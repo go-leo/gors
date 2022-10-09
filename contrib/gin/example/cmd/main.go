@@ -3,20 +3,14 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 
-	"github.com/go-leo/gors"
+	"github.com/go-leo/gors/contrib/gin/example/api/add"
 )
 
 func main() {
 	engine := gin.New()
-	var routes []*gors.Route
-
-	for _, route := range routes {
-		if len(route.Methods) <= 0 {
-			engine.Any(route.Path, gin.WrapF(route.Handler))
-			continue
-		}
-		for _, method := range route.Methods {
-			engine.Handle(method, route.Path, gin.WrapF(route.Handler))
-		}
-	}
+	engine.GET("/:a/:b", func(c *gin.Context) {
+		var a add.SumRequest
+		c.ShouldBindUri(&a)
+		c.BindUri(&a)
+	})
 }
