@@ -9,8 +9,6 @@ import (
 	"strconv"
 
 	"github.com/go-leo/stringx"
-
-	"github.com/go-leo/gors/internal/pkg/httpmethod"
 )
 
 const (
@@ -18,8 +16,6 @@ const (
 	gorsPackage    = goImportPath("github.com/go-leo/gors")
 	ginPackage     = goImportPath("github.com/gin-gonic/gin")
 	httpPackage    = goImportPath("net/http")
-	urlPackage     = goImportPath("net/url")
-	jsonPackage    = goImportPath("encoding/json")
 	ioPackage      = goImportPath("io")
 	bindingPackage = goImportPath("github.com/gin-gonic/gin/binding")
 	renderPackage  = goImportPath("github.com/gin-gonic/gin/render")
@@ -67,12 +63,26 @@ func (g *generate) checkAndGetResult1(rpcType *ast.FuncType, methodName *ast.Ide
 		}
 		return &result{string: true}
 	case *ast.StarExpr:
-		ident, ok := r1.X.(*ast.Ident)
-		if !ok {
+		switch x := r1.X.(type) {
+		case *ast.Ident:
+			name := x.Name
+			return &result{objectArgs: &objectArgs{name: name}}
+		case *ast.SelectorExpr:
+			ident, ok := x.X.(*ast.Ident)
+			if !ok {
+				log.Fatalf("error: func %s 1th result is invalid, must be []byte or string or io.Reader or *struct{}", methodName)
+			}
+			for importPath, goImport := range g.imports {
+				if goImport.PackageName == ident.Name {
+					return &result{objectArgs: &objectArgs{name: x.Sel.Name, goImportPath: goImportPath(importPath)}}
+				}
+			}
 			log.Fatalf("error: func %s 1th result is invalid, must be []byte or string or io.Reader or *struct{}", methodName)
+			return nil
+		default:
+			log.Fatalf("error: func %s 1th result is invalid, must be []byte or string or io.Reader or *struct{}", methodName)
+			return nil
 		}
-		name := ident.Name
-		return &result{objectArgs: &objectArgs{name: name}}
 	case *ast.SelectorExpr:
 		if r1.Sel == nil {
 			log.Fatalf("error: func %s 1th result is invalid, must be []byte or string or io.Reader or *struct{}", methodName)
@@ -125,12 +135,27 @@ func (g *generate) checkAndGetParam2(rpcType *ast.FuncType, methodName *ast.Iden
 		}
 		return &param{string: true}
 	case *ast.StarExpr:
-		ident, ok := p2.X.(*ast.Ident)
-		if !ok {
+		switch x := p2.X.(type) {
+		case *ast.Ident:
+			name := x.Name
+			return &param{objectArgs: &objectArgs{name: name}}
+		case *ast.SelectorExpr:
+			ident, ok := x.X.(*ast.Ident)
+			if !ok {
+				log.Fatalf("error: func %s 2th param is invalid, must be []byte or string or io.Reader or *struct{}", methodName)
+			}
+			for importPath, goImport := range g.imports {
+				if goImport.PackageName == ident.Name {
+					return &param{objectArgs: &objectArgs{name: x.Sel.Name, goImportPath: goImportPath(importPath)}}
+				}
+			}
 			log.Fatalf("error: func %s 2th param is invalid, must be []byte or string or io.Reader or *struct{}", methodName)
+			return nil
+		default:
+			log.Fatalf("error: func %s 2th param is invalid, must be []byte or string or io.Reader or *struct{}", methodName)
+			return nil
 		}
-		name := ident.Name
-		return &param{objectArgs: &objectArgs{name: name}}
+
 	case *ast.SelectorExpr:
 		if p2.Sel == nil {
 			log.Fatalf("error: func %s 2th param is invalid, must be []byte or string or io.Reader or *struct{}", methodName)
@@ -231,7 +256,7 @@ func (g *generate) printHandler(info *routerInfo) {
 	} else if info.param2.string {
 		g.printStringReq(info)
 	} else if info.param2.reader {
-		g.printReaderReq()
+		g.printReaderReq(info)
 	} else if info.param2.objectArgs != nil {
 		g.printObjectReq(info)
 	} else {
@@ -254,10 +279,6 @@ func (g *generate) printHandler(info *routerInfo) {
 }
 
 func (g *generate) printBytesReq(info *routerInfo) {
-	if info.method == httpmethod.GetMethod {
-		g.P(g.functionBuf, "var req = []byte{}")
-		return
-	}
 	g.P(g.functionBuf, "body, err := ", ioPackage.Ident("ReadAll"), "(c.Request.Body)")
 	g.P(g.functionBuf, "if err != nil {")
 	g.P(g.functionBuf, "c.String(", httpPackage.Ident("StatusBadRequest"), ", err.Error())")
@@ -268,10 +289,6 @@ func (g *generate) printBytesReq(info *routerInfo) {
 }
 
 func (g *generate) printStringReq(info *routerInfo) {
-	if info.method == httpmethod.GetMethod {
-		g.P(g.functionBuf, "var req string")
-		return
-	}
 	g.P(g.functionBuf, "body, err := ", ioPackage.Ident("ReadAll"), "(c.Request.Body)")
 	g.P(g.functionBuf, "if err != nil {")
 	g.P(g.functionBuf, "c.String(", httpPackage.Ident("StatusBadRequest"), ", err.Error())")
@@ -281,7 +298,7 @@ func (g *generate) printStringReq(info *routerInfo) {
 	g.P(g.functionBuf, "req := string(body)")
 }
 
-func (g *generate) printReaderReq() {
+func (g *generate) printReaderReq(info *routerInfo) {
 	g.P(g.functionBuf, "body := c.Request.Body")
 	g.P(g.functionBuf, "req := body")
 }
@@ -353,35 +370,38 @@ func (g *generate) printObjectReq(info *routerInfo) {
 }
 
 func (g *generate) printRPCHandler(info *routerInfo) {
-	g.P(g.functionBuf, "resp, err := srv.", info.rpcMethodName, "(c.Request.Context(), req)")
+	g.P(g.functionBuf, "var ctx ", contextPackage.Ident("Context"), " = c")
+	g.P(g.functionBuf, "ctx = ", gorsPackage.Ident("InjectStatusCode"), "(ctx, ", httpPackage.Ident("StatusOK"), ")")
+	g.P(g.functionBuf, "ctx = ", gorsPackage.Ident("InjectHeader"), "(ctx, c.Writer.Header())")
+	g.P(g.functionBuf, "resp, err := srv.", info.rpcMethodName, "(ctx, req)")
 	g.P(g.functionBuf, "if err != nil {")
 	g.P(g.functionBuf, "if httpErr, ok := err.(*", gorsPackage.Ident("HttpError"), "); ok {")
 	g.P(g.functionBuf, "c.String(httpErr.StatusCode(), httpErr.Error())")
-
+	g.P(g.functionBuf, "_ = c.Error(err).SetType(", ginPackage.Ident("ErrorTypePublic"), ")")
 	g.P(g.functionBuf, "return")
 	g.P(g.functionBuf, "}")
 	g.P(g.functionBuf, "c.String(", httpPackage.Ident("StatusInternalServerError"), ", err.Error())")
+	g.P(g.functionBuf, "_ = c.Error(err).SetType(", ginPackage.Ident("ErrorTypePrivate"), ")")
 	g.P(g.functionBuf, "return")
 	g.P(g.functionBuf, "}")
+	g.P(g.functionBuf, "statusCode := ", gorsPackage.Ident("ExtractStatusCode"), "(ctx)")
 }
 
 func (g *generate) printBytesRender(info *routerInfo) {
 	switch {
-	case info.bytesRender, info.stringRender, info.textRender, info.htmlRender:
-		g.P(g.functionBuf, "c.Render(", httpPackage.Ident("StatusOK"), ", ", renderPackage.Ident("Data"), "{ContentType: ", strconv.Quote(info.renderContentType), ", Data: resp})")
-	case info.redirectRender:
-		g.P(g.functionBuf, "c.Render(", httpPackage.Ident("StatusOK"), ", ", renderPackage.Ident("Redirect"), "{Code: 0, Request: c.Request, Location: strconv.Quote(string(resp))})")
+	case info.bytesRender:
+		g.P(g.functionBuf, "c.Render(statusCode, ", renderPackage.Ident("Data"), "{ContentType: ", strconv.Quote(info.renderContentType), ", Data: resp})")
 	default:
-		log.Fatalf("error: func %s []byte result must be set BytesRender or StringRender or TextRender or HTMLRender or RedirectRender", info.rpcMethodName)
+		log.Fatalf("error: func %s []byte result must be set BytesRender", info.rpcMethodName)
 	}
 }
 
 func (g *generate) printStringRender(info *routerInfo) {
 	switch {
-	case info.bytesRender, info.stringRender, info.textRender, info.htmlRender:
-		g.P(g.functionBuf, "c.Render(", httpPackage.Ident("StatusOK"), ", ", renderPackage.Ident("Data"), "{ContentType: ", strconv.Quote(info.renderContentType), ", Data: []byte(resp)})")
+	case info.stringRender, info.textRender, info.htmlRender:
+		g.P(g.functionBuf, "c.Render(statusCode, ", renderPackage.Ident("Data"), "{ContentType: ", strconv.Quote(info.renderContentType), ", Data: []byte(resp)})")
 	case info.redirectRender:
-		g.P(g.functionBuf, "c.Render(", httpPackage.Ident("StatusOK"), ", ", renderPackage.Ident("Redirect"), "{Code: 0, Request: c.Request, Location: strconv.Quote(resp)})")
+		g.P(g.functionBuf, "c.Redirect(statusCode, resp)")
 	default:
 		log.Fatalf("error: func %s string result must be set BytesRender or StringRender or TextRender or HTMLRender or RedirectRender", info.rpcMethodName)
 	}
@@ -390,7 +410,7 @@ func (g *generate) printStringRender(info *routerInfo) {
 func (g *generate) printReaderRender(info *routerInfo) {
 	switch {
 	case info.readerRender:
-		g.P(g.functionBuf, "c.Render(", httpPackage.Ident("StatusOK"), ", ", renderPackage.Ident("Reader"), "{ContentType: ", strconv.Quote(info.renderContentType), ", ContentLength: 0, Reader: resp, Headers: nil})")
+		g.P(g.functionBuf, "c.Render(statusCode, ", renderPackage.Ident("Reader"), "{ContentType: ", strconv.Quote(info.renderContentType), ", ContentLength: -1, Reader: resp})")
 	default:
 		log.Fatalf("error: func %s io.Reader result must be set ReaderRender", info.rpcMethodName)
 	}
@@ -399,44 +419,42 @@ func (g *generate) printReaderRender(info *routerInfo) {
 func (g *generate) printObjectRender(info *routerInfo) {
 	switch {
 	case info.jsonRender:
-		g.P(g.functionBuf, "c.Render(", httpPackage.Ident("StatusOK"), ", ", renderPackage.Ident("JSON"), "{Data: resp})")
+		g.P(g.functionBuf, "c.Render(statusCode, ", renderPackage.Ident("JSON"), "{Data: resp})")
 	case info.indentedJSONRender:
-		g.P(g.functionBuf, "c.Render(", httpPackage.Ident("StatusOK"), ", ", renderPackage.Ident("IndentedJSON"), "{Data: resp})")
+		g.P(g.functionBuf, "c.Render(statusCode, ", renderPackage.Ident("IndentedJSON"), "{Data: resp})")
 	case info.secureJSONRender:
-		g.P(g.functionBuf, "c.Render(", httpPackage.Ident("StatusOK"), ", ", renderPackage.Ident("IndentedJSON"), "{Data: resp})")
+		g.P(g.functionBuf, "c.Render(statusCode, ", renderPackage.Ident("SecureJSON"), "{Data: resp})")
 	case info.jsonpJSONRender:
-		g.P(g.functionBuf, "callback := c.DefaultQuery(\"callback\", \"\")")
-		g.P(g.functionBuf, "if callback == \"\" {")
-		g.P(g.functionBuf, "c.Render(", httpPackage.Ident("StatusOK"), ", render.JSON{Data: resp})")
-		g.P(g.functionBuf, "return")
-		g.P(g.functionBuf, "}")
-		g.P(g.functionBuf, "c.Render(", httpPackage.Ident("StatusOK"), ", ", renderPackage.Ident("JsonpJSON"), "{Callback: callback, Data: resp})")
+		g.P(g.functionBuf, "c.JSONP(statusCode, resp)")
 	case info.pureJSONRender:
-		g.P(g.functionBuf, "c.Render(", httpPackage.Ident("StatusOK"), ", ", renderPackage.Ident("PureJSON"), "{Data: resp})")
+		g.P(g.functionBuf, "c.Render(statusCode, ", renderPackage.Ident("PureJSON"), "{Data: resp})")
 	case info.asciiJSONRender:
-		g.P(g.functionBuf, "c.Render(", httpPackage.Ident("StatusOK"), ", ", renderPackage.Ident("AsciiJSON"), "{Data: resp})")
+		g.P(g.functionBuf, "c.Render(statusCode, ", renderPackage.Ident("AsciiJSON"), "{Data: resp})")
 	case info.xmlRender:
-		g.P(g.functionBuf, "c.Render(", httpPackage.Ident("StatusOK"), ", ", renderPackage.Ident("XML"), "{Data: resp})")
+		g.P(g.functionBuf, "c.Render(statusCode, ", renderPackage.Ident("XML"), "{Data: resp})")
 	case info.yamlRender:
-		g.P(g.functionBuf, "c.Render(", httpPackage.Ident("StatusOK"), ", ", renderPackage.Ident("YAML"), "{Data: resp})")
+		g.P(g.functionBuf, "c.Render(statusCode, ", renderPackage.Ident("YAML"), "{Data: resp})")
 	case info.protobufRender:
-		g.P(g.functionBuf, "c.Render(", httpPackage.Ident("StatusOK"), ", ", renderPackage.Ident("ProtoBuf"), "{Data: resp})")
+		g.P(g.functionBuf, "c.Render(statusCode, ", renderPackage.Ident("ProtoBuf"), "{Data: resp})")
 	case info.msgpackRender:
-		g.P(g.functionBuf, "c.Render(", httpPackage.Ident("StatusOK"), ", ", renderPackage.Ident("MsgPack"), "{Data: resp})")
+		g.P(g.functionBuf, "c.Render(statusCode, ", renderPackage.Ident("MsgPack"), "{Data: resp})")
 	case info.tomlRender:
-		g.P(g.functionBuf, "c.Render(", httpPackage.Ident("StatusOK"), ", ", renderPackage.Ident("TOML"), "{Data: resp})")
+		g.P(g.functionBuf, "c.Render(statusCode, ", renderPackage.Ident("TOML"), "{Data: resp})")
 	default:
 		log.Fatalf("error: func %s *struct{} result must be set JSONRender or IndentedJSONRender or SecureJSONRender or JsonpJSONRender or PureJSONRender or AsciiJSONRender or XMLRender or YAMLRender or ProtoBufRender or MsgPackRender or TOMLRender", info.rpcMethodName)
 	}
 }
 
 func (g *generate) printImports() {
+	g.P(g.importsBuf, "import (")
 	for _, imp := range g.imports {
 		if !imp.enable {
 			continue
 		}
-		g.P(g.importsBuf, "import ", imp.PackageName, " ", strconv.Quote(imp.ImportPath))
+		g.P(g.importsBuf, imp.PackageName, " ", strconv.Quote(imp.ImportPath))
 	}
+	g.P(g.importsBuf, ")")
+
 }
 
 func (g *generate) combine() {

@@ -19,7 +19,7 @@ func SetStatusCode(ctx context.Context, code int) {
 	atomic.SwapInt32(codePtr, int32(code))
 }
 
-func GetStatusCode(ctx context.Context) int {
+func ExtractStatusCode(ctx context.Context) int {
 	v := ctx.Value(codeKey{})
 	codePtr, _ := v.(*int32)
 	return int(atomic.LoadInt32(codePtr))

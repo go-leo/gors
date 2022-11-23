@@ -1,0 +1,11 @@
+syntax = "proto3";
+package gors.api.pb;
+option go_package = "github.com/go-leo/gors/example/api/pb;pb";
+
+message ProtoBufReq {
+  uint64 id = 1;
+}
+
+message ProtoBufResp {
+  string name = 1;
+}
