@@ -2,15 +2,14 @@
 package add
 
 import (
+	io "io"
 	"strconv"
-
-	gin "github.com/gin-gonic/gin"
 )
-import render "github.com/gin-gonic/gin/render"
-import binding "github.com/gin-gonic/gin/binding"
-import io "io"
 import gors "github.com/go-leo/gors"
 import http "net/http"
+import gin "github.com/gin-gonic/gin"
+import render "github.com/gin-gonic/gin/render"
+import binding "github.com/gin-gonic/gin/binding"
 
 func DemoRouters(srv Demo) []gors.Router {
 	return []gors.Router{
@@ -22,12 +21,10 @@ func DemoRouters(srv Demo) []gors.Router {
 				resp, err := srv.GetBytesBytes(c.Request.Context(), req)
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
-						c.Abort()
 						c.String(httpErr.StatusCode(), httpErr.Error())
-					} else {
-						c.Abort()
-						c.String(http.StatusInternalServerError, err.Error())
+						return
 					}
+					c.String(http.StatusInternalServerError, err.Error())
 					return
 				}
 				c.Render(http.StatusOK, render.Data{ContentType: "text/go", Data: resp})
@@ -41,19 +38,16 @@ func DemoRouters(srv Demo) []gors.Router {
 				if err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
-					c.Abort()
 					return
 				}
 				req := body
 				resp, err := srv.PostBytesBytes(c.Request.Context(), req)
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
-						c.Abort()
 						c.String(httpErr.StatusCode(), httpErr.Error())
-					} else {
-						c.Abort()
-						c.String(http.StatusInternalServerError, err.Error())
+						return
 					}
+					c.String(http.StatusInternalServerError, err.Error())
 					return
 				}
 				c.Render(http.StatusOK, render.Data{ContentType: "text/go", Data: resp})
@@ -67,12 +61,10 @@ func DemoRouters(srv Demo) []gors.Router {
 				resp, err := srv.GetStringString(c.Request.Context(), req)
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
-						c.Abort()
 						c.String(httpErr.StatusCode(), httpErr.Error())
-					} else {
-						c.Abort()
-						c.String(http.StatusInternalServerError, err.Error())
+						return
 					}
+					c.String(http.StatusInternalServerError, err.Error())
 					return
 				}
 				c.Render(http.StatusOK, render.Data{ContentType: "text/go", Data: []byte(resp)})
@@ -86,19 +78,16 @@ func DemoRouters(srv Demo) []gors.Router {
 				if err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
-					c.Abort()
 					return
 				}
 				req := string(body)
 				resp, err := srv.PostStringString(c.Request.Context(), req)
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
-						c.Abort()
 						c.String(httpErr.StatusCode(), httpErr.Error())
-					} else {
-						c.Abort()
-						c.String(http.StatusInternalServerError, err.Error())
+						return
 					}
+					c.String(http.StatusInternalServerError, err.Error())
 					return
 				}
 				c.Render(http.StatusOK, render.Data{ContentType: "text/go", Data: []byte(resp)})
@@ -113,12 +102,10 @@ func DemoRouters(srv Demo) []gors.Router {
 				resp, err := srv.GetReaderReader(c.Request.Context(), req)
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
-						c.Abort()
 						c.String(httpErr.StatusCode(), httpErr.Error())
-					} else {
-						c.Abort()
-						c.String(http.StatusInternalServerError, err.Error())
+						return
 					}
+					c.String(http.StatusInternalServerError, err.Error())
 					return
 				}
 				c.Render(http.StatusOK, render.Reader{ContentType: "", ContentLength: 0, Reader: resp, Headers: nil})
@@ -133,12 +120,10 @@ func DemoRouters(srv Demo) []gors.Router {
 				resp, err := srv.PostReaderReader(c.Request.Context(), req)
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
-						c.Abort()
 						c.String(httpErr.StatusCode(), httpErr.Error())
-					} else {
-						c.Abort()
-						c.String(http.StatusInternalServerError, err.Error())
+						return
 					}
+					c.String(http.StatusInternalServerError, err.Error())
 					return
 				}
 				c.Render(http.StatusOK, render.Reader{ContentType: "", ContentLength: 0, Reader: resp, Headers: nil})
@@ -152,12 +137,10 @@ func DemoRouters(srv Demo) []gors.Router {
 				resp, err := srv.GetBytesString(c.Request.Context(), req)
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
-						c.Abort()
 						c.String(httpErr.StatusCode(), httpErr.Error())
-					} else {
-						c.Abort()
-						c.String(http.StatusInternalServerError, err.Error())
+						return
 					}
+					c.String(http.StatusInternalServerError, err.Error())
 					return
 				}
 				c.Render(http.StatusOK, render.Data{ContentType: "text/html; charset=utf-8", Data: []byte(resp)})
@@ -171,19 +154,16 @@ func DemoRouters(srv Demo) []gors.Router {
 				if err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
-					c.Abort()
 					return
 				}
 				req := body
 				resp, err := srv.PostBytesString(c.Request.Context(), req)
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
-						c.Abort()
 						c.String(httpErr.StatusCode(), httpErr.Error())
-					} else {
-						c.Abort()
-						c.String(http.StatusInternalServerError, err.Error())
+						return
 					}
+					c.String(http.StatusInternalServerError, err.Error())
 					return
 				}
 				c.Render(http.StatusOK, render.Redirect{Code: 0, Request: c.Request, Location: strconv.Quote(resp)})
@@ -197,12 +177,10 @@ func DemoRouters(srv Demo) []gors.Router {
 				resp, err := srv.GetBytesReader(c.Request.Context(), req)
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
-						c.Abort()
 						c.String(httpErr.StatusCode(), httpErr.Error())
-					} else {
-						c.Abort()
-						c.String(http.StatusInternalServerError, err.Error())
+						return
 					}
+					c.String(http.StatusInternalServerError, err.Error())
 					return
 				}
 				c.Render(http.StatusOK, render.Reader{ContentType: "video/mpeg4", ContentLength: 0, Reader: resp, Headers: nil})
@@ -216,19 +194,16 @@ func DemoRouters(srv Demo) []gors.Router {
 				if err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
-					c.Abort()
 					return
 				}
 				req := body
 				resp, err := srv.PostBytesReader(c.Request.Context(), req)
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
-						c.Abort()
 						c.String(httpErr.StatusCode(), httpErr.Error())
-					} else {
-						c.Abort()
-						c.String(http.StatusInternalServerError, err.Error())
+						return
 					}
+					c.String(http.StatusInternalServerError, err.Error())
 					return
 				}
 				c.Render(http.StatusOK, render.Reader{ContentType: "video/mpeg4", ContentLength: 0, Reader: resp, Headers: nil})
@@ -242,12 +217,10 @@ func DemoRouters(srv Demo) []gors.Router {
 				resp, err := srv.GetStringBytes(c.Request.Context(), req)
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
-						c.Abort()
 						c.String(httpErr.StatusCode(), httpErr.Error())
-					} else {
-						c.Abort()
-						c.String(http.StatusInternalServerError, err.Error())
+						return
 					}
+					c.String(http.StatusInternalServerError, err.Error())
 					return
 				}
 				c.Render(http.StatusOK, render.Data{ContentType: "text/html; charset=utf-8", Data: resp})
@@ -261,19 +234,16 @@ func DemoRouters(srv Demo) []gors.Router {
 				if err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
-					c.Abort()
 					return
 				}
 				req := string(body)
 				resp, err := srv.PostStringBytes(c.Request.Context(), req)
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
-						c.Abort()
 						c.String(httpErr.StatusCode(), httpErr.Error())
-					} else {
-						c.Abort()
-						c.String(http.StatusInternalServerError, err.Error())
+						return
 					}
+					c.String(http.StatusInternalServerError, err.Error())
 					return
 				}
 				c.Render(http.StatusOK, render.Redirect{Code: 0, Request: c.Request, Location: strconv.Quote(string(resp))})
@@ -287,12 +257,10 @@ func DemoRouters(srv Demo) []gors.Router {
 				resp, err := srv.GetStringRender(c.Request.Context(), req)
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
-						c.Abort()
 						c.String(httpErr.StatusCode(), httpErr.Error())
-					} else {
-						c.Abort()
-						c.String(http.StatusInternalServerError, err.Error())
+						return
 					}
+					c.String(http.StatusInternalServerError, err.Error())
 					return
 				}
 				c.Render(http.StatusOK, render.Reader{ContentType: "video/mpeg4", ContentLength: 0, Reader: resp, Headers: nil})
@@ -306,19 +274,16 @@ func DemoRouters(srv Demo) []gors.Router {
 				if err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
-					c.Abort()
 					return
 				}
 				req := string(body)
 				resp, err := srv.PostStringReader(c.Request.Context(), req)
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
-						c.Abort()
 						c.String(httpErr.StatusCode(), httpErr.Error())
-					} else {
-						c.Abort()
-						c.String(http.StatusInternalServerError, err.Error())
+						return
 					}
+					c.String(http.StatusInternalServerError, err.Error())
 					return
 				}
 				c.Render(http.StatusOK, render.Reader{ContentType: "video/mpeg4", ContentLength: 0, Reader: resp, Headers: nil})
@@ -333,12 +298,10 @@ func DemoRouters(srv Demo) []gors.Router {
 				resp, err := srv.GetReaderBytes(c.Request.Context(), req)
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
-						c.Abort()
 						c.String(httpErr.StatusCode(), httpErr.Error())
-					} else {
-						c.Abort()
-						c.String(http.StatusInternalServerError, err.Error())
+						return
 					}
+					c.String(http.StatusInternalServerError, err.Error())
 					return
 				}
 				c.Render(http.StatusOK, render.Data{ContentType: "text/plain; charset=utf-8", Data: resp})
@@ -353,12 +316,10 @@ func DemoRouters(srv Demo) []gors.Router {
 				resp, err := srv.PostReaderBytes(c.Request.Context(), req)
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
-						c.Abort()
 						c.String(httpErr.StatusCode(), httpErr.Error())
-					} else {
-						c.Abort()
-						c.String(http.StatusInternalServerError, err.Error())
+						return
 					}
+					c.String(http.StatusInternalServerError, err.Error())
 					return
 				}
 				c.Render(http.StatusOK, render.Data{ContentType: "image/png", Data: resp})
@@ -373,12 +334,10 @@ func DemoRouters(srv Demo) []gors.Router {
 				resp, err := srv.GetReaderString(c.Request.Context(), req)
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
-						c.Abort()
 						c.String(httpErr.StatusCode(), httpErr.Error())
-					} else {
-						c.Abort()
-						c.String(http.StatusInternalServerError, err.Error())
+						return
 					}
+					c.String(http.StatusInternalServerError, err.Error())
 					return
 				}
 				c.Render(http.StatusOK, render.Data{ContentType: "text/plain; charset=utf-8", Data: []byte(resp)})
@@ -393,12 +352,10 @@ func DemoRouters(srv Demo) []gors.Router {
 				resp, err := srv.PostReaderString(c.Request.Context(), req)
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
-						c.Abort()
 						c.String(httpErr.StatusCode(), httpErr.Error())
-					} else {
-						c.Abort()
-						c.String(http.StatusInternalServerError, err.Error())
+						return
 					}
+					c.String(http.StatusInternalServerError, err.Error())
 					return
 				}
 				c.Render(http.StatusOK, render.Data{ContentType: "text/go", Data: []byte(resp)})
@@ -412,18 +369,15 @@ func DemoRouters(srv Demo) []gors.Router {
 				if err := c.BindUri(req); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
-					c.Abort()
 					return
 				}
 				resp, err := srv.UriBinding(c.Request.Context(), req)
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
-						c.Abort()
 						c.String(httpErr.StatusCode(), httpErr.Error())
-					} else {
-						c.Abort()
-						c.String(http.StatusInternalServerError, err.Error())
+						return
 					}
+					c.String(http.StatusInternalServerError, err.Error())
 					return
 				}
 				c.Render(http.StatusOK, render.IndentedJSON{Data: resp})
@@ -437,18 +391,15 @@ func DemoRouters(srv Demo) []gors.Router {
 				if err := c.ShouldBindWith(req, binding.Query); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
-					c.Abort()
 					return
 				}
 				resp, err := srv.QueryBinding(c.Request.Context(), req)
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
-						c.Abort()
 						c.String(httpErr.StatusCode(), httpErr.Error())
-					} else {
-						c.Abort()
-						c.String(http.StatusInternalServerError, err.Error())
+						return
 					}
+					c.String(http.StatusInternalServerError, err.Error())
 					return
 				}
 				c.Render(http.StatusOK, render.IndentedJSON{Data: resp})
@@ -462,18 +413,15 @@ func DemoRouters(srv Demo) []gors.Router {
 				if err := c.ShouldBindWith(req, binding.Header); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
-					c.Abort()
 					return
 				}
 				resp, err := srv.HeaderBinding(c.Request.Context(), req)
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
-						c.Abort()
 						c.String(httpErr.StatusCode(), httpErr.Error())
-					} else {
-						c.Abort()
-						c.String(http.StatusInternalServerError, err.Error())
+						return
 					}
+					c.String(http.StatusInternalServerError, err.Error())
 					return
 				}
 				callback := c.DefaultQuery("callback", "")
@@ -492,18 +440,15 @@ func DemoRouters(srv Demo) []gors.Router {
 				if err := c.ShouldBindWith(req, binding.JSON); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
-					c.Abort()
 					return
 				}
 				resp, err := srv.JSONBinding(c.Request.Context(), req)
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
-						c.Abort()
 						c.String(httpErr.StatusCode(), httpErr.Error())
-					} else {
-						c.Abort()
-						c.String(http.StatusInternalServerError, err.Error())
+						return
 					}
+					c.String(http.StatusInternalServerError, err.Error())
 					return
 				}
 				c.Render(http.StatusOK, render.JSON{Data: resp})
@@ -517,18 +462,15 @@ func DemoRouters(srv Demo) []gors.Router {
 				if err := c.ShouldBindWith(req, binding.XML); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
-					c.Abort()
 					return
 				}
 				resp, err := srv.XMLBinding(c.Request.Context(), req)
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
-						c.Abort()
 						c.String(httpErr.StatusCode(), httpErr.Error())
-					} else {
-						c.Abort()
-						c.String(http.StatusInternalServerError, err.Error())
+						return
 					}
+					c.String(http.StatusInternalServerError, err.Error())
 					return
 				}
 				c.Render(http.StatusOK, render.XML{Data: resp})
@@ -542,18 +484,15 @@ func DemoRouters(srv Demo) []gors.Router {
 				if err := c.ShouldBindWith(req, binding.Form); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
-					c.Abort()
 					return
 				}
 				resp, err := srv.FormBinding(c.Request.Context(), req)
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
-						c.Abort()
 						c.String(httpErr.StatusCode(), httpErr.Error())
-					} else {
-						c.Abort()
-						c.String(http.StatusInternalServerError, err.Error())
+						return
 					}
+					c.String(http.StatusInternalServerError, err.Error())
 					return
 				}
 				callback := c.DefaultQuery("callback", "")
@@ -572,18 +511,15 @@ func DemoRouters(srv Demo) []gors.Router {
 				if err := c.ShouldBindWith(req, binding.FormPost); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
-					c.Abort()
 					return
 				}
 				resp, err := srv.FormPostBinding(c.Request.Context(), req)
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
-						c.Abort()
 						c.String(httpErr.StatusCode(), httpErr.Error())
-					} else {
-						c.Abort()
-						c.String(http.StatusInternalServerError, err.Error())
+						return
 					}
+					c.String(http.StatusInternalServerError, err.Error())
 					return
 				}
 				c.Render(http.StatusOK, render.PureJSON{Data: resp})
@@ -597,18 +533,15 @@ func DemoRouters(srv Demo) []gors.Router {
 				if err := c.ShouldBindWith(req, binding.FormMultipart); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
-					c.Abort()
 					return
 				}
 				resp, err := srv.FormMultipartBinding(c.Request.Context(), req)
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
-						c.Abort()
 						c.String(httpErr.StatusCode(), httpErr.Error())
-					} else {
-						c.Abort()
-						c.String(http.StatusInternalServerError, err.Error())
+						return
 					}
+					c.String(http.StatusInternalServerError, err.Error())
 					return
 				}
 				c.Render(http.StatusOK, render.AsciiJSON{Data: resp})
@@ -622,18 +555,15 @@ func DemoRouters(srv Demo) []gors.Router {
 				if err := c.ShouldBindWith(req, binding.ProtoBuf); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
-					c.Abort()
 					return
 				}
 				resp, err := srv.ProtoBufBinding(c.Request.Context(), req)
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
-						c.Abort()
 						c.String(httpErr.StatusCode(), httpErr.Error())
-					} else {
-						c.Abort()
-						c.String(http.StatusInternalServerError, err.Error())
+						return
 					}
+					c.String(http.StatusInternalServerError, err.Error())
 					return
 				}
 				c.Render(http.StatusOK, render.ProtoBuf{Data: resp})
@@ -647,18 +577,15 @@ func DemoRouters(srv Demo) []gors.Router {
 				if err := c.ShouldBindWith(req, binding.MsgPack); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
-					c.Abort()
 					return
 				}
 				resp, err := srv.MsgPackBinding(c.Request.Context(), req)
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
-						c.Abort()
 						c.String(httpErr.StatusCode(), httpErr.Error())
-					} else {
-						c.Abort()
-						c.String(http.StatusInternalServerError, err.Error())
+						return
 					}
+					c.String(http.StatusInternalServerError, err.Error())
 					return
 				}
 				c.Render(http.StatusOK, render.MsgPack{Data: resp})
@@ -672,18 +599,15 @@ func DemoRouters(srv Demo) []gors.Router {
 				if err := c.ShouldBindWith(req, binding.YAML); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
-					c.Abort()
 					return
 				}
 				resp, err := srv.YAMLBinding(c.Request.Context(), req)
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
-						c.Abort()
 						c.String(httpErr.StatusCode(), httpErr.Error())
-					} else {
-						c.Abort()
-						c.String(http.StatusInternalServerError, err.Error())
+						return
 					}
+					c.String(http.StatusInternalServerError, err.Error())
 					return
 				}
 				c.Render(http.StatusOK, render.YAML{Data: resp})
@@ -697,18 +621,18 @@ func DemoRouters(srv Demo) []gors.Router {
 				if err := c.ShouldBindWith(req, binding.TOML); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
-					c.Abort()
 					return
 				}
-				resp, err := srv.TOMLBinding(c.Request.Context(), req)
+				code := http.StatusOK
+				ctx := c.Request.Context()
+
+				resp, err := srv.TOMLBinding(context, req)
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
-						c.Abort()
 						c.String(httpErr.StatusCode(), httpErr.Error())
-					} else {
-						c.Abort()
-						c.String(http.StatusInternalServerError, err.Error())
+						return
 					}
+					c.String(http.StatusInternalServerError, err.Error())
 					return
 				}
 				c.Render(http.StatusOK, render.TOML{Data: resp})

@@ -261,8 +261,7 @@ func (g *generate) printBytesReq(info *routerInfo) {
 	g.P(g.functionBuf, "body, err := ", ioPackage.Ident("ReadAll"), "(c.Request.Body)")
 	g.P(g.functionBuf, "if err != nil {")
 	g.P(g.functionBuf, "c.String(", httpPackage.Ident("StatusBadRequest"), ", err.Error())")
-	g.P(g.functionBuf, "_ = c.Error(err).SetType(gin.ErrorTypeBind)")
-	g.P(g.functionBuf, "c.Abort()")
+	g.P(g.functionBuf, "_ = c.Error(err).SetType(", ginPackage.Ident("ErrorTypeBind"), ")")
 	g.P(g.functionBuf, "return")
 	g.P(g.functionBuf, "}")
 	g.P(g.functionBuf, "req := body")
@@ -277,7 +276,6 @@ func (g *generate) printStringReq(info *routerInfo) {
 	g.P(g.functionBuf, "if err != nil {")
 	g.P(g.functionBuf, "c.String(", httpPackage.Ident("StatusBadRequest"), ", err.Error())")
 	g.P(g.functionBuf, "_ = c.Error(err).SetType(gin.ErrorTypeBind)")
-	g.P(g.functionBuf, "c.Abort()")
 	g.P(g.functionBuf, "return")
 	g.P(g.functionBuf, "}")
 	g.P(g.functionBuf, "req := string(body)")
@@ -301,7 +299,6 @@ func (g *generate) printBindUriRequest() {
 	g.P(g.functionBuf, "if err := c.BindUri(req); err != nil {")
 	g.P(g.functionBuf, "c.String(", httpPackage.Ident("StatusBadRequest"), ", err.Error())")
 	g.P(g.functionBuf, "_ = c.Error(err).SetType(gin.ErrorTypeBind)")
-	g.P(g.functionBuf, "c.Abort()")
 	g.P(g.functionBuf, "return")
 	g.P(g.functionBuf, "}")
 }
@@ -310,37 +307,46 @@ func (g *generate) printBindRequest(binding string) {
 	g.P(g.functionBuf, "if err := c.ShouldBindWith(req, ", bindingPackage.Ident(binding), "); err != nil {")
 	g.P(g.functionBuf, "c.String(", httpPackage.Ident("StatusBadRequest"), ", err.Error())")
 	g.P(g.functionBuf, "_ = c.Error(err).SetType(gin.ErrorTypeBind)")
-	g.P(g.functionBuf, "c.Abort()")
 	g.P(g.functionBuf, "return")
 	g.P(g.functionBuf, "}")
 }
 
 func (g *generate) printObjectReq(info *routerInfo) {
 	g.printObjectReqInit(info)
-	switch {
-	case info.uriBinding:
+	if info.uriBinding {
 		g.printBindUriRequest()
-	case info.queryBinding:
+	}
+	if info.queryBinding {
 		g.printBindRequest("Query")
-	case info.headerBinding:
+	}
+	if info.headerBinding {
 		g.printBindRequest("Header")
-	case info.jsonBinding:
+	}
+	if info.jsonBinding {
 		g.printBindRequest("JSON")
-	case info.xmlBinding:
+	}
+	if info.xmlBinding {
 		g.printBindRequest("XML")
-	case info.formBinding:
+	}
+	if info.formBinding {
 		g.printBindRequest("Form")
-	case info.formPostBinding:
+	}
+	if info.formPostBinding {
 		g.printBindRequest("FormPost")
-	case info.formMultipartBinding:
+	}
+	if info.formMultipartBinding {
 		g.printBindRequest("FormMultipart")
-	case info.protobufBinding:
+	}
+	if info.protobufBinding {
 		g.printBindRequest("ProtoBuf")
-	case info.msgpackBinding:
+	}
+	if info.msgpackBinding {
 		g.printBindRequest("MsgPack")
-	case info.yamlBinding:
+	}
+	if info.yamlBinding {
 		g.printBindRequest("YAML")
-	case info.tomlBinding:
+	}
+	if info.tomlBinding {
 		g.printBindRequest("TOML")
 	}
 
@@ -350,12 +356,11 @@ func (g *generate) printRPCHandler(info *routerInfo) {
 	g.P(g.functionBuf, "resp, err := srv.", info.rpcMethodName, "(c.Request.Context(), req)")
 	g.P(g.functionBuf, "if err != nil {")
 	g.P(g.functionBuf, "if httpErr, ok := err.(*", gorsPackage.Ident("HttpError"), "); ok {")
-	g.P(g.functionBuf, "c.Abort()")
 	g.P(g.functionBuf, "c.String(httpErr.StatusCode(), httpErr.Error())")
-	g.P(g.functionBuf, "} else {")
-	g.P(g.functionBuf, "c.Abort()")
-	g.P(g.functionBuf, "c.String(", httpPackage.Ident("StatusInternalServerError"), ", err.Error())")
+
+	g.P(g.functionBuf, "return")
 	g.P(g.functionBuf, "}")
+	g.P(g.functionBuf, "c.String(", httpPackage.Ident("StatusInternalServerError"), ", err.Error())")
 	g.P(g.functionBuf, "return")
 	g.P(g.functionBuf, "}")
 }
