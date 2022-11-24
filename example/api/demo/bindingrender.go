@@ -29,7 +29,7 @@ type BindingRender interface {
 	// @GORS @PATCH @Path("/XMLBindingXMLRender/:id") @UriBinding @QueryBinding @HeaderBinding  @XMLBinding @XMLRender
 	XMLBindingXMLRender(context.Context, *XMLBindingReq) (*XMLRenderResp, error)
 	// FormBindingJSONRender
-	// @GORS @POST @Path("/FormBindingJSONRender/:id") @UriBinding @QueryBinding @HeaderBinding @FormBinding @JSONRender
+	// @GORS @POST @Path("/FormBindingJSONRender/:id") @UriBinding @HeaderBinding @FormBinding @JSONRender
 	FormBindingJSONRender(context.Context, *FormBindingReq) (*JSONRenderResp, error)
 	// FormPostBindingPureJSONRender
 	// @GORS @POST @Path("/FormPostBindingPureJSONRender/:id") @UriBinding @QueryBinding @HeaderBinding @FormPostBinding @PureJSONRender
@@ -44,10 +44,10 @@ type BindingRender interface {
 	// @GORS @DELETE @Path("/MsgPackBindingMsgPackRender") @MsgPackBinding @MsgPackRender
 	MsgPackBindingMsgPackRender(context.Context, *MsgPackBindingReq) (*MsgPackRenderResp, error)
 	// YAMLBindingYAMLRender
-	// @GORS @Connect @Path("/YAMLBindingYAMLRender") @YAMLBinding @YAMLRender
+	// @GORS @DELETE @Path("/YAMLBindingYAMLRender/:id") @UriBinding @QueryBinding @HeaderBinding @YAMLBinding @YAMLRender
 	YAMLBindingYAMLRender(context.Context, *YAMLBindingReq) (*YAMLRenderResp, error)
 	// TOMLBindingTOMLRender
-	// @GORS @Options @Path("/TOMLBindingTOMLRender") @TOMLBinding @TOMLRender
+	// @GORS @PUT @Path("/TOMLBindingTOMLRender/:id") @UriBinding @QueryBinding @HeaderBinding @TOMLBinding @TOMLRender
 	TOMLBindingTOMLRender(context.Context, *TOMLBindingReq) (*TOMLRenderResp, error)
 }
 
@@ -129,11 +129,10 @@ type XMLRenderResp struct {
 }
 
 type FormBindingReq struct {
-	ID      int64                 `uri:"id"`
-	Name    string                `form:"name"`
-	Auth    string                `header:"Authorization"`
-	Address string                `form:"address"`
-	Avatar  *multipart.FileHeader `form:"avatar" binding:"required"`
+	ID      int64  `uri:"id"`
+	Name    string `form:"name"`
+	Auth    string `header:"Authorization"`
+	Address string `form:"address"`
 }
 
 type FormBindingResp struct {
@@ -162,7 +161,7 @@ type FormMultipartBindingReq struct {
 	Name    string                `form:"name"`
 	Auth    string                `header:"Authorization"`
 	Address string                `form:"address"`
-	Avatar  *multipart.FileHeader `form:"avatar" binding:"required"`
+	Avatar  *multipart.FileHeader `form:"avatar"`
 }
 
 type AsciiJSONRenderResp struct {

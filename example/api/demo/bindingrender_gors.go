@@ -208,11 +208,6 @@ func BindingRenderRouters(srv BindingRender) []gors.Router {
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
 				}
-				if err := c.ShouldBindWith(req, binding.Query); err != nil {
-					c.String(http.StatusBadRequest, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypeBind)
-					return
-				}
 				if err := c.ShouldBindWith(req, binding.Header); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
@@ -384,10 +379,25 @@ func BindingRenderRouters(srv BindingRender) []gors.Router {
 			},
 		},
 		{
-			HTTPMethod: http.MethodConnect,
-			Path:       "/api/BindingRender/YAMLBindingYAMLRender",
+			HTTPMethod: http.MethodDelete,
+			Path:       "/api/BindingRender/YAMLBindingYAMLRender/:id",
 			HandlerFunc: func(c *gin.Context) {
 				req := new(YAMLBindingReq)
+				if err := c.BindUri(req); err != nil {
+					c.String(http.StatusBadRequest, err.Error())
+					_ = c.Error(err).SetType(gin.ErrorTypeBind)
+					return
+				}
+				if err := c.ShouldBindWith(req, binding.Query); err != nil {
+					c.String(http.StatusBadRequest, err.Error())
+					_ = c.Error(err).SetType(gin.ErrorTypeBind)
+					return
+				}
+				if err := c.ShouldBindWith(req, binding.Header); err != nil {
+					c.String(http.StatusBadRequest, err.Error())
+					_ = c.Error(err).SetType(gin.ErrorTypeBind)
+					return
+				}
 				if err := c.ShouldBindWith(req, binding.YAML); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
@@ -412,10 +422,25 @@ func BindingRenderRouters(srv BindingRender) []gors.Router {
 			},
 		},
 		{
-			HTTPMethod: http.MethodOptions,
-			Path:       "/api/BindingRender/TOMLBindingTOMLRender",
+			HTTPMethod: http.MethodPut,
+			Path:       "/api/BindingRender/TOMLBindingTOMLRender/:id",
 			HandlerFunc: func(c *gin.Context) {
 				req := new(TOMLBindingReq)
+				if err := c.BindUri(req); err != nil {
+					c.String(http.StatusBadRequest, err.Error())
+					_ = c.Error(err).SetType(gin.ErrorTypeBind)
+					return
+				}
+				if err := c.ShouldBindWith(req, binding.Query); err != nil {
+					c.String(http.StatusBadRequest, err.Error())
+					_ = c.Error(err).SetType(gin.ErrorTypeBind)
+					return
+				}
+				if err := c.ShouldBindWith(req, binding.Header); err != nil {
+					c.String(http.StatusBadRequest, err.Error())
+					_ = c.Error(err).SetType(gin.ErrorTypeBind)
+					return
+				}
 				if err := c.ShouldBindWith(req, binding.TOML); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
