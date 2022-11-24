@@ -419,27 +419,27 @@ func (g *generate) printReaderRender(info *routerInfo) {
 func (g *generate) printObjectRender(info *routerInfo) {
 	switch {
 	case info.jsonRender:
-		g.P(g.functionBuf, "c.Render(statusCode, ", renderPackage.Ident("JSON"), "{Data: resp})")
+		g.P(g.functionBuf, "c.JSON(statusCode, resp)")
 	case info.indentedJSONRender:
-		g.P(g.functionBuf, "c.Render(statusCode, ", renderPackage.Ident("IndentedJSON"), "{Data: resp})")
+		g.P(g.functionBuf, "c.IndentedJSON(statusCode, resp)")
 	case info.secureJSONRender:
-		g.P(g.functionBuf, "c.Render(statusCode, ", renderPackage.Ident("SecureJSON"), "{Data: resp})")
+		g.P(g.functionBuf, "c.SecureJSON(statusCode, resp)")
 	case info.jsonpJSONRender:
 		g.P(g.functionBuf, "c.JSONP(statusCode, resp)")
 	case info.pureJSONRender:
-		g.P(g.functionBuf, "c.Render(statusCode, ", renderPackage.Ident("PureJSON"), "{Data: resp})")
+		g.P(g.functionBuf, "c.PureJSON(statusCode, resp)")
 	case info.asciiJSONRender:
-		g.P(g.functionBuf, "c.Render(statusCode, ", renderPackage.Ident("AsciiJSON"), "{Data: resp})")
+		g.P(g.functionBuf, "c.AsciiJSON(statusCode, resp)")
 	case info.xmlRender:
-		g.P(g.functionBuf, "c.Render(statusCode, ", renderPackage.Ident("XML"), "{Data: resp})")
+		g.P(g.functionBuf, "c.XML(statusCode, resp)")
 	case info.yamlRender:
-		g.P(g.functionBuf, "c.Render(statusCode, ", renderPackage.Ident("YAML"), "{Data: resp})")
+		g.P(g.functionBuf, "c.YAML(statusCode, resp)")
 	case info.protobufRender:
-		g.P(g.functionBuf, "c.Render(statusCode, ", renderPackage.Ident("ProtoBuf"), "{Data: resp})")
+		g.P(g.functionBuf, "c.ProtoBuf(statusCode, resp)")
 	case info.msgpackRender:
 		g.P(g.functionBuf, "c.Render(statusCode, ", renderPackage.Ident("MsgPack"), "{Data: resp})")
 	case info.tomlRender:
-		g.P(g.functionBuf, "c.Render(statusCode, ", renderPackage.Ident("TOML"), "{Data: resp})")
+		g.P(g.functionBuf, "c.TOML(statusCode, resp)")
 	default:
 		log.Fatalf("error: func %s *struct{} result must be set JSONRender or IndentedJSONRender or SecureJSONRender or JsonpJSONRender or PureJSONRender or AsciiJSONRender or XMLRender or YAMLRender or ProtoBufRender or MsgPackRender or TOMLRender", info.rpcMethodName)
 	}

@@ -56,11 +56,12 @@ type UriBindingReq struct {
 }
 
 type IndentedJSONRenderResp struct {
-	Name       string    `form:"name"`
-	Address    string    `form:"address"`
-	Birthday   time.Time `form:"birthday" time_format:"2006-01-02" time_utc:"1"`
-	CreateTime time.Time `form:"createTime" time_format:"unixNano"`
-	UnixTime   time.Time `form:"unixTime" time_format:"unix"`
+	ID         int64     `json:"id"`
+	Name       string    `json:"name"`
+	Address    string    `json:"address"`
+	Birthday   time.Time `json:"birthday"`
+	CreateTime time.Time `json:"createTime"`
+	UnixTime   time.Time `json:"unixTime"`
 }
 
 type QueryBindingReq struct {
@@ -69,7 +70,12 @@ type QueryBindingReq struct {
 }
 
 type SecureJSONRenderResp struct {
-	V int64
+	ID         int64     `json:"id"`
+	Name       string    `json:"name"`
+	Address    string    `json:"address"`
+	Birthday   time.Time `json:"birthday"`
+	CreateTime time.Time `json:"createTime"`
+	UnixTime   time.Time `json:"unixTime"`
 }
 
 type HeaderBindingReq struct {
@@ -79,7 +85,13 @@ type HeaderBindingReq struct {
 }
 
 type JsonpJSONRenderResp struct {
-	V int64
+	ID         int64     `json:"id"`
+	Name       string    `json:"name"`
+	Auth       string    `json:"auth"`
+	Address    string    `json:"address"`
+	Birthday   time.Time `json:"birthday"`
+	CreateTime time.Time `json:"createTime"`
+	UnixTime   time.Time `json:"unixTime"`
 }
 
 type JSONBindingReq struct {
@@ -90,7 +102,13 @@ type JSONBindingReq struct {
 }
 
 type JSONRenderResp struct {
-	V int64
+	ID         int64     `json:"id"`
+	Name       string    `json:"name"`
+	Auth       string    `json:"auth"`
+	Address    string    `json:"address"`
+	Birthday   time.Time `json:"birthday"`
+	CreateTime time.Time `json:"createTime"`
+	UnixTime   time.Time `json:"unixTime"`
 }
 
 type XMLBindingReq struct {
@@ -101,21 +119,16 @@ type XMLBindingReq struct {
 }
 
 type XMLRenderResp struct {
-	V int64
+	ID         int64     `xml:"id"`
+	Name       string    `xml:"name"`
+	Auth       string    `xml:"auth"`
+	Address    string    `xml:"address"`
+	Birthday   time.Time `xml:"birthday"`
+	CreateTime time.Time `xml:"createTime"`
+	UnixTime   time.Time `xml:"unixTime"`
 }
 
 type FormBindingReq struct {
-	ID      int64  `uri:"id"`
-	Name    string `form:"name"`
-	Auth    string `header:"Authorization"`
-	Address string `form:"address"`
-}
-
-type FormBindingResp struct {
-	V int64
-}
-
-type FormPostBindingReq struct {
 	ID      int64                 `uri:"id"`
 	Name    string                `form:"name"`
 	Auth    string                `header:"Authorization"`
@@ -123,8 +136,25 @@ type FormPostBindingReq struct {
 	Avatar  *multipart.FileHeader `form:"avatar" binding:"required"`
 }
 
-type PureJSONRenderResp struct {
+type FormBindingResp struct {
 	V int64
+}
+
+type FormPostBindingReq struct {
+	ID      int64  `uri:"id"`
+	Name    string `form:"name"`
+	Auth    string `header:"Authorization"`
+	Address string `form:"address"`
+}
+
+type PureJSONRenderResp struct {
+	ID         int64     `json:"id"`
+	Name       string    `json:"name"`
+	Auth       string    `json:"auth"`
+	Address    string    `json:"address"`
+	Birthday   time.Time `json:"birthday"`
+	CreateTime time.Time `json:"createTime"`
+	UnixTime   time.Time `json:"unixTime"`
 }
 
 type FormMultipartBindingReq struct {
@@ -136,37 +166,62 @@ type FormMultipartBindingReq struct {
 }
 
 type AsciiJSONRenderResp struct {
-	V int64
-}
-
-type ProtoBufBindingReq struct {
-	ID int64 `form:"id"`
-}
-
-type ProtoBufBindingResp struct {
-	V int64
+	ID         int64     `json:"id"`
+	Name       string    `json:"name"`
+	Auth       string    `json:"auth"`
+	Address    string    `json:"address"`
+	Birthday   time.Time `json:"birthday"`
+	CreateTime time.Time `json:"createTime"`
+	UnixTime   time.Time `json:"unixTime"`
 }
 
 type MsgPackBindingReq struct {
-	ID int64 `form:"id"`
+	ID      int64  `uri:"id"`
+	Name    string `form:"name"`
+	Auth    string `header:"Authorization"`
+	Address string
 }
 
 type MsgPackRenderResp struct {
-	V int64
+	ID         int64
+	Name       string
+	Auth       string
+	Address    string
+	Birthday   time.Time
+	CreateTime time.Time
+	UnixTime   time.Time
 }
 
 type YAMLBindingReq struct {
-	ID int64 `yaml:"id"`
+	ID      int64  `uri:"id"`
+	Name    string `form:"name"`
+	Auth    string `header:"Authorization"`
+	Address string `yaml:"address"`
 }
 
 type YAMLRenderResp struct {
-	V int64
+	ID         int64     `yaml:"id"`
+	Name       string    `yaml:"name"`
+	Auth       string    `yaml:"auth"`
+	Address    string    `yaml:"address"`
+	Birthday   time.Time `yaml:"birthday"`
+	CreateTime time.Time `yaml:"createTime"`
+	UnixTime   time.Time `yaml:"unixTime"`
 }
 
 type TOMLBindingReq struct {
-	ID int64 `toml:"id"`
+	ID      int64  `uri:"id"`
+	Name    string `form:"name"`
+	Auth    string `header:"Authorization"`
+	Address string `toml:"address"`
 }
 
 type TOMLRenderResp struct {
-	V int64
+	ID         int64     `toml:"id"`
+	Name       string    `toml:"name"`
+	Auth       string    `toml:"auth"`
+	Address    string    `toml:"address"`
+	Birthday   time.Time `toml:"birthday"`
+	CreateTime time.Time `toml:"createTime"`
+	UnixTime   time.Time `toml:"unixTime"`
 }
