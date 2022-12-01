@@ -2,7 +2,6 @@
 package demo
 
 import (
-	context "context"
 	gin "github.com/gin-gonic/gin"
 	render "github.com/gin-gonic/gin/render"
 	gors "github.com/go-leo/gors"
@@ -10,23 +9,25 @@ import (
 	http "net/http"
 )
 
-func BytesBytesRouters(srv BytesBytes) []gors.Router {
-	return []gors.Router{
+func BytesBytesRoutes(srv BytesBytes) []gors.Route {
+	return []gors.Route{
 		{
 			HTTPMethod: http.MethodGet,
 			Path:       "/api/BytesBytes/Get",
 			HandlerFunc: func(c *gin.Context) {
-				body, err := io.ReadAll(c.Request.Body)
+				var req []byte
+				var resp []byte
+				var err error
+				var body []byte
+				body, err = io.ReadAll(c.Request.Body)
 				if err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
 				}
-				req := body
-				var ctx context.Context = c
-				ctx = gors.InjectStatusCode(ctx, http.StatusOK)
-				ctx = gors.InjectHeader(ctx, c.Writer.Header())
-				resp, err := srv.GetBytesBytes(ctx, req)
+				req = body
+				ctx := gors.NewContext(c)
+				resp, err = srv.GetBytesBytes(ctx, req)
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
 						c.String(httpErr.StatusCode(), httpErr.Error())
@@ -37,7 +38,7 @@ func BytesBytesRouters(srv BytesBytes) []gors.Router {
 					_ = c.Error(err).SetType(gin.ErrorTypePrivate)
 					return
 				}
-				statusCode := gors.ExtractStatusCode(ctx)
+				statusCode := gors.GetCodeFromContext(ctx)
 				c.Render(statusCode, render.Data{ContentType: "text/go", Data: resp})
 			},
 		},
@@ -45,17 +46,19 @@ func BytesBytesRouters(srv BytesBytes) []gors.Router {
 			HTTPMethod: http.MethodPost,
 			Path:       "/api/BytesBytes/Post",
 			HandlerFunc: func(c *gin.Context) {
-				body, err := io.ReadAll(c.Request.Body)
+				var req []byte
+				var resp []byte
+				var err error
+				var body []byte
+				body, err = io.ReadAll(c.Request.Body)
 				if err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
 				}
-				req := body
-				var ctx context.Context = c
-				ctx = gors.InjectStatusCode(ctx, http.StatusOK)
-				ctx = gors.InjectHeader(ctx, c.Writer.Header())
-				resp, err := srv.PostBytesBytes(ctx, req)
+				req = body
+				ctx := gors.NewContext(c)
+				resp, err = srv.PostBytesBytes(ctx, req)
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
 						c.String(httpErr.StatusCode(), httpErr.Error())
@@ -66,7 +69,7 @@ func BytesBytesRouters(srv BytesBytes) []gors.Router {
 					_ = c.Error(err).SetType(gin.ErrorTypePrivate)
 					return
 				}
-				statusCode := gors.ExtractStatusCode(ctx)
+				statusCode := gors.GetCodeFromContext(ctx)
 				c.Render(statusCode, render.Data{ContentType: "text/go", Data: resp})
 			},
 		},

@@ -12,21 +12,21 @@ import (
 )
 
 func main() {
-	var routers []gors.Router
-	routers = append(routers, demo.BindingRenderRouters(new(svc.BindingRenderService))...)
-	routers = append(routers, demo.BytesBytesRouters(new(svc.BytesBytesService))...)
-	routers = append(routers, demo.BytesReaderRouters(new(svc.BytesReaderService))...)
-	routers = append(routers, demo.BytesStringRouters(new(svc.BytesStringService))...)
-	routers = append(routers, demo.ReaderBytesRouters(new(svc.ReaderBytesService))...)
-	routers = append(routers, demo.ReaderReaderRouters(new(svc.ReaderReaderService))...)
-	routers = append(routers, demo.ReaderStringRouters(new(svc.ReaderStringService))...)
-	routers = append(routers, demo.StringBytesRouters(new(svc.StringBytesService))...)
-	routers = append(routers, demo.StringReaderRouters(new(svc.StringReaderService))...)
-	routers = append(routers, demo.StringStringRouters(new(svc.StringStringService))...)
+	var routes []gors.Route
+	routes = append(routes, demo.BindingRenderRoutes(new(svc.BindingRenderService))...)
+	routes = append(routes, demo.BytesBytesRoutes(new(svc.BytesBytesService))...)
+	routes = append(routes, demo.BytesReaderRoutes(new(svc.BytesReaderService))...)
+	routes = append(routes, demo.BytesStringRoutes(new(svc.BytesStringService))...)
+	routes = append(routes, demo.ReaderBytesRoutes(new(svc.ReaderBytesService))...)
+	routes = append(routes, demo.ReaderReaderRoutes(new(svc.ReaderReaderService))...)
+	routes = append(routes, demo.ReaderStringRoutes(new(svc.ReaderStringService))...)
+	routes = append(routes, demo.StringBytesRoutes(new(svc.StringBytesService))...)
+	routes = append(routes, demo.StringReaderRoutes(new(svc.StringReaderService))...)
+	routes = append(routes, demo.StringStringRoutes(new(svc.StringStringService))...)
 
 	engine := gin.New()
-	for _, router := range routers {
-		engine.Handle(router.HTTPMethod, router.Path, router.HandlerFunc)
+	for _, route := range routes {
+		engine.Handle(route.HTTPMethod, route.Path, route.HandlerFunc)
 	}
 
 	srv := http.Server{Handler: engine}

@@ -2,7 +2,6 @@
 package demo
 
 import (
-	context "context"
 	gin "github.com/gin-gonic/gin"
 	render "github.com/gin-gonic/gin/render"
 	gors "github.com/go-leo/gors"
@@ -10,23 +9,25 @@ import (
 	http "net/http"
 )
 
-func StringReaderRouters(srv StringReader) []gors.Router {
-	return []gors.Router{
+func StringReaderRoutes(srv StringReader) []gors.Route {
+	return []gors.Route{
 		{
 			HTTPMethod: http.MethodGet,
 			Path:       "/api/StringReader/Get",
 			HandlerFunc: func(c *gin.Context) {
-				body, err := io.ReadAll(c.Request.Body)
+				var req string
+				var resp io.Reader
+				var err error
+				var body []byte
+				body, err = io.ReadAll(c.Request.Body)
 				if err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
 				}
-				req := string(body)
-				var ctx context.Context = c
-				ctx = gors.InjectStatusCode(ctx, http.StatusOK)
-				ctx = gors.InjectHeader(ctx, c.Writer.Header())
-				resp, err := srv.GetStringRender(ctx, req)
+				req = string(body)
+				ctx := gors.NewContext(c)
+				resp, err = srv.GetStringRender(ctx, req)
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
 						c.String(httpErr.StatusCode(), httpErr.Error())
@@ -37,7 +38,7 @@ func StringReaderRouters(srv StringReader) []gors.Router {
 					_ = c.Error(err).SetType(gin.ErrorTypePrivate)
 					return
 				}
-				statusCode := gors.ExtractStatusCode(ctx)
+				statusCode := gors.GetCodeFromContext(ctx)
 				c.Render(statusCode, render.Reader{ContentType: "video/mpeg4", ContentLength: -1, Reader: resp})
 			},
 		},
@@ -45,17 +46,19 @@ func StringReaderRouters(srv StringReader) []gors.Router {
 			HTTPMethod: http.MethodOptions,
 			Path:       "/api/StringReader/Options",
 			HandlerFunc: func(c *gin.Context) {
-				body, err := io.ReadAll(c.Request.Body)
+				var req string
+				var resp io.Reader
+				var err error
+				var body []byte
+				body, err = io.ReadAll(c.Request.Body)
 				if err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
 				}
-				req := string(body)
-				var ctx context.Context = c
-				ctx = gors.InjectStatusCode(ctx, http.StatusOK)
-				ctx = gors.InjectHeader(ctx, c.Writer.Header())
-				resp, err := srv.OptionsStringReader(ctx, req)
+				req = string(body)
+				ctx := gors.NewContext(c)
+				resp, err = srv.OptionsStringReader(ctx, req)
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
 						c.String(httpErr.StatusCode(), httpErr.Error())
@@ -66,7 +69,7 @@ func StringReaderRouters(srv StringReader) []gors.Router {
 					_ = c.Error(err).SetType(gin.ErrorTypePrivate)
 					return
 				}
-				statusCode := gors.ExtractStatusCode(ctx)
+				statusCode := gors.GetCodeFromContext(ctx)
 				c.Render(statusCode, render.Reader{ContentType: "video/mpeg4", ContentLength: -1, Reader: resp})
 			},
 		},

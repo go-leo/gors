@@ -2,7 +2,6 @@
 package demo
 
 import (
-	context "context"
 	gin "github.com/gin-gonic/gin"
 	render "github.com/gin-gonic/gin/render"
 	gors "github.com/go-leo/gors"
@@ -10,23 +9,25 @@ import (
 	http "net/http"
 )
 
-func StringBytesRouters(srv StringBytes) []gors.Router {
-	return []gors.Router{
+func StringBytesRoutes(srv StringBytes) []gors.Route {
+	return []gors.Route{
 		{
 			HTTPMethod: http.MethodGet,
 			Path:       "/api/StringBytes/Get",
 			HandlerFunc: func(c *gin.Context) {
-				body, err := io.ReadAll(c.Request.Body)
+				var req string
+				var resp []byte
+				var err error
+				var body []byte
+				body, err = io.ReadAll(c.Request.Body)
 				if err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
 				}
-				req := string(body)
-				var ctx context.Context = c
-				ctx = gors.InjectStatusCode(ctx, http.StatusOK)
-				ctx = gors.InjectHeader(ctx, c.Writer.Header())
-				resp, err := srv.GetStringBytes(ctx, req)
+				req = string(body)
+				ctx := gors.NewContext(c)
+				resp, err = srv.GetStringBytes(ctx, req)
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
 						c.String(httpErr.StatusCode(), httpErr.Error())
@@ -37,7 +38,7 @@ func StringBytesRouters(srv StringBytes) []gors.Router {
 					_ = c.Error(err).SetType(gin.ErrorTypePrivate)
 					return
 				}
-				statusCode := gors.ExtractStatusCode(ctx)
+				statusCode := gors.GetCodeFromContext(ctx)
 				c.Render(statusCode, render.Data{ContentType: "", Data: resp})
 			},
 		},
@@ -45,17 +46,19 @@ func StringBytesRouters(srv StringBytes) []gors.Router {
 			HTTPMethod: http.MethodOptions,
 			Path:       "/api/StringBytes/Options",
 			HandlerFunc: func(c *gin.Context) {
-				body, err := io.ReadAll(c.Request.Body)
+				var req string
+				var resp []byte
+				var err error
+				var body []byte
+				body, err = io.ReadAll(c.Request.Body)
 				if err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
 				}
-				req := string(body)
-				var ctx context.Context = c
-				ctx = gors.InjectStatusCode(ctx, http.StatusOK)
-				ctx = gors.InjectHeader(ctx, c.Writer.Header())
-				resp, err := srv.OptionsStringBytes(ctx, req)
+				req = string(body)
+				ctx := gors.NewContext(c)
+				resp, err = srv.OptionsStringBytes(ctx, req)
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
 						c.String(httpErr.StatusCode(), httpErr.Error())
@@ -66,7 +69,7 @@ func StringBytesRouters(srv StringBytes) []gors.Router {
 					_ = c.Error(err).SetType(gin.ErrorTypePrivate)
 					return
 				}
-				statusCode := gors.ExtractStatusCode(ctx)
+				statusCode := gors.GetCodeFromContext(ctx)
 				c.Render(statusCode, render.Data{ContentType: "", Data: resp})
 			},
 		},

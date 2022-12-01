@@ -2,7 +2,7 @@ package demo
 
 import (
 	"context"
-	tmpio "io"
+	"io"
 )
 
 //go:generate gors -service ReaderReader
@@ -12,8 +12,8 @@ import (
 type ReaderReader interface {
 	// GetReaderReader
 	// @GORS @GET @Path("/Get") @ReaderRender
-	GetReaderReader(context.Context, tmpio.Reader) (tmpio.Reader, error)
+	GetReaderReader(context.Context, io.Reader) (io.Reader, error)
 	// HeadReaderReader
 	// @GORS @HEAD @Path("/head") @ReaderRender
-	HeadReaderReader(context.Context, tmpio.Reader) (tmpio.Reader, error)
+	HeadReaderReader(context.Context, io.Reader) (io.Reader, error)
 }
