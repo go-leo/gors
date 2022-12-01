@@ -2,7 +2,7 @@ package gors
 
 import "github.com/gin-gonic/gin"
 
-type Router struct {
+type Route struct {
 	HTTPMethod  string
 	Path        string
 	HandlerFunc gin.HandlerFunc

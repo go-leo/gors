@@ -2,25 +2,25 @@
 package demo
 
 import (
-	context "context"
 	gin "github.com/gin-gonic/gin"
 	render "github.com/gin-gonic/gin/render"
 	gors "github.com/go-leo/gors"
+	io "io"
 	http "net/http"
 )
 
-func ReaderStringRouters(srv ReaderString) []gors.Router {
-	return []gors.Router{
+func ReaderStringRoutes(srv ReaderString) []gors.Route {
+	return []gors.Route{
 		{
 			HTTPMethod: http.MethodGet,
 			Path:       "/api/ReaderString/Get",
 			HandlerFunc: func(c *gin.Context) {
-				body := c.Request.Body
-				req := body
-				var ctx context.Context = c
-				ctx = gors.InjectStatusCode(ctx, http.StatusOK)
-				ctx = gors.InjectHeader(ctx, c.Writer.Header())
-				resp, err := srv.GetReaderString(ctx, req)
+				var req io.Reader
+				var resp string
+				var err error
+				req = c.Request.Body
+				ctx := gors.NewContext(c)
+				resp, err = srv.GetReaderString(ctx, req)
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
 						c.String(httpErr.StatusCode(), httpErr.Error())
@@ -31,7 +31,7 @@ func ReaderStringRouters(srv ReaderString) []gors.Router {
 					_ = c.Error(err).SetType(gin.ErrorTypePrivate)
 					return
 				}
-				statusCode := gors.ExtractStatusCode(ctx)
+				statusCode := gors.GetCodeFromContext(ctx)
 				c.Render(statusCode, render.Data{ContentType: "text/plain; charset=utf-8", Data: []byte(resp)})
 			},
 		},
@@ -39,12 +39,12 @@ func ReaderStringRouters(srv ReaderString) []gors.Router {
 			HTTPMethod: http.MethodPost,
 			Path:       "/api/ReaderString/Post",
 			HandlerFunc: func(c *gin.Context) {
-				body := c.Request.Body
-				req := body
-				var ctx context.Context = c
-				ctx = gors.InjectStatusCode(ctx, http.StatusOK)
-				ctx = gors.InjectHeader(ctx, c.Writer.Header())
-				resp, err := srv.PostReaderString(ctx, req)
+				var req io.Reader
+				var resp string
+				var err error
+				req = c.Request.Body
+				ctx := gors.NewContext(c)
+				resp, err = srv.PostReaderString(ctx, req)
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
 						c.String(httpErr.StatusCode(), httpErr.Error())
@@ -55,7 +55,7 @@ func ReaderStringRouters(srv ReaderString) []gors.Router {
 					_ = c.Error(err).SetType(gin.ErrorTypePrivate)
 					return
 				}
-				statusCode := gors.ExtractStatusCode(ctx)
+				statusCode := gors.GetCodeFromContext(ctx)
 				c.Render(statusCode, render.Data{ContentType: "text/go", Data: []byte(resp)})
 			},
 		},

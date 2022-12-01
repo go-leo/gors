@@ -2,7 +2,6 @@
 package demo
 
 import (
-	context "context"
 	gin "github.com/gin-gonic/gin"
 	binding "github.com/gin-gonic/gin/binding"
 	render "github.com/gin-gonic/gin/render"
@@ -11,22 +10,28 @@ import (
 	http "net/http"
 )
 
-func BindingRenderRouters(srv BindingRender) []gors.Router {
-	return []gors.Router{
+func BindingRenderRoutes(srv BindingRender) []gors.Route {
+	return []gors.Route{
 		{
 			HTTPMethod: http.MethodGet,
 			Path:       "/api/BindingRender/UriBindingIndentedJSONRender/:id",
 			HandlerFunc: func(c *gin.Context) {
-				req := new(UriBindingReq)
-				if err := c.BindUri(req); err != nil {
+				var req *UriBindingReq
+				var resp *IndentedJSONRenderResp
+				var err error
+				req = new(UriBindingReq)
+				if err = c.ShouldBindUri(req); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
 				}
-				var ctx context.Context = c
-				ctx = gors.InjectStatusCode(ctx, http.StatusOK)
-				ctx = gors.InjectHeader(ctx, c.Writer.Header())
-				resp, err := srv.UriBindingIndentedJSONRender(ctx, req)
+				if err := gors.Validate(req); err != nil {
+					c.String(http.StatusBadRequest, err.Error())
+					_ = c.Error(err).SetType(gin.ErrorTypeBind)
+					return
+				}
+				ctx := gors.NewContext(c)
+				resp, err = srv.UriBindingIndentedJSONRender(ctx, req)
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
 						c.String(httpErr.StatusCode(), httpErr.Error())
@@ -37,7 +42,7 @@ func BindingRenderRouters(srv BindingRender) []gors.Router {
 					_ = c.Error(err).SetType(gin.ErrorTypePrivate)
 					return
 				}
-				statusCode := gors.ExtractStatusCode(ctx)
+				statusCode := gors.GetCodeFromContext(ctx)
 				c.IndentedJSON(statusCode, resp)
 			},
 		},
@@ -45,21 +50,27 @@ func BindingRenderRouters(srv BindingRender) []gors.Router {
 			HTTPMethod: http.MethodGet,
 			Path:       "/api/BindingRender/QueryBindingSecureJSONRender/:id",
 			HandlerFunc: func(c *gin.Context) {
-				req := new(QueryBindingReq)
-				if err := c.BindUri(req); err != nil {
+				var req *QueryBindingReq
+				var resp *SecureJSONRenderResp
+				var err error
+				req = new(QueryBindingReq)
+				if err = c.ShouldBindUri(req); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
 				}
-				if err := c.ShouldBindWith(req, binding.Query); err != nil {
+				if err = c.ShouldBindWith(req, binding.Query); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
 				}
-				var ctx context.Context = c
-				ctx = gors.InjectStatusCode(ctx, http.StatusOK)
-				ctx = gors.InjectHeader(ctx, c.Writer.Header())
-				resp, err := srv.QueryBindingSecureJSONRender(ctx, req)
+				if err := gors.Validate(req); err != nil {
+					c.String(http.StatusBadRequest, err.Error())
+					_ = c.Error(err).SetType(gin.ErrorTypeBind)
+					return
+				}
+				ctx := gors.NewContext(c)
+				resp, err = srv.QueryBindingSecureJSONRender(ctx, req)
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
 						c.String(httpErr.StatusCode(), httpErr.Error())
@@ -70,7 +81,7 @@ func BindingRenderRouters(srv BindingRender) []gors.Router {
 					_ = c.Error(err).SetType(gin.ErrorTypePrivate)
 					return
 				}
-				statusCode := gors.ExtractStatusCode(ctx)
+				statusCode := gors.GetCodeFromContext(ctx)
 				c.SecureJSON(statusCode, resp)
 			},
 		},
@@ -78,26 +89,32 @@ func BindingRenderRouters(srv BindingRender) []gors.Router {
 			HTTPMethod: http.MethodGet,
 			Path:       "/api/BindingRender/HeaderBindingJsonpJSONRender/:id",
 			HandlerFunc: func(c *gin.Context) {
-				req := new(HeaderBindingReq)
-				if err := c.BindUri(req); err != nil {
+				var req *HeaderBindingReq
+				var resp *JsonpJSONRenderResp
+				var err error
+				req = new(HeaderBindingReq)
+				if err = c.ShouldBindUri(req); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
 				}
-				if err := c.ShouldBindWith(req, binding.Query); err != nil {
+				if err = c.ShouldBindWith(req, binding.Query); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
 				}
-				if err := c.ShouldBindWith(req, binding.Header); err != nil {
+				if err = c.ShouldBindWith(req, binding.Header); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
 				}
-				var ctx context.Context = c
-				ctx = gors.InjectStatusCode(ctx, http.StatusOK)
-				ctx = gors.InjectHeader(ctx, c.Writer.Header())
-				resp, err := srv.HeaderBindingJsonpJSONRender(ctx, req)
+				if err := gors.Validate(req); err != nil {
+					c.String(http.StatusBadRequest, err.Error())
+					_ = c.Error(err).SetType(gin.ErrorTypeBind)
+					return
+				}
+				ctx := gors.NewContext(c)
+				resp, err = srv.HeaderBindingJsonpJSONRender(ctx, req)
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
 						c.String(httpErr.StatusCode(), httpErr.Error())
@@ -108,7 +125,7 @@ func BindingRenderRouters(srv BindingRender) []gors.Router {
 					_ = c.Error(err).SetType(gin.ErrorTypePrivate)
 					return
 				}
-				statusCode := gors.ExtractStatusCode(ctx)
+				statusCode := gors.GetCodeFromContext(ctx)
 				c.JSONP(statusCode, resp)
 			},
 		},
@@ -116,31 +133,37 @@ func BindingRenderRouters(srv BindingRender) []gors.Router {
 			HTTPMethod: http.MethodPost,
 			Path:       "/api/BindingRender/JSONBindingJSONRender/:id",
 			HandlerFunc: func(c *gin.Context) {
-				req := new(JSONBindingReq)
-				if err := c.BindUri(req); err != nil {
+				var req *JSONBindingReq
+				var resp *JSONRenderResp
+				var err error
+				req = new(JSONBindingReq)
+				if err = c.ShouldBindUri(req); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
 				}
-				if err := c.ShouldBindWith(req, binding.Query); err != nil {
+				if err = c.ShouldBindWith(req, binding.Query); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
 				}
-				if err := c.ShouldBindWith(req, binding.Header); err != nil {
+				if err = c.ShouldBindWith(req, binding.Header); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
 				}
-				if err := c.ShouldBindWith(req, binding.JSON); err != nil {
+				if err = c.ShouldBindWith(req, binding.JSON); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
 				}
-				var ctx context.Context = c
-				ctx = gors.InjectStatusCode(ctx, http.StatusOK)
-				ctx = gors.InjectHeader(ctx, c.Writer.Header())
-				resp, err := srv.JSONBindingJSONRender(ctx, req)
+				if err := gors.Validate(req); err != nil {
+					c.String(http.StatusBadRequest, err.Error())
+					_ = c.Error(err).SetType(gin.ErrorTypeBind)
+					return
+				}
+				ctx := gors.NewContext(c)
+				resp, err = srv.JSONBindingJSONRender(ctx, req)
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
 						c.String(httpErr.StatusCode(), httpErr.Error())
@@ -151,7 +174,7 @@ func BindingRenderRouters(srv BindingRender) []gors.Router {
 					_ = c.Error(err).SetType(gin.ErrorTypePrivate)
 					return
 				}
-				statusCode := gors.ExtractStatusCode(ctx)
+				statusCode := gors.GetCodeFromContext(ctx)
 				c.JSON(statusCode, resp)
 			},
 		},
@@ -159,31 +182,37 @@ func BindingRenderRouters(srv BindingRender) []gors.Router {
 			HTTPMethod: http.MethodPatch,
 			Path:       "/api/BindingRender/XMLBindingXMLRender/:id",
 			HandlerFunc: func(c *gin.Context) {
-				req := new(XMLBindingReq)
-				if err := c.BindUri(req); err != nil {
+				var req *XMLBindingReq
+				var resp *XMLRenderResp
+				var err error
+				req = new(XMLBindingReq)
+				if err = c.ShouldBindUri(req); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
 				}
-				if err := c.ShouldBindWith(req, binding.Query); err != nil {
+				if err = c.ShouldBindWith(req, binding.Query); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
 				}
-				if err := c.ShouldBindWith(req, binding.Header); err != nil {
+				if err = c.ShouldBindWith(req, binding.Header); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
 				}
-				if err := c.ShouldBindWith(req, binding.XML); err != nil {
+				if err = c.ShouldBindWith(req, binding.XML); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
 				}
-				var ctx context.Context = c
-				ctx = gors.InjectStatusCode(ctx, http.StatusOK)
-				ctx = gors.InjectHeader(ctx, c.Writer.Header())
-				resp, err := srv.XMLBindingXMLRender(ctx, req)
+				if err := gors.Validate(req); err != nil {
+					c.String(http.StatusBadRequest, err.Error())
+					_ = c.Error(err).SetType(gin.ErrorTypeBind)
+					return
+				}
+				ctx := gors.NewContext(c)
+				resp, err = srv.XMLBindingXMLRender(ctx, req)
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
 						c.String(httpErr.StatusCode(), httpErr.Error())
@@ -194,7 +223,7 @@ func BindingRenderRouters(srv BindingRender) []gors.Router {
 					_ = c.Error(err).SetType(gin.ErrorTypePrivate)
 					return
 				}
-				statusCode := gors.ExtractStatusCode(ctx)
+				statusCode := gors.GetCodeFromContext(ctx)
 				c.XML(statusCode, resp)
 			},
 		},
@@ -202,26 +231,32 @@ func BindingRenderRouters(srv BindingRender) []gors.Router {
 			HTTPMethod: http.MethodPost,
 			Path:       "/api/BindingRender/FormBindingJSONRender/:id",
 			HandlerFunc: func(c *gin.Context) {
-				req := new(FormBindingReq)
-				if err := c.BindUri(req); err != nil {
+				var req *FormBindingReq
+				var resp *JSONRenderResp
+				var err error
+				req = new(FormBindingReq)
+				if err = c.ShouldBindUri(req); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
 				}
-				if err := c.ShouldBindWith(req, binding.Header); err != nil {
+				if err = c.ShouldBindWith(req, binding.Header); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
 				}
-				if err := c.ShouldBindWith(req, binding.Form); err != nil {
+				if err = c.ShouldBindWith(req, binding.Form); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
 				}
-				var ctx context.Context = c
-				ctx = gors.InjectStatusCode(ctx, http.StatusOK)
-				ctx = gors.InjectHeader(ctx, c.Writer.Header())
-				resp, err := srv.FormBindingJSONRender(ctx, req)
+				if err := gors.Validate(req); err != nil {
+					c.String(http.StatusBadRequest, err.Error())
+					_ = c.Error(err).SetType(gin.ErrorTypeBind)
+					return
+				}
+				ctx := gors.NewContext(c)
+				resp, err = srv.FormBindingJSONRender(ctx, req)
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
 						c.String(httpErr.StatusCode(), httpErr.Error())
@@ -232,7 +267,7 @@ func BindingRenderRouters(srv BindingRender) []gors.Router {
 					_ = c.Error(err).SetType(gin.ErrorTypePrivate)
 					return
 				}
-				statusCode := gors.ExtractStatusCode(ctx)
+				statusCode := gors.GetCodeFromContext(ctx)
 				c.JSON(statusCode, resp)
 			},
 		},
@@ -240,31 +275,37 @@ func BindingRenderRouters(srv BindingRender) []gors.Router {
 			HTTPMethod: http.MethodPost,
 			Path:       "/api/BindingRender/FormPostBindingPureJSONRender/:id",
 			HandlerFunc: func(c *gin.Context) {
-				req := new(FormPostBindingReq)
-				if err := c.BindUri(req); err != nil {
+				var req *FormPostBindingReq
+				var resp *PureJSONRenderResp
+				var err error
+				req = new(FormPostBindingReq)
+				if err = c.ShouldBindUri(req); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
 				}
-				if err := c.ShouldBindWith(req, binding.Query); err != nil {
+				if err = c.ShouldBindWith(req, binding.Query); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
 				}
-				if err := c.ShouldBindWith(req, binding.Header); err != nil {
+				if err = c.ShouldBindWith(req, binding.Header); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
 				}
-				if err := c.ShouldBindWith(req, binding.FormPost); err != nil {
+				if err = c.ShouldBindWith(req, binding.FormPost); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
 				}
-				var ctx context.Context = c
-				ctx = gors.InjectStatusCode(ctx, http.StatusOK)
-				ctx = gors.InjectHeader(ctx, c.Writer.Header())
-				resp, err := srv.FormPostBindingPureJSONRender(ctx, req)
+				if err := gors.Validate(req); err != nil {
+					c.String(http.StatusBadRequest, err.Error())
+					_ = c.Error(err).SetType(gin.ErrorTypeBind)
+					return
+				}
+				ctx := gors.NewContext(c)
+				resp, err = srv.FormPostBindingPureJSONRender(ctx, req)
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
 						c.String(httpErr.StatusCode(), httpErr.Error())
@@ -275,7 +316,7 @@ func BindingRenderRouters(srv BindingRender) []gors.Router {
 					_ = c.Error(err).SetType(gin.ErrorTypePrivate)
 					return
 				}
-				statusCode := gors.ExtractStatusCode(ctx)
+				statusCode := gors.GetCodeFromContext(ctx)
 				c.PureJSON(statusCode, resp)
 			},
 		},
@@ -283,31 +324,37 @@ func BindingRenderRouters(srv BindingRender) []gors.Router {
 			HTTPMethod: http.MethodPost,
 			Path:       "/api/BindingRender/FormMultipartBindingAsciiJSONRender/:id",
 			HandlerFunc: func(c *gin.Context) {
-				req := new(FormMultipartBindingReq)
-				if err := c.BindUri(req); err != nil {
+				var req *FormMultipartBindingReq
+				var resp *AsciiJSONRenderResp
+				var err error
+				req = new(FormMultipartBindingReq)
+				if err = c.ShouldBindUri(req); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
 				}
-				if err := c.ShouldBindWith(req, binding.Query); err != nil {
+				if err = c.ShouldBindWith(req, binding.Query); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
 				}
-				if err := c.ShouldBindWith(req, binding.Header); err != nil {
+				if err = c.ShouldBindWith(req, binding.Header); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
 				}
-				if err := c.ShouldBindWith(req, binding.FormMultipart); err != nil {
+				if err = c.ShouldBindWith(req, binding.FormMultipart); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
 				}
-				var ctx context.Context = c
-				ctx = gors.InjectStatusCode(ctx, http.StatusOK)
-				ctx = gors.InjectHeader(ctx, c.Writer.Header())
-				resp, err := srv.FormMultipartBindingAsciiJSONRender(ctx, req)
+				if err := gors.Validate(req); err != nil {
+					c.String(http.StatusBadRequest, err.Error())
+					_ = c.Error(err).SetType(gin.ErrorTypeBind)
+					return
+				}
+				ctx := gors.NewContext(c)
+				resp, err = srv.FormMultipartBindingAsciiJSONRender(ctx, req)
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
 						c.String(httpErr.StatusCode(), httpErr.Error())
@@ -318,7 +365,7 @@ func BindingRenderRouters(srv BindingRender) []gors.Router {
 					_ = c.Error(err).SetType(gin.ErrorTypePrivate)
 					return
 				}
-				statusCode := gors.ExtractStatusCode(ctx)
+				statusCode := gors.GetCodeFromContext(ctx)
 				c.AsciiJSON(statusCode, resp)
 			},
 		},
@@ -326,16 +373,22 @@ func BindingRenderRouters(srv BindingRender) []gors.Router {
 			HTTPMethod: http.MethodPut,
 			Path:       "/api/BindingRender/ProtoBufBindingProtoBufRender",
 			HandlerFunc: func(c *gin.Context) {
-				req := new(pb.ProtoBufReq)
-				if err := c.ShouldBindWith(req, binding.ProtoBuf); err != nil {
+				var req *pb.ProtoBufReq
+				var resp *pb.ProtoBufResp
+				var err error
+				req = new(pb.ProtoBufReq)
+				if err = c.ShouldBindWith(req, binding.ProtoBuf); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
 				}
-				var ctx context.Context = c
-				ctx = gors.InjectStatusCode(ctx, http.StatusOK)
-				ctx = gors.InjectHeader(ctx, c.Writer.Header())
-				resp, err := srv.ProtoBufBindingProtoBufRender(ctx, req)
+				if err := gors.Validate(req); err != nil {
+					c.String(http.StatusBadRequest, err.Error())
+					_ = c.Error(err).SetType(gin.ErrorTypeBind)
+					return
+				}
+				ctx := gors.NewContext(c)
+				resp, err = srv.ProtoBufBindingProtoBufRender(ctx, req)
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
 						c.String(httpErr.StatusCode(), httpErr.Error())
@@ -346,7 +399,7 @@ func BindingRenderRouters(srv BindingRender) []gors.Router {
 					_ = c.Error(err).SetType(gin.ErrorTypePrivate)
 					return
 				}
-				statusCode := gors.ExtractStatusCode(ctx)
+				statusCode := gors.GetCodeFromContext(ctx)
 				c.ProtoBuf(statusCode, resp)
 			},
 		},
@@ -354,16 +407,22 @@ func BindingRenderRouters(srv BindingRender) []gors.Router {
 			HTTPMethod: http.MethodDelete,
 			Path:       "/api/BindingRender/MsgPackBindingMsgPackRender",
 			HandlerFunc: func(c *gin.Context) {
-				req := new(MsgPackBindingReq)
-				if err := c.ShouldBindWith(req, binding.MsgPack); err != nil {
+				var req *MsgPackBindingReq
+				var resp *MsgPackRenderResp
+				var err error
+				req = new(MsgPackBindingReq)
+				if err = c.ShouldBindWith(req, binding.MsgPack); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
 				}
-				var ctx context.Context = c
-				ctx = gors.InjectStatusCode(ctx, http.StatusOK)
-				ctx = gors.InjectHeader(ctx, c.Writer.Header())
-				resp, err := srv.MsgPackBindingMsgPackRender(ctx, req)
+				if err := gors.Validate(req); err != nil {
+					c.String(http.StatusBadRequest, err.Error())
+					_ = c.Error(err).SetType(gin.ErrorTypeBind)
+					return
+				}
+				ctx := gors.NewContext(c)
+				resp, err = srv.MsgPackBindingMsgPackRender(ctx, req)
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
 						c.String(httpErr.StatusCode(), httpErr.Error())
@@ -374,7 +433,7 @@ func BindingRenderRouters(srv BindingRender) []gors.Router {
 					_ = c.Error(err).SetType(gin.ErrorTypePrivate)
 					return
 				}
-				statusCode := gors.ExtractStatusCode(ctx)
+				statusCode := gors.GetCodeFromContext(ctx)
 				c.Render(statusCode, render.MsgPack{Data: resp})
 			},
 		},
@@ -382,31 +441,37 @@ func BindingRenderRouters(srv BindingRender) []gors.Router {
 			HTTPMethod: http.MethodDelete,
 			Path:       "/api/BindingRender/YAMLBindingYAMLRender/:id",
 			HandlerFunc: func(c *gin.Context) {
-				req := new(YAMLBindingReq)
-				if err := c.BindUri(req); err != nil {
+				var req *YAMLBindingReq
+				var resp *YAMLRenderResp
+				var err error
+				req = new(YAMLBindingReq)
+				if err = c.ShouldBindUri(req); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
 				}
-				if err := c.ShouldBindWith(req, binding.Query); err != nil {
+				if err = c.ShouldBindWith(req, binding.Query); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
 				}
-				if err := c.ShouldBindWith(req, binding.Header); err != nil {
+				if err = c.ShouldBindWith(req, binding.Header); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
 				}
-				if err := c.ShouldBindWith(req, binding.YAML); err != nil {
+				if err = c.ShouldBindWith(req, binding.YAML); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
 				}
-				var ctx context.Context = c
-				ctx = gors.InjectStatusCode(ctx, http.StatusOK)
-				ctx = gors.InjectHeader(ctx, c.Writer.Header())
-				resp, err := srv.YAMLBindingYAMLRender(ctx, req)
+				if err := gors.Validate(req); err != nil {
+					c.String(http.StatusBadRequest, err.Error())
+					_ = c.Error(err).SetType(gin.ErrorTypeBind)
+					return
+				}
+				ctx := gors.NewContext(c)
+				resp, err = srv.YAMLBindingYAMLRender(ctx, req)
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
 						c.String(httpErr.StatusCode(), httpErr.Error())
@@ -417,7 +482,7 @@ func BindingRenderRouters(srv BindingRender) []gors.Router {
 					_ = c.Error(err).SetType(gin.ErrorTypePrivate)
 					return
 				}
-				statusCode := gors.ExtractStatusCode(ctx)
+				statusCode := gors.GetCodeFromContext(ctx)
 				c.YAML(statusCode, resp)
 			},
 		},
@@ -425,31 +490,37 @@ func BindingRenderRouters(srv BindingRender) []gors.Router {
 			HTTPMethod: http.MethodPut,
 			Path:       "/api/BindingRender/TOMLBindingTOMLRender/:id",
 			HandlerFunc: func(c *gin.Context) {
-				req := new(TOMLBindingReq)
-				if err := c.BindUri(req); err != nil {
+				var req *TOMLBindingReq
+				var resp *TOMLRenderResp
+				var err error
+				req = new(TOMLBindingReq)
+				if err = c.ShouldBindUri(req); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
 				}
-				if err := c.ShouldBindWith(req, binding.Query); err != nil {
+				if err = c.ShouldBindWith(req, binding.Query); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
 				}
-				if err := c.ShouldBindWith(req, binding.Header); err != nil {
+				if err = c.ShouldBindWith(req, binding.Header); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
 				}
-				if err := c.ShouldBindWith(req, binding.TOML); err != nil {
+				if err = c.ShouldBindWith(req, binding.TOML); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
 				}
-				var ctx context.Context = c
-				ctx = gors.InjectStatusCode(ctx, http.StatusOK)
-				ctx = gors.InjectHeader(ctx, c.Writer.Header())
-				resp, err := srv.TOMLBindingTOMLRender(ctx, req)
+				if err := gors.Validate(req); err != nil {
+					c.String(http.StatusBadRequest, err.Error())
+					_ = c.Error(err).SetType(gin.ErrorTypeBind)
+					return
+				}
+				ctx := gors.NewContext(c)
+				resp, err = srv.TOMLBindingTOMLRender(ctx, req)
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
 						c.String(httpErr.StatusCode(), httpErr.Error())
@@ -460,7 +531,7 @@ func BindingRenderRouters(srv BindingRender) []gors.Router {
 					_ = c.Error(err).SetType(gin.ErrorTypePrivate)
 					return
 				}
-				statusCode := gors.ExtractStatusCode(ctx)
+				statusCode := gors.GetCodeFromContext(ctx)
 				c.TOML(statusCode, resp)
 			},
 		},

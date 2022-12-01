@@ -57,6 +57,9 @@ type goIdent struct {
 }
 
 func (x *goIdent) Qualify() string {
+	if x.GoImport.ImportPath == "" {
+		return x.GoName
+	}
 	return x.GoImport.PackageName + "." + x.GoName
 }
 

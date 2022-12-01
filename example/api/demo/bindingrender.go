@@ -129,10 +129,11 @@ type XMLRenderResp struct {
 }
 
 type FormBindingReq struct {
-	ID      int64  `uri:"id"`
-	Name    string `form:"name"`
-	Auth    string `header:"Authorization"`
-	Address string `form:"address"`
+	ID      int64                 `uri:"id"`
+	Name    string                `form:"name"`
+	Auth    string                `header:"Authorization"`
+	Address string                `form:"address"`
+	Avatar  *multipart.FileHeader `form:"avatar"`
 }
 
 type FormBindingResp struct {

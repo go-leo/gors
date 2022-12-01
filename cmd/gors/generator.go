@@ -7,8 +7,6 @@ import (
 	"io"
 	"log"
 	"strconv"
-
-	"github.com/go-leo/stringx"
 )
 
 const (
@@ -230,9 +228,9 @@ func (g *generate) printHeader() {
 
 func (g *generate) printFunction() {
 	serviceName := g.srvName
-	functionName := serviceName + "Routers"
-	g.P(g.functionBuf, "func ", functionName, "(srv ", serviceName, ") []", gorsPackage.Ident("Router"), " {")
-	g.P(g.functionBuf, "return []", gorsPackage.Ident("Router"), "{")
+	functionName := serviceName + "Routes"
+	g.P(g.functionBuf, "func ", functionName, "(srv ", serviceName, ") []", gorsPackage.Ident("Route"), " {")
+	g.P(g.functionBuf, "return []", gorsPackage.Ident("Route"), "{")
 	for _, routerInfo := range g.routerInfos {
 		g.printRouterInfo(routerInfo)
 	}
@@ -252,13 +250,40 @@ func (g *generate) printRouterInfo(info *routerInfo) {
 
 func (g *generate) printHandler(info *routerInfo) {
 	if info.param2.bytes {
-		g.printBytesReq(info)
+		g.P(g.functionBuf, "var req []byte")
 	} else if info.param2.string {
-		g.printStringReq(info)
+		g.P(g.functionBuf, "var req string")
+	} else if info.param2.reader {
+		g.P(g.functionBuf, "var req ", ioPackage.Ident("Reader"))
+	} else if objectArgs := info.param2.objectArgs; objectArgs != nil {
+		g.P(g.functionBuf, "var req *", objectArgs.goImportPath.Ident(objectArgs.name))
+	} else {
+		log.Fatalf("error: func %s 2th param is invalid, must be []byte or string or *struct{}", info.rpcMethodName)
+	}
+	if info.result1.bytes {
+		g.P(g.functionBuf, "var resp []byte")
+	} else if info.result1.string {
+		g.P(g.functionBuf, "var resp string")
+	} else if info.result1.reader {
+		g.P(g.functionBuf, "var resp ", ioPackage.Ident("Reader"))
+	} else if objectArgs := info.result1.objectArgs; objectArgs != nil {
+		g.P(g.functionBuf, "var resp *", objectArgs.goImportPath.Ident(objectArgs.name))
+	} else {
+		log.Fatalf("error: func %s 1th result is invalid, must be []byte or string or *struct{}", info.rpcMethodName)
+	}
+	g.P(g.functionBuf, "var err error")
+
+	if info.param2.bytes {
+		g.printBytesReq(info)
+		g.P(g.functionBuf, "req = body")
+	} else if info.param2.string {
+		g.printBytesReq(info)
+		g.P(g.functionBuf, "req = string(body)")
 	} else if info.param2.reader {
 		g.printReaderReq(info)
 	} else if info.param2.objectArgs != nil {
 		g.printObjectReq(info)
+		g.printReqValidate()
 	} else {
 		log.Fatalf("error: func %s 2th param is invalid, must be []byte or string or *struct{}", info.rpcMethodName)
 	}
@@ -279,41 +304,26 @@ func (g *generate) printHandler(info *routerInfo) {
 }
 
 func (g *generate) printBytesReq(info *routerInfo) {
-	g.P(g.functionBuf, "body, err := ", ioPackage.Ident("ReadAll"), "(c.Request.Body)")
+	g.P(g.functionBuf, "var body []byte")
+	g.P(g.functionBuf, "body, err = ", ioPackage.Ident("ReadAll"), "(c.Request.Body)")
 	g.P(g.functionBuf, "if err != nil {")
 	g.P(g.functionBuf, "c.String(", httpPackage.Ident("StatusBadRequest"), ", err.Error())")
 	g.P(g.functionBuf, "_ = c.Error(err).SetType(", ginPackage.Ident("ErrorTypeBind"), ")")
 	g.P(g.functionBuf, "return")
 	g.P(g.functionBuf, "}")
-	g.P(g.functionBuf, "req := body")
-}
-
-func (g *generate) printStringReq(info *routerInfo) {
-	g.P(g.functionBuf, "body, err := ", ioPackage.Ident("ReadAll"), "(c.Request.Body)")
-	g.P(g.functionBuf, "if err != nil {")
-	g.P(g.functionBuf, "c.String(", httpPackage.Ident("StatusBadRequest"), ", err.Error())")
-	g.P(g.functionBuf, "_ = c.Error(err).SetType(gin.ErrorTypeBind)")
-	g.P(g.functionBuf, "return")
-	g.P(g.functionBuf, "}")
-	g.P(g.functionBuf, "req := string(body)")
 }
 
 func (g *generate) printReaderReq(info *routerInfo) {
-	g.P(g.functionBuf, "body := c.Request.Body")
-	g.P(g.functionBuf, "req := body")
+	g.P(g.functionBuf, "req = c.Request.Body")
 }
 
 func (g *generate) printObjectReqInit(info *routerInfo) {
 	objArgs := info.param2.objectArgs
-	if stringx.IsBlank(string(objArgs.goImportPath)) {
-		g.P(g.functionBuf, "req := new(", objArgs.name, ")")
-	} else {
-		g.P(g.functionBuf, "req := new(", objArgs.goImportPath.Ident(objArgs.name), ")")
-	}
+	g.P(g.functionBuf, "req = new(", objArgs.goImportPath.Ident(objArgs.name), ")")
 }
 
 func (g *generate) printBindUriRequest() {
-	g.P(g.functionBuf, "if err := c.BindUri(req); err != nil {")
+	g.P(g.functionBuf, "if err = c.ShouldBindUri(req); err != nil {")
 	g.P(g.functionBuf, "c.String(", httpPackage.Ident("StatusBadRequest"), ", err.Error())")
 	g.P(g.functionBuf, "_ = c.Error(err).SetType(gin.ErrorTypeBind)")
 	g.P(g.functionBuf, "return")
@@ -321,7 +331,7 @@ func (g *generate) printBindUriRequest() {
 }
 
 func (g *generate) printBindRequest(binding string) {
-	g.P(g.functionBuf, "if err := c.ShouldBindWith(req, ", bindingPackage.Ident(binding), "); err != nil {")
+	g.P(g.functionBuf, "if err = c.ShouldBindWith(req, ", bindingPackage.Ident(binding), "); err != nil {")
 	g.P(g.functionBuf, "c.String(", httpPackage.Ident("StatusBadRequest"), ", err.Error())")
 	g.P(g.functionBuf, "_ = c.Error(err).SetType(gin.ErrorTypeBind)")
 	g.P(g.functionBuf, "return")
@@ -369,11 +379,17 @@ func (g *generate) printObjectReq(info *routerInfo) {
 
 }
 
+func (g *generate) printReqValidate() {
+	g.P(g.functionBuf, "if err := ", gorsPackage.Ident("Validate"), "(req); err != nil {")
+	g.P(g.functionBuf, "c.String(", httpPackage.Ident("StatusBadRequest"), ", err.Error())")
+	g.P(g.functionBuf, "_ = c.Error(err).SetType(gin.ErrorTypeBind)")
+	g.P(g.functionBuf, "return")
+	g.P(g.functionBuf, "}")
+}
+
 func (g *generate) printRPCHandler(info *routerInfo) {
-	g.P(g.functionBuf, "var ctx ", contextPackage.Ident("Context"), " = c")
-	g.P(g.functionBuf, "ctx = ", gorsPackage.Ident("InjectStatusCode"), "(ctx, ", httpPackage.Ident("StatusOK"), ")")
-	g.P(g.functionBuf, "ctx = ", gorsPackage.Ident("InjectHeader"), "(ctx, c.Writer.Header())")
-	g.P(g.functionBuf, "resp, err := srv.", info.rpcMethodName, "(ctx, req)")
+	g.P(g.functionBuf, "ctx := ", gorsPackage.Ident("NewContext"), "(c)")
+	g.P(g.functionBuf, "resp, err = srv.", info.rpcMethodName, "(ctx, req)")
 	g.P(g.functionBuf, "if err != nil {")
 	g.P(g.functionBuf, "if httpErr, ok := err.(*", gorsPackage.Ident("HttpError"), "); ok {")
 	g.P(g.functionBuf, "c.String(httpErr.StatusCode(), httpErr.Error())")
@@ -384,7 +400,7 @@ func (g *generate) printRPCHandler(info *routerInfo) {
 	g.P(g.functionBuf, "_ = c.Error(err).SetType(", ginPackage.Ident("ErrorTypePrivate"), ")")
 	g.P(g.functionBuf, "return")
 	g.P(g.functionBuf, "}")
-	g.P(g.functionBuf, "statusCode := ", gorsPackage.Ident("ExtractStatusCode"), "(ctx)")
+	g.P(g.functionBuf, "statusCode := ", gorsPackage.Ident("GetCodeFromContext"), "(ctx)")
 }
 
 func (g *generate) printBytesRender(info *routerInfo) {
@@ -449,6 +465,9 @@ func (g *generate) printImports() {
 	g.P(g.importsBuf, "import (")
 	for _, imp := range g.imports {
 		if !imp.enable {
+			continue
+		}
+		if imp.ImportPath == "" {
 			continue
 		}
 		g.P(g.importsBuf, imp.PackageName, " ", strconv.Quote(imp.ImportPath))
