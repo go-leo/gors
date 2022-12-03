@@ -11,10 +11,10 @@ import (
 
 func BytesReaderRoutes(srv BytesReader) []gors.Route {
 	return []gors.Route{
-		{
-			HTTPMethod: http.MethodGet,
-			Path:       "/api/BytesReader/Get",
-			HandlerFunc: func(c *gin.Context) {
+		gors.NewRoute(
+			http.MethodGet,
+			"/api/BytesReader/Get",
+			func(c *gin.Context) {
 				var req []byte
 				var resp io.Reader
 				var err error
@@ -41,11 +41,11 @@ func BytesReaderRoutes(srv BytesReader) []gors.Route {
 				statusCode := gors.GetCodeFromContext(ctx)
 				c.Render(statusCode, render.Reader{ContentType: "video/mpeg4", ContentLength: -1, Reader: resp})
 			},
-		},
-		{
-			HTTPMethod: http.MethodPatch,
-			Path:       "/api/BytesReader/Patch",
-			HandlerFunc: func(c *gin.Context) {
+		),
+		gors.NewRoute(
+			http.MethodPatch,
+			"/api/BytesReader/Patch",
+			func(c *gin.Context) {
 				var req []byte
 				var resp io.Reader
 				var err error
@@ -72,6 +72,6 @@ func BytesReaderRoutes(srv BytesReader) []gors.Route {
 				statusCode := gors.GetCodeFromContext(ctx)
 				c.Render(statusCode, render.Reader{ContentType: "video/mpeg4", ContentLength: -1, Reader: resp})
 			},
-		},
+		),
 	}
 }

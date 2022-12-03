@@ -12,10 +12,10 @@ import (
 
 func BindingRenderRoutes(srv BindingRender) []gors.Route {
 	return []gors.Route{
-		{
-			HTTPMethod: http.MethodGet,
-			Path:       "/api/BindingRender/UriBindingIndentedJSONRender/:id",
-			HandlerFunc: func(c *gin.Context) {
+		gors.NewRoute(
+			http.MethodGet,
+			"/api/BindingRender/UriBindingIndentedJSONRender/:id",
+			func(c *gin.Context) {
 				var req *UriBindingReq
 				var resp *IndentedJSONRenderResp
 				var err error
@@ -45,11 +45,11 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				statusCode := gors.GetCodeFromContext(ctx)
 				c.IndentedJSON(statusCode, resp)
 			},
-		},
-		{
-			HTTPMethod: http.MethodGet,
-			Path:       "/api/BindingRender/QueryBindingSecureJSONRender/:id",
-			HandlerFunc: func(c *gin.Context) {
+		),
+		gors.NewRoute(
+			http.MethodGet,
+			"/api/BindingRender/QueryBindingSecureJSONRender/:id",
+			func(c *gin.Context) {
 				var req *QueryBindingReq
 				var resp *SecureJSONRenderResp
 				var err error
@@ -84,11 +84,11 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				statusCode := gors.GetCodeFromContext(ctx)
 				c.SecureJSON(statusCode, resp)
 			},
-		},
-		{
-			HTTPMethod: http.MethodGet,
-			Path:       "/api/BindingRender/HeaderBindingJsonpJSONRender/:id",
-			HandlerFunc: func(c *gin.Context) {
+		),
+		gors.NewRoute(
+			http.MethodGet,
+			"/api/BindingRender/HeaderBindingJsonpJSONRender/:id",
+			func(c *gin.Context) {
 				var req *HeaderBindingReq
 				var resp *JsonpJSONRenderResp
 				var err error
@@ -128,11 +128,11 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				statusCode := gors.GetCodeFromContext(ctx)
 				c.JSONP(statusCode, resp)
 			},
-		},
-		{
-			HTTPMethod: http.MethodPost,
-			Path:       "/api/BindingRender/JSONBindingJSONRender/:id",
-			HandlerFunc: func(c *gin.Context) {
+		),
+		gors.NewRoute(
+			http.MethodPost,
+			"/api/BindingRender/JSONBindingJSONRender/:id",
+			func(c *gin.Context) {
 				var req *JSONBindingReq
 				var resp *JSONRenderResp
 				var err error
@@ -177,11 +177,11 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				statusCode := gors.GetCodeFromContext(ctx)
 				c.JSON(statusCode, resp)
 			},
-		},
-		{
-			HTTPMethod: http.MethodPatch,
-			Path:       "/api/BindingRender/XMLBindingXMLRender/:id",
-			HandlerFunc: func(c *gin.Context) {
+		),
+		gors.NewRoute(
+			http.MethodPatch,
+			"/api/BindingRender/XMLBindingXMLRender/:id",
+			func(c *gin.Context) {
 				var req *XMLBindingReq
 				var resp *XMLRenderResp
 				var err error
@@ -226,11 +226,11 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				statusCode := gors.GetCodeFromContext(ctx)
 				c.XML(statusCode, resp)
 			},
-		},
-		{
-			HTTPMethod: http.MethodPost,
-			Path:       "/api/BindingRender/FormBindingJSONRender/:id",
-			HandlerFunc: func(c *gin.Context) {
+		),
+		gors.NewRoute(
+			http.MethodPost,
+			"/api/BindingRender/FormBindingJSONRender/:id",
+			func(c *gin.Context) {
 				var req *FormBindingReq
 				var resp *JSONRenderResp
 				var err error
@@ -270,11 +270,11 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				statusCode := gors.GetCodeFromContext(ctx)
 				c.JSON(statusCode, resp)
 			},
-		},
-		{
-			HTTPMethod: http.MethodPost,
-			Path:       "/api/BindingRender/FormPostBindingPureJSONRender/:id",
-			HandlerFunc: func(c *gin.Context) {
+		),
+		gors.NewRoute(
+			http.MethodPost,
+			"/api/BindingRender/FormPostBindingPureJSONRender/:id",
+			func(c *gin.Context) {
 				var req *FormPostBindingReq
 				var resp *PureJSONRenderResp
 				var err error
@@ -319,11 +319,11 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				statusCode := gors.GetCodeFromContext(ctx)
 				c.PureJSON(statusCode, resp)
 			},
-		},
-		{
-			HTTPMethod: http.MethodPost,
-			Path:       "/api/BindingRender/FormMultipartBindingAsciiJSONRender/:id",
-			HandlerFunc: func(c *gin.Context) {
+		),
+		gors.NewRoute(
+			http.MethodPost,
+			"/api/BindingRender/FormMultipartBindingAsciiJSONRender/:id",
+			func(c *gin.Context) {
 				var req *FormMultipartBindingReq
 				var resp *AsciiJSONRenderResp
 				var err error
@@ -368,11 +368,11 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				statusCode := gors.GetCodeFromContext(ctx)
 				c.AsciiJSON(statusCode, resp)
 			},
-		},
-		{
-			HTTPMethod: http.MethodPut,
-			Path:       "/api/BindingRender/ProtoBufBindingProtoBufRender",
-			HandlerFunc: func(c *gin.Context) {
+		),
+		gors.NewRoute(
+			http.MethodPut,
+			"/api/BindingRender/ProtoBufBindingProtoBufRender",
+			func(c *gin.Context) {
 				var req *pb.ProtoBufReq
 				var resp *pb.ProtoBufResp
 				var err error
@@ -402,11 +402,11 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				statusCode := gors.GetCodeFromContext(ctx)
 				c.ProtoBuf(statusCode, resp)
 			},
-		},
-		{
-			HTTPMethod: http.MethodDelete,
-			Path:       "/api/BindingRender/MsgPackBindingMsgPackRender",
-			HandlerFunc: func(c *gin.Context) {
+		),
+		gors.NewRoute(
+			http.MethodDelete,
+			"/api/BindingRender/MsgPackBindingMsgPackRender",
+			func(c *gin.Context) {
 				var req *MsgPackBindingReq
 				var resp *MsgPackRenderResp
 				var err error
@@ -436,11 +436,11 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				statusCode := gors.GetCodeFromContext(ctx)
 				c.Render(statusCode, render.MsgPack{Data: resp})
 			},
-		},
-		{
-			HTTPMethod: http.MethodDelete,
-			Path:       "/api/BindingRender/YAMLBindingYAMLRender/:id",
-			HandlerFunc: func(c *gin.Context) {
+		),
+		gors.NewRoute(
+			http.MethodDelete,
+			"/api/BindingRender/YAMLBindingYAMLRender/:id",
+			func(c *gin.Context) {
 				var req *YAMLBindingReq
 				var resp *YAMLRenderResp
 				var err error
@@ -485,11 +485,11 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				statusCode := gors.GetCodeFromContext(ctx)
 				c.YAML(statusCode, resp)
 			},
-		},
-		{
-			HTTPMethod: http.MethodPut,
-			Path:       "/api/BindingRender/TOMLBindingTOMLRender/:id",
-			HandlerFunc: func(c *gin.Context) {
+		),
+		gors.NewRoute(
+			http.MethodPut,
+			"/api/BindingRender/TOMLBindingTOMLRender/:id",
+			func(c *gin.Context) {
 				var req *TOMLBindingReq
 				var resp *TOMLRenderResp
 				var err error
@@ -534,6 +534,6 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				statusCode := gors.GetCodeFromContext(ctx)
 				c.TOML(statusCode, resp)
 			},
-		},
+		),
 	}
 }

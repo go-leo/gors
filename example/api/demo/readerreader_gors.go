@@ -11,10 +11,10 @@ import (
 
 func ReaderReaderRoutes(srv ReaderReader) []gors.Route {
 	return []gors.Route{
-		{
-			HTTPMethod: http.MethodGet,
-			Path:       "/api/ReaderReader/Get",
-			HandlerFunc: func(c *gin.Context) {
+		gors.NewRoute(
+			http.MethodGet,
+			"/api/ReaderReader/Get",
+			func(c *gin.Context) {
 				var req io.Reader
 				var resp io.Reader
 				var err error
@@ -34,11 +34,11 @@ func ReaderReaderRoutes(srv ReaderReader) []gors.Route {
 				statusCode := gors.GetCodeFromContext(ctx)
 				c.Render(statusCode, render.Reader{ContentType: "", ContentLength: -1, Reader: resp})
 			},
-		},
-		{
-			HTTPMethod: http.MethodHead,
-			Path:       "/api/ReaderReader/head",
-			HandlerFunc: func(c *gin.Context) {
+		),
+		gors.NewRoute(
+			http.MethodHead,
+			"/api/ReaderReader/head",
+			func(c *gin.Context) {
 				var req io.Reader
 				var resp io.Reader
 				var err error
@@ -58,6 +58,6 @@ func ReaderReaderRoutes(srv ReaderReader) []gors.Route {
 				statusCode := gors.GetCodeFromContext(ctx)
 				c.Render(statusCode, render.Reader{ContentType: "", ContentLength: -1, Reader: resp})
 			},
-		},
+		),
 	}
 }

@@ -11,10 +11,10 @@ import (
 
 func StringBytesRoutes(srv StringBytes) []gors.Route {
 	return []gors.Route{
-		{
-			HTTPMethod: http.MethodGet,
-			Path:       "/api/StringBytes/Get",
-			HandlerFunc: func(c *gin.Context) {
+		gors.NewRoute(
+			http.MethodGet,
+			"/api/StringBytes/Get",
+			func(c *gin.Context) {
 				var req string
 				var resp []byte
 				var err error
@@ -41,11 +41,11 @@ func StringBytesRoutes(srv StringBytes) []gors.Route {
 				statusCode := gors.GetCodeFromContext(ctx)
 				c.Render(statusCode, render.Data{ContentType: "", Data: resp})
 			},
-		},
-		{
-			HTTPMethod: http.MethodOptions,
-			Path:       "/api/StringBytes/Options",
-			HandlerFunc: func(c *gin.Context) {
+		),
+		gors.NewRoute(
+			http.MethodOptions,
+			"/api/StringBytes/Options",
+			func(c *gin.Context) {
 				var req string
 				var resp []byte
 				var err error
@@ -72,6 +72,6 @@ func StringBytesRoutes(srv StringBytes) []gors.Route {
 				statusCode := gors.GetCodeFromContext(ctx)
 				c.Render(statusCode, render.Data{ContentType: "", Data: resp})
 			},
-		},
+		),
 	}
 }

@@ -11,10 +11,10 @@ import (
 
 func BytesStringRoutes(srv BytesString) []gors.Route {
 	return []gors.Route{
-		{
-			HTTPMethod: http.MethodGet,
-			Path:       "/api/BytesString/Get",
-			HandlerFunc: func(c *gin.Context) {
+		gors.NewRoute(
+			http.MethodGet,
+			"/api/BytesString/Get",
+			func(c *gin.Context) {
 				var req []byte
 				var resp string
 				var err error
@@ -41,11 +41,11 @@ func BytesStringRoutes(srv BytesString) []gors.Route {
 				statusCode := gors.GetCodeFromContext(ctx)
 				c.Render(statusCode, render.Data{ContentType: "text/html; charset=utf-8", Data: []byte(resp)})
 			},
-		},
-		{
-			HTTPMethod: http.MethodPut,
-			Path:       "/api/BytesString/Put",
-			HandlerFunc: func(c *gin.Context) {
+		),
+		gors.NewRoute(
+			http.MethodPut,
+			"/api/BytesString/Put",
+			func(c *gin.Context) {
 				var req []byte
 				var resp string
 				var err error
@@ -72,6 +72,6 @@ func BytesStringRoutes(srv BytesString) []gors.Route {
 				statusCode := gors.GetCodeFromContext(ctx)
 				c.Redirect(statusCode, resp)
 			},
-		},
+		),
 	}
 }

@@ -9,10 +9,10 @@ import (
 
 func ServiceRoutes(srv Service) []gors.Route {
 	return []gors.Route{
-		{
-			HTTPMethod: http.MethodGet,
-			Path:       "/api/v1/method/:id",
-			HandlerFunc: func(c *gin.Context) {
+		gors.NewRoute(
+			http.MethodGet,
+			"/api/v1/method/:id",
+			func(c *gin.Context) {
 				var req *MethodReq
 				var resp *MethodResp
 				var err error
@@ -42,6 +42,6 @@ func ServiceRoutes(srv Service) []gors.Route {
 				statusCode := gors.GetCodeFromContext(ctx)
 				c.JSON(statusCode, resp)
 			},
-		},
+		),
 	}
 }

@@ -26,7 +26,7 @@ func main() {
 
 	engine := gin.New()
 	for _, route := range routes {
-		engine.Handle(route.HTTPMethod, route.Path, route.HandlerFunc)
+		engine.Handle(route.Method(), route.Path(), route.Handler())
 	}
 
 	srv := http.Server{Handler: engine}

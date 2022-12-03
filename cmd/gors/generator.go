@@ -239,13 +239,13 @@ func (g *generate) printFunction() {
 }
 
 func (g *generate) printRouterInfo(info *routerInfo) {
-	g.P(g.functionBuf, "{")
-	g.P(g.functionBuf, "HTTPMethod: ", httpPackage.Ident(info.method), ",")
-	g.P(g.functionBuf, "Path: ", strconv.Quote(info.path), ",")
-	g.P(g.functionBuf, "HandlerFunc: func(c *", ginPackage.Ident("Context"), ") {")
+	g.P(g.functionBuf, gorsPackage.Ident("NewRoute"), "(")
+	g.P(g.functionBuf, httpPackage.Ident(info.method), ",")
+	g.P(g.functionBuf, strconv.Quote(info.path), ",")
+	g.P(g.functionBuf, "func(c *", ginPackage.Ident("Context"), ") {")
 	g.printHandler(info)
 	g.P(g.functionBuf, "},")
-	g.P(g.functionBuf, "},")
+	g.P(g.functionBuf, "),")
 }
 
 func (g *generate) printHandler(info *routerInfo) {

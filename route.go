@@ -2,26 +2,30 @@ package gors
 
 import "github.com/gin-gonic/gin"
 
-type IRoute interface {
+type Route interface {
 	Method() string
-	AbsolutePath() string
+	Path() string
 	Handler() gin.HandlerFunc
 }
 
-type Route struct {
-	HTTPMethod  string
-	Path        string
-	HandlerFunc gin.HandlerFunc
+func NewRoute(method string, path string, handler gin.HandlerFunc) Route {
+	return &route{method: method, path: path, handler: handler}
 }
 
-func (r *Route) Method() string {
-	return r.HTTPMethod
+type route struct {
+	method  string
+	path    string
+	handler gin.HandlerFunc
 }
 
-func (r *Route) AbsolutePath() string {
-	return r.Path
+func (r *route) Method() string {
+	return r.method
 }
 
-func (r *Route) Handler() gin.HandlerFunc {
-	return r.Handler()
+func (r *route) Path() string {
+	return r.path
+}
+
+func (r *route) Handler() gin.HandlerFunc {
+	return r.handler
 }

@@ -11,10 +11,10 @@ import (
 
 func StringStringRoutes(srv StringString) []gors.Route {
 	return []gors.Route{
-		{
-			HTTPMethod: http.MethodGet,
-			Path:       "/api/StringString/Get",
-			HandlerFunc: func(c *gin.Context) {
+		gors.NewRoute(
+			http.MethodGet,
+			"/api/StringString/Get",
+			func(c *gin.Context) {
 				var req string
 				var resp string
 				var err error
@@ -41,11 +41,11 @@ func StringStringRoutes(srv StringString) []gors.Route {
 				statusCode := gors.GetCodeFromContext(ctx)
 				c.Render(statusCode, render.Data{ContentType: "text/go", Data: []byte(resp)})
 			},
-		},
-		{
-			HTTPMethod: http.MethodPatch,
-			Path:       "/api/StringString/Patch",
-			HandlerFunc: func(c *gin.Context) {
+		),
+		gors.NewRoute(
+			http.MethodPatch,
+			"/api/StringString/Patch",
+			func(c *gin.Context) {
 				var req string
 				var resp string
 				var err error
@@ -72,6 +72,6 @@ func StringStringRoutes(srv StringString) []gors.Route {
 				statusCode := gors.GetCodeFromContext(ctx)
 				c.Render(statusCode, render.Data{ContentType: "text/go", Data: []byte(resp)})
 			},
-		},
+		),
 	}
 }
