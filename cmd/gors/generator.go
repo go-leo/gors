@@ -223,6 +223,7 @@ func (g *generate) content() []byte {
 
 func (g *generate) printHeader() {
 	g.P(g.headerBuf, g.header)
+	g.P(g.headerBuf)
 	g.P(g.headerBuf, g.pkg)
 }
 
