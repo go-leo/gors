@@ -504,7 +504,7 @@ func newRouter(methodName *ast.Ident, basePath string, commentList []*ast.Commen
 	}
 	if r != nil {
 		if stringx.IsBlank(r.method) {
-			log.Fatal("error: method not set")
+			log.Fatalf("error: rpcmethod %s, http method is empty", methodName.String())
 		}
 		r.path = path.Join(basePath, r.path)
 	}
