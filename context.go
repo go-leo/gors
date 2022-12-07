@@ -10,7 +10,10 @@ import (
 type key struct{}
 
 func NewContext(c *gin.Context) context.Context {
-	return context.WithValue(c, key{}, c)
+	ctx := c.Request.Context()
+	ctx = context.WithValue(ctx, key{}, c)
+	c.Request = c.Request.WithContext(ctx)
+	return c.Request.Context()
 }
 
 func FromContext(ctx context.Context) *gin.Context {
