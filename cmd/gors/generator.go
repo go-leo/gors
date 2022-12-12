@@ -381,7 +381,7 @@ func (g *generate) printObjectReq(info *routerInfo) {
 }
 
 func (g *generate) printReqValidate() {
-	g.P(g.functionBuf, "if err := ", gorsPackage.Ident("Validate"), "(req); err != nil {")
+	g.P(g.functionBuf, "if err = ", gorsPackage.Ident("Validate"), "(req); err != nil {")
 	g.P(g.functionBuf, "c.String(", httpPackage.Ident("StatusBadRequest"), ", err.Error())")
 	g.P(g.functionBuf, "_ = c.Error(err).SetType(gin.ErrorTypeBind)")
 	g.P(g.functionBuf, "return")
