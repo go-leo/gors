@@ -26,7 +26,7 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
 				}
-				if err := gors.Validate(req); err != nil {
+				if err = gors.Validate(req); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
@@ -65,7 +65,7 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
 				}
-				if err := gors.Validate(req); err != nil {
+				if err = gors.Validate(req); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
@@ -109,7 +109,7 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
 				}
-				if err := gors.Validate(req); err != nil {
+				if err = gors.Validate(req); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
@@ -158,7 +158,7 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
 				}
-				if err := gors.Validate(req); err != nil {
+				if err = gors.Validate(req); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
@@ -207,7 +207,7 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
 				}
-				if err := gors.Validate(req); err != nil {
+				if err = gors.Validate(req); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
@@ -251,7 +251,7 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
 				}
-				if err := gors.Validate(req); err != nil {
+				if err = gors.Validate(req); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
@@ -300,7 +300,7 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
 				}
-				if err := gors.Validate(req); err != nil {
+				if err = gors.Validate(req); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
@@ -349,7 +349,7 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
 				}
-				if err := gors.Validate(req); err != nil {
+				if err = gors.Validate(req); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
@@ -383,7 +383,7 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
 				}
-				if err := gors.Validate(req); err != nil {
+				if err = gors.Validate(req); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
@@ -417,7 +417,7 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
 				}
-				if err := gors.Validate(req); err != nil {
+				if err = gors.Validate(req); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
@@ -466,7 +466,7 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
 				}
-				if err := gors.Validate(req); err != nil {
+				if err = gors.Validate(req); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
@@ -515,7 +515,7 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return
 				}
-				if err := gors.Validate(req); err != nil {
+				if err = gors.Validate(req); err != nil {
 					c.String(http.StatusBadRequest, err.Error())
 					_ = c.Error(err).SetType(gin.ErrorTypeBind)
 					return

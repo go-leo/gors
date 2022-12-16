@@ -7,11 +7,11 @@ const (
 	Path = "@Path"
 
 	GET     = "@GET"
-	HEAD    = "@HEAD"
 	POST    = "@POST"
 	PUT     = "@PUT"
-	PATCH   = "@PATCH"
 	DELETE  = "@DELETE"
+	PATCH   = "@PATCH"
+	HEAD    = "@HEAD"
 	CONNECT = "@CONNECT"
 	OPTIONS = "@OPTIONS"
 	TRACE   = "@TRACE"

@@ -380,11 +380,6 @@ func newRouter(methodName *ast.Ident, basePath string, commentList []*ast.Commen
 					log.Fatalf("error: rpcmethod %s, there are multiple methods", methodName.String())
 				}
 				r.method = httpmethod.GetMethod
-			case strings.ToUpper(s) == annotation.HEAD:
-				if stringx.IsNotBlank(r.method) {
-					log.Fatalf("error: rpcmethod %s, there are multiple methods", methodName.String())
-				}
-				r.method = httpmethod.HeadMethod
 			case strings.ToUpper(s) == annotation.POST:
 				if stringx.IsNotBlank(r.method) {
 					log.Fatalf("error: rpcmethod %s, there are multiple methods", methodName.String())
@@ -395,16 +390,21 @@ func newRouter(methodName *ast.Ident, basePath string, commentList []*ast.Commen
 					log.Fatalf("error: rpcmethod %s, there are multiple methods", methodName.String())
 				}
 				r.method = httpmethod.PutMethod
-			case strings.ToUpper(s) == annotation.PATCH:
-				if stringx.IsNotBlank(r.method) {
-					log.Fatalf("error: rpcmethod %s, there are multiple methods", methodName.String())
-				}
-				r.method = httpmethod.PatchMethod
 			case strings.ToUpper(s) == annotation.DELETE:
 				if stringx.IsNotBlank(r.method) {
 					log.Fatalf("error: rpcmethod %s, there are multiple methods", methodName.String())
 				}
 				r.method = httpmethod.DeleteMethod
+			case strings.ToUpper(s) == annotation.PATCH:
+				if stringx.IsNotBlank(r.method) {
+					log.Fatalf("error: rpcmethod %s, there are multiple methods", methodName.String())
+				}
+				r.method = httpmethod.PatchMethod
+			case strings.ToUpper(s) == annotation.HEAD:
+				if stringx.IsNotBlank(r.method) {
+					log.Fatalf("error: rpcmethod %s, there are multiple methods", methodName.String())
+				}
+				r.method = httpmethod.HeadMethod
 			case strings.ToUpper(s) == annotation.CONNECT:
 				if stringx.IsNotBlank(r.method) {
 					log.Fatalf("error: rpcmethod %s, there are multiple methods", methodName.String())
@@ -512,7 +512,7 @@ func newRouter(methodName *ast.Ident, basePath string, commentList []*ast.Commen
 }
 
 func findPath(s string) (string, bool) {
-	reg := regexp.MustCompile(`@Path\("(.*)"\)`)
+	reg := regexp.MustCompile(`@Path\((.*)\)`)
 	if !reg.MatchString(s) {
 		return "", false
 	}
@@ -521,7 +521,7 @@ func findPath(s string) (string, bool) {
 }
 
 func findStringRender(s string) (string, bool) {
-	reg := regexp.MustCompile(`@StringRender\("(.*)"\)`)
+	reg := regexp.MustCompile(`@StringRender\((.*)\)`)
 	if !reg.MatchString(s) {
 		return "", false
 	}
@@ -530,7 +530,7 @@ func findStringRender(s string) (string, bool) {
 }
 
 func findBytesRender(s string) (string, bool) {
-	reg := regexp.MustCompile(`@BytesRender\("(.*)"\)`)
+	reg := regexp.MustCompile(`@BytesRender\((.*)\)`)
 	if !reg.MatchString(s) {
 		return "", false
 	}
@@ -539,7 +539,7 @@ func findBytesRender(s string) (string, bool) {
 }
 
 func findReaderRender(s string) (string, bool) {
-	reg := regexp.MustCompile(`@ReaderRender\("(.*)"\)`)
+	reg := regexp.MustCompile(`@ReaderRender\((.*)\)`)
 	if !reg.MatchString(s) {
 		return "", false
 	}

@@ -8,12 +8,12 @@ import (
 //go:generate gors -service ReaderReader
 
 // ReaderReader
-// @GORS @Path("/api")  @Path("/ReaderReader")
+// @GORS @Path(/api/ReaderReader)
 type ReaderReader interface {
 	// GetReaderReader
-	// @GORS @GET @Path("/Get") @ReaderRender
+	// @GORS @GET @Path(/Get) @ReaderRender
 	GetReaderReader(context.Context, io.Reader) (io.Reader, error)
 	// HeadReaderReader
-	// @GORS @HEAD @Path("/head") @ReaderRender
+	// @GORS @HEAD @Path(/head) @ReaderRender
 	HeadReaderReader(context.Context, io.Reader) (io.Reader, error)
 }

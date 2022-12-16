@@ -68,10 +68,10 @@ go install github.com/go-leo/gors/cmd/gors@latest
 //go:generate gors -service Service
 
 // Service
-// @GORS @Path("/api")  @Path("/v1")
+// @GORS @Path("/api)  @Path("/v1)
 type Service interface {
 	// Method
-    // @GORS @GET @Path("/method/:id") @UriBinding @JSONRender
+    // @GORS @GET @Path("/method/:id) @UriBinding @JSONRender
     Method(context.Context, *MethodReq) (*MethodResp, error)
 }
 type MethodReq struct {
@@ -183,12 +183,12 @@ if err != nil {
 # 响应
 ## 参数一
 第一个响应参数有四种类型：`string`、`[]byte`、`io.Reader`和`结构体指针`,其他类型都会生成失败。
-- `io.Reader`，将`io.Reader`写入响应的Body中，必须要配合`@ReaderRender`注解使用，可以自定义响应`Content-Type`，比如`@ReaderRender("video/mpeg4")`
-- `[]byte`，将`[]byte`写入响应的Body中，必须要配合`@BytesRender`注解使用，可以自定义响应`Content-Type`，比如`@BytesRender("image/png")`
+- `io.Reader`，将`io.Reader`写入响应的Body中，必须要配合`@ReaderRender`注解使用，可以自定义响应`Content-Type`，比如`@ReaderRender(video/mpeg4)`
+- `[]byte`，将`[]byte`写入响应的Body中，必须要配合`@BytesRender`注解使用，可以自定义响应`Content-Type`，比如`@BytesRender(image/png)`
 - `string`,可以配合不同的Render策略进行响应。
   * `@TextRender`, 将文本以`Content-Type`为`"text/plain; charset=utf-8"`写入响应的Body中。
   * `@HTMLRender`, 将文本以`Content-Type`为`"text/html; charset=utf-8"`写入响应的Body中。
-  * `@StringRender`, 将文本写入响应的Body中，可以自定义响应`Content-Type`，比如`@StringRender("text/xml")`
+  * `@StringRender`, 将文本写入响应的Body中，可以自定义响应`Content-Type`，比如`@StringRender(text/xml)`
   * `@RedirectRender`, 重定向渲染，重定向到文本指定的位置。
 - `结构体指针`，需要配合各自Render策略，将结构体指针序列化成`[]byte`后,写入响应的Body中。
 ## 参数二
@@ -203,7 +203,7 @@ if err != nil {
 
 ## @Path
 必须设置，路径注解。
-- 可以设置参数，`@Path("/api")`
+- 可以设置参数，`@Path(/api)`
 - 如果设置在接口名上，代表为所有path定义基础的path。
 - 如果设置在方法上，代表为此方法定义path。
 - 可以设置多个`@Path`注解，此时多个path会被拼接成一个。
@@ -299,12 +299,12 @@ if err != nil {
 ### @BytesRender
 >字节数组渲染。
 >
->只有当方法的第一个返回参数类型为`[]byte`时才能使用，`@BytesRender`将数据以字节数组写入响应的Body中，可以自定义响应`Content-Type`，比如：`@BytesRender("image/png")`代表渲染一张图片。
+>只有当方法的第一个返回参数类型为`[]byte`时才能使用，`@BytesRender`将数据以字节数组写入响应的Body中，可以自定义响应`Content-Type`，比如：`@BytesRender(image/png)`代表渲染一张图片。
 
 ### @StringRender
 >字符串渲染。
 >
->只有当方法的第一个返回参数类型为`string`时才能使用，`@StringRender`将数据以文本的方式写入响应的Body中，可以自定义响应`Content-Type`，比如`@StringRender("image/xml")`代表渲染xml文件。
+>只有当方法的第一个返回参数类型为`string`时才能使用，`@StringRender`将数据以文本的方式写入响应的Body中，可以自定义响应`Content-Type`，比如`@StringRender(image/xml)`代表渲染xml文件。
 
 ### @TextRender
 >文本渲染。
@@ -322,7 +322,7 @@ if err != nil {
 >只有当方法的第一个返回参数类型为`string`时才能使用,此参数应该是个可以重定向的地址位置。
 
 ### @ReaderRender
->数据流渲染，只有当方法的第一个返回参数类型为`io.Reader`时才能使用，`@ReaderRender`将数据流写入响应的Body中，可以自定义响应`Content-Type`，比如：`@ReaderRender("video/mpeg4")`代表渲染一个视频文件。
+>数据流渲染，只有当方法的第一个返回参数类型为`io.Reader`时才能使用，`@ReaderRender`将数据流写入响应的Body中，可以自定义响应`Content-Type`，比如：`@ReaderRender(video/mpeg4)`代表渲染一个视频文件。
 
 ### @JSONRender
 >JSON渲染。

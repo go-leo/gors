@@ -29,3 +29,10 @@ func (r *route) Path() string {
 func (r *route) Handler() gin.HandlerFunc {
 	return r.handler
 }
+
+func HandleRoutes(iRoutes gin.IRoutes, routes ...Route) gin.IRoutes {
+	for _, route := range routes {
+		iRoutes = iRoutes.Handle(route.Method(), route.Path(), route.Handler())
+	}
+	return iRoutes
+}

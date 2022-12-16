@@ -40,7 +40,7 @@ func BytesBytesRoutes(srv BytesBytes) []gors.Route {
 					return
 				}
 				statusCode := gors.GetCodeFromContext(ctx)
-				c.Render(statusCode, render.Data{ContentType: "text/go", Data: resp})
+				c.Render(statusCode, render.Data{ContentType: "ttt.sss", Data: resp})
 			},
 		),
 		gors.NewRoute(

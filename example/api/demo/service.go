@@ -5,10 +5,10 @@ import "context"
 //go:generate gors -service Service
 
 // Service
-// @GORS @Path("/api")  @Path("/v1")
+// @GORS @Path(/api)  @Path(/v1)
 type Service interface {
 	// Method
-	// @GORS @GET @Path("/method/:id") @UriBinding @JSONRender
+	// @GORS @GET @Path(/method/:id) @UriBinding @JSONRender
 	Method(context.Context, *MethodReq) (*MethodResp, error)
 }
 

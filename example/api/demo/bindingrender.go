@@ -11,43 +11,43 @@ import (
 //go:generate gors -service BindingRender
 
 // BindingRender
-// @GORS @Path("/api")  @Path("/BindingRender")
+// @GORS @Path(/api/BindingRender)
 type BindingRender interface {
 	// UriBindingIndentedJSONRender
-	// @GORS @GET @Path("/UriBindingIndentedJSONRender/:id") @UriBinding @IndentedJSONRender
+	// @GORS @GET @Path(/UriBindingIndentedJSONRender/:id) @UriBinding @IndentedJSONRender
 	UriBindingIndentedJSONRender(context.Context, *UriBindingReq) (*IndentedJSONRenderResp, error)
 	// QueryBindingSecureJSONRender
-	// @GORS @GET @Path("/QueryBindingSecureJSONRender/:id") @UriBinding @QueryBinding @SecureJSONRender
+	// @GORS @GET @Path(/QueryBindingSecureJSONRender/:id) @UriBinding @QueryBinding @SecureJSONRender
 	QueryBindingSecureJSONRender(context.Context, *QueryBindingReq) (*SecureJSONRenderResp, error)
 	// HeaderBindingJsonpJSONRender
-	// @GORS @GET @Path("/HeaderBindingJsonpJSONRender/:id") @UriBinding @QueryBinding @HeaderBinding @JsonpJSONRender
+	// @GORS @GET @Path(/HeaderBindingJsonpJSONRender/:id) @UriBinding @QueryBinding @HeaderBinding @JsonpJSONRender
 	HeaderBindingJsonpJSONRender(context.Context, *HeaderBindingReq) (*JsonpJSONRenderResp, error)
 	// JSONBindingJSONRender
-	// @GORS @POST @Path("/JSONBindingJSONRender/:id") @UriBinding @QueryBinding @HeaderBinding @JSONBinding @JSONRender
+	// @GORS @POST @Path(/JSONBindingJSONRender/:id) @UriBinding @QueryBinding @HeaderBinding @JSONBinding @JSONRender
 	JSONBindingJSONRender(context.Context, *JSONBindingReq) (*JSONRenderResp, error)
 	// XMLBindingXMLRender
-	// @GORS @PATCH @Path("/XMLBindingXMLRender/:id") @UriBinding @QueryBinding @HeaderBinding  @XMLBinding @XMLRender
+	// @GORS @PATCH @Path(/XMLBindingXMLRender/:id) @UriBinding @QueryBinding @HeaderBinding  @XMLBinding @XMLRender
 	XMLBindingXMLRender(context.Context, *XMLBindingReq) (*XMLRenderResp, error)
 	// FormBindingJSONRender
-	// @GORS @POST @Path("/FormBindingJSONRender/:id") @UriBinding @HeaderBinding @FormBinding @JSONRender
+	// @GORS @POST @Path(/FormBindingJSONRender/:id) @UriBinding @HeaderBinding @FormBinding @JSONRender
 	FormBindingJSONRender(context.Context, *FormBindingReq) (*JSONRenderResp, error)
 	// FormPostBindingPureJSONRender
-	// @GORS @POST @Path("/FormPostBindingPureJSONRender/:id") @UriBinding @QueryBinding @HeaderBinding @FormPostBinding @PureJSONRender
+	// @GORS @POST @Path(/FormPostBindingPureJSONRender/:id) @UriBinding @QueryBinding @HeaderBinding @FormPostBinding @PureJSONRender
 	FormPostBindingPureJSONRender(context.Context, *FormPostBindingReq) (*PureJSONRenderResp, error)
 	// FormMultipartBindingAsciiJSONRender
-	// @GORS @POST @Path("/FormMultipartBindingAsciiJSONRender/:id") @UriBinding @QueryBinding @HeaderBinding @FormMultipartBinding @AsciiJSONRender
+	// @GORS @POST @Path(/FormMultipartBindingAsciiJSONRender/:id) @UriBinding @QueryBinding @HeaderBinding @FormMultipartBinding @AsciiJSONRender
 	FormMultipartBindingAsciiJSONRender(context.Context, *FormMultipartBindingReq) (*AsciiJSONRenderResp, error)
 	// ProtoBufBindingProtoBufRender
-	// @GORS @PUT @Path("/ProtoBufBindingProtoBufRender") @ProtoBufBinding @ProtoBufRender
+	// @GORS @PUT @Path(/ProtoBufBindingProtoBufRender) @ProtoBufBinding @ProtoBufRender
 	ProtoBufBindingProtoBufRender(context.Context, *pb.ProtoBufReq) (*pb.ProtoBufResp, error)
 	// MsgPackBindingMsgPackRender
-	// @GORS @DELETE @Path("/MsgPackBindingMsgPackRender") @MsgPackBinding @MsgPackRender
+	// @GORS @DELETE @Path(/MsgPackBindingMsgPackRender) @MsgPackBinding @MsgPackRender
 	MsgPackBindingMsgPackRender(context.Context, *MsgPackBindingReq) (*MsgPackRenderResp, error)
 	// YAMLBindingYAMLRender
-	// @GORS @DELETE @Path("/YAMLBindingYAMLRender/:id") @UriBinding @QueryBinding @HeaderBinding @YAMLBinding @YAMLRender
+	// @GORS @DELETE @Path(/YAMLBindingYAMLRender/:id) @UriBinding @QueryBinding @HeaderBinding @YAMLBinding @YAMLRender
 	YAMLBindingYAMLRender(context.Context, *YAMLBindingReq) (*YAMLRenderResp, error)
 	// TOMLBindingTOMLRender
-	// @GORS @PUT @Path("/TOMLBindingTOMLRender/:id") @UriBinding @QueryBinding @HeaderBinding @TOMLBinding @TOMLRender
+	// @GORS @PUT @Path(/TOMLBindingTOMLRender/:id) @UriBinding @QueryBinding @HeaderBinding @TOMLBinding @TOMLRender
 	TOMLBindingTOMLRender(context.Context, *TOMLBindingReq) (*TOMLRenderResp, error)
 }
 
