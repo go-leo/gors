@@ -22,7 +22,6 @@ public class SampleDialogWrapper extends DialogWrapper {
         JLabel label = new JLabel("testing");
         label.setPreferredSize(new Dimension(100, 100));
         dialogPanel.add(label, BorderLayout.CENTER);
-
         return dialogPanel;
     }
 }
