@@ -33,6 +33,9 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				}
 				ctx := gors.NewContext(c)
 				resp, err = srv.UriBindingIndentedJSONRender(ctx, req)
+				if gors.IsInterrupted(ctx) {
+					return
+				}
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
 						c.String(httpErr.StatusCode(), httpErr.Error())

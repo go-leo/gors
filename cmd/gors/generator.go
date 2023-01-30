@@ -391,6 +391,9 @@ func (g *generate) printReqValidate() {
 func (g *generate) printRPCHandler(info *routerInfo) {
 	g.P(g.functionBuf, "ctx := ", gorsPackage.Ident("NewContext"), "(c)")
 	g.P(g.functionBuf, "resp, err = srv.", info.rpcMethodName, "(ctx, req)")
+	g.P(g.functionBuf, "if ", gorsPackage.Ident("IsInterrupted"), "(ctx) {")
+	g.P(g.functionBuf, "return")
+	g.P(g.functionBuf, "}")
 	g.P(g.functionBuf, "if err != nil {")
 	g.P(g.functionBuf, "if httpErr, ok := err.(*", gorsPackage.Ident("HttpError"), "); ok {")
 	g.P(g.functionBuf, "c.String(httpErr.StatusCode(), httpErr.Error())")
