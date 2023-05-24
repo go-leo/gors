@@ -7,7 +7,7 @@
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-name -->
     <name>Gors Code Completion</name>
 
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
     <vendor email="soyacen@outlook.com" url="https://github.com/go-leo">go-leo</vendor>
 
@@ -51,8 +51,8 @@
     </extensions>
 
     <applicationListeners>
-        <listener class="com.leo.gors.intellij.listeners.ProjectOpenCloseListener"
-                  topic="com.intellij.openapi.project.ProjectManagerListener"/>
+<!--        <listener class="com.leo.gors.intellij.listeners.ProjectOpenCloseListener"-->
+<!--                  topic="com.intellij.openapi.project.ProjectManagerListener"/>-->
     </applicationListeners>
 
     <actions>

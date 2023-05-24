@@ -18,8 +18,8 @@ import (
 	"unicode"
 	"unicode/utf8"
 
-	"github.com/go-leo/slicex"
-	"github.com/go-leo/stringx"
+	"github.com/go-leo/gox/slicex"
+	"github.com/go-leo/gox/stringx"
 	"golang.org/x/tools/go/packages"
 
 	"github.com/go-leo/gors/internal/pkg/annotation"
