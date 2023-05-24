@@ -339,6 +339,16 @@ func (g *generate) printBindRequest(binding string) {
 	g.P(g.functionBuf, "}")
 }
 
+func (g *generate) printCustomRequest(s string) {
+	g.P(g.functionBuf, "var binding gors.Binding = req")
+	g.P(g.functionBuf, "err = binding.Bind(c)")
+	g.P(g.functionBuf, "if err != nil {")
+	g.P(g.functionBuf, "c.String(http.StatusBadRequest, err.Error())")
+	g.P(g.functionBuf, "_ = c.Error(err).SetType(gin.ErrorTypeBind)")
+	g.P(g.functionBuf, "return")
+	g.P(g.functionBuf, "}")
+}
+
 func (g *generate) printObjectReq(info *routerInfo) {
 	g.printObjectReqInit(info)
 	if info.uriBinding {
@@ -376,6 +386,9 @@ func (g *generate) printObjectReq(info *routerInfo) {
 	}
 	if info.tomlBinding {
 		g.printBindRequest("TOML")
+	}
+	if info.customBinding {
+		g.printCustomRequest("Custom")
 	}
 
 }
@@ -460,8 +473,11 @@ func (g *generate) printObjectRender(info *routerInfo) {
 		g.P(g.functionBuf, "c.Render(statusCode, ", renderPackage.Ident("MsgPack"), "{Data: resp})")
 	case info.tomlRender:
 		g.P(g.functionBuf, "c.TOML(statusCode, resp)")
+	case info.customRender:
+		g.P(g.functionBuf, "var render ", gorsPackage.Ident("Render"), " = resp")
+		g.P(g.functionBuf, "render.Render(c, statusCode)")
 	default:
-		log.Fatalf("error: func %s *struct{} result must be set JSONRender or IndentedJSONRender or SecureJSONRender or JsonpJSONRender or PureJSONRender or AsciiJSONRender or XMLRender or YAMLRender or ProtoBufRender or MsgPackRender or TOMLRender", info.rpcMethodName)
+		log.Fatalf("error: func %s *struct{} result must be set a Render", info.rpcMethodName)
 	}
 }
 

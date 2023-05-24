@@ -1,0 +1,43 @@
+package demo
+
+import (
+	"context"
+	"encoding/json"
+	"github.com/gin-gonic/gin"
+	"io"
+)
+
+//go:generate gors -service CustomBinderRender
+
+// CustomBinderRender
+// @GORS @Path(/api/CustomBinderRender)
+type CustomBinderRender interface {
+	// Custom
+	// @GORS @POST @Path(/Custom) @CustomBinding @CustomRender
+	Custom(ctx context.Context, req *CustomReq) (*CustomResp, error)
+}
+
+type CustomReq struct {
+	V string
+}
+
+func (req *CustomReq) Bind(c *gin.Context) error {
+	data, err := io.ReadAll(c.Request.Body)
+	if err != nil {
+		return err
+	}
+	req.V = string(data)
+	return nil
+}
+
+type CustomResp struct {
+}
+
+func (resp *CustomResp) Render(c *gin.Context, statusCode int) error {
+	data, err := json.Marshal(resp)
+	if err != nil {
+		return err
+	}
+	c.Data(statusCode, "text/plain", data)
+	return nil
+}

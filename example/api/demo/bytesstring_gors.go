@@ -29,6 +29,9 @@ func BytesStringRoutes(srv BytesString) []gors.Route {
 				req = body
 				ctx := gors.NewContext(c)
 				resp, err = srv.GetBytesString(ctx, req)
+				if gors.IsInterrupted(ctx) {
+					return
+				}
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
 						c.String(httpErr.StatusCode(), httpErr.Error())
@@ -60,6 +63,9 @@ func BytesStringRoutes(srv BytesString) []gors.Route {
 				req = body
 				ctx := gors.NewContext(c)
 				resp, err = srv.PutBytesString(ctx, req)
+				if gors.IsInterrupted(ctx) {
+					return
+				}
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
 						c.String(httpErr.StatusCode(), httpErr.Error())

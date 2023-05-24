@@ -75,6 +75,9 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				}
 				ctx := gors.NewContext(c)
 				resp, err = srv.QueryBindingSecureJSONRender(ctx, req)
+				if gors.IsInterrupted(ctx) {
+					return
+				}
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
 						c.String(httpErr.StatusCode(), httpErr.Error())
@@ -119,6 +122,9 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				}
 				ctx := gors.NewContext(c)
 				resp, err = srv.HeaderBindingJsonpJSONRender(ctx, req)
+				if gors.IsInterrupted(ctx) {
+					return
+				}
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
 						c.String(httpErr.StatusCode(), httpErr.Error())
@@ -168,6 +174,9 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				}
 				ctx := gors.NewContext(c)
 				resp, err = srv.JSONBindingJSONRender(ctx, req)
+				if gors.IsInterrupted(ctx) {
+					return
+				}
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
 						c.String(httpErr.StatusCode(), httpErr.Error())
@@ -217,6 +226,9 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				}
 				ctx := gors.NewContext(c)
 				resp, err = srv.XMLBindingXMLRender(ctx, req)
+				if gors.IsInterrupted(ctx) {
+					return
+				}
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
 						c.String(httpErr.StatusCode(), httpErr.Error())
@@ -261,6 +273,9 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				}
 				ctx := gors.NewContext(c)
 				resp, err = srv.FormBindingJSONRender(ctx, req)
+				if gors.IsInterrupted(ctx) {
+					return
+				}
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
 						c.String(httpErr.StatusCode(), httpErr.Error())
@@ -310,6 +325,9 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				}
 				ctx := gors.NewContext(c)
 				resp, err = srv.FormPostBindingPureJSONRender(ctx, req)
+				if gors.IsInterrupted(ctx) {
+					return
+				}
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
 						c.String(httpErr.StatusCode(), httpErr.Error())
@@ -359,6 +377,9 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				}
 				ctx := gors.NewContext(c)
 				resp, err = srv.FormMultipartBindingAsciiJSONRender(ctx, req)
+				if gors.IsInterrupted(ctx) {
+					return
+				}
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
 						c.String(httpErr.StatusCode(), httpErr.Error())
@@ -393,6 +414,9 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				}
 				ctx := gors.NewContext(c)
 				resp, err = srv.ProtoBufBindingProtoBufRender(ctx, req)
+				if gors.IsInterrupted(ctx) {
+					return
+				}
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
 						c.String(httpErr.StatusCode(), httpErr.Error())
@@ -427,6 +451,9 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				}
 				ctx := gors.NewContext(c)
 				resp, err = srv.MsgPackBindingMsgPackRender(ctx, req)
+				if gors.IsInterrupted(ctx) {
+					return
+				}
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
 						c.String(httpErr.StatusCode(), httpErr.Error())
@@ -476,6 +503,9 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				}
 				ctx := gors.NewContext(c)
 				resp, err = srv.YAMLBindingYAMLRender(ctx, req)
+				if gors.IsInterrupted(ctx) {
+					return
+				}
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
 						c.String(httpErr.StatusCode(), httpErr.Error())
@@ -525,6 +555,9 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				}
 				ctx := gors.NewContext(c)
 				resp, err = srv.TOMLBindingTOMLRender(ctx, req)
+				if gors.IsInterrupted(ctx) {
+					return
+				}
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
 						c.String(httpErr.StatusCode(), httpErr.Error())

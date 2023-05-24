@@ -29,6 +29,9 @@ func BytesReaderRoutes(srv BytesReader) []gors.Route {
 				req = body
 				ctx := gors.NewContext(c)
 				resp, err = srv.GetBytesReader(ctx, req)
+				if gors.IsInterrupted(ctx) {
+					return
+				}
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
 						c.String(httpErr.StatusCode(), httpErr.Error())
@@ -60,6 +63,9 @@ func BytesReaderRoutes(srv BytesReader) []gors.Route {
 				req = body
 				ctx := gors.NewContext(c)
 				resp, err = srv.PatchBytesReader(ctx, req)
+				if gors.IsInterrupted(ctx) {
+					return
+				}
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
 						c.String(httpErr.StatusCode(), httpErr.Error())

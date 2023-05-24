@@ -29,6 +29,9 @@ func StringStringRoutes(srv StringString) []gors.Route {
 				req = string(body)
 				ctx := gors.NewContext(c)
 				resp, err = srv.GetStringString(ctx, req)
+				if gors.IsInterrupted(ctx) {
+					return
+				}
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
 						c.String(httpErr.StatusCode(), httpErr.Error())
@@ -60,6 +63,9 @@ func StringStringRoutes(srv StringString) []gors.Route {
 				req = string(body)
 				ctx := gors.NewContext(c)
 				resp, err = srv.PatchStringString(ctx, req)
+				if gors.IsInterrupted(ctx) {
+					return
+				}
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
 						c.String(httpErr.StatusCode(), httpErr.Error())

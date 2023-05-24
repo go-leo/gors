@@ -28,6 +28,7 @@ const (
 	MsgPackBinding       = "@MsgPackBinding"
 	YAMLBinding          = "@YAMLBinding"
 	TOMLBinding          = "@TOMLBinding"
+	CustomBinding        = "@CustomBinding"
 
 	BytesRender    = "@BytesRender"
 	StringRender   = "@StringRender"
@@ -47,4 +48,5 @@ const (
 	ProtoBufRender     = "@ProtoBufRender"
 	MsgPackRender      = "@MsgPackRender"
 	TOMLRender         = "@TOMLRender"
+	CustomRender       = "@CustomRender"
 )

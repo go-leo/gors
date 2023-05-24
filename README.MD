@@ -32,6 +32,7 @@
 		- [@MsgPackBinding](#msgpackbinding)
 		- [@YAMLBinding](#yamlbinding)
 		- [@TOMLBinding](#tomlbinding)
+		- [@CustomBinding](#custombinding)
 	- [Render 注解](#render-注解)
 		- [@BytesRender](#bytesrender)
 		- [@StringRender](#stringrender)
@@ -50,6 +51,7 @@
 		- [@ProtoBufRender](#protobufrender)
 		- [@MsgPackRender](#msgpackrender)
 		- [@TOMLRender](#tomlrender)
+		- [@CustomRender](#customrender)
 - [Validate](#validate)
 	- [Validator接口](#validator接口)
 # gors
@@ -292,6 +294,9 @@ if err != nil {
 ### @TOMLBinding
 >将请求的Body以TOML形式解析出来并绑定到结构体指针中。
 
+### @CustomBinding
+>预定义的Binding策略不能满足需求，需要使用自定义Binding策略，请求结构体需要实现gors.Binding接口。
+
 ## Render 注解
 响应渲染注解。
 - 方法的一个返回参数的类型不通，相对应的渲染也不同。
@@ -379,6 +384,9 @@ if err != nil {
 >TOML渲染。
 >
 >只有当方法的第一个返回参数类型为`结构体指针`时才能使用，`@TOMLRender`将结构体指针以TOML格式序列化并且写入响应的Body中，`Content-Type`固定为`application/toml`。参考[gin文档-TOMLRender](https://github.com/gin-gonic/gin#xml-json-yaml-toml-and-protobuf-rendering)
+
+### @CustomRender
+>预定义的Render策略不能满足需求，需要使用自定义Render策略，响应结构体需要实现gors.Render接口。
 
 # Validate
 除了gin框架支持的参数校验方案外，gors也提供了另外一种参数校验方式，方法的第一个返回参数类型为`结构体指针`,并且实现了Validator接口，则在数据绑定后，会对数据进行校验。

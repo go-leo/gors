@@ -104,6 +104,7 @@ type routerInfo struct {
 	msgpackBinding       bool
 	yamlBinding          bool
 	tomlBinding          bool
+	customBinding        bool
 
 	rpcMethodName string
 	param2        *param
@@ -129,6 +130,7 @@ type routerInfo struct {
 	protobufRender     bool
 	msgpackRender      bool
 	tomlRender         bool
+	customRender       bool
 }
 
 func init() {
@@ -447,6 +449,8 @@ func newRouter(methodName *ast.Ident, basePath string, commentList []*ast.Commen
 				r.yamlBinding = true
 			case strings.ToUpper(s) == strings.ToUpper(annotation.TOMLBinding):
 				r.tomlBinding = true
+			case strings.ToUpper(s) == strings.ToUpper(annotation.CustomBinding):
+				r.customBinding = true
 				// binding end
 
 				// render start
@@ -493,6 +497,8 @@ func newRouter(methodName *ast.Ident, basePath string, commentList []*ast.Commen
 				r.msgpackRender = true
 			case strings.ToUpper(s) == strings.ToUpper(annotation.TOMLRender):
 				r.tomlRender = true
+			case strings.ToUpper(s) == strings.ToUpper(annotation.CustomRender):
+				r.customRender = true
 				// render end
 
 			case strings.HasPrefix(s, annotation.GORS):

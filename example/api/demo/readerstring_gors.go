@@ -22,6 +22,9 @@ func ReaderStringRoutes(srv ReaderString) []gors.Route {
 				req = c.Request.Body
 				ctx := gors.NewContext(c)
 				resp, err = srv.GetReaderString(ctx, req)
+				if gors.IsInterrupted(ctx) {
+					return
+				}
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
 						c.String(httpErr.StatusCode(), httpErr.Error())
@@ -46,6 +49,9 @@ func ReaderStringRoutes(srv ReaderString) []gors.Route {
 				req = c.Request.Body
 				ctx := gors.NewContext(c)
 				resp, err = srv.PostReaderString(ctx, req)
+				if gors.IsInterrupted(ctx) {
+					return
+				}
 				if err != nil {
 					if httpErr, ok := err.(*gors.HttpError); ok {
 						c.String(httpErr.StatusCode(), httpErr.Error())
