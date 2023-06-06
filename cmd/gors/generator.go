@@ -291,17 +291,8 @@ func (g *generate) printHandler(info *routerInfo) {
 
 	g.printRPCHandler(info)
 
-	if info.result1.bytes {
-		g.printBytesRender(info)
-	} else if info.result1.string {
-		g.printStringRender(info)
-	} else if info.result1.reader {
-		g.printReaderRender(info)
-	} else if info.result1.objectArgs != nil {
-		g.printObjectRender(info)
-	} else {
-		log.Fatalf("error: func %s 1th result is invalid, must be []byte or string or *struct{}", info.rpcMethodName)
-	}
+	g.printResponse(info)
+
 }
 
 func (g *generate) printBytesReq(info *routerInfo) {
@@ -404,81 +395,98 @@ func (g *generate) printReqValidate() {
 func (g *generate) printRPCHandler(info *routerInfo) {
 	g.P(g.functionBuf, "ctx := ", gorsPackage.Ident("NewContext"), "(c)")
 	g.P(g.functionBuf, "resp, err = srv.", info.rpcMethodName, "(ctx, req)")
-	g.P(g.functionBuf, "if ", gorsPackage.Ident("IsInterrupted"), "(ctx) {")
+}
+
+func (g *generate) printResponse(info *routerInfo) {
+	g.P(g.functionBuf, "switch e := err.(type) {")
+	g.P(g.functionBuf, "case nil:")
+
+	switch {
+	case info.result1.bytes:
+		switch {
+		case info.bytesRender:
+			g.P(g.functionBuf, "statusCode := ", gorsPackage.Ident("HttpStatusCode"), "(c, resp)")
+			g.P(g.functionBuf, "c.Render(statusCode, ", renderPackage.Ident("Data"), "{ContentType: ", strconv.Quote(info.renderContentType), ", Data: resp})")
+		default:
+			log.Fatalf("error: func %s []byte result must be set BytesRender", info.rpcMethodName)
+		}
+	case info.result1.string:
+		switch {
+		case info.stringRender, info.textRender, info.htmlRender:
+			g.P(g.functionBuf, "statusCode := ", gorsPackage.Ident("HttpStatusCode"), "(c, resp)")
+			g.P(g.functionBuf, "c.Render(statusCode, ", renderPackage.Ident("Data"), "{ContentType: ", strconv.Quote(info.renderContentType), ", Data: []byte(resp)})")
+		case info.redirectRender:
+			g.P(g.functionBuf, "statusCode := ", gorsPackage.Ident("HttpStatusCode"), "(c, resp)")
+			g.P(g.functionBuf, "c.Redirect(statusCode, resp)")
+		default:
+			log.Fatalf("error: func %s string result must be set BytesRender or StringRender or TextRender or HTMLRender or RedirectRender", info.rpcMethodName)
+		}
+	case info.result1.reader:
+		switch {
+		case info.readerRender:
+			g.P(g.functionBuf, "statusCode := ", gorsPackage.Ident("HttpStatusCode"), "(c, resp)")
+			g.P(g.functionBuf, "c.Render(statusCode, ", renderPackage.Ident("Reader"), "{ContentType: ", strconv.Quote(info.renderContentType), ", ContentLength: -1, Reader: resp})")
+		default:
+			log.Fatalf("error: func %s io.Reader result must be set ReaderRender", info.rpcMethodName)
+		}
+	case info.result1.objectArgs != nil:
+		switch {
+		case info.jsonRender:
+			g.P(g.functionBuf, "statusCode := ", gorsPackage.Ident("HttpStatusCode"), "(c, resp)")
+			g.P(g.functionBuf, "c.JSON(statusCode, resp)")
+		case info.indentedJSONRender:
+			g.P(g.functionBuf, "statusCode := ", gorsPackage.Ident("HttpStatusCode"), "(c, resp)")
+			g.P(g.functionBuf, "c.IndentedJSON(statusCode, resp)")
+		case info.secureJSONRender:
+			g.P(g.functionBuf, "statusCode := ", gorsPackage.Ident("HttpStatusCode"), "(c, resp)")
+			g.P(g.functionBuf, "c.SecureJSON(statusCode, resp)")
+		case info.jsonpJSONRender:
+			g.P(g.functionBuf, "statusCode := ", gorsPackage.Ident("HttpStatusCode"), "(c, resp)")
+			g.P(g.functionBuf, "c.JSONP(statusCode, resp)")
+		case info.pureJSONRender:
+			g.P(g.functionBuf, "statusCode := ", gorsPackage.Ident("HttpStatusCode"), "(c, resp)")
+			g.P(g.functionBuf, "c.PureJSON(statusCode, resp)")
+		case info.asciiJSONRender:
+			g.P(g.functionBuf, "statusCode := ", gorsPackage.Ident("HttpStatusCode"), "(c, resp)")
+			g.P(g.functionBuf, "c.AsciiJSON(statusCode, resp)")
+		case info.xmlRender:
+			g.P(g.functionBuf, "statusCode := ", gorsPackage.Ident("HttpStatusCode"), "(c, resp)")
+			g.P(g.functionBuf, "c.XML(statusCode, resp)")
+		case info.yamlRender:
+			g.P(g.functionBuf, "statusCode := ", gorsPackage.Ident("HttpStatusCode"), "(c, resp)")
+			g.P(g.functionBuf, "c.YAML(statusCode, resp)")
+		case info.protobufRender:
+			g.P(g.functionBuf, "statusCode := ", gorsPackage.Ident("HttpStatusCode"), "(c, resp)")
+			g.P(g.functionBuf, "c.ProtoBuf(statusCode, resp)")
+		case info.msgpackRender:
+			g.P(g.functionBuf, "statusCode := ", gorsPackage.Ident("HttpStatusCode"), "(c, resp)")
+			g.P(g.functionBuf, "c.Render(statusCode, ", renderPackage.Ident("MsgPack"), "{Data: resp})")
+		case info.tomlRender:
+			g.P(g.functionBuf, "statusCode := ", gorsPackage.Ident("HttpStatusCode"), "(c, resp)")
+			g.P(g.functionBuf, "c.TOML(statusCode, resp)")
+		case info.customRender:
+			g.P(g.functionBuf, "var render ", gorsPackage.Ident("Render"), " = resp")
+			g.P(g.functionBuf, "render.Render(c)")
+		default:
+			log.Fatalf("error: func %s *struct{} result must be set a Render", info.rpcMethodName)
+		}
+	default:
+		log.Fatalf("error: func %s 1th result is invalid, must be []byte or string or *struct{}", info.rpcMethodName)
+	}
+
 	g.P(g.functionBuf, "return")
-	g.P(g.functionBuf, "}")
-	g.P(g.functionBuf, "if err != nil {")
-	g.P(g.functionBuf, "if httpErr, ok := err.(*", gorsPackage.Ident("HttpError"), "); ok {")
-	g.P(g.functionBuf, "c.String(httpErr.StatusCode(), httpErr.Error())")
-	g.P(g.functionBuf, "_ = c.Error(err).SetType(", ginPackage.Ident("ErrorTypePublic"), ")")
+	//g.P(g.functionBuf, "case *", gorsPackage.Ident("Error"), ":")
+	//g.P(g.functionBuf, "return")
+	g.P(g.functionBuf, "case *", gorsPackage.Ident("HttpError"), ":")
+	g.P(g.functionBuf, "c.String(e.StatusCode(), e.Error())")
+	g.P(g.functionBuf, "_ = c.Error(e).SetType(", ginPackage.Ident("ErrorTypePublic"), ")")
 	g.P(g.functionBuf, "return")
-	g.P(g.functionBuf, "}")
+	g.P(g.functionBuf, "default:")
 	g.P(g.functionBuf, "c.String(", httpPackage.Ident("StatusInternalServerError"), ", err.Error())")
-	g.P(g.functionBuf, "_ = c.Error(err).SetType(", ginPackage.Ident("ErrorTypePrivate"), ")")
+	g.P(g.functionBuf, "_ = c.Error(e).SetType(", ginPackage.Ident("ErrorTypePrivate"), ")")
 	g.P(g.functionBuf, "return")
 	g.P(g.functionBuf, "}")
-	g.P(g.functionBuf, "statusCode := ", gorsPackage.Ident("GetCodeFromContext"), "(ctx)")
-}
 
-func (g *generate) printBytesRender(info *routerInfo) {
-	switch {
-	case info.bytesRender:
-		g.P(g.functionBuf, "c.Render(statusCode, ", renderPackage.Ident("Data"), "{ContentType: ", strconv.Quote(info.renderContentType), ", Data: resp})")
-	default:
-		log.Fatalf("error: func %s []byte result must be set BytesRender", info.rpcMethodName)
-	}
-}
-
-func (g *generate) printStringRender(info *routerInfo) {
-	switch {
-	case info.stringRender, info.textRender, info.htmlRender:
-		g.P(g.functionBuf, "c.Render(statusCode, ", renderPackage.Ident("Data"), "{ContentType: ", strconv.Quote(info.renderContentType), ", Data: []byte(resp)})")
-	case info.redirectRender:
-		g.P(g.functionBuf, "c.Redirect(statusCode, resp)")
-	default:
-		log.Fatalf("error: func %s string result must be set BytesRender or StringRender or TextRender or HTMLRender or RedirectRender", info.rpcMethodName)
-	}
-}
-
-func (g *generate) printReaderRender(info *routerInfo) {
-	switch {
-	case info.readerRender:
-		g.P(g.functionBuf, "c.Render(statusCode, ", renderPackage.Ident("Reader"), "{ContentType: ", strconv.Quote(info.renderContentType), ", ContentLength: -1, Reader: resp})")
-	default:
-		log.Fatalf("error: func %s io.Reader result must be set ReaderRender", info.rpcMethodName)
-	}
-}
-
-func (g *generate) printObjectRender(info *routerInfo) {
-	switch {
-	case info.jsonRender:
-		g.P(g.functionBuf, "c.JSON(statusCode, resp)")
-	case info.indentedJSONRender:
-		g.P(g.functionBuf, "c.IndentedJSON(statusCode, resp)")
-	case info.secureJSONRender:
-		g.P(g.functionBuf, "c.SecureJSON(statusCode, resp)")
-	case info.jsonpJSONRender:
-		g.P(g.functionBuf, "c.JSONP(statusCode, resp)")
-	case info.pureJSONRender:
-		g.P(g.functionBuf, "c.PureJSON(statusCode, resp)")
-	case info.asciiJSONRender:
-		g.P(g.functionBuf, "c.AsciiJSON(statusCode, resp)")
-	case info.xmlRender:
-		g.P(g.functionBuf, "c.XML(statusCode, resp)")
-	case info.yamlRender:
-		g.P(g.functionBuf, "c.YAML(statusCode, resp)")
-	case info.protobufRender:
-		g.P(g.functionBuf, "c.ProtoBuf(statusCode, resp)")
-	case info.msgpackRender:
-		g.P(g.functionBuf, "c.Render(statusCode, ", renderPackage.Ident("MsgPack"), "{Data: resp})")
-	case info.tomlRender:
-		g.P(g.functionBuf, "c.TOML(statusCode, resp)")
-	case info.customRender:
-		g.P(g.functionBuf, "var render ", gorsPackage.Ident("Render"), " = resp")
-		g.P(g.functionBuf, "render.Render(c, statusCode)")
-	default:
-		log.Fatalf("error: func %s *struct{} result must be set a Render", info.rpcMethodName)
-	}
 }
 
 func (g *generate) printImports() {

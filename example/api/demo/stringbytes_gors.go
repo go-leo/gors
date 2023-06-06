@@ -29,21 +29,20 @@ func StringBytesRoutes(srv StringBytes) []gors.Route {
 				req = string(body)
 				ctx := gors.NewContext(c)
 				resp, err = srv.GetStringBytes(ctx, req)
-				if gors.IsInterrupted(ctx) {
+				switch e := err.(type) {
+				case nil:
+					statusCode := gors.HttpStatusCode(c, resp)
+					c.Render(statusCode, render.Data{ContentType: "", Data: resp})
 					return
-				}
-				if err != nil {
-					if httpErr, ok := err.(*gors.HttpError); ok {
-						c.String(httpErr.StatusCode(), httpErr.Error())
-						_ = c.Error(err).SetType(gin.ErrorTypePublic)
-						return
-					}
+				case *gors.HttpError:
+					c.String(e.StatusCode(), e.Error())
+					_ = c.Error(e).SetType(gin.ErrorTypePublic)
+					return
+				default:
 					c.String(http.StatusInternalServerError, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypePrivate)
+					_ = c.Error(e).SetType(gin.ErrorTypePrivate)
 					return
 				}
-				statusCode := gors.GetCodeFromContext(ctx)
-				c.Render(statusCode, render.Data{ContentType: "", Data: resp})
 			},
 		),
 		gors.NewRoute(
@@ -63,21 +62,20 @@ func StringBytesRoutes(srv StringBytes) []gors.Route {
 				req = string(body)
 				ctx := gors.NewContext(c)
 				resp, err = srv.OptionsStringBytes(ctx, req)
-				if gors.IsInterrupted(ctx) {
+				switch e := err.(type) {
+				case nil:
+					statusCode := gors.HttpStatusCode(c, resp)
+					c.Render(statusCode, render.Data{ContentType: "", Data: resp})
 					return
-				}
-				if err != nil {
-					if httpErr, ok := err.(*gors.HttpError); ok {
-						c.String(httpErr.StatusCode(), httpErr.Error())
-						_ = c.Error(err).SetType(gin.ErrorTypePublic)
-						return
-					}
+				case *gors.HttpError:
+					c.String(e.StatusCode(), e.Error())
+					_ = c.Error(e).SetType(gin.ErrorTypePublic)
+					return
+				default:
 					c.String(http.StatusInternalServerError, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypePrivate)
+					_ = c.Error(e).SetType(gin.ErrorTypePrivate)
 					return
 				}
-				statusCode := gors.GetCodeFromContext(ctx)
-				c.Render(statusCode, render.Data{ContentType: "", Data: resp})
 			},
 		),
 	}

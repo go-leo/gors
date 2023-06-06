@@ -33,21 +33,20 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				}
 				ctx := gors.NewContext(c)
 				resp, err = srv.UriBindingIndentedJSONRender(ctx, req)
-				if gors.IsInterrupted(ctx) {
+				switch e := err.(type) {
+				case nil:
+					statusCode := gors.HttpStatusCode(c, resp)
+					c.IndentedJSON(statusCode, resp)
 					return
-				}
-				if err != nil {
-					if httpErr, ok := err.(*gors.HttpError); ok {
-						c.String(httpErr.StatusCode(), httpErr.Error())
-						_ = c.Error(err).SetType(gin.ErrorTypePublic)
-						return
-					}
+				case *gors.HttpError:
+					c.String(e.StatusCode(), e.Error())
+					_ = c.Error(e).SetType(gin.ErrorTypePublic)
+					return
+				default:
 					c.String(http.StatusInternalServerError, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypePrivate)
+					_ = c.Error(e).SetType(gin.ErrorTypePrivate)
 					return
 				}
-				statusCode := gors.GetCodeFromContext(ctx)
-				c.IndentedJSON(statusCode, resp)
 			},
 		),
 		gors.NewRoute(
@@ -75,21 +74,20 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				}
 				ctx := gors.NewContext(c)
 				resp, err = srv.QueryBindingSecureJSONRender(ctx, req)
-				if gors.IsInterrupted(ctx) {
+				switch e := err.(type) {
+				case nil:
+					statusCode := gors.HttpStatusCode(c, resp)
+					c.SecureJSON(statusCode, resp)
 					return
-				}
-				if err != nil {
-					if httpErr, ok := err.(*gors.HttpError); ok {
-						c.String(httpErr.StatusCode(), httpErr.Error())
-						_ = c.Error(err).SetType(gin.ErrorTypePublic)
-						return
-					}
+				case *gors.HttpError:
+					c.String(e.StatusCode(), e.Error())
+					_ = c.Error(e).SetType(gin.ErrorTypePublic)
+					return
+				default:
 					c.String(http.StatusInternalServerError, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypePrivate)
+					_ = c.Error(e).SetType(gin.ErrorTypePrivate)
 					return
 				}
-				statusCode := gors.GetCodeFromContext(ctx)
-				c.SecureJSON(statusCode, resp)
 			},
 		),
 		gors.NewRoute(
@@ -122,21 +120,20 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				}
 				ctx := gors.NewContext(c)
 				resp, err = srv.HeaderBindingJsonpJSONRender(ctx, req)
-				if gors.IsInterrupted(ctx) {
+				switch e := err.(type) {
+				case nil:
+					statusCode := gors.HttpStatusCode(c, resp)
+					c.JSONP(statusCode, resp)
 					return
-				}
-				if err != nil {
-					if httpErr, ok := err.(*gors.HttpError); ok {
-						c.String(httpErr.StatusCode(), httpErr.Error())
-						_ = c.Error(err).SetType(gin.ErrorTypePublic)
-						return
-					}
+				case *gors.HttpError:
+					c.String(e.StatusCode(), e.Error())
+					_ = c.Error(e).SetType(gin.ErrorTypePublic)
+					return
+				default:
 					c.String(http.StatusInternalServerError, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypePrivate)
+					_ = c.Error(e).SetType(gin.ErrorTypePrivate)
 					return
 				}
-				statusCode := gors.GetCodeFromContext(ctx)
-				c.JSONP(statusCode, resp)
 			},
 		),
 		gors.NewRoute(
@@ -174,21 +171,20 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				}
 				ctx := gors.NewContext(c)
 				resp, err = srv.JSONBindingJSONRender(ctx, req)
-				if gors.IsInterrupted(ctx) {
+				switch e := err.(type) {
+				case nil:
+					statusCode := gors.HttpStatusCode(c, resp)
+					c.JSON(statusCode, resp)
 					return
-				}
-				if err != nil {
-					if httpErr, ok := err.(*gors.HttpError); ok {
-						c.String(httpErr.StatusCode(), httpErr.Error())
-						_ = c.Error(err).SetType(gin.ErrorTypePublic)
-						return
-					}
+				case *gors.HttpError:
+					c.String(e.StatusCode(), e.Error())
+					_ = c.Error(e).SetType(gin.ErrorTypePublic)
+					return
+				default:
 					c.String(http.StatusInternalServerError, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypePrivate)
+					_ = c.Error(e).SetType(gin.ErrorTypePrivate)
 					return
 				}
-				statusCode := gors.GetCodeFromContext(ctx)
-				c.JSON(statusCode, resp)
 			},
 		),
 		gors.NewRoute(
@@ -226,21 +222,20 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				}
 				ctx := gors.NewContext(c)
 				resp, err = srv.XMLBindingXMLRender(ctx, req)
-				if gors.IsInterrupted(ctx) {
+				switch e := err.(type) {
+				case nil:
+					statusCode := gors.HttpStatusCode(c, resp)
+					c.XML(statusCode, resp)
 					return
-				}
-				if err != nil {
-					if httpErr, ok := err.(*gors.HttpError); ok {
-						c.String(httpErr.StatusCode(), httpErr.Error())
-						_ = c.Error(err).SetType(gin.ErrorTypePublic)
-						return
-					}
+				case *gors.HttpError:
+					c.String(e.StatusCode(), e.Error())
+					_ = c.Error(e).SetType(gin.ErrorTypePublic)
+					return
+				default:
 					c.String(http.StatusInternalServerError, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypePrivate)
+					_ = c.Error(e).SetType(gin.ErrorTypePrivate)
 					return
 				}
-				statusCode := gors.GetCodeFromContext(ctx)
-				c.XML(statusCode, resp)
 			},
 		),
 		gors.NewRoute(
@@ -273,21 +268,20 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				}
 				ctx := gors.NewContext(c)
 				resp, err = srv.FormBindingJSONRender(ctx, req)
-				if gors.IsInterrupted(ctx) {
+				switch e := err.(type) {
+				case nil:
+					statusCode := gors.HttpStatusCode(c, resp)
+					c.JSON(statusCode, resp)
 					return
-				}
-				if err != nil {
-					if httpErr, ok := err.(*gors.HttpError); ok {
-						c.String(httpErr.StatusCode(), httpErr.Error())
-						_ = c.Error(err).SetType(gin.ErrorTypePublic)
-						return
-					}
+				case *gors.HttpError:
+					c.String(e.StatusCode(), e.Error())
+					_ = c.Error(e).SetType(gin.ErrorTypePublic)
+					return
+				default:
 					c.String(http.StatusInternalServerError, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypePrivate)
+					_ = c.Error(e).SetType(gin.ErrorTypePrivate)
 					return
 				}
-				statusCode := gors.GetCodeFromContext(ctx)
-				c.JSON(statusCode, resp)
 			},
 		),
 		gors.NewRoute(
@@ -325,21 +319,20 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				}
 				ctx := gors.NewContext(c)
 				resp, err = srv.FormPostBindingPureJSONRender(ctx, req)
-				if gors.IsInterrupted(ctx) {
+				switch e := err.(type) {
+				case nil:
+					statusCode := gors.HttpStatusCode(c, resp)
+					c.PureJSON(statusCode, resp)
 					return
-				}
-				if err != nil {
-					if httpErr, ok := err.(*gors.HttpError); ok {
-						c.String(httpErr.StatusCode(), httpErr.Error())
-						_ = c.Error(err).SetType(gin.ErrorTypePublic)
-						return
-					}
+				case *gors.HttpError:
+					c.String(e.StatusCode(), e.Error())
+					_ = c.Error(e).SetType(gin.ErrorTypePublic)
+					return
+				default:
 					c.String(http.StatusInternalServerError, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypePrivate)
+					_ = c.Error(e).SetType(gin.ErrorTypePrivate)
 					return
 				}
-				statusCode := gors.GetCodeFromContext(ctx)
-				c.PureJSON(statusCode, resp)
 			},
 		),
 		gors.NewRoute(
@@ -377,21 +370,20 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				}
 				ctx := gors.NewContext(c)
 				resp, err = srv.FormMultipartBindingAsciiJSONRender(ctx, req)
-				if gors.IsInterrupted(ctx) {
+				switch e := err.(type) {
+				case nil:
+					statusCode := gors.HttpStatusCode(c, resp)
+					c.AsciiJSON(statusCode, resp)
 					return
-				}
-				if err != nil {
-					if httpErr, ok := err.(*gors.HttpError); ok {
-						c.String(httpErr.StatusCode(), httpErr.Error())
-						_ = c.Error(err).SetType(gin.ErrorTypePublic)
-						return
-					}
+				case *gors.HttpError:
+					c.String(e.StatusCode(), e.Error())
+					_ = c.Error(e).SetType(gin.ErrorTypePublic)
+					return
+				default:
 					c.String(http.StatusInternalServerError, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypePrivate)
+					_ = c.Error(e).SetType(gin.ErrorTypePrivate)
 					return
 				}
-				statusCode := gors.GetCodeFromContext(ctx)
-				c.AsciiJSON(statusCode, resp)
 			},
 		),
 		gors.NewRoute(
@@ -414,21 +406,20 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				}
 				ctx := gors.NewContext(c)
 				resp, err = srv.ProtoBufBindingProtoBufRender(ctx, req)
-				if gors.IsInterrupted(ctx) {
+				switch e := err.(type) {
+				case nil:
+					statusCode := gors.HttpStatusCode(c, resp)
+					c.ProtoBuf(statusCode, resp)
 					return
-				}
-				if err != nil {
-					if httpErr, ok := err.(*gors.HttpError); ok {
-						c.String(httpErr.StatusCode(), httpErr.Error())
-						_ = c.Error(err).SetType(gin.ErrorTypePublic)
-						return
-					}
+				case *gors.HttpError:
+					c.String(e.StatusCode(), e.Error())
+					_ = c.Error(e).SetType(gin.ErrorTypePublic)
+					return
+				default:
 					c.String(http.StatusInternalServerError, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypePrivate)
+					_ = c.Error(e).SetType(gin.ErrorTypePrivate)
 					return
 				}
-				statusCode := gors.GetCodeFromContext(ctx)
-				c.ProtoBuf(statusCode, resp)
 			},
 		),
 		gors.NewRoute(
@@ -451,21 +442,20 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				}
 				ctx := gors.NewContext(c)
 				resp, err = srv.MsgPackBindingMsgPackRender(ctx, req)
-				if gors.IsInterrupted(ctx) {
+				switch e := err.(type) {
+				case nil:
+					statusCode := gors.HttpStatusCode(c, resp)
+					c.Render(statusCode, render.MsgPack{Data: resp})
 					return
-				}
-				if err != nil {
-					if httpErr, ok := err.(*gors.HttpError); ok {
-						c.String(httpErr.StatusCode(), httpErr.Error())
-						_ = c.Error(err).SetType(gin.ErrorTypePublic)
-						return
-					}
+				case *gors.HttpError:
+					c.String(e.StatusCode(), e.Error())
+					_ = c.Error(e).SetType(gin.ErrorTypePublic)
+					return
+				default:
 					c.String(http.StatusInternalServerError, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypePrivate)
+					_ = c.Error(e).SetType(gin.ErrorTypePrivate)
 					return
 				}
-				statusCode := gors.GetCodeFromContext(ctx)
-				c.Render(statusCode, render.MsgPack{Data: resp})
 			},
 		),
 		gors.NewRoute(
@@ -503,21 +493,20 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				}
 				ctx := gors.NewContext(c)
 				resp, err = srv.YAMLBindingYAMLRender(ctx, req)
-				if gors.IsInterrupted(ctx) {
+				switch e := err.(type) {
+				case nil:
+					statusCode := gors.HttpStatusCode(c, resp)
+					c.YAML(statusCode, resp)
 					return
-				}
-				if err != nil {
-					if httpErr, ok := err.(*gors.HttpError); ok {
-						c.String(httpErr.StatusCode(), httpErr.Error())
-						_ = c.Error(err).SetType(gin.ErrorTypePublic)
-						return
-					}
+				case *gors.HttpError:
+					c.String(e.StatusCode(), e.Error())
+					_ = c.Error(e).SetType(gin.ErrorTypePublic)
+					return
+				default:
 					c.String(http.StatusInternalServerError, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypePrivate)
+					_ = c.Error(e).SetType(gin.ErrorTypePrivate)
 					return
 				}
-				statusCode := gors.GetCodeFromContext(ctx)
-				c.YAML(statusCode, resp)
 			},
 		),
 		gors.NewRoute(
@@ -555,21 +544,20 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				}
 				ctx := gors.NewContext(c)
 				resp, err = srv.TOMLBindingTOMLRender(ctx, req)
-				if gors.IsInterrupted(ctx) {
+				switch e := err.(type) {
+				case nil:
+					statusCode := gors.HttpStatusCode(c, resp)
+					c.TOML(statusCode, resp)
 					return
-				}
-				if err != nil {
-					if httpErr, ok := err.(*gors.HttpError); ok {
-						c.String(httpErr.StatusCode(), httpErr.Error())
-						_ = c.Error(err).SetType(gin.ErrorTypePublic)
-						return
-					}
+				case *gors.HttpError:
+					c.String(e.StatusCode(), e.Error())
+					_ = c.Error(e).SetType(gin.ErrorTypePublic)
+					return
+				default:
 					c.String(http.StatusInternalServerError, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypePrivate)
+					_ = c.Error(e).SetType(gin.ErrorTypePrivate)
 					return
 				}
-				statusCode := gors.GetCodeFromContext(ctx)
-				c.TOML(statusCode, resp)
 			},
 		),
 	}

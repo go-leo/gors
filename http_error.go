@@ -1,8 +1,6 @@
 package gors
 
-import "fmt"
-
-// HttpError http 错误，
+// HttpError 指定http状态码和错误信息
 type HttpError struct {
 	// statusCode http status code
 	statusCode int
@@ -10,15 +8,15 @@ type HttpError struct {
 	err error
 }
 
-func (h HttpError) StatusCode() int {
-	return h.statusCode
+func (e *HttpError) StatusCode() int {
+	return e.statusCode
 }
 
-func (h HttpError) Error() string {
-	return fmt.Sprintf("http status code is %d, err: %v", h.statusCode, h.err)
+func (e *HttpError) Error() string {
+	return e.err.Error()
 }
 
-// NewHttpError 创建一个HttpError
+// NewHttpError 创建Http错误
 func NewHttpError(statusCode int, err error) *HttpError {
 	return &HttpError{
 		statusCode: statusCode,

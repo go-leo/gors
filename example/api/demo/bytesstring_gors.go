@@ -29,21 +29,20 @@ func BytesStringRoutes(srv BytesString) []gors.Route {
 				req = body
 				ctx := gors.NewContext(c)
 				resp, err = srv.GetBytesString(ctx, req)
-				if gors.IsInterrupted(ctx) {
+				switch e := err.(type) {
+				case nil:
+					statusCode := gors.HttpStatusCode(c, resp)
+					c.Render(statusCode, render.Data{ContentType: "text/html; charset=utf-8", Data: []byte(resp)})
 					return
-				}
-				if err != nil {
-					if httpErr, ok := err.(*gors.HttpError); ok {
-						c.String(httpErr.StatusCode(), httpErr.Error())
-						_ = c.Error(err).SetType(gin.ErrorTypePublic)
-						return
-					}
+				case *gors.HttpError:
+					c.String(e.StatusCode(), e.Error())
+					_ = c.Error(e).SetType(gin.ErrorTypePublic)
+					return
+				default:
 					c.String(http.StatusInternalServerError, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypePrivate)
+					_ = c.Error(e).SetType(gin.ErrorTypePrivate)
 					return
 				}
-				statusCode := gors.GetCodeFromContext(ctx)
-				c.Render(statusCode, render.Data{ContentType: "text/html; charset=utf-8", Data: []byte(resp)})
 			},
 		),
 		gors.NewRoute(
@@ -63,21 +62,20 @@ func BytesStringRoutes(srv BytesString) []gors.Route {
 				req = body
 				ctx := gors.NewContext(c)
 				resp, err = srv.PutBytesString(ctx, req)
-				if gors.IsInterrupted(ctx) {
+				switch e := err.(type) {
+				case nil:
+					statusCode := gors.HttpStatusCode(c, resp)
+					c.Redirect(statusCode, resp)
 					return
-				}
-				if err != nil {
-					if httpErr, ok := err.(*gors.HttpError); ok {
-						c.String(httpErr.StatusCode(), httpErr.Error())
-						_ = c.Error(err).SetType(gin.ErrorTypePublic)
-						return
-					}
+				case *gors.HttpError:
+					c.String(e.StatusCode(), e.Error())
+					_ = c.Error(e).SetType(gin.ErrorTypePublic)
+					return
+				default:
 					c.String(http.StatusInternalServerError, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypePrivate)
+					_ = c.Error(e).SetType(gin.ErrorTypePrivate)
 					return
 				}
-				statusCode := gors.GetCodeFromContext(ctx)
-				c.Redirect(statusCode, resp)
 			},
 		),
 	}

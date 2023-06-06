@@ -22,21 +22,20 @@ func ReaderReaderRoutes(srv ReaderReader) []gors.Route {
 				req = c.Request.Body
 				ctx := gors.NewContext(c)
 				resp, err = srv.GetReaderReader(ctx, req)
-				if gors.IsInterrupted(ctx) {
+				switch e := err.(type) {
+				case nil:
+					statusCode := gors.HttpStatusCode(c, resp)
+					c.Render(statusCode, render.Reader{ContentType: "", ContentLength: -1, Reader: resp})
 					return
-				}
-				if err != nil {
-					if httpErr, ok := err.(*gors.HttpError); ok {
-						c.String(httpErr.StatusCode(), httpErr.Error())
-						_ = c.Error(err).SetType(gin.ErrorTypePublic)
-						return
-					}
+				case *gors.HttpError:
+					c.String(e.StatusCode(), e.Error())
+					_ = c.Error(e).SetType(gin.ErrorTypePublic)
+					return
+				default:
 					c.String(http.StatusInternalServerError, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypePrivate)
+					_ = c.Error(e).SetType(gin.ErrorTypePrivate)
 					return
 				}
-				statusCode := gors.GetCodeFromContext(ctx)
-				c.Render(statusCode, render.Reader{ContentType: "", ContentLength: -1, Reader: resp})
 			},
 		),
 		gors.NewRoute(
@@ -49,21 +48,20 @@ func ReaderReaderRoutes(srv ReaderReader) []gors.Route {
 				req = c.Request.Body
 				ctx := gors.NewContext(c)
 				resp, err = srv.HeadReaderReader(ctx, req)
-				if gors.IsInterrupted(ctx) {
+				switch e := err.(type) {
+				case nil:
+					statusCode := gors.HttpStatusCode(c, resp)
+					c.Render(statusCode, render.Reader{ContentType: "", ContentLength: -1, Reader: resp})
 					return
-				}
-				if err != nil {
-					if httpErr, ok := err.(*gors.HttpError); ok {
-						c.String(httpErr.StatusCode(), httpErr.Error())
-						_ = c.Error(err).SetType(gin.ErrorTypePublic)
-						return
-					}
+				case *gors.HttpError:
+					c.String(e.StatusCode(), e.Error())
+					_ = c.Error(e).SetType(gin.ErrorTypePublic)
+					return
+				default:
 					c.String(http.StatusInternalServerError, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypePrivate)
+					_ = c.Error(e).SetType(gin.ErrorTypePrivate)
 					return
 				}
-				statusCode := gors.GetCodeFromContext(ctx)
-				c.Render(statusCode, render.Reader{ContentType: "", ContentLength: -1, Reader: resp})
 			},
 		),
 	}

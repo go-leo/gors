@@ -23,6 +23,7 @@ func main() {
 	routes = append(routes, demo.StringBytesRoutes(new(svc.StringBytesService))...)
 	routes = append(routes, demo.StringReaderRoutes(new(svc.StringReaderService))...)
 	routes = append(routes, demo.StringStringRoutes(new(svc.StringStringService))...)
+	routes = append(routes, demo.CustomBinderRenderRoutes(new(svc.Custom))...)
 
 	engine := gin.New()
 	for _, route := range routes {

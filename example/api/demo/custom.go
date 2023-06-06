@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"io"
+	"net/http"
 )
 
 //go:generate gors -service CustomBinderRender
@@ -33,11 +34,11 @@ func (req *CustomReq) Bind(c *gin.Context) error {
 type CustomResp struct {
 }
 
-func (resp *CustomResp) Render(c *gin.Context, statusCode int) error {
+func (resp *CustomResp) Render(c *gin.Context) error {
 	data, err := json.Marshal(resp)
 	if err != nil {
 		return err
 	}
-	c.Data(statusCode, "text/plain", data)
+	c.Data(http.StatusOK, "text/plain", data)
 	return nil
 }
