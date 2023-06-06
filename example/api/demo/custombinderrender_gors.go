@@ -32,22 +32,20 @@ func CustomBinderRenderRoutes(srv CustomBinderRender) []gors.Route {
 				}
 				ctx := gors.NewContext(c)
 				resp, err = srv.Custom(ctx, req)
-				if gors.IsInterrupted(ctx) {
+				switch e := err.(type) {
+				case nil:
+					var render gors.Render = resp
+					render.Render(c)
 					return
-				}
-				if err != nil {
-					if httpErr, ok := err.(*gors.HttpError); ok {
-						c.String(httpErr.StatusCode(), httpErr.Error())
-						_ = c.Error(err).SetType(gin.ErrorTypePublic)
-						return
-					}
+				case *gors.HttpError:
+					c.String(e.StatusCode(), e.Error())
+					_ = c.Error(e).SetType(gin.ErrorTypePublic)
+					return
+				default:
 					c.String(http.StatusInternalServerError, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypePrivate)
+					_ = c.Error(e).SetType(gin.ErrorTypePrivate)
 					return
 				}
-				statusCode := gors.GetCodeFromContext(ctx)
-				var render gors.Render = resp
-				render.Render(c, statusCode)
 			},
 		),
 	}
