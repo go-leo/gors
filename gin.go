@@ -9,3 +9,11 @@ func UriParams(c *gin.Context) map[string][]string {
 	}
 	return m
 }
+
+func QueryParams(c *gin.Context) map[string][]string {
+	return c.Request.URL.Query()
+}
+
+func HeaderParams(c *gin.Context) map[string][]string {
+	return c.Request.Header
+}

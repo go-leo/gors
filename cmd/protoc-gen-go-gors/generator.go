@@ -63,19 +63,14 @@ func genFunction(gen *protogen.Plugin, file *protogen.File, g *protogen.Generate
 			g.P("var err error")
 			g.P("req = new(", method.Input.GoIdent, ")")
 			if router.UriBinding {
-				g.P("uriParams := ", gorsPackage.Ident("UriParams"), "(c)")
-				g.P("if err := ", bindingPackage.Ident("MapFormWithTag"), "(req, gors.UriParams(c), ", strconv.Quote("json"), "); err != nil {")
-				g.P("c.String(", httpPackage.Ident("StatusBadRequest"), ", err.Error())")
-				g.P("_ = c.Error(err).SetType(gin.ErrorTypeBind)")
-				g.P("return")
-				g.P("}")
+				printMapBinding(g, "UriParams")
 			}
-			//if router.QueryBinding {
-			//	g.printBindRequest("Query")
-			//}
-			//if router.HeaderBinding {
-			//	g.printBindRequest("Header")
-			//}
+			if router.QueryBinding {
+				printMapBinding(g, "QueryParams")
+			}
+			if router.HeaderBinding {
+				printMapBinding(g, "HeaderParams")
+			}
 			//if router.JSONBinding {
 			//	g.printBindRequest("JSON")
 			//}
@@ -124,6 +119,14 @@ func genFunction(gen *protogen.Plugin, file *protogen.File, g *protogen.Generate
 		}
 	}
 	g.P("}")
+	g.P("}")
+}
+
+func printMapBinding(g *protogen.GeneratedFile, paramMethodName string) {
+	g.P("if err := ", bindingPackage.Ident("MapFormWithTag"), "(req, ", gorsPackage.Ident(paramMethodName), "(c), ", strconv.Quote("json"), "); err != nil {")
+	g.P("c.String(", httpPackage.Ident("StatusBadRequest"), ", err.Error())")
+	g.P("_ = c.Error(err).SetType(", ginPackage.Ident("ErrorTypeBind"), ")")
+	g.P("return")
 	g.P("}")
 }
 
