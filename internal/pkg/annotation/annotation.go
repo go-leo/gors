@@ -40,7 +40,7 @@ const (
 	JSONRender         = "@JSONRender"
 	IndentedJSONRender = "@IndentedJSONRender"
 	SecureJSONRender   = "@SecureJSONRender"
-	JsonpJSONRender    = "@JsonpJSONRender"
+	JSONPJSONRender    = "@JSONPJSONRender"
 	PureJSONRender     = "@PureJSONRender"
 	AsciiJSONRender    = "@AsciiJSONRender"
 	XMLRender          = "@XMLRender"

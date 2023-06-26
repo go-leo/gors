@@ -1,10 +1,10 @@
 module github.com/go-leo/gors
 
-go 1.18
+go 1.20
 
 require (
 	github.com/gin-gonic/gin v1.8.1
-	github.com/go-leo/gox v0.0.0-20230517130055-1c138d6cc06a
+	github.com/go-leo/gox v0.0.0-20230616023204-abcd5dbca361
 	golang.org/x/tools v0.2.0
 	google.golang.org/protobuf v1.28.1
 )

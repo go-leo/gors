@@ -4,7 +4,6 @@ package demo
 
 import (
 	gin "github.com/gin-gonic/gin"
-	render "github.com/gin-gonic/gin/render"
 	gors "github.com/go-leo/gors"
 	io "io"
 	http "net/http"
@@ -22,20 +21,7 @@ func ReaderStringRoutes(srv ReaderString) []gors.Route {
 				req = c.Request.Body
 				ctx := gors.NewContext(c)
 				resp, err = srv.GetReaderString(ctx, req)
-				switch e := err.(type) {
-				case nil:
-					statusCode := gors.HttpStatusCode(c, resp)
-					c.Render(statusCode, render.Data{ContentType: "text/plain; charset=utf-8", Data: []byte(resp)})
-					return
-				case *gors.HttpError:
-					c.String(e.StatusCode(), e.Error())
-					_ = c.Error(e).SetType(gin.ErrorTypePublic)
-					return
-				default:
-					c.String(http.StatusInternalServerError, err.Error())
-					_ = c.Error(e).SetType(gin.ErrorTypePrivate)
-					return
-				}
+				gors.MustRender(c, resp, err, "text/plain; charset=utf-8", gors.TextRender)
 			},
 		),
 		gors.NewRoute(
@@ -48,20 +34,7 @@ func ReaderStringRoutes(srv ReaderString) []gors.Route {
 				req = c.Request.Body
 				ctx := gors.NewContext(c)
 				resp, err = srv.PostReaderString(ctx, req)
-				switch e := err.(type) {
-				case nil:
-					statusCode := gors.HttpStatusCode(c, resp)
-					c.Render(statusCode, render.Data{ContentType: "text/go", Data: []byte(resp)})
-					return
-				case *gors.HttpError:
-					c.String(e.StatusCode(), e.Error())
-					_ = c.Error(e).SetType(gin.ErrorTypePublic)
-					return
-				default:
-					c.String(http.StatusInternalServerError, err.Error())
-					_ = c.Error(e).SetType(gin.ErrorTypePrivate)
-					return
-				}
+				gors.MustRender(c, resp, err, "text/go", gors.StringRender)
 			},
 		),
 	}

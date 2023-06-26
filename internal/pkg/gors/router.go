@@ -120,12 +120,12 @@ type RouterInfo struct {
 	JSONRender         bool
 	IndentedJSONRender bool
 	SecureJSONRender   bool
-	JsonpJSONRender    bool
+	JSONPJSONRender    bool
 	PureJSONRender     bool
 	AsciiJSONRender    bool
 	XMLRender          bool
 	YAMLRender         bool
-	ProtobufRender     bool
+	ProtoBufRender     bool
 	MsgPackRender      bool
 	TOMLRender         bool
 	CustomRender       bool
@@ -262,8 +262,8 @@ func NewRouter(methodName string, basePath string, comments []string) *RouterInf
 				r.IndentedJSONRender = true
 			case strings.ToUpper(s) == strings.ToUpper(annotation.SecureJSONRender):
 				r.SecureJSONRender = true
-			case strings.ToUpper(s) == strings.ToUpper(annotation.JsonpJSONRender):
-				r.JsonpJSONRender = true
+			case strings.ToUpper(s) == strings.ToUpper(annotation.JSONPJSONRender):
+				r.JSONPJSONRender = true
 			case strings.ToUpper(s) == strings.ToUpper(annotation.PureJSONRender):
 				r.PureJSONRender = true
 			case strings.ToUpper(s) == strings.ToUpper(annotation.AsciiJSONRender):
@@ -273,7 +273,7 @@ func NewRouter(methodName string, basePath string, comments []string) *RouterInf
 			case strings.ToUpper(s) == strings.ToUpper(annotation.YAMLRender):
 				r.YAMLRender = true
 			case strings.ToUpper(s) == strings.ToUpper(annotation.ProtoBufRender):
-				r.ProtobufRender = true
+				r.ProtoBufRender = true
 			case strings.ToUpper(s) == strings.ToUpper(annotation.MsgPackRender):
 				r.MsgPackRender = true
 			case strings.ToUpper(s) == strings.ToUpper(annotation.TOMLRender):

@@ -18,6 +18,7 @@ const (
 	ioPackage      = gors.GoImportPath("io")
 	bindingPackage = gors.GoImportPath("github.com/gin-gonic/gin/binding")
 	renderPackage  = gors.GoImportPath("github.com/gin-gonic/gin/render")
+	convxPackage   = gors.GoImportPath("github.com/go-leo/gox/convx")
 )
 
 type generate struct {
@@ -280,7 +281,7 @@ func (g *generate) printHandler(info *gors.RouterInfo) {
 		g.P(g.functionBuf, "req = body")
 	} else if info.Param2.String {
 		g.printBytesReq(info)
-		g.P(g.functionBuf, "req = string(body)")
+		g.P(g.functionBuf, "req = ", convxPackage.Ident("BytesToString"), "(body)")
 	} else if info.Param2.Reader {
 		g.P(g.functionBuf, "req = c.Request.Body")
 	} else if info.Param2.ObjectArgs != nil {
@@ -376,95 +377,66 @@ func (g *generate) printRPCHandler(info *gors.RouterInfo) {
 }
 
 func (g *generate) printResponse(info *gors.RouterInfo) {
-	g.P(g.functionBuf, "switch e := err.(type) {")
-	g.P(g.functionBuf, "case nil:")
-
 	switch {
 	case info.Result1.Bytes:
 		switch {
 		case info.BytesRender:
-			g.P(g.functionBuf, "statusCode := ", gorsPackage.Ident("HttpStatusCode"), "(c, resp)")
-			g.P(g.functionBuf, "c.Render(statusCode, ", renderPackage.Ident("Data"), "{ContentType: ", strconv.Quote(info.RenderContentType), ", Data: resp})")
+			g.P(g.functionBuf, gorsPackage.Ident("MustRender"), "(c, resp, err, ", strconv.Quote(info.RenderContentType), ", ", gorsPackage.Ident("BytesRender"), ")")
 		default:
 			log.Fatalf("error: func %s []byte result must be set BytesRender", info.RpcMethodName)
 		}
 	case info.Result1.String:
 		switch {
-		case info.StringRender, info.TextRender, info.HTMLRender:
-			g.P(g.functionBuf, "statusCode := ", gorsPackage.Ident("HttpStatusCode"), "(c, resp)")
-			g.P(g.functionBuf, "c.Render(statusCode, ", renderPackage.Ident("Data"), "{ContentType: ", strconv.Quote(info.RenderContentType), ", Data: []byte(resp)})")
+		case info.StringRender:
+			g.P(g.functionBuf, gorsPackage.Ident("MustRender"), "(c, resp, err, ", strconv.Quote(info.RenderContentType), ", ", gorsPackage.Ident("StringRender"), ")")
+		case info.TextRender:
+			g.P(g.functionBuf, gorsPackage.Ident("MustRender"), "(c, resp, err, ", strconv.Quote(info.RenderContentType), ", ", gorsPackage.Ident("TextRender"), ")")
+		case info.HTMLRender:
+			g.P(g.functionBuf, gorsPackage.Ident("MustRender"), "(c, resp, err, ", strconv.Quote(info.RenderContentType), ", ", gorsPackage.Ident("HTMLRender"), ")")
 		case info.RedirectRender:
-			g.P(g.functionBuf, "statusCode := ", gorsPackage.Ident("HttpStatusCode"), "(c, resp)")
-			g.P(g.functionBuf, "c.Redirect(statusCode, resp)")
+			g.P(g.functionBuf, gorsPackage.Ident("MustRender"), "(c, resp, err, ", strconv.Quote(info.RenderContentType), ", ", gorsPackage.Ident("RedirectRender"), ")")
 		default:
 			log.Fatalf("error: func %s string result must be set BytesRender or StringRender or TextRender or HTMLRender or RedirectRender", info.RpcMethodName)
 		}
 	case info.Result1.Reader:
 		switch {
 		case info.ReaderRender:
-			g.P(g.functionBuf, "statusCode := ", gorsPackage.Ident("HttpStatusCode"), "(c, resp)")
-			g.P(g.functionBuf, "c.Render(statusCode, ", renderPackage.Ident("Reader"), "{ContentType: ", strconv.Quote(info.RenderContentType), ", ContentLength: -1, Reader: resp})")
+			g.P(g.functionBuf, gorsPackage.Ident("MustRender"), "(c, resp, err, ", strconv.Quote(info.RenderContentType), ", ", gorsPackage.Ident("ReaderRender"), ")")
 		default:
 			log.Fatalf("error: func %s io.Reader result must be set ReaderRender", info.RpcMethodName)
 		}
 	case info.Result1.ObjectArgs != nil:
 		switch {
 		case info.JSONRender:
-			g.P(g.functionBuf, "statusCode := ", gorsPackage.Ident("HttpStatusCode"), "(c, resp)")
-			g.P(g.functionBuf, "c.JSON(statusCode, resp)")
+			g.P(g.functionBuf, gorsPackage.Ident("MustRender"), "(c, resp, err, ", strconv.Quote(info.RenderContentType), ", ", gorsPackage.Ident("JSONRender"), ")")
 		case info.IndentedJSONRender:
-			g.P(g.functionBuf, "statusCode := ", gorsPackage.Ident("HttpStatusCode"), "(c, resp)")
-			g.P(g.functionBuf, "c.IndentedJSON(statusCode, resp)")
+			g.P(g.functionBuf, gorsPackage.Ident("MustRender"), "(c, resp, err, ", strconv.Quote(info.RenderContentType), ", ", gorsPackage.Ident("IndentedJSONRender"), ")")
 		case info.SecureJSONRender:
-			g.P(g.functionBuf, "statusCode := ", gorsPackage.Ident("HttpStatusCode"), "(c, resp)")
-			g.P(g.functionBuf, "c.SecureJSON(statusCode, resp)")
-		case info.JsonpJSONRender:
-			g.P(g.functionBuf, "statusCode := ", gorsPackage.Ident("HttpStatusCode"), "(c, resp)")
-			g.P(g.functionBuf, "c.JSONP(statusCode, resp)")
+			g.P(g.functionBuf, gorsPackage.Ident("MustRender"), "(c, resp, err, ", strconv.Quote(info.RenderContentType), ", ", gorsPackage.Ident("SecureJSONRender"), ")")
+		case info.JSONPJSONRender:
+			g.P(g.functionBuf, gorsPackage.Ident("MustRender"), "(c, resp, err, ", strconv.Quote(info.RenderContentType), ", ", gorsPackage.Ident("JSONPJSONRender"), ")")
 		case info.PureJSONRender:
-			g.P(g.functionBuf, "statusCode := ", gorsPackage.Ident("HttpStatusCode"), "(c, resp)")
-			g.P(g.functionBuf, "c.PureJSON(statusCode, resp)")
+			g.P(g.functionBuf, gorsPackage.Ident("MustRender"), "(c, resp, err, ", strconv.Quote(info.RenderContentType), ", ", gorsPackage.Ident("PureJSONRender"), ")")
 		case info.AsciiJSONRender:
-			g.P(g.functionBuf, "statusCode := ", gorsPackage.Ident("HttpStatusCode"), "(c, resp)")
-			g.P(g.functionBuf, "c.AsciiJSON(statusCode, resp)")
+			g.P(g.functionBuf, gorsPackage.Ident("MustRender"), "(c, resp, err, ", strconv.Quote(info.RenderContentType), ", ", gorsPackage.Ident("AsciiJSONRender"), ")")
 		case info.XMLRender:
-			g.P(g.functionBuf, "statusCode := ", gorsPackage.Ident("HttpStatusCode"), "(c, resp)")
-			g.P(g.functionBuf, "c.XML(statusCode, resp)")
+			g.P(g.functionBuf, gorsPackage.Ident("MustRender"), "(c, resp, err, ", strconv.Quote(info.RenderContentType), ", ", gorsPackage.Ident("XMLRender"), ")")
 		case info.YAMLRender:
-			g.P(g.functionBuf, "statusCode := ", gorsPackage.Ident("HttpStatusCode"), "(c, resp)")
-			g.P(g.functionBuf, "c.YAML(statusCode, resp)")
-		case info.ProtobufRender:
-			g.P(g.functionBuf, "statusCode := ", gorsPackage.Ident("HttpStatusCode"), "(c, resp)")
-			g.P(g.functionBuf, "c.ProtoBuf(statusCode, resp)")
+			g.P(g.functionBuf, gorsPackage.Ident("MustRender"), "(c, resp, err, ", strconv.Quote(info.RenderContentType), ", ", gorsPackage.Ident("YAMLRender"), ")")
+		case info.ProtoBufRender:
+			g.P(g.functionBuf, gorsPackage.Ident("MustRender"), "(c, resp, err, ", strconv.Quote(info.RenderContentType), ", ", gorsPackage.Ident("ProtoBufRender"), ")")
 		case info.MsgPackRender:
-			g.P(g.functionBuf, "statusCode := ", gorsPackage.Ident("HttpStatusCode"), "(c, resp)")
-			g.P(g.functionBuf, "c.Render(statusCode, ", renderPackage.Ident("MsgPack"), "{Data: resp})")
+			g.P(g.functionBuf, gorsPackage.Ident("MustRender"), "(c, resp, err, ", strconv.Quote(info.RenderContentType), ", ", gorsPackage.Ident("MsgPackRender"), ")")
 		case info.TOMLRender:
-			g.P(g.functionBuf, "statusCode := ", gorsPackage.Ident("HttpStatusCode"), "(c, resp)")
-			g.P(g.functionBuf, "c.TOML(statusCode, resp)")
+			g.P(g.functionBuf, gorsPackage.Ident("MustRender"), "(c, resp, err, ", strconv.Quote(info.RenderContentType), ", ", gorsPackage.Ident("TOMLRender"), ")")
 		case info.CustomRender:
-			g.P(g.functionBuf, "var render ", gorsPackage.Ident("Render"), " = resp")
-			g.P(g.functionBuf, "render.Render(c)")
+			g.P(g.functionBuf, gorsPackage.Ident("MustRender"), "(c, resp, err, ", strconv.Quote(info.RenderContentType), ", ", gorsPackage.Ident("CustomRender"), ")")
 		default:
 			log.Fatalf("error: func %s *struct{} result must be set a Render", info.RpcMethodName)
 		}
 	default:
 		log.Fatalf("error: func %s 1th result is invalid, must be []byte or string or *struct{}", info.RpcMethodName)
 	}
-
-	g.P(g.functionBuf, "return")
-	//g.P(g.functionBuf, "case *", gorsPackage.Ident("Error"), ":")
-	//g.P(g.functionBuf, "return")
-	g.P(g.functionBuf, "case *", gorsPackage.Ident("HttpError"), ":")
-	g.P(g.functionBuf, "c.String(e.StatusCode(), e.Error())")
-	g.P(g.functionBuf, "_ = c.Error(e).SetType(", ginPackage.Ident("ErrorTypePublic"), ")")
-	g.P(g.functionBuf, "return")
-	g.P(g.functionBuf, "default:")
-	g.P(g.functionBuf, "c.String(", httpPackage.Ident("StatusInternalServerError"), ", err.Error())")
-	g.P(g.functionBuf, "_ = c.Error(e).SetType(", ginPackage.Ident("ErrorTypePrivate"), ")")
-	g.P(g.functionBuf, "return")
-	g.P(g.functionBuf, "}")
-
 }
 
 func (g *generate) printImports() {

@@ -20,7 +20,7 @@ type BindingRender interface {
 	// @GORS @GET @Path(/QueryBindingSecureJSONRender/:id) @UriBinding @QueryBinding @SecureJSONRender
 	QueryBindingSecureJSONRender(context.Context, *QueryBindingReq) (*SecureJSONRenderResp, error)
 	// HeaderBindingJsonpJSONRender
-	// @GORS @GET @Path(/HeaderBindingJsonpJSONRender/:id) @UriBinding @QueryBinding @HeaderBinding @JsonpJSONRender
+	// @GORS @GET @Path(/HeaderBindingJsonpJSONRender/:id) @UriBinding @QueryBinding @HeaderBinding @JSONPJSONRender
 	HeaderBindingJsonpJSONRender(context.Context, *HeaderBindingReq) (*JsonpJSONRenderResp, error)
 	// JSONBindingJSONRender
 	// @GORS @POST @Path(/JSONBindingJSONRender/:id) @UriBinding @QueryBinding @HeaderBinding @JSONBinding @JSONRender

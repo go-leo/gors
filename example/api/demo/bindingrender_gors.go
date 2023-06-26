@@ -4,7 +4,6 @@ package demo
 
 import (
 	gin "github.com/gin-gonic/gin"
-	render "github.com/gin-gonic/gin/render"
 	gors "github.com/go-leo/gors"
 	pb "github.com/go-leo/gors/example/api/pb"
 	http "net/http"
@@ -33,20 +32,7 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				}
 				ctx := gors.NewContext(c)
 				resp, err = srv.UriBindingIndentedJSONRender(ctx, req)
-				switch e := err.(type) {
-				case nil:
-					statusCode := gors.HttpStatusCode(c, resp)
-					c.IndentedJSON(statusCode, resp)
-					return
-				case *gors.HttpError:
-					c.String(e.StatusCode(), e.Error())
-					_ = c.Error(e).SetType(gin.ErrorTypePublic)
-					return
-				default:
-					c.String(http.StatusInternalServerError, err.Error())
-					_ = c.Error(e).SetType(gin.ErrorTypePrivate)
-					return
-				}
+				gors.MustRender(c, resp, err, "", gors.IndentedJSONRender)
 			},
 		),
 		gors.NewRoute(
@@ -71,20 +57,7 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				}
 				ctx := gors.NewContext(c)
 				resp, err = srv.QueryBindingSecureJSONRender(ctx, req)
-				switch e := err.(type) {
-				case nil:
-					statusCode := gors.HttpStatusCode(c, resp)
-					c.SecureJSON(statusCode, resp)
-					return
-				case *gors.HttpError:
-					c.String(e.StatusCode(), e.Error())
-					_ = c.Error(e).SetType(gin.ErrorTypePublic)
-					return
-				default:
-					c.String(http.StatusInternalServerError, err.Error())
-					_ = c.Error(e).SetType(gin.ErrorTypePrivate)
-					return
-				}
+				gors.MustRender(c, resp, err, "", gors.SecureJSONRender)
 			},
 		),
 		gors.NewRoute(
@@ -110,20 +83,7 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				}
 				ctx := gors.NewContext(c)
 				resp, err = srv.HeaderBindingJsonpJSONRender(ctx, req)
-				switch e := err.(type) {
-				case nil:
-					statusCode := gors.HttpStatusCode(c, resp)
-					c.JSONP(statusCode, resp)
-					return
-				case *gors.HttpError:
-					c.String(e.StatusCode(), e.Error())
-					_ = c.Error(e).SetType(gin.ErrorTypePublic)
-					return
-				default:
-					c.String(http.StatusInternalServerError, err.Error())
-					_ = c.Error(e).SetType(gin.ErrorTypePrivate)
-					return
-				}
+				gors.MustRender(c, resp, err, "", gors.JSONPJSONRender)
 			},
 		),
 		gors.NewRoute(
@@ -150,20 +110,7 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				}
 				ctx := gors.NewContext(c)
 				resp, err = srv.JSONBindingJSONRender(ctx, req)
-				switch e := err.(type) {
-				case nil:
-					statusCode := gors.HttpStatusCode(c, resp)
-					c.JSON(statusCode, resp)
-					return
-				case *gors.HttpError:
-					c.String(e.StatusCode(), e.Error())
-					_ = c.Error(e).SetType(gin.ErrorTypePublic)
-					return
-				default:
-					c.String(http.StatusInternalServerError, err.Error())
-					_ = c.Error(e).SetType(gin.ErrorTypePrivate)
-					return
-				}
+				gors.MustRender(c, resp, err, "", gors.JSONRender)
 			},
 		),
 		gors.NewRoute(
@@ -190,20 +137,7 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				}
 				ctx := gors.NewContext(c)
 				resp, err = srv.XMLBindingXMLRender(ctx, req)
-				switch e := err.(type) {
-				case nil:
-					statusCode := gors.HttpStatusCode(c, resp)
-					c.XML(statusCode, resp)
-					return
-				case *gors.HttpError:
-					c.String(e.StatusCode(), e.Error())
-					_ = c.Error(e).SetType(gin.ErrorTypePublic)
-					return
-				default:
-					c.String(http.StatusInternalServerError, err.Error())
-					_ = c.Error(e).SetType(gin.ErrorTypePrivate)
-					return
-				}
+				gors.MustRender(c, resp, err, "", gors.XMLRender)
 			},
 		),
 		gors.NewRoute(
@@ -229,20 +163,7 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				}
 				ctx := gors.NewContext(c)
 				resp, err = srv.FormBindingJSONRender(ctx, req)
-				switch e := err.(type) {
-				case nil:
-					statusCode := gors.HttpStatusCode(c, resp)
-					c.JSON(statusCode, resp)
-					return
-				case *gors.HttpError:
-					c.String(e.StatusCode(), e.Error())
-					_ = c.Error(e).SetType(gin.ErrorTypePublic)
-					return
-				default:
-					c.String(http.StatusInternalServerError, err.Error())
-					_ = c.Error(e).SetType(gin.ErrorTypePrivate)
-					return
-				}
+				gors.MustRender(c, resp, err, "", gors.JSONRender)
 			},
 		),
 		gors.NewRoute(
@@ -269,20 +190,7 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				}
 				ctx := gors.NewContext(c)
 				resp, err = srv.FormPostBindingPureJSONRender(ctx, req)
-				switch e := err.(type) {
-				case nil:
-					statusCode := gors.HttpStatusCode(c, resp)
-					c.PureJSON(statusCode, resp)
-					return
-				case *gors.HttpError:
-					c.String(e.StatusCode(), e.Error())
-					_ = c.Error(e).SetType(gin.ErrorTypePublic)
-					return
-				default:
-					c.String(http.StatusInternalServerError, err.Error())
-					_ = c.Error(e).SetType(gin.ErrorTypePrivate)
-					return
-				}
+				gors.MustRender(c, resp, err, "", gors.PureJSONRender)
 			},
 		),
 		gors.NewRoute(
@@ -309,20 +217,7 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				}
 				ctx := gors.NewContext(c)
 				resp, err = srv.FormMultipartBindingAsciiJSONRender(ctx, req)
-				switch e := err.(type) {
-				case nil:
-					statusCode := gors.HttpStatusCode(c, resp)
-					c.AsciiJSON(statusCode, resp)
-					return
-				case *gors.HttpError:
-					c.String(e.StatusCode(), e.Error())
-					_ = c.Error(e).SetType(gin.ErrorTypePublic)
-					return
-				default:
-					c.String(http.StatusInternalServerError, err.Error())
-					_ = c.Error(e).SetType(gin.ErrorTypePrivate)
-					return
-				}
+				gors.MustRender(c, resp, err, "", gors.AsciiJSONRender)
 			},
 		),
 		gors.NewRoute(
@@ -346,20 +241,7 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				}
 				ctx := gors.NewContext(c)
 				resp, err = srv.ProtoBufBindingProtoBufRender(ctx, req)
-				switch e := err.(type) {
-				case nil:
-					statusCode := gors.HttpStatusCode(c, resp)
-					c.ProtoBuf(statusCode, resp)
-					return
-				case *gors.HttpError:
-					c.String(e.StatusCode(), e.Error())
-					_ = c.Error(e).SetType(gin.ErrorTypePublic)
-					return
-				default:
-					c.String(http.StatusInternalServerError, err.Error())
-					_ = c.Error(e).SetType(gin.ErrorTypePrivate)
-					return
-				}
+				gors.MustRender(c, resp, err, "", gors.ProtoBufRender)
 			},
 		),
 		gors.NewRoute(
@@ -383,20 +265,7 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				}
 				ctx := gors.NewContext(c)
 				resp, err = srv.MsgPackBindingMsgPackRender(ctx, req)
-				switch e := err.(type) {
-				case nil:
-					statusCode := gors.HttpStatusCode(c, resp)
-					c.Render(statusCode, render.MsgPack{Data: resp})
-					return
-				case *gors.HttpError:
-					c.String(e.StatusCode(), e.Error())
-					_ = c.Error(e).SetType(gin.ErrorTypePublic)
-					return
-				default:
-					c.String(http.StatusInternalServerError, err.Error())
-					_ = c.Error(e).SetType(gin.ErrorTypePrivate)
-					return
-				}
+				gors.MustRender(c, resp, err, "", gors.MsgPackRender)
 			},
 		),
 		gors.NewRoute(
@@ -423,20 +292,7 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				}
 				ctx := gors.NewContext(c)
 				resp, err = srv.YAMLBindingYAMLRender(ctx, req)
-				switch e := err.(type) {
-				case nil:
-					statusCode := gors.HttpStatusCode(c, resp)
-					c.YAML(statusCode, resp)
-					return
-				case *gors.HttpError:
-					c.String(e.StatusCode(), e.Error())
-					_ = c.Error(e).SetType(gin.ErrorTypePublic)
-					return
-				default:
-					c.String(http.StatusInternalServerError, err.Error())
-					_ = c.Error(e).SetType(gin.ErrorTypePrivate)
-					return
-				}
+				gors.MustRender(c, resp, err, "", gors.YAMLRender)
 			},
 		),
 		gors.NewRoute(
@@ -463,20 +319,7 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				}
 				ctx := gors.NewContext(c)
 				resp, err = srv.TOMLBindingTOMLRender(ctx, req)
-				switch e := err.(type) {
-				case nil:
-					statusCode := gors.HttpStatusCode(c, resp)
-					c.TOML(statusCode, resp)
-					return
-				case *gors.HttpError:
-					c.String(e.StatusCode(), e.Error())
-					_ = c.Error(e).SetType(gin.ErrorTypePublic)
-					return
-				default:
-					c.String(http.StatusInternalServerError, err.Error())
-					_ = c.Error(e).SetType(gin.ErrorTypePrivate)
-					return
-				}
+				gors.MustRender(c, resp, err, "", gors.TOMLRender)
 			},
 		),
 	}

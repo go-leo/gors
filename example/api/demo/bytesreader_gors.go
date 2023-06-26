@@ -4,7 +4,6 @@ package demo
 
 import (
 	gin "github.com/gin-gonic/gin"
-	render "github.com/gin-gonic/gin/render"
 	gors "github.com/go-leo/gors"
 	io "io"
 	http "net/http"
@@ -28,20 +27,7 @@ func BytesReaderRoutes(srv BytesReader) []gors.Route {
 				req = body
 				ctx := gors.NewContext(c)
 				resp, err = srv.GetBytesReader(ctx, req)
-				switch e := err.(type) {
-				case nil:
-					statusCode := gors.HttpStatusCode(c, resp)
-					c.Render(statusCode, render.Reader{ContentType: "video/mpeg4", ContentLength: -1, Reader: resp})
-					return
-				case *gors.HttpError:
-					c.String(e.StatusCode(), e.Error())
-					_ = c.Error(e).SetType(gin.ErrorTypePublic)
-					return
-				default:
-					c.String(http.StatusInternalServerError, err.Error())
-					_ = c.Error(e).SetType(gin.ErrorTypePrivate)
-					return
-				}
+				gors.MustRender(c, resp, err, "video/mpeg4", gors.ReaderRender)
 			},
 		),
 		gors.NewRoute(
@@ -60,20 +46,7 @@ func BytesReaderRoutes(srv BytesReader) []gors.Route {
 				req = body
 				ctx := gors.NewContext(c)
 				resp, err = srv.PatchBytesReader(ctx, req)
-				switch e := err.(type) {
-				case nil:
-					statusCode := gors.HttpStatusCode(c, resp)
-					c.Render(statusCode, render.Reader{ContentType: "video/mpeg4", ContentLength: -1, Reader: resp})
-					return
-				case *gors.HttpError:
-					c.String(e.StatusCode(), e.Error())
-					_ = c.Error(e).SetType(gin.ErrorTypePublic)
-					return
-				default:
-					c.String(http.StatusInternalServerError, err.Error())
-					_ = c.Error(e).SetType(gin.ErrorTypePrivate)
-					return
-				}
+				gors.MustRender(c, resp, err, "video/mpeg4", gors.ReaderRender)
 			},
 		),
 	}

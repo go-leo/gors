@@ -31,20 +31,7 @@ func ServiceRoutes(srv Service) []gors.Route {
 				}
 				ctx := gors.NewContext(c)
 				resp, err = srv.Method(ctx, req)
-				switch e := err.(type) {
-				case nil:
-					statusCode := gors.HttpStatusCode(c, resp)
-					c.JSON(statusCode, resp)
-					return
-				case *gors.HttpError:
-					c.String(e.StatusCode(), e.Error())
-					_ = c.Error(e).SetType(gin.ErrorTypePublic)
-					return
-				default:
-					c.String(http.StatusInternalServerError, err.Error())
-					_ = c.Error(e).SetType(gin.ErrorTypePrivate)
-					return
-				}
+				gors.MustRender(c, resp, err, "", gors.JSONRender)
 			},
 		),
 	}

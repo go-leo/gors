@@ -34,11 +34,7 @@ func (req *CustomReq) Bind(c *gin.Context) error {
 type CustomResp struct {
 }
 
-func (resp *CustomResp) Render(c *gin.Context) error {
-	data, err := json.Marshal(resp)
-	if err != nil {
-		return err
-	}
+func (resp *CustomResp) Render(c *gin.Context) {
+	data, _ := json.Marshal(resp)
 	c.Data(http.StatusOK, "text/plain", data)
-	return nil
 }

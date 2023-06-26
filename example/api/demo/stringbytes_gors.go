@@ -4,8 +4,8 @@ package demo
 
 import (
 	gin "github.com/gin-gonic/gin"
-	render "github.com/gin-gonic/gin/render"
 	gors "github.com/go-leo/gors"
+	convx "github.com/go-leo/gox/convx"
 	io "io"
 	http "net/http"
 )
@@ -25,23 +25,10 @@ func StringBytesRoutes(srv StringBytes) []gors.Route {
 					gors.HandleBadRequest(c, err)
 					return
 				}
-				req = string(body)
+				req = convx.BytesToString(body)
 				ctx := gors.NewContext(c)
 				resp, err = srv.GetStringBytes(ctx, req)
-				switch e := err.(type) {
-				case nil:
-					statusCode := gors.HttpStatusCode(c, resp)
-					c.Render(statusCode, render.Data{ContentType: "", Data: resp})
-					return
-				case *gors.HttpError:
-					c.String(e.StatusCode(), e.Error())
-					_ = c.Error(e).SetType(gin.ErrorTypePublic)
-					return
-				default:
-					c.String(http.StatusInternalServerError, err.Error())
-					_ = c.Error(e).SetType(gin.ErrorTypePrivate)
-					return
-				}
+				gors.MustRender(c, resp, err, "", gors.BytesRender)
 			},
 		),
 		gors.NewRoute(
@@ -57,23 +44,10 @@ func StringBytesRoutes(srv StringBytes) []gors.Route {
 					gors.HandleBadRequest(c, err)
 					return
 				}
-				req = string(body)
+				req = convx.BytesToString(body)
 				ctx := gors.NewContext(c)
 				resp, err = srv.OptionsStringBytes(ctx, req)
-				switch e := err.(type) {
-				case nil:
-					statusCode := gors.HttpStatusCode(c, resp)
-					c.Render(statusCode, render.Data{ContentType: "", Data: resp})
-					return
-				case *gors.HttpError:
-					c.String(e.StatusCode(), e.Error())
-					_ = c.Error(e).SetType(gin.ErrorTypePublic)
-					return
-				default:
-					c.String(http.StatusInternalServerError, err.Error())
-					_ = c.Error(e).SetType(gin.ErrorTypePrivate)
-					return
-				}
+				gors.MustRender(c, resp, err, "", gors.BytesRender)
 			},
 		),
 	}
