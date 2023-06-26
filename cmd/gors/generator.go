@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"github.com/go-leo/gors/internal/pkg/gors"
 	"go/ast"
 	"io"
 	"log"
@@ -10,13 +11,13 @@ import (
 )
 
 const (
-	contextPackage = goImportPath("context")
-	gorsPackage    = goImportPath("github.com/go-leo/gors")
-	ginPackage     = goImportPath("github.com/gin-gonic/gin")
-	httpPackage    = goImportPath("net/http")
-	ioPackage      = goImportPath("io")
-	bindingPackage = goImportPath("github.com/gin-gonic/gin/binding")
-	renderPackage  = goImportPath("github.com/gin-gonic/gin/render")
+	contextPackage = gors.GoImportPath("context")
+	gorsPackage    = gors.GoImportPath("github.com/go-leo/gors")
+	ginPackage     = gors.GoImportPath("github.com/gin-gonic/gin")
+	httpPackage    = gors.GoImportPath("net/http")
+	ioPackage      = gors.GoImportPath("io")
+	bindingPackage = gors.GoImportPath("github.com/gin-gonic/gin/binding")
+	renderPackage  = gors.GoImportPath("github.com/gin-gonic/gin/render")
 )
 
 type generate struct {
@@ -26,10 +27,10 @@ type generate struct {
 	functionBuf      *bytes.Buffer
 	header           string
 	pkg              string
-	imports          map[string]*goImport
+	imports          map[string]*gors.GoImport
 	srvName          string
 	usedPackageNames map[string]bool
-	routerInfos      []*routerInfo
+	routerInfos      []*gors.RouterInfo
 }
 
 func (g *generate) checkResult2MustBeError(rpcType *ast.FuncType, methodName *ast.Ident) {
@@ -43,7 +44,7 @@ func (g *generate) checkResult2MustBeError(rpcType *ast.FuncType, methodName *as
 	}
 }
 
-func (g *generate) checkAndGetResult1(rpcType *ast.FuncType, methodName *ast.Ident) *result {
+func (g *generate) checkAndGetResult1(rpcType *ast.FuncType, methodName *ast.Ident) *gors.Result {
 	result1 := rpcType.Results.List[0]
 	switch r1 := result1.Type.(type) {
 	case *ast.ArrayType:
@@ -54,17 +55,17 @@ func (g *generate) checkAndGetResult1(rpcType *ast.FuncType, methodName *ast.Ide
 		if ident.Name != "byte" {
 			log.Fatalf("error: func %s 1th result is invalid, must be []byte or string or io.Reader or *struct{}", methodName)
 		}
-		return &result{bytes: true}
+		return &gors.Result{Bytes: true}
 	case *ast.Ident:
 		if r1.Name != "string" {
 			log.Fatalf("error: func %s 1th result is invalid, must be []byte or string or io.Reader or *struct{}", methodName)
 		}
-		return &result{string: true}
+		return &gors.Result{String: true}
 	case *ast.StarExpr:
 		switch x := r1.X.(type) {
 		case *ast.Ident:
 			name := x.Name
-			return &result{objectArgs: &objectArgs{name: name}}
+			return &gors.Result{ObjectArgs: &gors.ObjectArgs{Name: name}}
 		case *ast.SelectorExpr:
 			ident, ok := x.X.(*ast.Ident)
 			if !ok {
@@ -72,7 +73,7 @@ func (g *generate) checkAndGetResult1(rpcType *ast.FuncType, methodName *ast.Ide
 			}
 			for importPath, goImport := range g.imports {
 				if goImport.PackageName == ident.Name {
-					return &result{objectArgs: &objectArgs{name: x.Sel.Name, goImportPath: goImportPath(importPath)}}
+					return &gors.Result{ObjectArgs: &gors.ObjectArgs{Name: x.Sel.Name, GoImportPath: gors.GoImportPath(importPath)}}
 				}
 			}
 			log.Fatalf("error: func %s 1th result is invalid, must be []byte or string or io.Reader or *struct{}", methodName)
@@ -99,7 +100,7 @@ func (g *generate) checkAndGetResult1(rpcType *ast.FuncType, methodName *ast.Ide
 		if ioImport.PackageName != ident.Name {
 			log.Fatalf("error: func %s 1th result is invalid, must be []byte or string or io.Reader or *struct{}", methodName)
 		}
-		return &result{reader: true}
+		return &gors.Result{Reader: true}
 	default:
 
 	}
@@ -115,7 +116,7 @@ func (g *generate) checkResults(rpcType *ast.FuncType, methodName *ast.Ident) {
 	}
 }
 
-func (g *generate) checkAndGetParam2(rpcType *ast.FuncType, methodName *ast.Ident) *param {
+func (g *generate) checkAndGetParam2(rpcType *ast.FuncType, methodName *ast.Ident) *gors.Param {
 	param2 := rpcType.Params.List[1]
 	switch p2 := param2.Type.(type) {
 	case *ast.ArrayType:
@@ -126,17 +127,17 @@ func (g *generate) checkAndGetParam2(rpcType *ast.FuncType, methodName *ast.Iden
 		if ident.Name != "byte" {
 			log.Fatalf("error: func %s 2th param is invalid, must be []byte or string or io.Reader or *struct{}", methodName)
 		}
-		return &param{bytes: true}
+		return &gors.Param{Bytes: true}
 	case *ast.Ident:
 		if p2.Name != "string" {
 			log.Fatalf("error: func %s 2th param is invalid, must be []byte or string or io.Reader or *struct{}", methodName)
 		}
-		return &param{string: true}
+		return &gors.Param{String: true}
 	case *ast.StarExpr:
 		switch x := p2.X.(type) {
 		case *ast.Ident:
 			name := x.Name
-			return &param{objectArgs: &objectArgs{name: name}}
+			return &gors.Param{ObjectArgs: &gors.ObjectArgs{Name: name}}
 		case *ast.SelectorExpr:
 			ident, ok := x.X.(*ast.Ident)
 			if !ok {
@@ -144,7 +145,7 @@ func (g *generate) checkAndGetParam2(rpcType *ast.FuncType, methodName *ast.Iden
 			}
 			for importPath, goImport := range g.imports {
 				if goImport.PackageName == ident.Name {
-					return &param{objectArgs: &objectArgs{name: x.Sel.Name, goImportPath: goImportPath(importPath)}}
+					return &gors.Param{ObjectArgs: &gors.ObjectArgs{Name: x.Sel.Name, GoImportPath: gors.GoImportPath(importPath)}}
 				}
 			}
 			log.Fatalf("error: func %s 2th param is invalid, must be []byte or string or io.Reader or *struct{}", methodName)
@@ -172,7 +173,7 @@ func (g *generate) checkAndGetParam2(rpcType *ast.FuncType, methodName *ast.Iden
 		if ioImport.PackageName != ident.Name {
 			log.Fatalf("error: func %s 2th param is invalid, must be []byte or string or io.Reader or *struct{}", methodName)
 		}
-		return &param{reader: true}
+		return &gors.Param{Reader: true}
 	default:
 		log.Fatalf("error: func %s 2th param is invalid, must be []byte or string or io.Reader or *struct{}", methodName)
 		return nil
@@ -239,54 +240,54 @@ func (g *generate) printFunction() {
 	g.P(g.functionBuf, "}")
 }
 
-func (g *generate) printRouterInfo(info *routerInfo) {
+func (g *generate) printRouterInfo(info *gors.RouterInfo) {
 	g.P(g.functionBuf, gorsPackage.Ident("NewRoute"), "(")
-	g.P(g.functionBuf, httpPackage.Ident(info.method), ",")
-	g.P(g.functionBuf, strconv.Quote(info.path), ",")
+	g.P(g.functionBuf, httpPackage.Ident(info.Method), ",")
+	g.P(g.functionBuf, strconv.Quote(info.Path), ",")
 	g.P(g.functionBuf, "func(c *", ginPackage.Ident("Context"), ") {")
 	g.printHandler(info)
 	g.P(g.functionBuf, "},")
 	g.P(g.functionBuf, "),")
 }
 
-func (g *generate) printHandler(info *routerInfo) {
-	if info.param2.bytes {
+func (g *generate) printHandler(info *gors.RouterInfo) {
+	if info.Param2.Bytes {
 		g.P(g.functionBuf, "var req []byte")
-	} else if info.param2.string {
+	} else if info.Param2.String {
 		g.P(g.functionBuf, "var req string")
-	} else if info.param2.reader {
+	} else if info.Param2.Reader {
 		g.P(g.functionBuf, "var req ", ioPackage.Ident("Reader"))
-	} else if objectArgs := info.param2.objectArgs; objectArgs != nil {
-		g.P(g.functionBuf, "var req *", objectArgs.goImportPath.Ident(objectArgs.name))
+	} else if objectArgs := info.Param2.ObjectArgs; objectArgs != nil {
+		g.P(g.functionBuf, "var req *", objectArgs.GoImportPath.Ident(objectArgs.Name))
 	} else {
-		log.Fatalf("error: func %s 2th param is invalid, must be []byte or string or *struct{}", info.rpcMethodName)
+		log.Fatalf("error: func %s 2th param is invalid, must be []byte or string or *struct{}", info.RpcMethodName)
 	}
-	if info.result1.bytes {
+	if info.Result1.Bytes {
 		g.P(g.functionBuf, "var resp []byte")
-	} else if info.result1.string {
+	} else if info.Result1.String {
 		g.P(g.functionBuf, "var resp string")
-	} else if info.result1.reader {
+	} else if info.Result1.Reader {
 		g.P(g.functionBuf, "var resp ", ioPackage.Ident("Reader"))
-	} else if objectArgs := info.result1.objectArgs; objectArgs != nil {
-		g.P(g.functionBuf, "var resp *", objectArgs.goImportPath.Ident(objectArgs.name))
+	} else if objectArgs := info.Result1.ObjectArgs; objectArgs != nil {
+		g.P(g.functionBuf, "var resp *", objectArgs.GoImportPath.Ident(objectArgs.Name))
 	} else {
-		log.Fatalf("error: func %s 1th result is invalid, must be []byte or string or *struct{}", info.rpcMethodName)
+		log.Fatalf("error: func %s 1th result is invalid, must be []byte or string or *struct{}", info.RpcMethodName)
 	}
 	g.P(g.functionBuf, "var err error")
 
-	if info.param2.bytes {
+	if info.Param2.Bytes {
 		g.printBytesReq(info)
 		g.P(g.functionBuf, "req = body")
-	} else if info.param2.string {
+	} else if info.Param2.String {
 		g.printBytesReq(info)
 		g.P(g.functionBuf, "req = string(body)")
-	} else if info.param2.reader {
+	} else if info.Param2.Reader {
 		g.printReaderReq(info)
-	} else if info.param2.objectArgs != nil {
+	} else if info.Param2.ObjectArgs != nil {
 		g.printObjectReq(info)
 		g.printReqValidate()
 	} else {
-		log.Fatalf("error: func %s 2th param is invalid, must be []byte or string or *struct{}", info.rpcMethodName)
+		log.Fatalf("error: func %s 2th param is invalid, must be []byte or string or *struct{}", info.RpcMethodName)
 	}
 
 	g.printRPCHandler(info)
@@ -295,7 +296,7 @@ func (g *generate) printHandler(info *routerInfo) {
 
 }
 
-func (g *generate) printBytesReq(info *routerInfo) {
+func (g *generate) printBytesReq(info *gors.RouterInfo) {
 	g.P(g.functionBuf, "var body []byte")
 	g.P(g.functionBuf, "body, err = ", ioPackage.Ident("ReadAll"), "(c.Request.Body)")
 	g.P(g.functionBuf, "if err != nil {")
@@ -305,13 +306,13 @@ func (g *generate) printBytesReq(info *routerInfo) {
 	g.P(g.functionBuf, "}")
 }
 
-func (g *generate) printReaderReq(info *routerInfo) {
+func (g *generate) printReaderReq(info *gors.RouterInfo) {
 	g.P(g.functionBuf, "req = c.Request.Body")
 }
 
-func (g *generate) printObjectReqInit(info *routerInfo) {
-	objArgs := info.param2.objectArgs
-	g.P(g.functionBuf, "req = new(", objArgs.goImportPath.Ident(objArgs.name), ")")
+func (g *generate) printObjectReqInit(info *gors.RouterInfo) {
+	objArgs := info.Param2.ObjectArgs
+	g.P(g.functionBuf, "req = new(", objArgs.GoImportPath.Ident(objArgs.Name), ")")
 }
 
 func (g *generate) printBindUriRequest() {
@@ -340,45 +341,45 @@ func (g *generate) printCustomRequest(s string) {
 	g.P(g.functionBuf, "}")
 }
 
-func (g *generate) printObjectReq(info *routerInfo) {
+func (g *generate) printObjectReq(info *gors.RouterInfo) {
 	g.printObjectReqInit(info)
-	if info.uriBinding {
+	if info.UriBinding {
 		g.printBindUriRequest()
 	}
-	if info.queryBinding {
+	if info.QueryBinding {
 		g.printBindRequest("Query")
 	}
-	if info.headerBinding {
+	if info.HeaderBinding {
 		g.printBindRequest("Header")
 	}
-	if info.jsonBinding {
+	if info.JSONBinding {
 		g.printBindRequest("JSON")
 	}
-	if info.xmlBinding {
+	if info.XMLBinding {
 		g.printBindRequest("XML")
 	}
-	if info.formBinding {
+	if info.FormBinding {
 		g.printBindRequest("Form")
 	}
-	if info.formPostBinding {
+	if info.FormPostBinding {
 		g.printBindRequest("FormPost")
 	}
-	if info.formMultipartBinding {
+	if info.FormMultipartBinding {
 		g.printBindRequest("FormMultipart")
 	}
-	if info.protobufBinding {
+	if info.ProtobufBinding {
 		g.printBindRequest("ProtoBuf")
 	}
-	if info.msgpackBinding {
+	if info.MsgPackBinding {
 		g.printBindRequest("MsgPack")
 	}
-	if info.yamlBinding {
+	if info.YAMLBinding {
 		g.printBindRequest("YAML")
 	}
-	if info.tomlBinding {
+	if info.TOMLBinding {
 		g.printBindRequest("TOML")
 	}
-	if info.customBinding {
+	if info.CustomBinding {
 		g.printCustomRequest("Custom")
 	}
 
@@ -392,86 +393,86 @@ func (g *generate) printReqValidate() {
 	g.P(g.functionBuf, "}")
 }
 
-func (g *generate) printRPCHandler(info *routerInfo) {
+func (g *generate) printRPCHandler(info *gors.RouterInfo) {
 	g.P(g.functionBuf, "ctx := ", gorsPackage.Ident("NewContext"), "(c)")
-	g.P(g.functionBuf, "resp, err = srv.", info.rpcMethodName, "(ctx, req)")
+	g.P(g.functionBuf, "resp, err = srv.", info.RpcMethodName, "(ctx, req)")
 }
 
-func (g *generate) printResponse(info *routerInfo) {
+func (g *generate) printResponse(info *gors.RouterInfo) {
 	g.P(g.functionBuf, "switch e := err.(type) {")
 	g.P(g.functionBuf, "case nil:")
 
 	switch {
-	case info.result1.bytes:
+	case info.Result1.Bytes:
 		switch {
-		case info.bytesRender:
+		case info.BytesRender:
 			g.P(g.functionBuf, "statusCode := ", gorsPackage.Ident("HttpStatusCode"), "(c, resp)")
-			g.P(g.functionBuf, "c.Render(statusCode, ", renderPackage.Ident("Data"), "{ContentType: ", strconv.Quote(info.renderContentType), ", Data: resp})")
+			g.P(g.functionBuf, "c.Render(statusCode, ", renderPackage.Ident("Data"), "{ContentType: ", strconv.Quote(info.RenderContentType), ", Data: resp})")
 		default:
-			log.Fatalf("error: func %s []byte result must be set BytesRender", info.rpcMethodName)
+			log.Fatalf("error: func %s []byte result must be set BytesRender", info.RpcMethodName)
 		}
-	case info.result1.string:
+	case info.Result1.String:
 		switch {
-		case info.stringRender, info.textRender, info.htmlRender:
+		case info.StringRender, info.TextRender, info.HTMLRender:
 			g.P(g.functionBuf, "statusCode := ", gorsPackage.Ident("HttpStatusCode"), "(c, resp)")
-			g.P(g.functionBuf, "c.Render(statusCode, ", renderPackage.Ident("Data"), "{ContentType: ", strconv.Quote(info.renderContentType), ", Data: []byte(resp)})")
-		case info.redirectRender:
+			g.P(g.functionBuf, "c.Render(statusCode, ", renderPackage.Ident("Data"), "{ContentType: ", strconv.Quote(info.RenderContentType), ", Data: []byte(resp)})")
+		case info.RedirectRender:
 			g.P(g.functionBuf, "statusCode := ", gorsPackage.Ident("HttpStatusCode"), "(c, resp)")
 			g.P(g.functionBuf, "c.Redirect(statusCode, resp)")
 		default:
-			log.Fatalf("error: func %s string result must be set BytesRender or StringRender or TextRender or HTMLRender or RedirectRender", info.rpcMethodName)
+			log.Fatalf("error: func %s string result must be set BytesRender or StringRender or TextRender or HTMLRender or RedirectRender", info.RpcMethodName)
 		}
-	case info.result1.reader:
+	case info.Result1.Reader:
 		switch {
-		case info.readerRender:
+		case info.ReaderRender:
 			g.P(g.functionBuf, "statusCode := ", gorsPackage.Ident("HttpStatusCode"), "(c, resp)")
-			g.P(g.functionBuf, "c.Render(statusCode, ", renderPackage.Ident("Reader"), "{ContentType: ", strconv.Quote(info.renderContentType), ", ContentLength: -1, Reader: resp})")
+			g.P(g.functionBuf, "c.Render(statusCode, ", renderPackage.Ident("Reader"), "{ContentType: ", strconv.Quote(info.RenderContentType), ", ContentLength: -1, Reader: resp})")
 		default:
-			log.Fatalf("error: func %s io.Reader result must be set ReaderRender", info.rpcMethodName)
+			log.Fatalf("error: func %s io.Reader result must be set ReaderRender", info.RpcMethodName)
 		}
-	case info.result1.objectArgs != nil:
+	case info.Result1.ObjectArgs != nil:
 		switch {
-		case info.jsonRender:
+		case info.JSONRender:
 			g.P(g.functionBuf, "statusCode := ", gorsPackage.Ident("HttpStatusCode"), "(c, resp)")
 			g.P(g.functionBuf, "c.JSON(statusCode, resp)")
-		case info.indentedJSONRender:
+		case info.IndentedJSONRender:
 			g.P(g.functionBuf, "statusCode := ", gorsPackage.Ident("HttpStatusCode"), "(c, resp)")
 			g.P(g.functionBuf, "c.IndentedJSON(statusCode, resp)")
-		case info.secureJSONRender:
+		case info.SecureJSONRender:
 			g.P(g.functionBuf, "statusCode := ", gorsPackage.Ident("HttpStatusCode"), "(c, resp)")
 			g.P(g.functionBuf, "c.SecureJSON(statusCode, resp)")
-		case info.jsonpJSONRender:
+		case info.JsonpJSONRender:
 			g.P(g.functionBuf, "statusCode := ", gorsPackage.Ident("HttpStatusCode"), "(c, resp)")
 			g.P(g.functionBuf, "c.JSONP(statusCode, resp)")
-		case info.pureJSONRender:
+		case info.PureJSONRender:
 			g.P(g.functionBuf, "statusCode := ", gorsPackage.Ident("HttpStatusCode"), "(c, resp)")
 			g.P(g.functionBuf, "c.PureJSON(statusCode, resp)")
-		case info.asciiJSONRender:
+		case info.AsciiJSONRender:
 			g.P(g.functionBuf, "statusCode := ", gorsPackage.Ident("HttpStatusCode"), "(c, resp)")
 			g.P(g.functionBuf, "c.AsciiJSON(statusCode, resp)")
-		case info.xmlRender:
+		case info.XMLRender:
 			g.P(g.functionBuf, "statusCode := ", gorsPackage.Ident("HttpStatusCode"), "(c, resp)")
 			g.P(g.functionBuf, "c.XML(statusCode, resp)")
-		case info.yamlRender:
+		case info.YAMLRender:
 			g.P(g.functionBuf, "statusCode := ", gorsPackage.Ident("HttpStatusCode"), "(c, resp)")
 			g.P(g.functionBuf, "c.YAML(statusCode, resp)")
-		case info.protobufRender:
+		case info.ProtobufRender:
 			g.P(g.functionBuf, "statusCode := ", gorsPackage.Ident("HttpStatusCode"), "(c, resp)")
 			g.P(g.functionBuf, "c.ProtoBuf(statusCode, resp)")
-		case info.msgpackRender:
+		case info.MsgPackRender:
 			g.P(g.functionBuf, "statusCode := ", gorsPackage.Ident("HttpStatusCode"), "(c, resp)")
 			g.P(g.functionBuf, "c.Render(statusCode, ", renderPackage.Ident("MsgPack"), "{Data: resp})")
-		case info.tomlRender:
+		case info.TOMLRender:
 			g.P(g.functionBuf, "statusCode := ", gorsPackage.Ident("HttpStatusCode"), "(c, resp)")
 			g.P(g.functionBuf, "c.TOML(statusCode, resp)")
-		case info.customRender:
+		case info.CustomRender:
 			g.P(g.functionBuf, "var render ", gorsPackage.Ident("Render"), " = resp")
 			g.P(g.functionBuf, "render.Render(c)")
 		default:
-			log.Fatalf("error: func %s *struct{} result must be set a Render", info.rpcMethodName)
+			log.Fatalf("error: func %s *struct{} result must be set a Render", info.RpcMethodName)
 		}
 	default:
-		log.Fatalf("error: func %s 1th result is invalid, must be []byte or string or *struct{}", info.rpcMethodName)
+		log.Fatalf("error: func %s 1th result is invalid, must be []byte or string or *struct{}", info.RpcMethodName)
 	}
 
 	g.P(g.functionBuf, "return")
@@ -492,7 +493,7 @@ func (g *generate) printResponse(info *routerInfo) {
 func (g *generate) printImports() {
 	g.P(g.importsBuf, "import (")
 	for _, imp := range g.imports {
-		if !imp.enable {
+		if !imp.Enable {
 			continue
 		}
 		if imp.ImportPath == "" {
@@ -513,8 +514,8 @@ func (g *generate) combine() {
 func (g *generate) P(w io.Writer, v ...any) {
 	for _, x := range v {
 		switch x := x.(type) {
-		case *goIdent:
-			x.GoImport.enable = true
+		case *gors.GoIdent:
+			x.GoImport.Enable = true
 			g.imports[x.GoImport.ImportPath] = x.GoImport
 			_, _ = fmt.Fprint(w, x.Qualify())
 		default:
