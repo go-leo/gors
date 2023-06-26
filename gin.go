@@ -6,6 +6,11 @@ import (
 	"net/http"
 )
 
+func HandleBadRequest(c *gin.Context, err error) {
+	c.String(http.StatusBadRequest, err.Error())
+	_ = c.Error(err).SetType(gin.ErrorTypeBind)
+}
+
 func UriParams(c *gin.Context) (map[string][]string, error) {
 	m := make(map[string][]string)
 	for _, v := range c.Params {

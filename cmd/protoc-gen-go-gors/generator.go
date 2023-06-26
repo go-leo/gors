@@ -139,15 +139,14 @@ func splitComment(leadingComment string) []string {
 }
 
 func printMapBinding(g *protogen.GeneratedFile, paramMethodName string) {
-	g.P(paramMethodName, ", err := ", gorsPackage.Ident(paramMethodName))
+	paramName := strings.ToLower(paramMethodName[0:1]) + paramMethodName[1:]
+	g.P(paramName, ", err := ", gorsPackage.Ident(paramMethodName), "(c)")
 	g.P("if err != nil {")
-	g.P("c.String(", httpPackage.Ident("StatusBadRequest"), ", err.Error())")
-	g.P("_ = c.Error(err).SetType(", ginPackage.Ident("ErrorTypeBind"), ")")
+	g.P(gorsPackage.Ident("HandleBadRequest"), "(c, err)")
 	g.P("return")
 	g.P("}")
-	g.P("if err := ", bindingPackage.Ident("MapFormWithTag"), "(req, ", gorsPackage.Ident(paramMethodName), "(c), ", strconv.Quote("json"), "); err != nil {")
-	g.P("c.String(", httpPackage.Ident("StatusBadRequest"), ", err.Error())")
-	g.P("_ = c.Error(err).SetType(", ginPackage.Ident("ErrorTypeBind"), ")")
+	g.P("if err := ", bindingPackage.Ident("MapFormWithTag"), "(req, ", paramName, ",", strconv.Quote("json"), "); err != nil {")
+	g.P(gorsPackage.Ident("HandleBadRequest"), "(c, err)")
 	g.P("return")
 	g.P("}")
 }

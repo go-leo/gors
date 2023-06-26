@@ -300,8 +300,7 @@ func (g *generate) printBytesReq(info *gors.RouterInfo) {
 	g.P(g.functionBuf, "var body []byte")
 	g.P(g.functionBuf, "body, err = ", ioPackage.Ident("ReadAll"), "(c.Request.Body)")
 	g.P(g.functionBuf, "if err != nil {")
-	g.P(g.functionBuf, "c.String(", httpPackage.Ident("StatusBadRequest"), ", err.Error())")
-	g.P(g.functionBuf, "_ = c.Error(err).SetType(", ginPackage.Ident("ErrorTypeBind"), ")")
+	g.P(g.functionBuf, gorsPackage.Ident("HandleBadRequest"), "(c, err)")
 	g.P(g.functionBuf, "return")
 	g.P(g.functionBuf, "}")
 }
@@ -317,16 +316,14 @@ func (g *generate) printObjectReqInit(info *gors.RouterInfo) {
 
 func (g *generate) printBindUriRequest() {
 	g.P(g.functionBuf, "if err = c.ShouldBindUri(req); err != nil {")
-	g.P(g.functionBuf, "c.String(", httpPackage.Ident("StatusBadRequest"), ", err.Error())")
-	g.P(g.functionBuf, "_ = c.Error(err).SetType(gin.ErrorTypeBind)")
+	g.P(g.functionBuf, gorsPackage.Ident("HandleBadRequest"), "(c, err)")
 	g.P(g.functionBuf, "return")
 	g.P(g.functionBuf, "}")
 }
 
 func (g *generate) printBindRequest(binding string) {
 	g.P(g.functionBuf, "if err = c.ShouldBindWith(req, ", bindingPackage.Ident(binding), "); err != nil {")
-	g.P(g.functionBuf, "c.String(", httpPackage.Ident("StatusBadRequest"), ", err.Error())")
-	g.P(g.functionBuf, "_ = c.Error(err).SetType(gin.ErrorTypeBind)")
+	g.P(g.functionBuf, gorsPackage.Ident("HandleBadRequest"), "(c, err)")
 	g.P(g.functionBuf, "return")
 	g.P(g.functionBuf, "}")
 }
@@ -335,8 +332,7 @@ func (g *generate) printCustomRequest(s string) {
 	g.P(g.functionBuf, "var binding gors.Binding = req")
 	g.P(g.functionBuf, "err = binding.Bind(c)")
 	g.P(g.functionBuf, "if err != nil {")
-	g.P(g.functionBuf, "c.String(http.StatusBadRequest, err.Error())")
-	g.P(g.functionBuf, "_ = c.Error(err).SetType(gin.ErrorTypeBind)")
+	g.P(g.functionBuf, gorsPackage.Ident("HandleBadRequest"), "(c, err)")
 	g.P(g.functionBuf, "return")
 	g.P(g.functionBuf, "}")
 }
@@ -387,8 +383,7 @@ func (g *generate) printObjectReq(info *gors.RouterInfo) {
 
 func (g *generate) printReqValidate() {
 	g.P(g.functionBuf, "if err = ", gorsPackage.Ident("Validate"), "(req); err != nil {")
-	g.P(g.functionBuf, "c.String(", httpPackage.Ident("StatusBadRequest"), ", err.Error())")
-	g.P(g.functionBuf, "_ = c.Error(err).SetType(gin.ErrorTypeBind)")
+	g.P(g.functionBuf, gorsPackage.Ident("HandleBadRequest"), "(c, err)")
 	g.P(g.functionBuf, "return")
 	g.P(g.functionBuf, "}")
 }
