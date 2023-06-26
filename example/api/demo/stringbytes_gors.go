@@ -22,8 +22,7 @@ func StringBytesRoutes(srv StringBytes) []gors.Route {
 				var body []byte
 				body, err = io.ReadAll(c.Request.Body)
 				if err != nil {
-					c.String(http.StatusBadRequest, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypeBind)
+					gors.HandleBadRequest(c, err)
 					return
 				}
 				req = string(body)
@@ -55,8 +54,7 @@ func StringBytesRoutes(srv StringBytes) []gors.Route {
 				var body []byte
 				body, err = io.ReadAll(c.Request.Body)
 				if err != nil {
-					c.String(http.StatusBadRequest, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypeBind)
+					gors.HandleBadRequest(c, err)
 					return
 				}
 				req = string(body)

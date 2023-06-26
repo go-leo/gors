@@ -18,14 +18,15 @@ func ServiceRoutes(srv Service) []gors.Route {
 				var resp *MethodResp
 				var err error
 				req = new(MethodReq)
-				if err = c.ShouldBindUri(req); err != nil {
-					c.String(http.StatusBadRequest, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypeBind)
+				if err := gors.ShouldBind(
+					c, req,
+					gors.UriBinding,
+				); err != nil {
+					gors.HandleBadRequest(c, err)
 					return
 				}
 				if err = gors.Validate(req); err != nil {
-					c.String(http.StatusBadRequest, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypeBind)
+					gors.HandleBadRequest(c, err)
 					return
 				}
 				ctx := gors.NewContext(c)

@@ -153,8 +153,7 @@ func printMapBinding(g *protogen.GeneratedFile, paramMethodName string) {
 
 func printBindRequest(g *protogen.GeneratedFile, binding string) {
 	g.P("if err = c.ShouldBindWith(req, ", bindingPackage.Ident(binding), "); err != nil {")
-	g.P("c.String(", httpPackage.Ident("StatusBadRequest"), ", err.Error())")
-	g.P("_ = c.Error(err).SetType(", ginPackage.Ident("ErrorTypeBind"), ")")
+	g.P(gorsPackage.Ident("HandleBadRequest"), "(c, err)")
 	g.P("return")
 	g.P("}")
 }

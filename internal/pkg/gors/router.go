@@ -102,7 +102,7 @@ type RouterInfo struct {
 	FormBinding          bool
 	FormPostBinding      bool
 	FormMultipartBinding bool
-	ProtobufBinding      bool
+	ProtoBufBinding      bool
 	MsgPackBinding       bool
 	YAMLBinding          bool
 	TOMLBinding          bool
@@ -223,7 +223,7 @@ func NewRouter(methodName string, basePath string, comments []string) *RouterInf
 			case strings.ToUpper(s) == strings.ToUpper(annotation.FormMultipartBinding):
 				r.FormMultipartBinding = true
 			case strings.ToUpper(s) == strings.ToUpper(annotation.ProtoBufBinding):
-				r.ProtobufBinding = true
+				r.ProtoBufBinding = true
 			case strings.ToUpper(s) == strings.ToUpper(annotation.MsgPackBinding):
 				r.MsgPackBinding = true
 			case strings.ToUpper(s) == strings.ToUpper(annotation.YAMLBinding):

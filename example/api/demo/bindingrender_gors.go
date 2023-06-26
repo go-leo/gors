@@ -4,7 +4,6 @@ package demo
 
 import (
 	gin "github.com/gin-gonic/gin"
-	binding "github.com/gin-gonic/gin/binding"
 	render "github.com/gin-gonic/gin/render"
 	gors "github.com/go-leo/gors"
 	pb "github.com/go-leo/gors/example/api/pb"
@@ -21,14 +20,15 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				var resp *IndentedJSONRenderResp
 				var err error
 				req = new(UriBindingReq)
-				if err = c.ShouldBindUri(req); err != nil {
-					c.String(http.StatusBadRequest, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypeBind)
+				if err := gors.ShouldBind(
+					c, req,
+					gors.UriBinding,
+				); err != nil {
+					gors.HandleBadRequest(c, err)
 					return
 				}
 				if err = gors.Validate(req); err != nil {
-					c.String(http.StatusBadRequest, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypeBind)
+					gors.HandleBadRequest(c, err)
 					return
 				}
 				ctx := gors.NewContext(c)
@@ -57,19 +57,16 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				var resp *SecureJSONRenderResp
 				var err error
 				req = new(QueryBindingReq)
-				if err = c.ShouldBindUri(req); err != nil {
-					c.String(http.StatusBadRequest, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypeBind)
-					return
-				}
-				if err = c.ShouldBindWith(req, binding.Query); err != nil {
-					c.String(http.StatusBadRequest, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypeBind)
+				if err := gors.ShouldBind(
+					c, req,
+					gors.UriBinding,
+					gors.QueryBinding,
+				); err != nil {
+					gors.HandleBadRequest(c, err)
 					return
 				}
 				if err = gors.Validate(req); err != nil {
-					c.String(http.StatusBadRequest, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypeBind)
+					gors.HandleBadRequest(c, err)
 					return
 				}
 				ctx := gors.NewContext(c)
@@ -98,24 +95,17 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				var resp *JsonpJSONRenderResp
 				var err error
 				req = new(HeaderBindingReq)
-				if err = c.ShouldBindUri(req); err != nil {
-					c.String(http.StatusBadRequest, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypeBind)
-					return
-				}
-				if err = c.ShouldBindWith(req, binding.Query); err != nil {
-					c.String(http.StatusBadRequest, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypeBind)
-					return
-				}
-				if err = c.ShouldBindWith(req, binding.Header); err != nil {
-					c.String(http.StatusBadRequest, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypeBind)
+				if err := gors.ShouldBind(
+					c, req,
+					gors.UriBinding,
+					gors.QueryBinding,
+					gors.HeaderBinding,
+				); err != nil {
+					gors.HandleBadRequest(c, err)
 					return
 				}
 				if err = gors.Validate(req); err != nil {
-					c.String(http.StatusBadRequest, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypeBind)
+					gors.HandleBadRequest(c, err)
 					return
 				}
 				ctx := gors.NewContext(c)
@@ -144,29 +134,18 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				var resp *JSONRenderResp
 				var err error
 				req = new(JSONBindingReq)
-				if err = c.ShouldBindUri(req); err != nil {
-					c.String(http.StatusBadRequest, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypeBind)
-					return
-				}
-				if err = c.ShouldBindWith(req, binding.Query); err != nil {
-					c.String(http.StatusBadRequest, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypeBind)
-					return
-				}
-				if err = c.ShouldBindWith(req, binding.Header); err != nil {
-					c.String(http.StatusBadRequest, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypeBind)
-					return
-				}
-				if err = c.ShouldBindWith(req, binding.JSON); err != nil {
-					c.String(http.StatusBadRequest, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypeBind)
+				if err := gors.ShouldBind(
+					c, req,
+					gors.UriBinding,
+					gors.QueryBinding,
+					gors.HeaderBinding,
+					gors.JSONBinding,
+				); err != nil {
+					gors.HandleBadRequest(c, err)
 					return
 				}
 				if err = gors.Validate(req); err != nil {
-					c.String(http.StatusBadRequest, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypeBind)
+					gors.HandleBadRequest(c, err)
 					return
 				}
 				ctx := gors.NewContext(c)
@@ -195,29 +174,18 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				var resp *XMLRenderResp
 				var err error
 				req = new(XMLBindingReq)
-				if err = c.ShouldBindUri(req); err != nil {
-					c.String(http.StatusBadRequest, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypeBind)
-					return
-				}
-				if err = c.ShouldBindWith(req, binding.Query); err != nil {
-					c.String(http.StatusBadRequest, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypeBind)
-					return
-				}
-				if err = c.ShouldBindWith(req, binding.Header); err != nil {
-					c.String(http.StatusBadRequest, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypeBind)
-					return
-				}
-				if err = c.ShouldBindWith(req, binding.XML); err != nil {
-					c.String(http.StatusBadRequest, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypeBind)
+				if err := gors.ShouldBind(
+					c, req,
+					gors.UriBinding,
+					gors.QueryBinding,
+					gors.HeaderBinding,
+					gors.XMLBinding,
+				); err != nil {
+					gors.HandleBadRequest(c, err)
 					return
 				}
 				if err = gors.Validate(req); err != nil {
-					c.String(http.StatusBadRequest, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypeBind)
+					gors.HandleBadRequest(c, err)
 					return
 				}
 				ctx := gors.NewContext(c)
@@ -246,24 +214,17 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				var resp *JSONRenderResp
 				var err error
 				req = new(FormBindingReq)
-				if err = c.ShouldBindUri(req); err != nil {
-					c.String(http.StatusBadRequest, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypeBind)
-					return
-				}
-				if err = c.ShouldBindWith(req, binding.Header); err != nil {
-					c.String(http.StatusBadRequest, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypeBind)
-					return
-				}
-				if err = c.ShouldBindWith(req, binding.Form); err != nil {
-					c.String(http.StatusBadRequest, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypeBind)
+				if err := gors.ShouldBind(
+					c, req,
+					gors.UriBinding,
+					gors.HeaderBinding,
+					gors.FormBinding,
+				); err != nil {
+					gors.HandleBadRequest(c, err)
 					return
 				}
 				if err = gors.Validate(req); err != nil {
-					c.String(http.StatusBadRequest, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypeBind)
+					gors.HandleBadRequest(c, err)
 					return
 				}
 				ctx := gors.NewContext(c)
@@ -292,29 +253,18 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				var resp *PureJSONRenderResp
 				var err error
 				req = new(FormPostBindingReq)
-				if err = c.ShouldBindUri(req); err != nil {
-					c.String(http.StatusBadRequest, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypeBind)
-					return
-				}
-				if err = c.ShouldBindWith(req, binding.Query); err != nil {
-					c.String(http.StatusBadRequest, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypeBind)
-					return
-				}
-				if err = c.ShouldBindWith(req, binding.Header); err != nil {
-					c.String(http.StatusBadRequest, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypeBind)
-					return
-				}
-				if err = c.ShouldBindWith(req, binding.FormPost); err != nil {
-					c.String(http.StatusBadRequest, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypeBind)
+				if err := gors.ShouldBind(
+					c, req,
+					gors.UriBinding,
+					gors.QueryBinding,
+					gors.HeaderBinding,
+					gors.FormPostBinding,
+				); err != nil {
+					gors.HandleBadRequest(c, err)
 					return
 				}
 				if err = gors.Validate(req); err != nil {
-					c.String(http.StatusBadRequest, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypeBind)
+					gors.HandleBadRequest(c, err)
 					return
 				}
 				ctx := gors.NewContext(c)
@@ -343,29 +293,18 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				var resp *AsciiJSONRenderResp
 				var err error
 				req = new(FormMultipartBindingReq)
-				if err = c.ShouldBindUri(req); err != nil {
-					c.String(http.StatusBadRequest, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypeBind)
-					return
-				}
-				if err = c.ShouldBindWith(req, binding.Query); err != nil {
-					c.String(http.StatusBadRequest, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypeBind)
-					return
-				}
-				if err = c.ShouldBindWith(req, binding.Header); err != nil {
-					c.String(http.StatusBadRequest, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypeBind)
-					return
-				}
-				if err = c.ShouldBindWith(req, binding.FormMultipart); err != nil {
-					c.String(http.StatusBadRequest, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypeBind)
+				if err := gors.ShouldBind(
+					c, req,
+					gors.UriBinding,
+					gors.QueryBinding,
+					gors.HeaderBinding,
+					gors.FormMultipartBinding,
+				); err != nil {
+					gors.HandleBadRequest(c, err)
 					return
 				}
 				if err = gors.Validate(req); err != nil {
-					c.String(http.StatusBadRequest, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypeBind)
+					gors.HandleBadRequest(c, err)
 					return
 				}
 				ctx := gors.NewContext(c)
@@ -394,14 +333,15 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				var resp *pb.ProtoBufResp
 				var err error
 				req = new(pb.ProtoBufReq)
-				if err = c.ShouldBindWith(req, binding.ProtoBuf); err != nil {
-					c.String(http.StatusBadRequest, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypeBind)
+				if err := gors.ShouldBind(
+					c, req,
+					gors.ProtoBufBinding,
+				); err != nil {
+					gors.HandleBadRequest(c, err)
 					return
 				}
 				if err = gors.Validate(req); err != nil {
-					c.String(http.StatusBadRequest, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypeBind)
+					gors.HandleBadRequest(c, err)
 					return
 				}
 				ctx := gors.NewContext(c)
@@ -430,14 +370,15 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				var resp *MsgPackRenderResp
 				var err error
 				req = new(MsgPackBindingReq)
-				if err = c.ShouldBindWith(req, binding.MsgPack); err != nil {
-					c.String(http.StatusBadRequest, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypeBind)
+				if err := gors.ShouldBind(
+					c, req,
+					gors.MsgPackBinding,
+				); err != nil {
+					gors.HandleBadRequest(c, err)
 					return
 				}
 				if err = gors.Validate(req); err != nil {
-					c.String(http.StatusBadRequest, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypeBind)
+					gors.HandleBadRequest(c, err)
 					return
 				}
 				ctx := gors.NewContext(c)
@@ -466,29 +407,18 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				var resp *YAMLRenderResp
 				var err error
 				req = new(YAMLBindingReq)
-				if err = c.ShouldBindUri(req); err != nil {
-					c.String(http.StatusBadRequest, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypeBind)
-					return
-				}
-				if err = c.ShouldBindWith(req, binding.Query); err != nil {
-					c.String(http.StatusBadRequest, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypeBind)
-					return
-				}
-				if err = c.ShouldBindWith(req, binding.Header); err != nil {
-					c.String(http.StatusBadRequest, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypeBind)
-					return
-				}
-				if err = c.ShouldBindWith(req, binding.YAML); err != nil {
-					c.String(http.StatusBadRequest, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypeBind)
+				if err := gors.ShouldBind(
+					c, req,
+					gors.UriBinding,
+					gors.QueryBinding,
+					gors.HeaderBinding,
+					gors.YAMLBinding,
+				); err != nil {
+					gors.HandleBadRequest(c, err)
 					return
 				}
 				if err = gors.Validate(req); err != nil {
-					c.String(http.StatusBadRequest, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypeBind)
+					gors.HandleBadRequest(c, err)
 					return
 				}
 				ctx := gors.NewContext(c)
@@ -517,29 +447,18 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				var resp *TOMLRenderResp
 				var err error
 				req = new(TOMLBindingReq)
-				if err = c.ShouldBindUri(req); err != nil {
-					c.String(http.StatusBadRequest, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypeBind)
-					return
-				}
-				if err = c.ShouldBindWith(req, binding.Query); err != nil {
-					c.String(http.StatusBadRequest, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypeBind)
-					return
-				}
-				if err = c.ShouldBindWith(req, binding.Header); err != nil {
-					c.String(http.StatusBadRequest, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypeBind)
-					return
-				}
-				if err = c.ShouldBindWith(req, binding.TOML); err != nil {
-					c.String(http.StatusBadRequest, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypeBind)
+				if err := gors.ShouldBind(
+					c, req,
+					gors.UriBinding,
+					gors.QueryBinding,
+					gors.HeaderBinding,
+					gors.TOMLBinding,
+				); err != nil {
+					gors.HandleBadRequest(c, err)
 					return
 				}
 				if err = gors.Validate(req); err != nil {
-					c.String(http.StatusBadRequest, err.Error())
-					_ = c.Error(err).SetType(gin.ErrorTypeBind)
+					gors.HandleBadRequest(c, err)
 					return
 				}
 				ctx := gors.NewContext(c)

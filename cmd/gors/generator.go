@@ -282,7 +282,7 @@ func (g *generate) printHandler(info *gors.RouterInfo) {
 		g.printBytesReq(info)
 		g.P(g.functionBuf, "req = string(body)")
 	} else if info.Param2.Reader {
-		g.printReaderReq(info)
+		g.P(g.functionBuf, "req = c.Request.Body")
 	} else if info.Param2.ObjectArgs != nil {
 		g.printObjectReq(info)
 		g.printReqValidate()
@@ -305,80 +305,62 @@ func (g *generate) printBytesReq(info *gors.RouterInfo) {
 	g.P(g.functionBuf, "}")
 }
 
-func (g *generate) printReaderReq(info *gors.RouterInfo) {
-	g.P(g.functionBuf, "req = c.Request.Body")
-}
-
-func (g *generate) printObjectReqInit(info *gors.RouterInfo) {
-	objArgs := info.Param2.ObjectArgs
-	g.P(g.functionBuf, "req = new(", objArgs.GoImportPath.Ident(objArgs.Name), ")")
-}
-
-func (g *generate) printBindUriRequest() {
-	g.P(g.functionBuf, "if err = c.ShouldBindUri(req); err != nil {")
-	g.P(g.functionBuf, gorsPackage.Ident("HandleBadRequest"), "(c, err)")
-	g.P(g.functionBuf, "return")
-	g.P(g.functionBuf, "}")
-}
-
-func (g *generate) printBindRequest(binding string) {
-	g.P(g.functionBuf, "if err = c.ShouldBindWith(req, ", bindingPackage.Ident(binding), "); err != nil {")
-	g.P(g.functionBuf, gorsPackage.Ident("HandleBadRequest"), "(c, err)")
-	g.P(g.functionBuf, "return")
-	g.P(g.functionBuf, "}")
-}
-
-func (g *generate) printCustomRequest(s string) {
-	g.P(g.functionBuf, "var binding gors.Binding = req")
-	g.P(g.functionBuf, "err = binding.Bind(c)")
-	g.P(g.functionBuf, "if err != nil {")
+func (g *generate) printRequestBind(bindings []string) {
+	g.P(g.functionBuf, "if err := ", gorsPackage.Ident("ShouldBind"), "(")
+	g.P(g.functionBuf, "c, req, ")
+	for _, binding := range bindings {
+		g.P(g.functionBuf, gorsPackage.Ident(binding), ",")
+	}
+	g.P(g.functionBuf, "); err != nil {")
 	g.P(g.functionBuf, gorsPackage.Ident("HandleBadRequest"), "(c, err)")
 	g.P(g.functionBuf, "return")
 	g.P(g.functionBuf, "}")
 }
 
 func (g *generate) printObjectReq(info *gors.RouterInfo) {
-	g.printObjectReqInit(info)
+	objArgs := info.Param2.ObjectArgs
+	g.P(g.functionBuf, "req = new(", objArgs.GoImportPath.Ident(objArgs.Name), ")")
+	var bindings []string
 	if info.UriBinding {
-		g.printBindUriRequest()
+		bindings = append(bindings, "UriBinding")
 	}
 	if info.QueryBinding {
-		g.printBindRequest("Query")
+		bindings = append(bindings, "QueryBinding")
 	}
 	if info.HeaderBinding {
-		g.printBindRequest("Header")
-	}
-	if info.JSONBinding {
-		g.printBindRequest("JSON")
-	}
-	if info.XMLBinding {
-		g.printBindRequest("XML")
+		bindings = append(bindings, "HeaderBinding")
 	}
 	if info.FormBinding {
-		g.printBindRequest("Form")
+		bindings = append(bindings, "FormBinding")
 	}
 	if info.FormPostBinding {
-		g.printBindRequest("FormPost")
+		bindings = append(bindings, "FormPostBinding")
 	}
 	if info.FormMultipartBinding {
-		g.printBindRequest("FormMultipart")
+		bindings = append(bindings, "FormMultipartBinding")
 	}
-	if info.ProtobufBinding {
-		g.printBindRequest("ProtoBuf")
+	if info.JSONBinding {
+		bindings = append(bindings, "JSONBinding")
+	}
+	if info.XMLBinding {
+		bindings = append(bindings, "XMLBinding")
+	}
+	if info.ProtoBufBinding {
+		bindings = append(bindings, "ProtoBufBinding")
 	}
 	if info.MsgPackBinding {
-		g.printBindRequest("MsgPack")
+		bindings = append(bindings, "MsgPackBinding")
 	}
 	if info.YAMLBinding {
-		g.printBindRequest("YAML")
+		bindings = append(bindings, "YAMLBinding")
 	}
 	if info.TOMLBinding {
-		g.printBindRequest("TOML")
+		bindings = append(bindings, "TOMLBinding")
 	}
 	if info.CustomBinding {
-		g.printCustomRequest("Custom")
+		bindings = append(bindings, "CustomBinding")
 	}
-
+	g.printRequestBind(bindings)
 }
 
 func (g *generate) printReqValidate() {
