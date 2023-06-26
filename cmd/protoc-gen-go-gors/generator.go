@@ -71,21 +71,19 @@ func genFunction(gen *protogen.Plugin, file *protogen.File, g *protogen.Generate
 			if router.HeaderBinding {
 				printMapBinding(g, "HeaderParams")
 			}
-			//if router.JSONBinding {
-			//	g.printBindRequest("JSON")
-			//}
+			if router.FormBinding {
+				printMapBinding(g, "FormParams")
+			}
+			if router.FormPostBinding {
+				printMapBinding(g, "FormPostParams")
+			}
+			if router.JSONBinding {
+				printBindRequest(g, "JSON")
+			}
 			//if router.XMLBinding {
 			//	g.printBindRequest("XML")
 			//}
-			//if router.FormBinding {
-			//	g.printBindRequest("Form")
-			//}
-			//if router.FormPostBinding {
-			//	g.printBindRequest("FormPost")
-			//}
-			//if router.FormMultipartBinding {
-			//	g.printBindRequest("FormMultipart")
-			//}
+
 			//if router.ProtobufBinding {
 			//	g.printBindRequest("ProtoBuf")
 			//}
@@ -122,14 +120,6 @@ func genFunction(gen *protogen.Plugin, file *protogen.File, g *protogen.Generate
 	g.P("}")
 }
 
-func printMapBinding(g *protogen.GeneratedFile, paramMethodName string) {
-	g.P("if err := ", bindingPackage.Ident("MapFormWithTag"), "(req, ", gorsPackage.Ident(paramMethodName), "(c), ", strconv.Quote("json"), "); err != nil {")
-	g.P("c.String(", httpPackage.Ident("StatusBadRequest"), ", err.Error())")
-	g.P("_ = c.Error(err).SetType(", ginPackage.Ident("ErrorTypeBind"), ")")
-	g.P("return")
-	g.P("}")
-}
-
 func extractBasePath(service *protogen.Service) string {
 	return gors.ExtractBasePath(splitComment(service.Comments.Leading.String()))
 }
@@ -146,4 +136,26 @@ func splitComment(leadingComment string) []string {
 		comments = append(comments, line)
 	}
 	return comments
+}
+
+func printMapBinding(g *protogen.GeneratedFile, paramMethodName string) {
+	g.P(paramMethodName, ", err := ", gorsPackage.Ident(paramMethodName))
+	g.P("if err != nil {")
+	g.P("c.String(", httpPackage.Ident("StatusBadRequest"), ", err.Error())")
+	g.P("_ = c.Error(err).SetType(", ginPackage.Ident("ErrorTypeBind"), ")")
+	g.P("return")
+	g.P("}")
+	g.P("if err := ", bindingPackage.Ident("MapFormWithTag"), "(req, ", gorsPackage.Ident(paramMethodName), "(c), ", strconv.Quote("json"), "); err != nil {")
+	g.P("c.String(", httpPackage.Ident("StatusBadRequest"), ", err.Error())")
+	g.P("_ = c.Error(err).SetType(", ginPackage.Ident("ErrorTypeBind"), ")")
+	g.P("return")
+	g.P("}")
+}
+
+func printBindRequest(g *protogen.GeneratedFile, binding string) {
+	g.P("if err = c.ShouldBindWith(req, ", bindingPackage.Ident(binding), "); err != nil {")
+	g.P("c.String(", httpPackage.Ident("StatusBadRequest"), ", err.Error())")
+	g.P("_ = c.Error(err).SetType(", ginPackage.Ident("ErrorTypeBind"), ")")
+	g.P("return")
+	g.P("}")
 }
