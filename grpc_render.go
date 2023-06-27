@@ -4,6 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"google.golang.org/grpc/metadata"
+
 	//"github.com/gin-gonic/gin/render"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/grpclog"
@@ -17,7 +19,7 @@ var OutgoingHeaderMatcher = DefaultOutgoingHeaderMatcher
 
 var HandleGRPCError = DefaultHandleGRPCError
 
-func DefaultHandleGRPCError(c *gin.Context, err error) {
+func DefaultHandleGRPCError(c *gin.Context, err error, headerMD, trailerMD metadata.MD) {
 	var customStatus *HttpError
 	if errors.As(err, &customStatus) {
 		err = customStatus.err
@@ -33,12 +35,7 @@ func DefaultHandleGRPCError(c *gin.Context, err error) {
 		c.Writer.Header().Set("WWW-Authenticate", s.Message())
 	}
 
-	md, ok := GRPCMetadataFromContext(c.Request.Context())
-	if !ok {
-		grpclog.Infof("Failed to extract GRPCMetadata from context")
-	}
-
-	handleForwardResponseGRPCMetadata(c, md)
+	handleForwardResponseGRPCMetadata(c, headerMD)
 
 	// RFC 7230 https://tools.ietf.org/html/rfc7230#section-4.1.2
 	// Unless the request includes a TE header field indicating "trailers"
@@ -48,7 +45,7 @@ func DefaultHandleGRPCError(c *gin.Context, err error) {
 	doForwardTrailers := requestAcceptsTrailers(c)
 
 	if doForwardTrailers {
-		handleForwardResponseTrailerHeader(c, md)
+		handleForwardResponseTrailerHeader(c, trailerMD)
 		c.Writer.Header().Set("Transfer-Encoding", "chunked")
 	}
 
@@ -60,12 +57,12 @@ func DefaultHandleGRPCError(c *gin.Context, err error) {
 	c.String(st, pb.Message)
 
 	if doForwardTrailers {
-		handleForwardResponseTrailer(c, md)
+		handleForwardResponseTrailer(c, trailerMD)
 	}
 }
 
-func handleForwardResponseGRPCMetadata(c *gin.Context, md GRPCMetadata) {
-	for k, vs := range md.HeaderMD {
+func handleForwardResponseGRPCMetadata(c *gin.Context, headerMD metadata.MD) {
+	for k, vs := range headerMD {
 		if h, ok := OutgoingHeaderMatcher(k); ok {
 			for _, v := range vs {
 				c.Writer.Header().Add(h, v)
@@ -79,15 +76,15 @@ func requestAcceptsTrailers(c *gin.Context) bool {
 	return strings.Contains(strings.ToLower(te), "trailers")
 }
 
-func handleForwardResponseTrailerHeader(c *gin.Context, md GRPCMetadata) {
-	for k := range md.TrailerMD {
+func handleForwardResponseTrailerHeader(c *gin.Context, trailerMD metadata.MD) {
+	for k := range trailerMD {
 		tKey := textproto.CanonicalMIMEHeaderKey(fmt.Sprintf("%s%s", MetadataTrailerPrefix, k))
 		c.Writer.Header().Add("Trailer", tKey)
 	}
 }
 
-func handleForwardResponseTrailer(c *gin.Context, md GRPCMetadata) {
-	for k, vs := range md.TrailerMD {
+func handleForwardResponseTrailer(c *gin.Context, trailerMD metadata.MD) {
+	for k, vs := range trailerMD {
 		tKey := fmt.Sprintf("%s%s", MetadataTrailerPrefix, k)
 		for _, v := range vs {
 			c.Writer.Header().Add(tKey, v)
@@ -144,8 +141,8 @@ func HTTPStatusFromCode(code codes.Code) int {
 	}
 }
 
-func DefaultHandleGRPCResponse(c *gin.Context, md GRPCMetadata, resp any, err error) {
-	handleForwardResponseGRPCMetadata(c, md)
+func DefaultHandleGRPCResponse(c *gin.Context, headerMD, trailerMD metadata.MD, resp any, err error) {
+	handleForwardResponseGRPCMetadata(c, headerMD)
 
 	// RFC 7230 https://tools.ietf.org/html/rfc7230#section-4.1.2
 	// Unless the request includes a TE header field indicating "trailers"
@@ -155,11 +152,9 @@ func DefaultHandleGRPCResponse(c *gin.Context, md GRPCMetadata, resp any, err er
 	doForwardTrailers := requestAcceptsTrailers(c)
 
 	if doForwardTrailers {
-		handleForwardResponseTrailerHeader(c, md)
+		handleForwardResponseTrailerHeader(c, trailerMD)
 		c.Writer.Header().Set("Transfer-Encoding", "chunked")
 	}
-
-	handleForwardResponseTrailerHeader(c, md)
 
 	//var buf []byte
 	//var err error
@@ -172,6 +167,6 @@ func DefaultHandleGRPCResponse(c *gin.Context, md GRPCMetadata, resp any, err er
 	// TODO Render
 
 	if doForwardTrailers {
-		handleForwardResponseTrailer(c, md)
+		handleForwardResponseTrailer(c, trailerMD)
 	}
 }
