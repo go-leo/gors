@@ -7,6 +7,7 @@ require (
 	github.com/go-leo/gox v0.0.0-20230616023204-abcd5dbca361
 	golang.org/x/exp v0.0.0-20230213192124-5e25df0256eb
 	golang.org/x/tools v0.6.0
+	google.golang.org/grpc v1.56.1
 	google.golang.org/protobuf v1.30.0
 )
 
