@@ -22,12 +22,16 @@ func CustomBinderRenderRoutes(srv CustomBinderRender) []gors.Route {
 					c, req, "",
 					gors.CustomBinding,
 				); err != nil {
-					gors.HandleBadRequest(c, err)
+					gors.HTTPErrorRender(c, gors.BindError(err))
 					return
 				}
 				ctx := gors.NewContext(c)
 				resp, err = srv.Custom(ctx, req)
-				gors.MustRender(c, resp, err, "", gors.CustomRender)
+				if err != nil {
+					gors.HTTPErrorRender(c, err)
+					return
+				}
+				gors.CustomRender(c, gors.HTTPStatusCode(ctx), resp, "")
 			},
 		),
 	}

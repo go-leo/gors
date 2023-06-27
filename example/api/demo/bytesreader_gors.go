@@ -27,7 +27,11 @@ func BytesReaderRoutes(srv BytesReader) []gors.Route {
 				req = body
 				ctx := gors.NewContext(c)
 				resp, err = srv.GetBytesReader(ctx, req)
-				gors.MustRender(c, resp, err, "video/mpeg4", gors.ReaderRender)
+				if err != nil {
+					gors.HTTPErrorRender(c, err)
+					return
+				}
+				gors.ReaderRender(c, gors.HTTPStatusCode(ctx), resp, "video/mpeg4")
 			},
 		),
 		gors.NewRoute(
@@ -46,7 +50,11 @@ func BytesReaderRoutes(srv BytesReader) []gors.Route {
 				req = body
 				ctx := gors.NewContext(c)
 				resp, err = srv.PatchBytesReader(ctx, req)
-				gors.MustRender(c, resp, err, "video/mpeg4", gors.ReaderRender)
+				if err != nil {
+					gors.HTTPErrorRender(c, err)
+					return
+				}
+				gors.ReaderRender(c, gors.HTTPStatusCode(ctx), resp, "video/mpeg4")
 			},
 		),
 	}

@@ -22,12 +22,16 @@ func ServiceRoutes(srv Service) []gors.Route {
 					c, req, "",
 					gors.UriBinding,
 				); err != nil {
-					gors.HandleBadRequest(c, err)
+					gors.HTTPErrorRender(c, gors.BindError(err))
 					return
 				}
 				ctx := gors.NewContext(c)
 				resp, err = srv.Method(ctx, req)
-				gors.MustRender(c, resp, err, "", gors.JSONRender)
+				if err != nil {
+					gors.HTTPErrorRender(c, err)
+					return
+				}
+				gors.JSONRender(c, gors.HTTPStatusCode(ctx), resp, "")
 			},
 		),
 	}

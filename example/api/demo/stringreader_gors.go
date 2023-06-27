@@ -28,7 +28,11 @@ func StringReaderRoutes(srv StringReader) []gors.Route {
 				req = convx.BytesToString(body)
 				ctx := gors.NewContext(c)
 				resp, err = srv.GetStringRender(ctx, req)
-				gors.MustRender(c, resp, err, "video/mpeg4", gors.ReaderRender)
+				if err != nil {
+					gors.HTTPErrorRender(c, err)
+					return
+				}
+				gors.ReaderRender(c, gors.HTTPStatusCode(ctx), resp, "video/mpeg4")
 			},
 		),
 		gors.NewRoute(
@@ -47,7 +51,11 @@ func StringReaderRoutes(srv StringReader) []gors.Route {
 				req = convx.BytesToString(body)
 				ctx := gors.NewContext(c)
 				resp, err = srv.OptionsStringReader(ctx, req)
-				gors.MustRender(c, resp, err, "video/mpeg4", gors.ReaderRender)
+				if err != nil {
+					gors.HTTPErrorRender(c, err)
+					return
+				}
+				gors.ReaderRender(c, gors.HTTPStatusCode(ctx), resp, "video/mpeg4")
 			},
 		),
 	}

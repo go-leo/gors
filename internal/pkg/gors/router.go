@@ -130,6 +130,7 @@ type RouterInfo struct {
 	MsgPackRender      bool
 	TOMLRender         bool
 	CustomRender       bool
+	ProtoJSONRender    bool
 
 	RpcMethodName string
 	Param2        *Param
@@ -283,6 +284,8 @@ func NewRouter(methodName string, basePath string, comments []string) *RouterInf
 				r.TOMLRender = true
 			case strings.ToUpper(s) == strings.ToUpper(annotation.CustomRender):
 				r.CustomRender = true
+			case strings.ToUpper(s) == strings.ToUpper(annotation.ProtoJSONRender):
+				r.ProtoJSONRender = true
 				// render end
 
 			case strings.HasPrefix(s, annotation.GORS):

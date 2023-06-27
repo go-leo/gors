@@ -27,7 +27,11 @@ func BytesBytesRoutes(srv BytesBytes) []gors.Route {
 				req = body
 				ctx := gors.NewContext(c)
 				resp, err = srv.GetBytesBytes(ctx, req)
-				gors.MustRender(c, resp, err, "ttt.sss", gors.BytesRender)
+				if err != nil {
+					gors.HTTPErrorRender(c, err)
+					return
+				}
+				gors.BytesRender(c, gors.HTTPStatusCode(ctx), resp, "ttt.sss")
 			},
 		),
 		gors.NewRoute(
@@ -46,7 +50,11 @@ func BytesBytesRoutes(srv BytesBytes) []gors.Route {
 				req = body
 				ctx := gors.NewContext(c)
 				resp, err = srv.PostBytesBytes(ctx, req)
-				gors.MustRender(c, resp, err, "text/go", gors.BytesRender)
+				if err != nil {
+					gors.HTTPErrorRender(c, err)
+					return
+				}
+				gors.BytesRender(c, gors.HTTPStatusCode(ctx), resp, "text/go")
 			},
 		),
 	}

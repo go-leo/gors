@@ -50,4 +50,5 @@ const (
 	MsgPackRender      = "@MsgPackRender"
 	TOMLRender         = "@TOMLRender"
 	CustomRender       = "@CustomRender"
+	ProtoJSONRender    = "@ProtoJSONRender"
 )

@@ -28,7 +28,11 @@ func StringBytesRoutes(srv StringBytes) []gors.Route {
 				req = convx.BytesToString(body)
 				ctx := gors.NewContext(c)
 				resp, err = srv.GetStringBytes(ctx, req)
-				gors.MustRender(c, resp, err, "", gors.BytesRender)
+				if err != nil {
+					gors.HTTPErrorRender(c, err)
+					return
+				}
+				gors.BytesRender(c, gors.HTTPStatusCode(ctx), resp, "")
 			},
 		),
 		gors.NewRoute(
@@ -47,7 +51,11 @@ func StringBytesRoutes(srv StringBytes) []gors.Route {
 				req = convx.BytesToString(body)
 				ctx := gors.NewContext(c)
 				resp, err = srv.OptionsStringBytes(ctx, req)
-				gors.MustRender(c, resp, err, "", gors.BytesRender)
+				if err != nil {
+					gors.HTTPErrorRender(c, err)
+					return
+				}
+				gors.BytesRender(c, gors.HTTPStatusCode(ctx), resp, "")
 			},
 		),
 	}

@@ -23,12 +23,16 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 					c, req, "",
 					gors.UriBinding,
 				); err != nil {
-					gors.HandleBadRequest(c, err)
+					gors.HTTPErrorRender(c, gors.BindError(err))
 					return
 				}
 				ctx := gors.NewContext(c)
 				resp, err = srv.UriBindingIndentedJSONRender(ctx, req)
-				gors.MustRender(c, resp, err, "", gors.IndentedJSONRender)
+				if err != nil {
+					gors.HTTPErrorRender(c, err)
+					return
+				}
+				gors.IndentedJSONRender(c, gors.HTTPStatusCode(ctx), resp, "")
 			},
 		),
 		gors.NewRoute(
@@ -44,12 +48,16 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 					gors.UriBinding,
 					gors.QueryBinding,
 				); err != nil {
-					gors.HandleBadRequest(c, err)
+					gors.HTTPErrorRender(c, gors.BindError(err))
 					return
 				}
 				ctx := gors.NewContext(c)
 				resp, err = srv.QueryBindingSecureJSONRender(ctx, req)
-				gors.MustRender(c, resp, err, "", gors.SecureJSONRender)
+				if err != nil {
+					gors.HTTPErrorRender(c, err)
+					return
+				}
+				gors.SecureJSONRender(c, gors.HTTPStatusCode(ctx), resp, "")
 			},
 		),
 		gors.NewRoute(
@@ -66,12 +74,16 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 					gors.QueryBinding,
 					gors.HeaderBinding,
 				); err != nil {
-					gors.HandleBadRequest(c, err)
+					gors.HTTPErrorRender(c, gors.BindError(err))
 					return
 				}
 				ctx := gors.NewContext(c)
 				resp, err = srv.HeaderBindingJsonpJSONRender(ctx, req)
-				gors.MustRender(c, resp, err, "", gors.JSONPJSONRender)
+				if err != nil {
+					gors.HTTPErrorRender(c, err)
+					return
+				}
+				gors.JSONPJSONRender(c, gors.HTTPStatusCode(ctx), resp, "")
 			},
 		),
 		gors.NewRoute(
@@ -89,12 +101,16 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 					gors.HeaderBinding,
 					gors.JSONBinding,
 				); err != nil {
-					gors.HandleBadRequest(c, err)
+					gors.HTTPErrorRender(c, gors.BindError(err))
 					return
 				}
 				ctx := gors.NewContext(c)
 				resp, err = srv.JSONBindingJSONRender(ctx, req)
-				gors.MustRender(c, resp, err, "", gors.JSONRender)
+				if err != nil {
+					gors.HTTPErrorRender(c, err)
+					return
+				}
+				gors.JSONRender(c, gors.HTTPStatusCode(ctx), resp, "")
 			},
 		),
 		gors.NewRoute(
@@ -112,12 +128,16 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 					gors.HeaderBinding,
 					gors.XMLBinding,
 				); err != nil {
-					gors.HandleBadRequest(c, err)
+					gors.HTTPErrorRender(c, gors.BindError(err))
 					return
 				}
 				ctx := gors.NewContext(c)
 				resp, err = srv.XMLBindingXMLRender(ctx, req)
-				gors.MustRender(c, resp, err, "", gors.XMLRender)
+				if err != nil {
+					gors.HTTPErrorRender(c, err)
+					return
+				}
+				gors.XMLRender(c, gors.HTTPStatusCode(ctx), resp, "")
 			},
 		),
 		gors.NewRoute(
@@ -134,12 +154,16 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 					gors.HeaderBinding,
 					gors.FormBinding,
 				); err != nil {
-					gors.HandleBadRequest(c, err)
+					gors.HTTPErrorRender(c, gors.BindError(err))
 					return
 				}
 				ctx := gors.NewContext(c)
 				resp, err = srv.FormBindingJSONRender(ctx, req)
-				gors.MustRender(c, resp, err, "", gors.JSONRender)
+				if err != nil {
+					gors.HTTPErrorRender(c, err)
+					return
+				}
+				gors.JSONRender(c, gors.HTTPStatusCode(ctx), resp, "")
 			},
 		),
 		gors.NewRoute(
@@ -157,12 +181,16 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 					gors.HeaderBinding,
 					gors.FormPostBinding,
 				); err != nil {
-					gors.HandleBadRequest(c, err)
+					gors.HTTPErrorRender(c, gors.BindError(err))
 					return
 				}
 				ctx := gors.NewContext(c)
 				resp, err = srv.FormPostBindingPureJSONRender(ctx, req)
-				gors.MustRender(c, resp, err, "", gors.PureJSONRender)
+				if err != nil {
+					gors.HTTPErrorRender(c, err)
+					return
+				}
+				gors.PureJSONRender(c, gors.HTTPStatusCode(ctx), resp, "")
 			},
 		),
 		gors.NewRoute(
@@ -180,12 +208,16 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 					gors.HeaderBinding,
 					gors.FormMultipartBinding,
 				); err != nil {
-					gors.HandleBadRequest(c, err)
+					gors.HTTPErrorRender(c, gors.BindError(err))
 					return
 				}
 				ctx := gors.NewContext(c)
 				resp, err = srv.FormMultipartBindingAsciiJSONRender(ctx, req)
-				gors.MustRender(c, resp, err, "", gors.AsciiJSONRender)
+				if err != nil {
+					gors.HTTPErrorRender(c, err)
+					return
+				}
+				gors.AsciiJSONRender(c, gors.HTTPStatusCode(ctx), resp, "")
 			},
 		),
 		gors.NewRoute(
@@ -200,12 +232,16 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 					c, req, "",
 					gors.ProtoBufBinding,
 				); err != nil {
-					gors.HandleBadRequest(c, err)
+					gors.HTTPErrorRender(c, gors.BindError(err))
 					return
 				}
 				ctx := gors.NewContext(c)
 				resp, err = srv.ProtoBufBindingProtoBufRender(ctx, req)
-				gors.MustRender(c, resp, err, "", gors.ProtoBufRender)
+				if err != nil {
+					gors.HTTPErrorRender(c, err)
+					return
+				}
+				gors.ProtoBufRender(c, gors.HTTPStatusCode(ctx), resp, "")
 			},
 		),
 		gors.NewRoute(
@@ -220,12 +256,16 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 					c, req, "",
 					gors.MsgPackBinding,
 				); err != nil {
-					gors.HandleBadRequest(c, err)
+					gors.HTTPErrorRender(c, gors.BindError(err))
 					return
 				}
 				ctx := gors.NewContext(c)
 				resp, err = srv.MsgPackBindingMsgPackRender(ctx, req)
-				gors.MustRender(c, resp, err, "", gors.MsgPackRender)
+				if err != nil {
+					gors.HTTPErrorRender(c, err)
+					return
+				}
+				gors.MsgPackRender(c, gors.HTTPStatusCode(ctx), resp, "")
 			},
 		),
 		gors.NewRoute(
@@ -243,12 +283,16 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 					gors.HeaderBinding,
 					gors.YAMLBinding,
 				); err != nil {
-					gors.HandleBadRequest(c, err)
+					gors.HTTPErrorRender(c, gors.BindError(err))
 					return
 				}
 				ctx := gors.NewContext(c)
 				resp, err = srv.YAMLBindingYAMLRender(ctx, req)
-				gors.MustRender(c, resp, err, "", gors.YAMLRender)
+				if err != nil {
+					gors.HTTPErrorRender(c, err)
+					return
+				}
+				gors.YAMLRender(c, gors.HTTPStatusCode(ctx), resp, "")
 			},
 		),
 		gors.NewRoute(
@@ -266,12 +310,16 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 					gors.HeaderBinding,
 					gors.TOMLBinding,
 				); err != nil {
-					gors.HandleBadRequest(c, err)
+					gors.HTTPErrorRender(c, gors.BindError(err))
 					return
 				}
 				ctx := gors.NewContext(c)
 				resp, err = srv.TOMLBindingTOMLRender(ctx, req)
-				gors.MustRender(c, resp, err, "", gors.TOMLRender)
+				if err != nil {
+					gors.HTTPErrorRender(c, err)
+					return
+				}
+				gors.TOMLRender(c, gors.HTTPStatusCode(ctx), resp, "")
 			},
 		),
 	}

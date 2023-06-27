@@ -27,7 +27,11 @@ func BytesStringRoutes(srv BytesString) []gors.Route {
 				req = body
 				ctx := gors.NewContext(c)
 				resp, err = srv.GetBytesString(ctx, req)
-				gors.MustRender(c, resp, err, "text/html; charset=utf-8", gors.HTMLRender)
+				if err != nil {
+					gors.HTTPErrorRender(c, err)
+					return
+				}
+				gors.HTMLRender(c, gors.HTTPStatusCode(ctx), resp, "text/html; charset=utf-8")
 			},
 		),
 		gors.NewRoute(
@@ -46,7 +50,11 @@ func BytesStringRoutes(srv BytesString) []gors.Route {
 				req = body
 				ctx := gors.NewContext(c)
 				resp, err = srv.PutBytesString(ctx, req)
-				gors.MustRender(c, resp, err, "", gors.RedirectRender)
+				if err != nil {
+					gors.HTTPErrorRender(c, err)
+					return
+				}
+				gors.RedirectRender(c, gors.HTTPStatusCode(ctx), resp, "")
 			},
 		),
 	}

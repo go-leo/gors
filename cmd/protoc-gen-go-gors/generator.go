@@ -65,6 +65,7 @@ func genClientFunction(gen *protogen.Plugin, file *protogen.File, g *protogen.Ge
 			g.P("var req *", method.Input.GoIdent)
 			g.P("var resp *", method.Output.GoIdent)
 			g.P("var ctx ", contextPackage.Ident("Context"))
+			g.P("var headerMD, trailerMD ", metadataPackage.Ident("MD"))
 			g.P("var err error")
 			g.P("req = new(", method.Input.GoIdent, ")")
 
@@ -74,7 +75,6 @@ func genClientFunction(gen *protogen.Plugin, file *protogen.File, g *protogen.Ge
 			g.P(gorsPackage.Ident("HandleGRPCError"), "(c, err)")
 			g.P("return")
 			g.P("}")
-			g.P("var headerMD, trailerMD ", metadataPackage.Ident("MD"))
 			g.P("resp, err = cli.", method.GoName, "(ctx, req, ", grpcPackage.Ident("Header"), "(&headerMD), ", grpcPackage.Ident("Trailer"), "(&trailerMD))")
 
 			printResponseRender(gen, g, router, fmName)
@@ -188,7 +188,7 @@ func printRequestBinding(gen *protogen.Plugin, g *protogen.GeneratedFile, router
 		g.P(gorsPackage.Ident(binding), ",")
 	}
 	g.P("); err != nil {")
-	g.P(gorsPackage.Ident("HandleGRPCError"), "(c, err)")
+	g.P(gorsPackage.Ident("GRPCErrorRender"), "(c, err, headerMD, trailerMD)")
 	g.P("return")
 	g.P("}")
 }

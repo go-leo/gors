@@ -21,7 +21,11 @@ func ReaderBytesRoutes(srv ReaderBytes) []gors.Route {
 				req = c.Request.Body
 				ctx := gors.NewContext(c)
 				resp, err = srv.GetReaderBytes(ctx, req)
-				gors.MustRender(c, resp, err, "", gors.BytesRender)
+				if err != nil {
+					gors.HTTPErrorRender(c, err)
+					return
+				}
+				gors.BytesRender(c, gors.HTTPStatusCode(ctx), resp, "")
 			},
 		),
 		gors.NewRoute(
@@ -34,7 +38,11 @@ func ReaderBytesRoutes(srv ReaderBytes) []gors.Route {
 				req = c.Request.Body
 				ctx := gors.NewContext(c)
 				resp, err = srv.PostReaderBytes(ctx, req)
-				gors.MustRender(c, resp, err, "text/go", gors.BytesRender)
+				if err != nil {
+					gors.HTTPErrorRender(c, err)
+					return
+				}
+				gors.BytesRender(c, gors.HTTPStatusCode(ctx), resp, "text/go")
 			},
 		),
 	}
