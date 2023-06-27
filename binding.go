@@ -1,11 +1,12 @@
 package gors
 
 import (
-	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"net/http"
 )
+
+var HandleBadRequest = DefaultHandleBadRequest
 
 func ShouldBind(c *gin.Context, req any, fns ...func(c *gin.Context, req any) error) error {
 	for _, fn := range fns {
@@ -75,70 +76,7 @@ func CustomBinding(c *gin.Context, req any) error {
 	return customBinding.Bind(c)
 }
 
-func ShouldBindWith(c *gin.Context, req any, tag string, fns ...func(c *gin.Context, req any, tag string) error) error {
-	for _, fn := range fns {
-		if err := fn(c, req, tag); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func UriBindingWith(c *gin.Context, req any, tag string) error {
-	m := make(map[string][]string)
-	for _, v := range c.Params {
-		m[v.Key] = []string{v.Value}
-	}
-	return binding.MapFormWithTag(req, m, tag)
-}
-
-func QueryBindingWith(c *gin.Context, req any, tag string) error {
-	return binding.MapFormWithTag(req, c.Request.URL.Query(), tag)
-}
-
-func HeaderBindingWith(c *gin.Context, req any, tag string) error {
-	return binding.MapFormWithTag(req, c.Request.Header, tag)
-}
-
-func FormBindingWith(c *gin.Context, req any, tag string) error {
-	if err := c.Request.ParseForm(); err != nil {
-		return err
-	}
-	const defaultMemory = 32 << 20
-	if err := c.Request.ParseMultipartForm(defaultMemory); err != nil && !errors.Is(err, http.ErrNotMultipart) {
-		return err
-	}
-	return binding.MapFormWithTag(req, c.Request.Form, tag)
-}
-
-func FormPostBindingWith(c *gin.Context, req any, tag string) error {
-	if err := c.Request.ParseForm(); err != nil {
-		return err
-	}
-	return binding.MapFormWithTag(req, c.Request.PostForm, tag)
-}
-
-func JSONBindingWith(c *gin.Context, req any, tag string) error {
-	return c.ShouldBindWith(req, binding.JSON)
-}
-
-func ProtoBufBindingWith(c *gin.Context, req any, tag string) error {
-	return c.ShouldBindWith(req, binding.ProtoBuf)
-}
-
-func MsgPackBindingWith(c *gin.Context, req any, tag string) error {
-	return c.ShouldBindWith(req, binding.MsgPack)
-}
-
-func CustomBindingWith(c *gin.Context, req any, tag string) error {
-	customBinding, ok := req.(Binding)
-	if !ok {
-		return nil
-	}
-	return customBinding.Bind(c)
-}
-
-func HandleBadRequest(c *gin.Context, err error) {
+func DefaultHandleBadRequest(c *gin.Context, err error) {
 	c.String(http.StatusBadRequest, err.Error())
 	_ = c.Error(err).SetType(gin.ErrorTypeBind)
 }

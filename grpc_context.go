@@ -23,6 +23,10 @@ var IncomingHeaderMatcher = DefaultHeaderMatcher
 
 var MetadataAnnotators []func(c *gin.Context) metadata.MD
 
+// MetadataTrailerPrefix is prepended to gRPC metadata as it is converted to
+// HTTP headers in a response handled by grpc-gateway
+const MetadataTrailerPrefix = "Grpc-Trailer-"
+
 const metadataGrpcTimeout = "Grpc-Timeout"
 const metadataHeaderBinarySuffix = "-Bin"
 
