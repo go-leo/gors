@@ -40,12 +40,16 @@ func generateFileContent(gen *protogen.Plugin, file *protogen.File, g *protogen.
 		return
 	}
 	for _, service := range file.Services {
-		genClientFunction(gen, file, g, service)
+		err := genClientFunction(gen, file, g, service)
+		if err != nil {
+			gen.Error(err)
+			return
+		}
 		genServerFunction(gen, file, g, service)
 	}
 }
 
-func genClientFunction(gen *protogen.Plugin, file *protogen.File, g *protogen.GeneratedFile, service *protogen.Service) {
+func genClientFunction(gen *protogen.Plugin, file *protogen.File, g *protogen.GeneratedFile, service *protogen.Service) error {
 	clientName := service.GoName + "Client"
 	funcName := clientName + "Routes"
 
@@ -69,10 +73,17 @@ func genClientFunction(gen *protogen.Plugin, file *protogen.File, g *protogen.Ge
 			g.P("var err error")
 			g.P("req = new(", method.Input.GoIdent, ")")
 
-			printRequestBinding(gen, g, router, fmName)
+			err := printRequestBinding(gen, g, router, fmName)
+			if err != nil {
+				return err
+			}
 
 			g.P("if ctx, err = ", gorsPackage.Ident("NewGRPCContext"), "(c, ", strconv.Quote(fmName), "); err != nil {")
-			g.P(gorsPackage.Ident("HandleGRPCError"), "(c, err)")
+			name, err := renderMethodName(router, fmName)
+			if err != nil {
+				return err
+			}
+			g.P(gorsPackage.Ident("GRPCErrorRender"), "(c, err, headerMD, trailerMD,", gorsPackage.Ident(name), ")")
 			g.P("return")
 			g.P("}")
 			g.P("resp, err = cli.", method.GoName, "(ctx, req, ", grpcPackage.Ident("Header"), "(&headerMD), ", grpcPackage.Ident("Trailer"), "(&trailerMD))")
@@ -92,6 +103,7 @@ func genClientFunction(gen *protogen.Plugin, file *protogen.File, g *protogen.Ge
 	}
 	g.P("}")
 	g.P("}")
+	return nil
 }
 
 func genServerFunction(gen *protogen.Plugin, file *protogen.File, g *protogen.GeneratedFile, service *protogen.Service) {
@@ -138,7 +150,7 @@ func genServerFunction(gen *protogen.Plugin, file *protogen.File, g *protogen.Ge
 	g.P("}")
 }
 
-func printRequestBinding(gen *protogen.Plugin, g *protogen.GeneratedFile, router *gors.RouterInfo, fmName string) {
+func printRequestBinding(gen *protogen.Plugin, g *protogen.GeneratedFile, router *gors.RouterInfo, fmName string) error {
 	var bindings []string
 	if router.UriBinding {
 		bindings = append(bindings, "UriBinding")
@@ -171,16 +183,13 @@ func printRequestBinding(gen *protogen.Plugin, g *protogen.GeneratedFile, router
 		bindings = append(bindings, "ProtoJSONBinding")
 	}
 	if router.XMLBinding {
-		gen.Error(fmt.Errorf("%s, @XMLBinding is not supported", fmName))
-		return
+		return fmt.Errorf("%s, @XMLBinding is not supported", fmName)
 	}
 	if router.YAMLBinding {
-		gen.Error(fmt.Errorf("%s, @YAMLBinding is not supported", fmName))
-		return
+		return fmt.Errorf("%s, @YAMLBinding is not supported", fmName)
 	}
 	if router.TOMLBinding {
-		gen.Error(fmt.Errorf("%s, @TOMLBinding is not supported", fmName))
-		return
+		return fmt.Errorf("%s, @TOMLBinding is not supported", fmName)
 	}
 	g.P("if err = ", gorsPackage.Ident("ShouldBind"), "(")
 	g.P("c, req, ", strconv.Quote("json"), ",")
@@ -188,31 +197,41 @@ func printRequestBinding(gen *protogen.Plugin, g *protogen.GeneratedFile, router
 		g.P(gorsPackage.Ident(binding), ",")
 	}
 	g.P("); err != nil {")
-	g.P(gorsPackage.Ident("GRPCErrorRender"), "(c, err, headerMD, trailerMD)")
+
+	name, err := renderMethodName(router, fmName)
+	if err != nil {
+		return err
+	}
+
+	g.P(gorsPackage.Ident("GRPCErrorRender"), "(c, err, headerMD, trailerMD,", gorsPackage.Ident(name), ")")
 	g.P("return")
 	g.P("}")
+	return nil
 }
 
 func printResponseRender(gen *protogen.Plugin, g *protogen.GeneratedFile, router *gors.RouterInfo, fmName string) {
 	switch {
 	case router.JSONRender:
-		g.P(gorsPackage.Ident("MustRender"), "(c, resp, err, ", strconv.Quote(router.RenderContentType), ", ", gorsPackage.Ident("JSONRender"), ")")
+		g.P(gorsPackage.Ident("JSONRender"), "(c, ", gorsPackage.Ident("HTTPStatusCode"), "(ctx), resp, ", strconv.Quote(router.RenderContentType), ")")
 	case router.IndentedJSONRender:
-		g.P(gorsPackage.Ident("MustRender"), "(c, resp, err, ", strconv.Quote(router.RenderContentType), ", ", gorsPackage.Ident("IndentedJSONRender"), ")")
+		g.P(gorsPackage.Ident("IndentedJSONRender"), "(c, ", gorsPackage.Ident("HTTPStatusCode"), "(ctx), resp, ", strconv.Quote(router.RenderContentType), ")")
 	case router.SecureJSONRender:
-		g.P(gorsPackage.Ident("MustRender"), "(c, resp, err, ", strconv.Quote(router.RenderContentType), ", ", gorsPackage.Ident("SecureJSONRender"), ")")
+		g.P(gorsPackage.Ident("SecureJSONRender"), "(c, ", gorsPackage.Ident("HTTPStatusCode"), "(ctx), resp, ", strconv.Quote(router.RenderContentType), ")")
 	case router.JSONPJSONRender:
-		g.P(gorsPackage.Ident("MustRender"), "(c, resp, err, ", strconv.Quote(router.RenderContentType), ", ", gorsPackage.Ident("JSONPJSONRender"), ")")
+		g.P(gorsPackage.Ident("JSONPJSONRender"), "(c, ", gorsPackage.Ident("HTTPStatusCode"), "(ctx), resp, ", strconv.Quote(router.RenderContentType), ")")
 	case router.PureJSONRender:
-		g.P(gorsPackage.Ident("MustRender"), "(c, resp, err, ", strconv.Quote(router.RenderContentType), ", ", gorsPackage.Ident("PureJSONRender"), ")")
+		g.P(gorsPackage.Ident("PureJSONRender"), "(c, ", gorsPackage.Ident("HTTPStatusCode"), "(ctx), resp, ", strconv.Quote(router.RenderContentType), ")")
 	case router.AsciiJSONRender:
-		g.P(gorsPackage.Ident("MustRender"), "(c, resp, err, ", strconv.Quote(router.RenderContentType), ", ", gorsPackage.Ident("AsciiJSONRender"), ")")
+		g.P(gorsPackage.Ident("AsciiJSONRender"), "(c, ", gorsPackage.Ident("HTTPStatusCode"), "(ctx), resp, ", strconv.Quote(router.RenderContentType), ")")
 	case router.ProtoBufRender:
-		g.P(gorsPackage.Ident("MustRender"), "(c, resp, err, ", strconv.Quote(router.RenderContentType), ", ", gorsPackage.Ident("ProtoBufRender"), ")")
+		g.P(gorsPackage.Ident("ProtoBufRender"), "(c, ", gorsPackage.Ident("HTTPStatusCode"), "(ctx), resp, ", strconv.Quote(router.RenderContentType), ")")
 	case router.MsgPackRender:
-		g.P(gorsPackage.Ident("MustRender"), "(c, resp, err, ", strconv.Quote(router.RenderContentType), ", ", gorsPackage.Ident("MsgPackRender"), ")")
+		g.P(gorsPackage.Ident("MsgPackRender"), "(c, ", gorsPackage.Ident("HTTPStatusCode"), "(ctx), resp, ", strconv.Quote(router.RenderContentType), ")")
 	case router.CustomRender:
-		g.P(gorsPackage.Ident("MustRender"), "(c, resp, err, ", strconv.Quote(router.RenderContentType), ", ", gorsPackage.Ident("CustomRender"), ")")
+		g.P(gorsPackage.Ident("CustomRender"), "(c, ", gorsPackage.Ident("HTTPStatusCode"), "(ctx), resp, ", strconv.Quote(router.RenderContentType), ")")
+	case router.ProtoJSONRender:
+		g.P(gorsPackage.Ident("ProtoJSONRender"), "(c, ", gorsPackage.Ident("HTTPStatusCode"), "(ctx), resp, ", strconv.Quote(router.RenderContentType), ")")
+
 	case router.BytesRender:
 		gen.Error(fmt.Errorf("%s, @BytesRender is not supported", fmName))
 		return
@@ -243,6 +262,52 @@ func printResponseRender(gen *protogen.Plugin, g *protogen.GeneratedFile, router
 	default:
 		gen.Error(fmt.Errorf("%s, render not defined", fmName))
 		return
+	}
+}
+
+func renderMethodName(router *gors.RouterInfo, fmName string) (string, error) {
+	switch {
+	case router.JSONRender:
+		return "JSONRender", nil
+	case router.IndentedJSONRender:
+		return "IndentedJSONRender", nil
+	case router.SecureJSONRender:
+		return "SecureJSONRender", nil
+	case router.JSONPJSONRender:
+		return "JSONPJSONRender", nil
+	case router.PureJSONRender:
+		return "PureJSONRender", nil
+	case router.AsciiJSONRender:
+		return "AsciiJSONRender", nil
+	case router.ProtoBufRender:
+		return "ProtoBufRender", nil
+	case router.MsgPackRender:
+		return "MsgPackRender", nil
+	case router.CustomRender:
+		return "CustomRender", nil
+	case router.ProtoJSONRender:
+		return "ProtoJSONRender", nil
+
+	case router.BytesRender:
+		return "", fmt.Errorf("%s, @BytesRender is not supported", fmName)
+	case router.StringRender:
+		return "", fmt.Errorf("%s, @StringRender is not supported", fmName)
+	case router.TextRender:
+		return "", fmt.Errorf("%s, @TextRender is not supported", fmName)
+	case router.HTMLRender:
+		return "", fmt.Errorf("%s, @HTMLRender is not supported", fmName)
+	case router.RedirectRender:
+		return "", fmt.Errorf("%s, @RedirectRender is not supported", fmName)
+	case router.ReaderRender:
+		return "", fmt.Errorf("%s, @ReaderRender is not supported", fmName)
+	case router.XMLRender:
+		return "", fmt.Errorf("%s, @XMLRender is not supported", fmName)
+	case router.YAMLRender:
+		return "", fmt.Errorf("%s, @YAMLRender is not supported", fmName)
+	case router.TOMLRender:
+		return "", fmt.Errorf("%s, @TOMLRender is not supported", fmName)
+	default:
+		return "", fmt.Errorf("%s, render not defined", fmName)
 	}
 }
 
