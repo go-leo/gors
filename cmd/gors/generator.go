@@ -307,7 +307,7 @@ func (g *generate) printBytesReq(info *gors.RouterInfo) {
 
 func (g *generate) printRequestBind(bindings []string) {
 	g.P(g.functionBuf, "if err = ", gorsPackage.Ident("ShouldBind"), "(")
-	g.P(g.functionBuf, "c, req, ")
+	g.P(g.functionBuf, "c, req, ", strconv.Quote(""), ",")
 	for _, binding := range bindings {
 		g.P(g.functionBuf, gorsPackage.Ident(binding), ",")
 	}
@@ -359,6 +359,9 @@ func (g *generate) printObjectReq(info *gors.RouterInfo) {
 	}
 	if info.CustomBinding {
 		bindings = append(bindings, "CustomBinding")
+	}
+	if info.ProtoJSONBinding {
+		bindings = append(bindings, "ProtoJSONBinding")
 	}
 	g.printRequestBind(bindings)
 }

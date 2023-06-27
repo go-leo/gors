@@ -18,8 +18,8 @@ func ServiceRoutes(srv Service) []gors.Route {
 				var resp *MethodResp
 				var err error
 				req = new(MethodReq)
-				if err := gors.ShouldBind(
-					c, req,
+				if err = gors.ShouldBind(
+					c, req, "",
 					gors.UriBinding,
 				); err != nil {
 					gors.HandleBadRequest(c, err)

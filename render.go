@@ -1,8 +1,10 @@
 package gors
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/render"
+	internalrender "github.com/go-leo/gors/internal/pkg/render"
 	"github.com/go-leo/gox/convx"
 	"github.com/go-leo/gox/iox"
 	"io"
@@ -10,19 +12,20 @@ import (
 )
 
 func MustRender(c *gin.Context, resp any, err error, contentType string, fn func(c *gin.Context, resp any, contentType string)) {
-	switch e := err.(type) {
-	case nil:
+	if err == nil {
 		fn(c, resp, contentType)
 		return
-	case *HttpError:
-		c.String(e.StatusCode(), e.Error())
-		_ = c.Error(e).SetType(gin.ErrorTypePublic)
-		return
-	default:
-		c.String(http.StatusInternalServerError, err.Error())
-		_ = c.Error(e).SetType(gin.ErrorTypePrivate)
+	}
+
+	var httpError *HttpError
+	if errors.As(err, &httpError) {
+		c.String(httpError.StatusCode(), httpError.Error())
+		_ = c.Error(httpError).SetType(gin.ErrorTypePublic)
 		return
 	}
+
+	c.String(http.StatusInternalServerError, err.Error())
+	_ = c.Error(err).SetType(gin.ErrorTypePrivate)
 }
 
 func BytesRender(c *gin.Context, resp any, contentType string) {
@@ -54,54 +57,58 @@ func ReaderRender(c *gin.Context, resp any, contentType string) {
 	c.Render(HTTPStatusCode(c), render.Reader{ContentType: contentType, ContentLength: int64(l), Reader: r})
 }
 
-func JSONRender(c *gin.Context, resp any, contentType string) {
+func JSONRender(c *gin.Context, resp any, _ string) {
 	c.JSON(HTTPStatusCode(c), resp)
 }
 
-func IndentedJSONRender(c *gin.Context, resp any, contentType string) {
+func IndentedJSONRender(c *gin.Context, resp any, _ string) {
 	c.IndentedJSON(HTTPStatusCode(c), resp)
 }
 
-func SecureJSONRender(c *gin.Context, resp any, contentType string) {
+func SecureJSONRender(c *gin.Context, resp any, _ string) {
 	c.SecureJSON(HTTPStatusCode(c), resp)
 }
 
-func JSONPJSONRender(c *gin.Context, resp any, contentType string) {
+func JSONPJSONRender(c *gin.Context, resp any, _ string) {
 	c.JSONP(HTTPStatusCode(c), resp)
 }
 
-func PureJSONRender(c *gin.Context, resp any, contentType string) {
+func PureJSONRender(c *gin.Context, resp any, _ string) {
 	c.PureJSON(HTTPStatusCode(c), resp)
 }
 
-func AsciiJSONRender(c *gin.Context, resp any, contentType string) {
+func AsciiJSONRender(c *gin.Context, resp any, _ string) {
 	c.AsciiJSON(HTTPStatusCode(c), resp)
 }
 
-func XMLRender(c *gin.Context, resp any, contentType string) {
+func XMLRender(c *gin.Context, resp any, _ string) {
 	c.XML(HTTPStatusCode(c), resp)
 }
 
-func YAMLRender(c *gin.Context, resp any, contentType string) {
+func YAMLRender(c *gin.Context, resp any, _ string) {
 	c.YAML(HTTPStatusCode(c), resp)
 }
 
-func ProtoBufRender(c *gin.Context, resp any, contentType string) {
+func ProtoBufRender(c *gin.Context, resp any, _ string) {
 	c.ProtoBuf(HTTPStatusCode(c), resp)
 }
 
-func MsgPackRender(c *gin.Context, resp any, contentType string) {
+func MsgPackRender(c *gin.Context, resp any, _ string) {
 	c.Render(HTTPStatusCode(c), render.MsgPack{Data: resp})
 }
 
-func TOMLRender(c *gin.Context, resp any, contentType string) {
+func TOMLRender(c *gin.Context, resp any, _ string) {
 	c.TOML(HTTPStatusCode(c), resp)
 }
 
-func CustomRender(c *gin.Context, resp any, contentType string) {
+func CustomRender(c *gin.Context, resp any, _ string) {
 	customRender, ok := resp.(Render)
 	if !ok {
 		return
 	}
 	customRender.Render(c)
+}
+
+func ProtoJSONRender(c *gin.Context, resp any, _ string) {
+	c.Render(HTTPStatusCode(c), internalrender.ProtoJSON{Data: resp})
 }

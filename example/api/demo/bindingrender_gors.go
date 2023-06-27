@@ -19,8 +19,8 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				var resp *IndentedJSONRenderResp
 				var err error
 				req = new(UriBindingReq)
-				if err := gors.ShouldBind(
-					c, req,
+				if err = gors.ShouldBind(
+					c, req, "",
 					gors.UriBinding,
 				); err != nil {
 					gors.HandleBadRequest(c, err)
@@ -39,8 +39,8 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				var resp *SecureJSONRenderResp
 				var err error
 				req = new(QueryBindingReq)
-				if err := gors.ShouldBind(
-					c, req,
+				if err = gors.ShouldBind(
+					c, req, "",
 					gors.UriBinding,
 					gors.QueryBinding,
 				); err != nil {
@@ -60,8 +60,8 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				var resp *JsonpJSONRenderResp
 				var err error
 				req = new(HeaderBindingReq)
-				if err := gors.ShouldBind(
-					c, req,
+				if err = gors.ShouldBind(
+					c, req, "",
 					gors.UriBinding,
 					gors.QueryBinding,
 					gors.HeaderBinding,
@@ -82,8 +82,8 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				var resp *JSONRenderResp
 				var err error
 				req = new(JSONBindingReq)
-				if err := gors.ShouldBind(
-					c, req,
+				if err = gors.ShouldBind(
+					c, req, "",
 					gors.UriBinding,
 					gors.QueryBinding,
 					gors.HeaderBinding,
@@ -105,8 +105,8 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				var resp *XMLRenderResp
 				var err error
 				req = new(XMLBindingReq)
-				if err := gors.ShouldBind(
-					c, req,
+				if err = gors.ShouldBind(
+					c, req, "",
 					gors.UriBinding,
 					gors.QueryBinding,
 					gors.HeaderBinding,
@@ -128,8 +128,8 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				var resp *JSONRenderResp
 				var err error
 				req = new(FormBindingReq)
-				if err := gors.ShouldBind(
-					c, req,
+				if err = gors.ShouldBind(
+					c, req, "",
 					gors.UriBinding,
 					gors.HeaderBinding,
 					gors.FormBinding,
@@ -150,8 +150,8 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				var resp *PureJSONRenderResp
 				var err error
 				req = new(FormPostBindingReq)
-				if err := gors.ShouldBind(
-					c, req,
+				if err = gors.ShouldBind(
+					c, req, "",
 					gors.UriBinding,
 					gors.QueryBinding,
 					gors.HeaderBinding,
@@ -174,7 +174,7 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				var err error
 				req = new(FormMultipartBindingReq)
 				if err = gors.ShouldBind(
-					c, req,
+					c, req, "",
 					gors.UriBinding,
 					gors.QueryBinding,
 					gors.HeaderBinding,
@@ -196,8 +196,8 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				var resp *pb.ProtoBufResp
 				var err error
 				req = new(pb.ProtoBufReq)
-				if err := gors.ShouldBind(
-					c, req,
+				if err = gors.ShouldBind(
+					c, req, "",
 					gors.ProtoBufBinding,
 				); err != nil {
 					gors.HandleBadRequest(c, err)
@@ -216,8 +216,8 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				var resp *MsgPackRenderResp
 				var err error
 				req = new(MsgPackBindingReq)
-				if err := gors.ShouldBind(
-					c, req,
+				if err = gors.ShouldBind(
+					c, req, "",
 					gors.MsgPackBinding,
 				); err != nil {
 					gors.HandleBadRequest(c, err)
@@ -236,8 +236,8 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				var resp *YAMLRenderResp
 				var err error
 				req = new(YAMLBindingReq)
-				if err := gors.ShouldBind(
-					c, req,
+				if err = gors.ShouldBind(
+					c, req, "",
 					gors.UriBinding,
 					gors.QueryBinding,
 					gors.HeaderBinding,
@@ -259,8 +259,8 @@ func BindingRenderRoutes(srv BindingRender) []gors.Route {
 				var resp *TOMLRenderResp
 				var err error
 				req = new(TOMLBindingReq)
-				if err := gors.ShouldBind(
-					c, req,
+				if err = gors.ShouldBind(
+					c, req, "",
 					gors.UriBinding,
 					gors.QueryBinding,
 					gors.HeaderBinding,

@@ -107,6 +107,7 @@ type RouterInfo struct {
 	YAMLBinding          bool
 	TOMLBinding          bool
 	CustomBinding        bool
+	ProtoJSONBinding     bool
 
 	RenderContentType string
 
@@ -214,6 +215,8 @@ func NewRouter(methodName string, basePath string, comments []string) *RouterInf
 				r.HeaderBinding = true
 			case strings.ToUpper(s) == strings.ToUpper(annotation.JSONBinding):
 				r.JSONBinding = true
+			case strings.ToUpper(s) == strings.ToUpper(annotation.ProtoJSONBinding):
+				r.ProtoJSONBinding = true
 			case strings.ToUpper(s) == strings.ToUpper(annotation.XMLBinding):
 				r.XMLBinding = true
 			case strings.ToUpper(s) == strings.ToUpper(annotation.FormBinding):

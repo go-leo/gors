@@ -29,6 +29,7 @@ const (
 	YAMLBinding          = "@YAMLBinding"
 	TOMLBinding          = "@TOMLBinding"
 	CustomBinding        = "@CustomBinding"
+	ProtoJSONBinding     = "@ProtoJSONBinding"
 
 	BytesRender    = "@BytesRender"
 	StringRender   = "@StringRender"

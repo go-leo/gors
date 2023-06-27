@@ -18,8 +18,8 @@ func CustomBinderRenderRoutes(srv CustomBinderRender) []gors.Route {
 				var resp *CustomResp
 				var err error
 				req = new(CustomReq)
-				if err := gors.ShouldBind(
-					c, req,
+				if err = gors.ShouldBind(
+					c, req, "",
 					gors.CustomBinding,
 				); err != nil {
 					gors.HandleBadRequest(c, err)

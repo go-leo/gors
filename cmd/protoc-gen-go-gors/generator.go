@@ -18,6 +18,7 @@ const (
 	httpPackage     = protogen.GoImportPath("net/http")
 	gorsPackage     = protogen.GoImportPath("github.com/go-leo/gors")
 	bindingPackage  = protogen.GoImportPath("github.com/gin-gonic/gin/binding")
+	contextPackage  = protogen.GoImportPath("context")
 )
 
 func generateFile(gen *protogen.Plugin, file *protogen.File) *protogen.GeneratedFile {
@@ -63,13 +64,18 @@ func genClientFunction(gen *protogen.Plugin, file *protogen.File, g *protogen.Ge
 			g.P("func(c *", ginPackage.Ident("Context"), ") {")
 			g.P("var req *", method.Input.GoIdent)
 			g.P("var resp *", method.Output.GoIdent)
+			g.P("var ctx ", contextPackage.Ident("Context"))
 			g.P("var err error")
 			g.P("req = new(", method.Input.GoIdent, ")")
 
 			printRequestBinding(gen, g, router, fmName)
 
-			g.P("ctx := ", gorsPackage.Ident("NewContext"), "(c)")
-			g.P("resp, err = cli.", method.GoName, "(ctx, req)")
+			g.P("if ctx, err = ", gorsPackage.Ident("NewGRPCContext"), "(c, ", strconv.Quote(fmName), "); err != nil {")
+			g.P(gorsPackage.Ident("HandleGRPCError"), "(c, err)")
+			g.P("return")
+			g.P("}")
+			g.P("var headerMD, trailerMD ", metadataPackage.Ident("MD"))
+			g.P("resp, err = cli.", method.GoName, "(ctx, req, ", grpcPackage.Ident("Header"), "(&headerMD), ", grpcPackage.Ident("Trailer"), "(&trailerMD))")
 
 			printResponseRender(gen, g, router, fmName)
 
@@ -135,31 +141,34 @@ func genServerFunction(gen *protogen.Plugin, file *protogen.File, g *protogen.Ge
 func printRequestBinding(gen *protogen.Plugin, g *protogen.GeneratedFile, router *gors.RouterInfo, fmName string) {
 	var bindings []string
 	if router.UriBinding {
-		bindings = append(bindings, "UriBindingWith")
+		bindings = append(bindings, "UriBinding")
 	}
 	if router.QueryBinding {
-		bindings = append(bindings, "QueryBindingWith")
+		bindings = append(bindings, "QueryBinding")
 	}
 	if router.HeaderBinding {
-		bindings = append(bindings, "HeaderBindingWith")
+		bindings = append(bindings, "HeaderBinding")
 	}
 	if router.FormBinding {
-		bindings = append(bindings, "FormBindingWith")
+		bindings = append(bindings, "FormBinding")
 	}
 	if router.FormPostBinding {
-		bindings = append(bindings, "FormPostBindingWith")
+		bindings = append(bindings, "FormPostBinding")
 	}
 	if router.JSONBinding {
-		bindings = append(bindings, "JSONBindingWith")
+		bindings = append(bindings, "JSONBinding")
 	}
 	if router.ProtoBufBinding {
-		bindings = append(bindings, "ProtoBufBindingWith")
+		bindings = append(bindings, "ProtoBufBinding")
 	}
 	if router.CustomBinding {
-		bindings = append(bindings, "CustomBindingWith")
+		bindings = append(bindings, "CustomBinding")
 	}
 	if router.MsgPackBinding {
-		bindings = append(bindings, "MsgPackBindingWith")
+		bindings = append(bindings, "MsgPackBinding")
+	}
+	if router.ProtoJSONBinding {
+		bindings = append(bindings, "ProtoJSONBinding")
 	}
 	if router.XMLBinding {
 		gen.Error(fmt.Errorf("%s, @XMLBinding is not supported", fmName))
@@ -173,13 +182,13 @@ func printRequestBinding(gen *protogen.Plugin, g *protogen.GeneratedFile, router
 		gen.Error(fmt.Errorf("%s, @TOMLBinding is not supported", fmName))
 		return
 	}
-	g.P("if err = ", gorsPackage.Ident("ShouldBindWith"), "(")
+	g.P("if err = ", gorsPackage.Ident("ShouldBind"), "(")
 	g.P("c, req, ", strconv.Quote("json"), ",")
 	for _, binding := range bindings {
 		g.P(gorsPackage.Ident(binding), ",")
 	}
 	g.P("); err != nil {")
-	g.P(gorsPackage.Ident("HandleBadRequest"), "(c, err)")
+	g.P(gorsPackage.Ident("HandleGRPCError"), "(c, err)")
 	g.P("return")
 	g.P("}")
 }
