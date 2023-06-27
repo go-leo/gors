@@ -25,10 +25,6 @@ func CustomBinderRenderRoutes(srv CustomBinderRender) []gors.Route {
 					gors.HandleBadRequest(c, err)
 					return
 				}
-				if err = gors.Validate(req); err != nil {
-					gors.HandleBadRequest(c, err)
-					return
-				}
 				ctx := gors.NewContext(c)
 				resp, err = srv.Custom(ctx, req)
 				gors.MustRender(c, resp, err, "", gors.CustomRender)

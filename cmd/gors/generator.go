@@ -286,14 +286,13 @@ func (g *generate) printHandler(info *gors.RouterInfo) {
 		g.P(g.functionBuf, "req = c.Request.Body")
 	} else if info.Param2.ObjectArgs != nil {
 		g.printObjectReq(info)
-		g.printReqValidate()
 	} else {
 		log.Fatalf("error: func %s 2th param is invalid, must be []byte or string or *struct{}", info.RpcMethodName)
 	}
 
 	g.printRPCHandler(info)
 
-	g.printResponse(info)
+	g.printResponseRender(info)
 
 }
 
@@ -307,7 +306,7 @@ func (g *generate) printBytesReq(info *gors.RouterInfo) {
 }
 
 func (g *generate) printRequestBind(bindings []string) {
-	g.P(g.functionBuf, "if err := ", gorsPackage.Ident("ShouldBind"), "(")
+	g.P(g.functionBuf, "if err = ", gorsPackage.Ident("ShouldBind"), "(")
 	g.P(g.functionBuf, "c, req, ")
 	for _, binding := range bindings {
 		g.P(g.functionBuf, gorsPackage.Ident(binding), ",")
@@ -364,19 +363,12 @@ func (g *generate) printObjectReq(info *gors.RouterInfo) {
 	g.printRequestBind(bindings)
 }
 
-func (g *generate) printReqValidate() {
-	g.P(g.functionBuf, "if err = ", gorsPackage.Ident("Validate"), "(req); err != nil {")
-	g.P(g.functionBuf, gorsPackage.Ident("HandleBadRequest"), "(c, err)")
-	g.P(g.functionBuf, "return")
-	g.P(g.functionBuf, "}")
-}
-
 func (g *generate) printRPCHandler(info *gors.RouterInfo) {
 	g.P(g.functionBuf, "ctx := ", gorsPackage.Ident("NewContext"), "(c)")
 	g.P(g.functionBuf, "resp, err = srv.", info.RpcMethodName, "(ctx, req)")
 }
 
-func (g *generate) printResponse(info *gors.RouterInfo) {
+func (g *generate) printResponseRender(info *gors.RouterInfo) {
 	switch {
 	case info.Result1.Bytes:
 		switch {

@@ -13,6 +13,9 @@ func ShouldBind(c *gin.Context, req any, fns ...func(c *gin.Context, req any) er
 			return err
 		}
 	}
+	if err := Validate(req); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -119,24 +122,12 @@ func JSONBindingWith(c *gin.Context, req any, tag string) error {
 	return c.ShouldBindWith(req, binding.JSON)
 }
 
-func XMLBindingWith(c *gin.Context, req any, tag string) error {
-	return c.ShouldBindWith(req, binding.XML)
-}
-
 func ProtoBufBindingWith(c *gin.Context, req any, tag string) error {
 	return c.ShouldBindWith(req, binding.ProtoBuf)
 }
 
 func MsgPackBindingWith(c *gin.Context, req any, tag string) error {
 	return c.ShouldBindWith(req, binding.MsgPack)
-}
-
-func YAMLBindingWith(c *gin.Context, req any, tag string) error {
-	return c.ShouldBindWith(req, binding.YAML)
-}
-
-func TOMLBindingWith(c *gin.Context, req any, tag string) error {
-	return c.ShouldBindWith(req, binding.TOML)
 }
 
 func CustomBindingWith(c *gin.Context, req any, tag string) error {

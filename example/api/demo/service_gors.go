@@ -25,10 +25,6 @@ func ServiceRoutes(srv Service) []gors.Route {
 					gors.HandleBadRequest(c, err)
 					return
 				}
-				if err = gors.Validate(req); err != nil {
-					gors.HandleBadRequest(c, err)
-					return
-				}
 				ctx := gors.NewContext(c)
 				resp, err = srv.Method(ctx, req)
 				gors.MustRender(c, resp, err, "", gors.JSONRender)
