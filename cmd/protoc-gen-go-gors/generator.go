@@ -45,6 +45,7 @@ func generateFileContent(gen *protogen.Plugin, file *protogen.File, g *protogen.
 			gen.Error(err)
 			return
 		}
+		g.P()
 		genServerFunction(gen, file, g, service)
 	}
 }

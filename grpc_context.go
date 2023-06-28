@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/grpclog"
 	"google.golang.org/grpc/metadata"
@@ -12,6 +13,7 @@ import (
 	"net/textproto"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -40,6 +42,65 @@ const MetadataPrefix = "gors-"
 // MetadataHeaderPrefix is the http prefix that represents custom metadata
 // parameters to or from a gRPC call.
 const MetadataHeaderPrefix = "Grpc-Metadata-"
+
+var _ grpc.ServerTransportStream = new(ServerTransportStream)
+
+// ServerTransportStream implements grpc.ServerTransportStream.
+// It should only be used by the generated files to support grpc.SendHeader
+// outside of gRPC server use.
+type ServerTransportStream struct {
+	mu      sync.Mutex
+	header  metadata.MD
+	trailer metadata.MD
+	method  string
+}
+
+func (s *ServerTransportStream) Method() string {
+	//TODO implement me
+	panic("implement me")
+}
+
+// Header returns the header metadata of the stream.
+func (s *ServerTransportStream) Header() metadata.MD {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.header.Copy()
+}
+
+// SetHeader sets the header metadata.
+func (s *ServerTransportStream) SetHeader(md metadata.MD) error {
+	if md.Len() == 0 {
+		return nil
+	}
+
+	s.mu.Lock()
+	s.header = metadata.Join(s.header, md)
+	s.mu.Unlock()
+	return nil
+}
+
+func (s *ServerTransportStream) SendHeader(md metadata.MD) error {
+	return s.SetHeader(md)
+}
+
+// Trailer returns the cached trailer metadata.
+func (s *ServerTransportStream) Trailer() metadata.MD {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.trailer.Copy()
+}
+
+// SetTrailer sets the trailer metadata.
+func (s *ServerTransportStream) SetTrailer(md metadata.MD) error {
+	if md.Len() == 0 {
+		return nil
+	}
+
+	s.mu.Lock()
+	s.trailer = metadata.Join(s.trailer, md)
+	s.mu.Unlock()
+	return nil
+}
 
 /*
 NewGRPCContext adds context information such as metadata from the request.
