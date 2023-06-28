@@ -9,52 +9,54 @@ import (
 	http "net/http"
 )
 
-func BytesStringRoutes(srv BytesString) []gors.Route {
+func BytesStringRoutes(srv BytesString, opts ...gors.Option) []gors.Route {
+	options := gors.New(opts...)
+	_ = options
 	return []gors.Route{
 		gors.NewRoute(
 			http.MethodGet,
 			"/api/BytesString/Get",
 			func(c *gin.Context) {
+				var ctx = gors.NewContext(c)
 				var req []byte
 				var resp string
 				var err error
 				var body []byte
 				body, err = io.ReadAll(c.Request.Body)
 				if err != nil {
-					gors.HandleBadRequest(c, err)
+					gors.ErrorRender(c, err, options.ErrorHandler)
 					return
 				}
 				req = body
-				ctx := gors.NewContext(c)
 				resp, err = srv.GetBytesString(ctx, req)
 				if err != nil {
-					gors.HTTPErrorRender(c, err)
+					gors.ErrorRender(c, err, options.ErrorHandler)
 					return
 				}
-				gors.HTMLRender(c, gors.HTTPStatusCode(ctx), resp, "text/html; charset=utf-8")
+				gors.ResponseRender(c, gors.StatusCode(ctx), resp, "text/html; charset=utf-8", gors.HTMLRender, options.ResponseWrapper)
 			},
 		),
 		gors.NewRoute(
 			http.MethodPut,
 			"/api/BytesString/Put",
 			func(c *gin.Context) {
+				var ctx = gors.NewContext(c)
 				var req []byte
 				var resp string
 				var err error
 				var body []byte
 				body, err = io.ReadAll(c.Request.Body)
 				if err != nil {
-					gors.HandleBadRequest(c, err)
+					gors.ErrorRender(c, err, options.ErrorHandler)
 					return
 				}
 				req = body
-				ctx := gors.NewContext(c)
 				resp, err = srv.PutBytesString(ctx, req)
 				if err != nil {
-					gors.HTTPErrorRender(c, err)
+					gors.ErrorRender(c, err, options.ErrorHandler)
 					return
 				}
-				gors.RedirectRender(c, gors.HTTPStatusCode(ctx), resp, "")
+				gors.ResponseRender(c, gors.StatusCode(ctx), resp, "", gors.RedirectRender, options.ResponseWrapper)
 			},
 		),
 	}

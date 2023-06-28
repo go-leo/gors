@@ -5,57 +5,58 @@ package demo
 import (
 	gin "github.com/gin-gonic/gin"
 	gors "github.com/go-leo/gors"
-	convx "github.com/go-leo/gox/convx"
 	io "io"
 	http "net/http"
 )
 
-func StringBytesRoutes(srv StringBytes) []gors.Route {
+func StringBytesRoutes(srv StringBytes, opts ...gors.Option) []gors.Route {
+	options := gors.New(opts...)
+	_ = options
 	return []gors.Route{
 		gors.NewRoute(
 			http.MethodGet,
 			"/api/StringBytes/Get",
 			func(c *gin.Context) {
+				var ctx = gors.NewContext(c)
 				var req string
 				var resp []byte
 				var err error
 				var body []byte
 				body, err = io.ReadAll(c.Request.Body)
 				if err != nil {
-					gors.HandleBadRequest(c, err)
+					gors.ErrorRender(c, err, options.ErrorHandler)
 					return
 				}
-				req = convx.BytesToString(body)
-				ctx := gors.NewContext(c)
+				req = string(body)
 				resp, err = srv.GetStringBytes(ctx, req)
 				if err != nil {
-					gors.HTTPErrorRender(c, err)
+					gors.ErrorRender(c, err, options.ErrorHandler)
 					return
 				}
-				gors.BytesRender(c, gors.HTTPStatusCode(ctx), resp, "")
+				gors.ResponseRender(c, gors.StatusCode(ctx), resp, "", gors.BytesRender, options.ResponseWrapper)
 			},
 		),
 		gors.NewRoute(
 			http.MethodOptions,
 			"/api/StringBytes/Options",
 			func(c *gin.Context) {
+				var ctx = gors.NewContext(c)
 				var req string
 				var resp []byte
 				var err error
 				var body []byte
 				body, err = io.ReadAll(c.Request.Body)
 				if err != nil {
-					gors.HandleBadRequest(c, err)
+					gors.ErrorRender(c, err, options.ErrorHandler)
 					return
 				}
-				req = convx.BytesToString(body)
-				ctx := gors.NewContext(c)
+				req = string(body)
 				resp, err = srv.OptionsStringBytes(ctx, req)
 				if err != nil {
-					gors.HTTPErrorRender(c, err)
+					gors.ErrorRender(c, err, options.ErrorHandler)
 					return
 				}
-				gors.BytesRender(c, gors.HTTPStatusCode(ctx), resp, "")
+				gors.ResponseRender(c, gors.StatusCode(ctx), resp, "", gors.BytesRender, options.ResponseWrapper)
 			},
 		),
 	}

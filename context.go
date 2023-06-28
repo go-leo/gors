@@ -22,16 +22,48 @@ func FromContext(ctx context.Context) *gin.Context {
 	return v
 }
 
-// SetHTTPStatusCode 向context设置status code
-func SetHTTPStatusCode(ctx context.Context, code int) {
+// SetStatusCode 向context设置status code
+func SetStatusCode(ctx context.Context, code int) {
 	FromContext(ctx).Set("HTTP_STATUS_CODE", code)
 }
 
-// HTTPStatusCode 从context获取status code
-func HTTPStatusCode(ctx context.Context) int {
+// StatusCode 从context获取status code
+func StatusCode(ctx context.Context) int {
 	code, exists := FromContext(ctx).Get("HTTP_STATUS_CODE")
 	if !exists {
 		return http.StatusOK
 	}
 	return code.(int)
+}
+
+// SetHeader 向context设置header
+func SetHeader(ctx context.Context, header http.Header) {
+	FromContext(ctx).Set("HTTP_HEADER", header)
+}
+
+// Header 从context获取header
+func Header(ctx context.Context) http.Header {
+	c := FromContext(ctx)
+	header, exists := c.Get("HTTP_HEADER")
+	if !exists {
+		header = http.Header{}
+		c.Set("HTTP_HEADER", header)
+	}
+	return header.(http.Header)
+}
+
+// SetTrailer 向context设置trailer
+func SetTrailer(ctx context.Context, trailer http.Header) {
+	FromContext(ctx).Set("HTTP_TRAILER", trailer)
+}
+
+// Trailer 从context获取trailer
+func Trailer(ctx context.Context) http.Header {
+	c := FromContext(ctx)
+	trailer, exists := c.Get("HTTP_TRAILER")
+	if !exists {
+		trailer = http.Header{}
+		c.Set("HTTP_TRAILER", trailer)
+	}
+	return trailer.(http.Header)
 }

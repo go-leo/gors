@@ -1,29 +1,28 @@
 package gors
 
 import (
+	"context"
 	"errors"
-	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	internalbinding "github.com/go-leo/gors/internal/pkg/binding"
 	"github.com/go-leo/gox/stringx"
 	"net/http"
 )
 
-var HandleBadRequest = DefaultHandleBadRequest
-
-func ShouldBind(c *gin.Context, req any, tag string, fns ...func(c *gin.Context, req any, tag string) error) error {
-	for _, fn := range fns {
-		if err := fn(c, req, tag); err != nil {
-			return err
+func RequestBind(ctx context.Context, req any, tag string, bindings ...func(ctx context.Context, req any, tag string) error) error {
+	for _, fn := range bindings {
+		if err := fn(ctx, req, tag); err != nil {
+			return Error{StatusCode: http.StatusBadRequest, Message: err.Error()}
 		}
 	}
 	if err := Validate(req); err != nil {
-		return err
+		return Error{StatusCode: http.StatusBadRequest, Message: err.Error()}
 	}
 	return nil
 }
 
-func UriBinding(c *gin.Context, req any, tag string) error {
+func UriBinding(ctx context.Context, req any, tag string) error {
+	c := FromContext(ctx)
 	if stringx.IsBlank(tag) {
 		return c.ShouldBindUri(req)
 	}
@@ -34,21 +33,24 @@ func UriBinding(c *gin.Context, req any, tag string) error {
 	return binding.MapFormWithTag(req, m, tag)
 }
 
-func QueryBinding(c *gin.Context, req any, tag string) error {
+func QueryBinding(ctx context.Context, req any, tag string) error {
+	c := FromContext(ctx)
 	if stringx.IsBlank(tag) {
 		return c.ShouldBindWith(req, binding.Query)
 	}
 	return binding.MapFormWithTag(req, c.Request.URL.Query(), tag)
 }
 
-func HeaderBinding(c *gin.Context, req any, tag string) error {
+func HeaderBinding(ctx context.Context, req any, tag string) error {
+	c := FromContext(ctx)
 	if stringx.IsBlank(tag) {
 		return c.ShouldBindWith(req, binding.Header)
 	}
 	return binding.MapFormWithTag(req, c.Request.Header, tag)
 }
 
-func FormBinding(c *gin.Context, req any, tag string) error {
+func FormBinding(ctx context.Context, req any, tag string) error {
+	c := FromContext(ctx)
 	if stringx.IsBlank(tag) {
 		return c.ShouldBindWith(req, binding.Form)
 	}
@@ -62,7 +64,8 @@ func FormBinding(c *gin.Context, req any, tag string) error {
 	return binding.MapFormWithTag(req, c.Request.Form, tag)
 }
 
-func FormPostBinding(c *gin.Context, req any, tag string) error {
+func FormPostBinding(ctx context.Context, req any, tag string) error {
+	c := FromContext(ctx)
 	if stringx.IsBlank(tag) {
 		return c.ShouldBindWith(req, binding.FormPost)
 	}
@@ -72,47 +75,51 @@ func FormPostBinding(c *gin.Context, req any, tag string) error {
 	return binding.MapFormWithTag(req, c.Request.PostForm, tag)
 }
 
-func FormMultipartBinding(c *gin.Context, req any, tag string) error {
+func FormMultipartBinding(ctx context.Context, req any, tag string) error {
+	c := FromContext(ctx)
 	return c.ShouldBindWith(req, binding.FormMultipart)
 }
 
-func JSONBinding(c *gin.Context, req any, _ string) error {
+func JSONBinding(ctx context.Context, req any, _ string) error {
+	c := FromContext(ctx)
 	return c.ShouldBindWith(req, binding.JSON)
 }
 
-func XMLBinding(c *gin.Context, req any, _ string) error {
+func ProtoJSONBinding(ctx context.Context, req any, _ string) error {
+	c := FromContext(ctx)
+	return c.ShouldBindWith(req, internalbinding.ProtoJSON)
+}
+
+func XMLBinding(ctx context.Context, req any, _ string) error {
+	c := FromContext(ctx)
 	return c.ShouldBindWith(req, binding.XML)
 }
 
-func ProtoBufBinding(c *gin.Context, req any, _ string) error {
+func ProtoBufBinding(ctx context.Context, req any, _ string) error {
+	c := FromContext(ctx)
 	return c.ShouldBindWith(req, binding.ProtoBuf)
 }
 
-func MsgPackBinding(c *gin.Context, req any, _ string) error {
+func MsgPackBinding(ctx context.Context, req any, _ string) error {
+	c := FromContext(ctx)
 	return c.ShouldBindWith(req, binding.MsgPack)
 }
 
-func YAMLBinding(c *gin.Context, req any, _ string) error {
+func YAMLBinding(ctx context.Context, req any, _ string) error {
+	c := FromContext(ctx)
 	return c.ShouldBindWith(req, binding.YAML)
 }
 
-func TOMLBinding(c *gin.Context, req any, _ string) error {
+func TOMLBinding(ctx context.Context, req any, _ string) error {
+	c := FromContext(ctx)
 	return c.ShouldBindWith(req, binding.TOML)
 }
 
-func CustomBinding(c *gin.Context, req any, _ string) error {
+func CustomBinding(ctx context.Context, req any, _ string) error {
+	c := FromContext(ctx)
 	customBinding, ok := req.(Binding)
 	if !ok {
 		return nil
 	}
 	return customBinding.Bind(c)
-}
-
-func ProtoJSONBinding(c *gin.Context, req any, _ string) error {
-	return c.ShouldBindWith(req, internalbinding.ProtoJSON)
-}
-
-func DefaultHandleBadRequest(c *gin.Context, err error) {
-	c.String(http.StatusBadRequest, err.Error())
-	_ = c.Error(err).SetType(gin.ErrorTypeBind)
 }

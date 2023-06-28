@@ -232,7 +232,9 @@ func (g *generate) printHeader() {
 func (g *generate) printFunction() {
 	serviceName := g.srvName
 	functionName := serviceName + "Routes"
-	g.P(g.functionBuf, "func ", functionName, "(srv ", serviceName, ") []", gorsPackage.Ident("Route"), " {")
+	g.P(g.functionBuf, "func ", functionName, "(srv ", serviceName, ", opts ...", gorsPackage.Ident("Option"), ") []", gorsPackage.Ident("Route"), " {")
+	g.P(g.functionBuf, "options := ", gorsPackage.Ident("New"), "(opts...)")
+	g.P(g.functionBuf, "_ = options")
 	g.P(g.functionBuf, "return []", gorsPackage.Ident("Route"), "{")
 	for _, routerInfo := range g.routerInfos {
 		g.printRouterInfo(routerInfo)
@@ -252,6 +254,8 @@ func (g *generate) printRouterInfo(info *gors.RouterInfo) {
 }
 
 func (g *generate) printHandler(info *gors.RouterInfo) {
+	g.P(g.functionBuf, "var ctx = ", gorsPackage.Ident("NewContext"), "(c)")
+
 	if info.Param2.Bytes {
 		g.P(g.functionBuf, "var req []byte")
 	} else if info.Param2.String {
@@ -281,7 +285,7 @@ func (g *generate) printHandler(info *gors.RouterInfo) {
 		g.P(g.functionBuf, "req = body")
 	} else if info.Param2.String {
 		g.printBytesReq(info)
-		g.P(g.functionBuf, "req = ", convxPackage.Ident("BytesToString"), "(body)")
+		g.P(g.functionBuf, "req = string(body)")
 	} else if info.Param2.Reader {
 		g.P(g.functionBuf, "req = c.Request.Body")
 	} else if info.Param2.ObjectArgs != nil {
@@ -290,7 +294,7 @@ func (g *generate) printHandler(info *gors.RouterInfo) {
 		log.Fatalf("error: func %s 2th param is invalid, must be []byte or string or *struct{}", info.RpcMethodName)
 	}
 
-	g.printRPCHandler(info)
+	g.P(g.functionBuf, "resp, err = srv.", info.RpcMethodName, "(ctx, req)")
 
 	g.printResponseRender(info)
 
@@ -300,19 +304,7 @@ func (g *generate) printBytesReq(info *gors.RouterInfo) {
 	g.P(g.functionBuf, "var body []byte")
 	g.P(g.functionBuf, "body, err = ", ioPackage.Ident("ReadAll"), "(c.Request.Body)")
 	g.P(g.functionBuf, "if err != nil {")
-	g.P(g.functionBuf, gorsPackage.Ident("HandleBadRequest"), "(c, err)")
-	g.P(g.functionBuf, "return")
-	g.P(g.functionBuf, "}")
-}
-
-func (g *generate) printRequestBind(bindings []string) {
-	g.P(g.functionBuf, "if err = ", gorsPackage.Ident("ShouldBind"), "(")
-	g.P(g.functionBuf, "c, req, ", strconv.Quote(""), ",")
-	for _, binding := range bindings {
-		g.P(g.functionBuf, gorsPackage.Ident(binding), ",")
-	}
-	g.P(g.functionBuf, "); err != nil {")
-	g.P(g.functionBuf, gorsPackage.Ident("HTTPErrorRender"), "(c, ", gorsPackage.Ident("BindError"), "(err))")
+	g.P(g.functionBuf, gorsPackage.Ident("ErrorRender"), "(c, err, options.ErrorHandler)")
 	g.P(g.functionBuf, "return")
 	g.P(g.functionBuf, "}")
 }
@@ -363,82 +355,92 @@ func (g *generate) printObjectReq(info *gors.RouterInfo) {
 	if info.ProtoJSONBinding {
 		bindings = append(bindings, "ProtoJSONBinding")
 	}
-	g.printRequestBind(bindings)
-}
-
-func (g *generate) printRPCHandler(info *gors.RouterInfo) {
-	g.P(g.functionBuf, "ctx := ", gorsPackage.Ident("NewContext"), "(c)")
-	g.P(g.functionBuf, "resp, err = srv.", info.RpcMethodName, "(ctx, req)")
+	g.P(g.functionBuf, "if err = ", gorsPackage.Ident("RequestBind"), "(")
+	g.P(g.functionBuf, "c, req, options.Tag,")
+	for _, binding := range bindings {
+		g.P(g.functionBuf, gorsPackage.Ident(binding), ",")
+	}
+	g.P(g.functionBuf, "); err != nil {")
+	g.P(g.functionBuf, gorsPackage.Ident("ErrorRender"), "(c, err, options.ErrorHandler)")
+	g.P(g.functionBuf, "return")
+	g.P(g.functionBuf, "}")
 }
 
 func (g *generate) printResponseRender(info *gors.RouterInfo) {
 	g.P(g.functionBuf, "if err != nil {")
-	g.P(g.functionBuf, gorsPackage.Ident("HTTPErrorRender"), "(c, err)")
+	g.P(g.functionBuf, gorsPackage.Ident("ErrorRender"), "(c, err, options.ErrorHandler)")
 	g.P(g.functionBuf, "return")
 	g.P(g.functionBuf, "}")
 
+	var renderMethodName string
 	switch {
 	case info.Result1.Bytes:
 		switch {
 		case info.BytesRender:
-			g.P(g.functionBuf, gorsPackage.Ident("BytesRender"), "(c, ", gorsPackage.Ident("HTTPStatusCode"), "(ctx), resp,", strconv.Quote(info.RenderContentType), ")")
+			renderMethodName = "BytesRender"
 		default:
 			log.Fatalf("error: func %s []byte result must be set BytesRender", info.RpcMethodName)
 		}
 	case info.Result1.String:
 		switch {
 		case info.StringRender:
-			g.P(g.functionBuf, gorsPackage.Ident("StringRender"), "(c, ", gorsPackage.Ident("HTTPStatusCode"), "(ctx), resp,", strconv.Quote(info.RenderContentType), ")")
+			renderMethodName = "StringRender"
 		case info.TextRender:
-			g.P(g.functionBuf, gorsPackage.Ident("TextRender"), "(c, ", gorsPackage.Ident("HTTPStatusCode"), "(ctx), resp,", strconv.Quote(info.RenderContentType), ")")
+			renderMethodName = "TextRender"
 		case info.HTMLRender:
-			g.P(g.functionBuf, gorsPackage.Ident("HTMLRender"), "(c, ", gorsPackage.Ident("HTTPStatusCode"), "(ctx), resp,", strconv.Quote(info.RenderContentType), ")")
+			renderMethodName = "HTMLRender"
 		case info.RedirectRender:
-			g.P(g.functionBuf, gorsPackage.Ident("RedirectRender"), "(c, ", gorsPackage.Ident("HTTPStatusCode"), "(ctx), resp,", strconv.Quote(info.RenderContentType), ")")
+			renderMethodName = "RedirectRender"
 		default:
 			log.Fatalf("error: func %s string result must be set BytesRender or StringRender or TextRender or HTMLRender or RedirectRender", info.RpcMethodName)
 		}
 	case info.Result1.Reader:
 		switch {
 		case info.ReaderRender:
-			g.P(g.functionBuf, gorsPackage.Ident("ReaderRender"), "(c, ", gorsPackage.Ident("HTTPStatusCode"), "(ctx), resp,", strconv.Quote(info.RenderContentType), ")")
+			renderMethodName = "ReaderRender"
 		default:
 			log.Fatalf("error: func %s io.Reader result must be set ReaderRender", info.RpcMethodName)
 		}
 	case info.Result1.ObjectArgs != nil:
 		switch {
 		case info.JSONRender:
-			g.P(g.functionBuf, gorsPackage.Ident("JSONRender"), "(c, ", gorsPackage.Ident("HTTPStatusCode"), "(ctx), resp,", strconv.Quote(info.RenderContentType), ")")
+			renderMethodName = "JSONRender"
 		case info.IndentedJSONRender:
-			g.P(g.functionBuf, gorsPackage.Ident("IndentedJSONRender"), "(c, ", gorsPackage.Ident("HTTPStatusCode"), "(ctx), resp,", strconv.Quote(info.RenderContentType), ")")
+			renderMethodName = "IndentedJSONRender"
 		case info.SecureJSONRender:
-			g.P(g.functionBuf, gorsPackage.Ident("SecureJSONRender"), "(c, ", gorsPackage.Ident("HTTPStatusCode"), "(ctx), resp,", strconv.Quote(info.RenderContentType), ")")
+			renderMethodName = "SecureJSONRender"
 		case info.JSONPJSONRender:
-			g.P(g.functionBuf, gorsPackage.Ident("JSONPJSONRender"), "(c, ", gorsPackage.Ident("HTTPStatusCode"), "(ctx), resp,", strconv.Quote(info.RenderContentType), ")")
+			renderMethodName = "JSONPJSONRender"
 		case info.PureJSONRender:
-			g.P(g.functionBuf, gorsPackage.Ident("PureJSONRender"), "(c, ", gorsPackage.Ident("HTTPStatusCode"), "(ctx), resp,", strconv.Quote(info.RenderContentType), ")")
+			renderMethodName = "PureJSONRender"
 		case info.AsciiJSONRender:
-			g.P(g.functionBuf, gorsPackage.Ident("AsciiJSONRender"), "(c, ", gorsPackage.Ident("HTTPStatusCode"), "(ctx), resp,", strconv.Quote(info.RenderContentType), ")")
-		case info.XMLRender:
-			g.P(g.functionBuf, gorsPackage.Ident("XMLRender"), "(c, ", gorsPackage.Ident("HTTPStatusCode"), "(ctx), resp,", strconv.Quote(info.RenderContentType), ")")
-		case info.YAMLRender:
-			g.P(g.functionBuf, gorsPackage.Ident("YAMLRender"), "(c, ", gorsPackage.Ident("HTTPStatusCode"), "(ctx), resp,", strconv.Quote(info.RenderContentType), ")")
-		case info.ProtoBufRender:
-			g.P(g.functionBuf, gorsPackage.Ident("ProtoBufRender"), "(c, ", gorsPackage.Ident("HTTPStatusCode"), "(ctx), resp,", strconv.Quote(info.RenderContentType), ")")
-		case info.MsgPackRender:
-			g.P(g.functionBuf, gorsPackage.Ident("MsgPackRender"), "(c, ", gorsPackage.Ident("HTTPStatusCode"), "(ctx), resp,", strconv.Quote(info.RenderContentType), ")")
-		case info.TOMLRender:
-			g.P(g.functionBuf, gorsPackage.Ident("TOMLRender"), "(c, ", gorsPackage.Ident("HTTPStatusCode"), "(ctx), resp,", strconv.Quote(info.RenderContentType), ")")
-		case info.CustomRender:
-			g.P(g.functionBuf, gorsPackage.Ident("CustomRender"), "(c, ", gorsPackage.Ident("HTTPStatusCode"), "(ctx), resp,", strconv.Quote(info.RenderContentType), ")")
+			renderMethodName = "AsciiJSONRender"
 		case info.ProtoJSONRender:
-			g.P(g.functionBuf, gorsPackage.Ident("ProtoJSONRender"), "(c, ", gorsPackage.Ident("HTTPStatusCode"), "(ctx), resp,", strconv.Quote(info.RenderContentType), ")")
+			renderMethodName = "ProtoJSONRender"
+		case info.XMLRender:
+			renderMethodName = "XMLRender"
+		case info.YAMLRender:
+			renderMethodName = "YAMLRender"
+		case info.ProtoBufRender:
+			renderMethodName = "ProtoBufRender"
+		case info.MsgPackRender:
+			renderMethodName = "MsgPackRender"
+		case info.TOMLRender:
+			renderMethodName = "TOMLRender"
+		case info.CustomRender:
+			renderMethodName = "CustomRender"
+
 		default:
 			log.Fatalf("error: func %s *struct{} result must be set a Render", info.RpcMethodName)
 		}
 	default:
 		log.Fatalf("error: func %s 1th result is invalid, must be []byte or string or *struct{}", info.RpcMethodName)
 	}
+
+	g.P(g.functionBuf, gorsPackage.Ident("ResponseRender"),
+		"(c, ", gorsPackage.Ident("StatusCode"), "(ctx), resp,",
+		strconv.Quote(info.RenderContentType), ",", gorsPackage.Ident(renderMethodName),
+		", options.ResponseWrapper)")
 }
 
 func (g *generate) printImports() {

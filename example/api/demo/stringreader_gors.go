@@ -5,57 +5,58 @@ package demo
 import (
 	gin "github.com/gin-gonic/gin"
 	gors "github.com/go-leo/gors"
-	convx "github.com/go-leo/gox/convx"
 	io "io"
 	http "net/http"
 )
 
-func StringReaderRoutes(srv StringReader) []gors.Route {
+func StringReaderRoutes(srv StringReader, opts ...gors.Option) []gors.Route {
+	options := gors.New(opts...)
+	_ = options
 	return []gors.Route{
 		gors.NewRoute(
 			http.MethodGet,
 			"/api/StringReader/Get",
 			func(c *gin.Context) {
+				var ctx = gors.NewContext(c)
 				var req string
 				var resp io.Reader
 				var err error
 				var body []byte
 				body, err = io.ReadAll(c.Request.Body)
 				if err != nil {
-					gors.HandleBadRequest(c, err)
+					gors.ErrorRender(c, err, options.ErrorHandler)
 					return
 				}
-				req = convx.BytesToString(body)
-				ctx := gors.NewContext(c)
+				req = string(body)
 				resp, err = srv.GetStringRender(ctx, req)
 				if err != nil {
-					gors.HTTPErrorRender(c, err)
+					gors.ErrorRender(c, err, options.ErrorHandler)
 					return
 				}
-				gors.ReaderRender(c, gors.HTTPStatusCode(ctx), resp, "video/mpeg4")
+				gors.ResponseRender(c, gors.StatusCode(ctx), resp, "video/mpeg4", gors.ReaderRender, options.ResponseWrapper)
 			},
 		),
 		gors.NewRoute(
 			http.MethodOptions,
 			"/api/StringReader/Options",
 			func(c *gin.Context) {
+				var ctx = gors.NewContext(c)
 				var req string
 				var resp io.Reader
 				var err error
 				var body []byte
 				body, err = io.ReadAll(c.Request.Body)
 				if err != nil {
-					gors.HandleBadRequest(c, err)
+					gors.ErrorRender(c, err, options.ErrorHandler)
 					return
 				}
-				req = convx.BytesToString(body)
-				ctx := gors.NewContext(c)
+				req = string(body)
 				resp, err = srv.OptionsStringReader(ctx, req)
 				if err != nil {
-					gors.HTTPErrorRender(c, err)
+					gors.ErrorRender(c, err, options.ErrorHandler)
 					return
 				}
-				gors.ReaderRender(c, gors.HTTPStatusCode(ctx), resp, "video/mpeg4")
+				gors.ResponseRender(c, gors.StatusCode(ctx), resp, "video/mpeg4", gors.ReaderRender, options.ResponseWrapper)
 			},
 		),
 	}

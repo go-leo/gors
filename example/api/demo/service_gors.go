@@ -8,30 +8,32 @@ import (
 	http "net/http"
 )
 
-func ServiceRoutes(srv Service) []gors.Route {
+func ServiceRoutes(srv Service, opts ...gors.Option) []gors.Route {
+	options := gors.New(opts...)
+	_ = options
 	return []gors.Route{
 		gors.NewRoute(
 			http.MethodGet,
 			"/api/v1/method/:id",
 			func(c *gin.Context) {
+				var ctx = gors.NewContext(c)
 				var req *MethodReq
 				var resp *MethodResp
 				var err error
 				req = new(MethodReq)
-				if err = gors.ShouldBind(
-					c, req, "",
+				if err = gors.RequestBind(
+					c, req, options.Tag,
 					gors.UriBinding,
 				); err != nil {
-					gors.HTTPErrorRender(c, gors.BindError(err))
+					gors.ErrorRender(c, err, options.ErrorHandler)
 					return
 				}
-				ctx := gors.NewContext(c)
 				resp, err = srv.Method(ctx, req)
 				if err != nil {
-					gors.HTTPErrorRender(c, err)
+					gors.ErrorRender(c, err, options.ErrorHandler)
 					return
 				}
-				gors.JSONRender(c, gors.HTTPStatusCode(ctx), resp, "")
+				gors.ResponseRender(c, gors.StatusCode(ctx), resp, "", gors.JSONRender, options.ResponseWrapper)
 			},
 		),
 	}

@@ -1,166 +1,153 @@
 package gors
 
 import (
+	"context"
 	"errors"
-	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/render"
 	internalrender "github.com/go-leo/gors/internal/pkg/render"
-	internalstatus "github.com/go-leo/gors/internal/pkg/status"
-	"github.com/go-leo/gox/convx"
 	"github.com/go-leo/gox/iox"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
-	"google.golang.org/grpc/status"
 	"io"
 	"net/http"
+	"strings"
 )
 
-func HTTPErrorRender(c *gin.Context, err error) {
-	var httpError *HttpError
-	if errors.As(err, &httpError) {
-		c.String(httpError.statusCode, httpError.err.Error())
-		_ = c.Error(httpError.err).SetType(httpError.errType)
+func ErrorRender(ctx context.Context, err error, handler func(ctx context.Context, err error)) {
+	if handler != nil {
+		handler(ctx, err)
 		return
 	}
-	c.String(http.StatusInternalServerError, err.Error())
-	_ = c.Error(err).SetType(gin.ErrorTypePrivate)
+	var e Error
+	if errors.As(err, &e) {
+		ResponseRender(ctx, e.StatusCode, e.Error(), "", StringRender, nil)
+		return
+	}
+	var ePtr *Error
+	if errors.As(err, &ePtr) {
+		ResponseRender(ctx, e.StatusCode, e.Error(), "", StringRender, nil)
+		return
+	}
+	ResponseRender(ctx, http.StatusInternalServerError, err.Error(), "", StringRender, nil)
 }
 
-func GRPCErrorRender(c *gin.Context, err error, headerMD metadata.MD, trailerMD metadata.MD, fn func(c *gin.Context, code int, resp any, contentType string)) {
-	var httpError *HttpError
-	if errors.As(err, &httpError) {
-		err = httpError.err
+func ResponseRender(ctx context.Context, code int, resp any, contentType string, render func(ctx context.Context, code int, resp any, contentType string), wrapper func(resp any) any) {
+	c := FromContext(ctx)
+	header := Header(ctx)
+	for key, values := range header {
+		for _, value := range values {
+			c.Writer.Header().Add(key, value)
+		}
 	}
 
-	grpcStatus := status.Convert(err)
-
-	c.Writer.Header().Del("Trailer")
-	c.Writer.Header().Del("Transfer-Encoding")
-
-	if grpcStatus.Code() == codes.Unauthenticated {
-		c.Writer.Header().Set("WWW-Authenticate", grpcStatus.Message())
+	te := c.GetHeader("TE")
+	var doForwardTrailers bool
+	if strings.Contains(strings.ToLower(te), "trailers") {
+		doForwardTrailers = true
 	}
 
-	handleForwardResponseGRPCMetadata(c, headerMD)
-
-	// RFC 7230 https://tools.ietf.org/html/rfc7230#section-4.1.2
-	// Unless the request includes a TE header field indicating "trailers"
-	// is acceptable, as described in Section 4.3, a server SHOULD NOT
-	// generate trailer fields that it believes are necessary for the user
-	// agent to receive.
-	doForwardTrailers := requestAcceptsTrailers(c)
-
+	trailer := Trailer(ctx)
 	if doForwardTrailers {
-		handleForwardResponseTrailerHeader(c, trailerMD)
+		for k := range trailer {
+			c.Writer.Header().Add("Trailer", k)
+		}
 		c.Writer.Header().Set("Transfer-Encoding", "chunked")
 	}
 
-	st := HTTPStatusFromCode(grpcStatus.Code())
-	if httpError != nil {
-		st = httpError.statusCode
+	if wrapper != nil {
+		resp = wrapper(resp)
 	}
 
-	pb := grpcStatus.Proto()
-	errResp := &internalstatus.Status{
-		Code:    pb.Code,
-		Message: pb.Message,
-		Details: pb.Details,
-	}
-	fn(c, st, errResp, "")
+	render(ctx, code, resp, contentType)
 
 	if doForwardTrailers {
-		handleForwardResponseTrailer(c, trailerMD)
+		for key, values := range trailer {
+			for _, value := range values {
+				c.Writer.Header().Add(key, value)
+			}
+		}
 	}
 }
 
-func ResponseRender(c *gin.Context, code int, resp any, err error, contentType string, fn func(c *gin.Context, code int, resp any, contentType string)) {
-	if err == nil {
-		fn(c, code, resp, contentType)
-		return
-	}
+func BytesRender(ctx context.Context, code int, resp any, contentType string) {
+	FromContext(ctx).Render(code, render.Data{ContentType: contentType, Data: resp.([]byte)})
 }
 
-func BytesRender(c *gin.Context, code int, resp any, contentType string) {
-	c.Render(code, render.Data{ContentType: contentType, Data: resp.([]byte)})
+func StringRender(ctx context.Context, code int, resp any, contentType string) {
+	FromContext(ctx).Render(code, render.Data{ContentType: contentType, Data: []byte(resp.(string))})
 }
 
-func StringRender(c *gin.Context, code int, resp any, contentType string) {
-	c.Render(code, render.Data{ContentType: contentType, Data: convx.StringToBytes(resp.(string))})
+func TextRender(ctx context.Context, code int, resp any, contentType string) {
+	FromContext(ctx).Render(code, render.Data{ContentType: contentType, Data: []byte(resp.(string))})
 }
 
-func TextRender(c *gin.Context, code int, resp any, contentType string) {
-	c.Render(code, render.Data{ContentType: contentType, Data: convx.StringToBytes(resp.(string))})
+func HTMLRender(ctx context.Context, code int, resp any, contentType string) {
+	FromContext(ctx).Render(code, render.Data{ContentType: contentType, Data: []byte(resp.(string))})
 }
 
-func HTMLRender(c *gin.Context, code int, resp any, contentType string) {
-	c.Render(code, render.Data{ContentType: contentType, Data: convx.StringToBytes(resp.(string))})
+func RedirectRender(ctx context.Context, code int, resp any, contentType string) {
+	FromContext(ctx).Redirect(code, resp.(string))
 }
 
-func RedirectRender(c *gin.Context, code int, resp any, contentType string) {
-	c.Redirect(code, resp.(string))
-}
-
-func ReaderRender(c *gin.Context, code int, resp any, contentType string) {
+func ReaderRender(ctx context.Context, code int, resp any, contentType string) {
 	r := resp.(io.Reader)
 	l, ok := iox.Len(r)
 	if !ok {
 		l = -1
 	}
-	c.Render(code, render.Reader{ContentType: contentType, ContentLength: int64(l), Reader: r})
+	FromContext(ctx).Render(code, render.Reader{ContentType: contentType, ContentLength: int64(l), Reader: r})
 }
 
-func JSONRender(c *gin.Context, code int, resp any, _ string) {
-	c.JSON(code, resp)
+func JSONRender(ctx context.Context, code int, resp any, _ string) {
+	FromContext(ctx).JSON(code, resp)
 }
 
-func IndentedJSONRender(c *gin.Context, code int, resp any, _ string) {
-	c.IndentedJSON(code, resp)
+func IndentedJSONRender(ctx context.Context, code int, resp any, _ string) {
+	FromContext(ctx).IndentedJSON(code, resp)
 }
 
-func SecureJSONRender(c *gin.Context, code int, resp any, _ string) {
-	c.SecureJSON(code, resp)
+func SecureJSONRender(ctx context.Context, code int, resp any, _ string) {
+	FromContext(ctx).SecureJSON(code, resp)
 }
 
-func JSONPJSONRender(c *gin.Context, code int, resp any, _ string) {
-	c.JSONP(code, resp)
+func JSONPJSONRender(ctx context.Context, code int, resp any, _ string) {
+	FromContext(ctx).JSONP(code, resp)
 }
 
-func PureJSONRender(c *gin.Context, code int, resp any, _ string) {
-	c.PureJSON(code, resp)
+func PureJSONRender(ctx context.Context, code int, resp any, _ string) {
+	FromContext(ctx).PureJSON(code, resp)
 }
 
-func AsciiJSONRender(c *gin.Context, code int, resp any, _ string) {
-	c.AsciiJSON(code, resp)
+func AsciiJSONRender(ctx context.Context, code int, resp any, _ string) {
+	FromContext(ctx).AsciiJSON(code, resp)
 }
 
-func XMLRender(c *gin.Context, code int, resp any, _ string) {
-	c.XML(code, resp)
+func ProtoJSONRender(ctx context.Context, code int, resp any, _ string) {
+	FromContext(ctx).Render(code, internalrender.ProtoJSON{Data: resp})
 }
 
-func YAMLRender(c *gin.Context, code int, resp any, _ string) {
-	c.YAML(code, resp)
+func XMLRender(ctx context.Context, code int, resp any, _ string) {
+	FromContext(ctx).XML(code, resp)
 }
 
-func ProtoBufRender(c *gin.Context, code int, resp any, _ string) {
-	c.ProtoBuf(code, resp)
+func YAMLRender(ctx context.Context, code int, resp any, _ string) {
+	FromContext(ctx).YAML(code, resp)
 }
 
-func MsgPackRender(c *gin.Context, code int, resp any, _ string) {
-	c.Render(code, render.MsgPack{Data: resp})
+func ProtoBufRender(ctx context.Context, code int, resp any, _ string) {
+	FromContext(ctx).ProtoBuf(code, resp)
 }
 
-func TOMLRender(c *gin.Context, code int, resp any, _ string) {
-	c.TOML(code, resp)
+func MsgPackRender(ctx context.Context, code int, resp any, _ string) {
+	FromContext(ctx).Render(code, render.MsgPack{Data: resp})
 }
 
-func CustomRender(c *gin.Context, code int, resp any, _ string) {
+func TOMLRender(ctx context.Context, code int, resp any, _ string) {
+	FromContext(ctx).TOML(code, resp)
+}
+
+func CustomRender(ctx context.Context, code int, resp any, _ string) {
 	customRender, ok := resp.(Render)
 	if !ok {
 		return
 	}
-	customRender.Render(c)
-}
-
-func ProtoJSONRender(c *gin.Context, code int, resp any, _ string) {
-	c.Render(code, internalrender.ProtoJSON{Data: resp})
+	customRender.Render(ctx)
 }

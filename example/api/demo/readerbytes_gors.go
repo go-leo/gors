@@ -9,40 +9,42 @@ import (
 	http "net/http"
 )
 
-func ReaderBytesRoutes(srv ReaderBytes) []gors.Route {
+func ReaderBytesRoutes(srv ReaderBytes, opts ...gors.Option) []gors.Route {
+	options := gors.New(opts...)
+	_ = options
 	return []gors.Route{
 		gors.NewRoute(
 			http.MethodGet,
 			"/api/ReaderBytes/Get",
 			func(c *gin.Context) {
+				var ctx = gors.NewContext(c)
 				var req io.Reader
 				var resp []byte
 				var err error
 				req = c.Request.Body
-				ctx := gors.NewContext(c)
 				resp, err = srv.GetReaderBytes(ctx, req)
 				if err != nil {
-					gors.HTTPErrorRender(c, err)
+					gors.ErrorRender(c, err, options.ErrorHandler)
 					return
 				}
-				gors.BytesRender(c, gors.HTTPStatusCode(ctx), resp, "")
+				gors.ResponseRender(c, gors.StatusCode(ctx), resp, "", gors.BytesRender, options.ResponseWrapper)
 			},
 		),
 		gors.NewRoute(
 			http.MethodPost,
 			"/api/ReaderBytes/Post",
 			func(c *gin.Context) {
+				var ctx = gors.NewContext(c)
 				var req io.Reader
 				var resp []byte
 				var err error
 				req = c.Request.Body
-				ctx := gors.NewContext(c)
 				resp, err = srv.PostReaderBytes(ctx, req)
 				if err != nil {
-					gors.HTTPErrorRender(c, err)
+					gors.ErrorRender(c, err, options.ErrorHandler)
 					return
 				}
-				gors.BytesRender(c, gors.HTTPStatusCode(ctx), resp, "text/go")
+				gors.ResponseRender(c, gors.StatusCode(ctx), resp, "text/go", gors.BytesRender, options.ResponseWrapper)
 			},
 		),
 	}

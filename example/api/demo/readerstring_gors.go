@@ -9,40 +9,42 @@ import (
 	http "net/http"
 )
 
-func ReaderStringRoutes(srv ReaderString) []gors.Route {
+func ReaderStringRoutes(srv ReaderString, opts ...gors.Option) []gors.Route {
+	options := gors.New(opts...)
+	_ = options
 	return []gors.Route{
 		gors.NewRoute(
 			http.MethodGet,
 			"/api/ReaderString/Get",
 			func(c *gin.Context) {
+				var ctx = gors.NewContext(c)
 				var req io.Reader
 				var resp string
 				var err error
 				req = c.Request.Body
-				ctx := gors.NewContext(c)
 				resp, err = srv.GetReaderString(ctx, req)
 				if err != nil {
-					gors.HTTPErrorRender(c, err)
+					gors.ErrorRender(c, err, options.ErrorHandler)
 					return
 				}
-				gors.TextRender(c, gors.HTTPStatusCode(ctx), resp, "text/plain; charset=utf-8")
+				gors.ResponseRender(c, gors.StatusCode(ctx), resp, "text/plain; charset=utf-8", gors.TextRender, options.ResponseWrapper)
 			},
 		),
 		gors.NewRoute(
 			http.MethodPost,
 			"/api/ReaderString/Post",
 			func(c *gin.Context) {
+				var ctx = gors.NewContext(c)
 				var req io.Reader
 				var resp string
 				var err error
 				req = c.Request.Body
-				ctx := gors.NewContext(c)
 				resp, err = srv.PostReaderString(ctx, req)
 				if err != nil {
-					gors.HTTPErrorRender(c, err)
+					gors.ErrorRender(c, err, options.ErrorHandler)
 					return
 				}
-				gors.StringRender(c, gors.HTTPStatusCode(ctx), resp, "text/go")
+				gors.ResponseRender(c, gors.StatusCode(ctx), resp, "text/go", gors.StringRender, options.ResponseWrapper)
 			},
 		),
 	}

@@ -46,7 +46,7 @@ func generateFileContent(gen *protogen.Plugin, file *protogen.File, g *protogen.
 			return
 		}
 		g.P()
-		genServerFunction(gen, file, g, service)
+		//genServerFunction(gen, file, g, service)
 	}
 }
 
@@ -55,7 +55,9 @@ func genClientFunction(gen *protogen.Plugin, file *protogen.File, g *protogen.Ge
 	funcName := clientName + "Routes"
 
 	basePath := extractBasePath(service)
-	g.P("func ", funcName, "(cli ", clientName, ") []", gorsPackage.Ident("Route"), " {")
+	g.P("func ", funcName, "(cli ", clientName, ", opts ...", gorsPackage.Ident("Option"), ") []", gorsPackage.Ident("Route"), " {")
+	g.P("options := ", gorsPackage.Ident("New"), "(opts...)")
+	g.P("_ = options")
 	g.P("return []", gorsPackage.Ident("Route"), "{")
 	for _, method := range service.Methods {
 		if !method.Desc.IsStreamingServer() && !method.Desc.IsStreamingClient() {
@@ -67,9 +69,9 @@ func genClientFunction(gen *protogen.Plugin, file *protogen.File, g *protogen.Ge
 			g.P(httpPackage.Ident(router.Method), ",")
 			g.P(strconv.Quote(router.Path), ",")
 			g.P("func(c *", ginPackage.Ident("Context"), ") {")
+			g.P("var ctx = ", gorsPackage.Ident("NewContext"), "(c)")
 			g.P("var req *", method.Input.GoIdent)
 			g.P("var resp *", method.Output.GoIdent)
-			g.P("var ctx ", contextPackage.Ident("Context"))
 			g.P("var headerMD, trailerMD ", metadataPackage.Ident("MD"))
 			g.P("var err error")
 			g.P("req = new(", method.Input.GoIdent, ")")
@@ -199,12 +201,7 @@ func printRequestBinding(gen *protogen.Plugin, g *protogen.GeneratedFile, router
 	}
 	g.P("); err != nil {")
 
-	name, err := renderMethodName(router, fmName)
-	if err != nil {
-		return err
-	}
-
-	g.P(gorsPackage.Ident("GRPCErrorRender"), "(c, err, headerMD, trailerMD,", gorsPackage.Ident(name), ")")
+	g.P(gorsPackage.Ident("ErrorRender"), "(c, err, options.ErrorHandler)")
 	g.P("return")
 	g.P("}")
 	return nil

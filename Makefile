@@ -11,5 +11,7 @@ protoc_gen:
 		--proto_path=. \
 		--go_out=. \
 		--go_opt=module=github.com/go-leo/gors \
-		example/api/pb/*.proto
+		example/api/pb/*.proto \
+		internal/pkg/status/*.proto
 	@echo "--- protoc generate end ---"
+

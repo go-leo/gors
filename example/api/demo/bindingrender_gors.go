@@ -9,317 +9,346 @@ import (
 	http "net/http"
 )
 
-func BindingRenderRoutes(srv BindingRender) []gors.Route {
+func BindingRenderRoutes(srv BindingRender, opts ...gors.Option) []gors.Route {
+	options := gors.New(opts...)
+	_ = options
 	return []gors.Route{
 		gors.NewRoute(
 			http.MethodGet,
 			"/api/BindingRender/UriBindingIndentedJSONRender/:id",
 			func(c *gin.Context) {
+				var ctx = gors.NewContext(c)
 				var req *UriBindingReq
 				var resp *IndentedJSONRenderResp
 				var err error
 				req = new(UriBindingReq)
-				if err = gors.ShouldBind(
-					c, req, "",
+				if err = gors.RequestBind(
+					c, req, options.Tag,
 					gors.UriBinding,
 				); err != nil {
-					gors.HTTPErrorRender(c, gors.BindError(err))
+					gors.ErrorRender(c, err, options.ErrorHandler)
 					return
 				}
-				ctx := gors.NewContext(c)
 				resp, err = srv.UriBindingIndentedJSONRender(ctx, req)
 				if err != nil {
-					gors.HTTPErrorRender(c, err)
+					gors.ErrorRender(c, err, options.ErrorHandler)
 					return
 				}
-				gors.IndentedJSONRender(c, gors.HTTPStatusCode(ctx), resp, "")
+				gors.ResponseRender(c, gors.StatusCode(ctx), resp, "", gors.IndentedJSONRender, options.ResponseWrapper)
 			},
 		),
 		gors.NewRoute(
 			http.MethodGet,
 			"/api/BindingRender/QueryBindingSecureJSONRender/:id",
 			func(c *gin.Context) {
+				var ctx = gors.NewContext(c)
 				var req *QueryBindingReq
 				var resp *SecureJSONRenderResp
 				var err error
 				req = new(QueryBindingReq)
-				if err = gors.ShouldBind(
-					c, req, "",
+				if err = gors.RequestBind(
+					c, req, options.Tag,
 					gors.UriBinding,
 					gors.QueryBinding,
 				); err != nil {
-					gors.HTTPErrorRender(c, gors.BindError(err))
+					gors.ErrorRender(c, err, options.ErrorHandler)
 					return
 				}
-				ctx := gors.NewContext(c)
 				resp, err = srv.QueryBindingSecureJSONRender(ctx, req)
 				if err != nil {
-					gors.HTTPErrorRender(c, err)
+					gors.ErrorRender(c, err, options.ErrorHandler)
 					return
 				}
-				gors.SecureJSONRender(c, gors.HTTPStatusCode(ctx), resp, "")
+				gors.ResponseRender(c, gors.StatusCode(ctx), resp, "", gors.SecureJSONRender, options.ResponseWrapper)
 			},
 		),
 		gors.NewRoute(
 			http.MethodGet,
 			"/api/BindingRender/HeaderBindingJsonpJSONRender/:id",
 			func(c *gin.Context) {
+				var ctx = gors.NewContext(c)
 				var req *HeaderBindingReq
 				var resp *JsonpJSONRenderResp
 				var err error
 				req = new(HeaderBindingReq)
-				if err = gors.ShouldBind(
-					c, req, "",
+				if err = gors.RequestBind(
+					c, req, options.Tag,
 					gors.UriBinding,
 					gors.QueryBinding,
 					gors.HeaderBinding,
 				); err != nil {
-					gors.HTTPErrorRender(c, gors.BindError(err))
+					gors.ErrorRender(c, err, options.ErrorHandler)
 					return
 				}
-				ctx := gors.NewContext(c)
 				resp, err = srv.HeaderBindingJsonpJSONRender(ctx, req)
 				if err != nil {
-					gors.HTTPErrorRender(c, err)
+					gors.ErrorRender(c, err, options.ErrorHandler)
 					return
 				}
-				gors.JSONPJSONRender(c, gors.HTTPStatusCode(ctx), resp, "")
+				gors.ResponseRender(c, gors.StatusCode(ctx), resp, "", gors.JSONPJSONRender, options.ResponseWrapper)
 			},
 		),
 		gors.NewRoute(
 			http.MethodPost,
 			"/api/BindingRender/JSONBindingJSONRender/:id",
 			func(c *gin.Context) {
+				var ctx = gors.NewContext(c)
 				var req *JSONBindingReq
 				var resp *JSONRenderResp
 				var err error
 				req = new(JSONBindingReq)
-				if err = gors.ShouldBind(
-					c, req, "",
+				if err = gors.RequestBind(
+					c, req, options.Tag,
 					gors.UriBinding,
 					gors.QueryBinding,
 					gors.HeaderBinding,
 					gors.JSONBinding,
 				); err != nil {
-					gors.HTTPErrorRender(c, gors.BindError(err))
+					gors.ErrorRender(c, err, options.ErrorHandler)
 					return
 				}
-				ctx := gors.NewContext(c)
 				resp, err = srv.JSONBindingJSONRender(ctx, req)
 				if err != nil {
-					gors.HTTPErrorRender(c, err)
+					gors.ErrorRender(c, err, options.ErrorHandler)
 					return
 				}
-				gors.JSONRender(c, gors.HTTPStatusCode(ctx), resp, "")
+				gors.ResponseRender(c, gors.StatusCode(ctx), resp, "", gors.JSONRender, options.ResponseWrapper)
 			},
 		),
 		gors.NewRoute(
 			http.MethodPatch,
 			"/api/BindingRender/XMLBindingXMLRender/:id",
 			func(c *gin.Context) {
+				var ctx = gors.NewContext(c)
 				var req *XMLBindingReq
 				var resp *XMLRenderResp
 				var err error
 				req = new(XMLBindingReq)
-				if err = gors.ShouldBind(
-					c, req, "",
+				if err = gors.RequestBind(
+					c, req, options.Tag,
 					gors.UriBinding,
 					gors.QueryBinding,
 					gors.HeaderBinding,
 					gors.XMLBinding,
 				); err != nil {
-					gors.HTTPErrorRender(c, gors.BindError(err))
+					gors.ErrorRender(c, err, options.ErrorHandler)
 					return
 				}
-				ctx := gors.NewContext(c)
 				resp, err = srv.XMLBindingXMLRender(ctx, req)
 				if err != nil {
-					gors.HTTPErrorRender(c, err)
+					gors.ErrorRender(c, err, options.ErrorHandler)
 					return
 				}
-				gors.XMLRender(c, gors.HTTPStatusCode(ctx), resp, "")
+				gors.ResponseRender(c, gors.StatusCode(ctx), resp, "", gors.XMLRender, options.ResponseWrapper)
 			},
 		),
 		gors.NewRoute(
 			http.MethodPost,
 			"/api/BindingRender/FormBindingJSONRender/:id",
 			func(c *gin.Context) {
+				var ctx = gors.NewContext(c)
 				var req *FormBindingReq
 				var resp *JSONRenderResp
 				var err error
 				req = new(FormBindingReq)
-				if err = gors.ShouldBind(
-					c, req, "",
+				if err = gors.RequestBind(
+					c, req, options.Tag,
 					gors.UriBinding,
 					gors.HeaderBinding,
 					gors.FormBinding,
 				); err != nil {
-					gors.HTTPErrorRender(c, gors.BindError(err))
+					gors.ErrorRender(c, err, options.ErrorHandler)
 					return
 				}
-				ctx := gors.NewContext(c)
 				resp, err = srv.FormBindingJSONRender(ctx, req)
 				if err != nil {
-					gors.HTTPErrorRender(c, err)
+					gors.ErrorRender(c, err, options.ErrorHandler)
 					return
 				}
-				gors.JSONRender(c, gors.HTTPStatusCode(ctx), resp, "")
+				gors.ResponseRender(c, gors.StatusCode(ctx), resp, "", gors.JSONRender, options.ResponseWrapper)
 			},
 		),
 		gors.NewRoute(
 			http.MethodPost,
 			"/api/BindingRender/FormPostBindingPureJSONRender/:id",
 			func(c *gin.Context) {
+				var ctx = gors.NewContext(c)
 				var req *FormPostBindingReq
 				var resp *PureJSONRenderResp
 				var err error
 				req = new(FormPostBindingReq)
-				if err = gors.ShouldBind(
-					c, req, "",
+				if err = gors.RequestBind(
+					c, req, options.Tag,
 					gors.UriBinding,
 					gors.QueryBinding,
 					gors.HeaderBinding,
 					gors.FormPostBinding,
 				); err != nil {
-					gors.HTTPErrorRender(c, gors.BindError(err))
+					gors.ErrorRender(c, err, options.ErrorHandler)
 					return
 				}
-				ctx := gors.NewContext(c)
 				resp, err = srv.FormPostBindingPureJSONRender(ctx, req)
 				if err != nil {
-					gors.HTTPErrorRender(c, err)
+					gors.ErrorRender(c, err, options.ErrorHandler)
 					return
 				}
-				gors.PureJSONRender(c, gors.HTTPStatusCode(ctx), resp, "")
+				gors.ResponseRender(c, gors.StatusCode(ctx), resp, "", gors.PureJSONRender, options.ResponseWrapper)
 			},
 		),
 		gors.NewRoute(
 			http.MethodPost,
 			"/api/BindingRender/FormMultipartBindingAsciiJSONRender/:id",
 			func(c *gin.Context) {
+				var ctx = gors.NewContext(c)
 				var req *FormMultipartBindingReq
 				var resp *AsciiJSONRenderResp
 				var err error
 				req = new(FormMultipartBindingReq)
-				if err = gors.ShouldBind(
-					c, req, "",
+				if err = gors.RequestBind(
+					c, req, options.Tag,
 					gors.UriBinding,
 					gors.QueryBinding,
 					gors.HeaderBinding,
 					gors.FormMultipartBinding,
 				); err != nil {
-					gors.HTTPErrorRender(c, gors.BindError(err))
+					gors.ErrorRender(c, err, options.ErrorHandler)
 					return
 				}
-				ctx := gors.NewContext(c)
 				resp, err = srv.FormMultipartBindingAsciiJSONRender(ctx, req)
 				if err != nil {
-					gors.HTTPErrorRender(c, err)
+					gors.ErrorRender(c, err, options.ErrorHandler)
 					return
 				}
-				gors.AsciiJSONRender(c, gors.HTTPStatusCode(ctx), resp, "")
+				gors.ResponseRender(c, gors.StatusCode(ctx), resp, "", gors.AsciiJSONRender, options.ResponseWrapper)
 			},
 		),
 		gors.NewRoute(
 			http.MethodPut,
 			"/api/BindingRender/ProtoBufBindingProtoBufRender",
 			func(c *gin.Context) {
+				var ctx = gors.NewContext(c)
 				var req *pb.ProtoBufReq
 				var resp *pb.ProtoBufResp
 				var err error
 				req = new(pb.ProtoBufReq)
-				if err = gors.ShouldBind(
-					c, req, "",
+				if err = gors.RequestBind(
+					c, req, options.Tag,
 					gors.ProtoBufBinding,
 				); err != nil {
-					gors.HTTPErrorRender(c, gors.BindError(err))
+					gors.ErrorRender(c, err, options.ErrorHandler)
 					return
 				}
-				ctx := gors.NewContext(c)
 				resp, err = srv.ProtoBufBindingProtoBufRender(ctx, req)
 				if err != nil {
-					gors.HTTPErrorRender(c, err)
+					gors.ErrorRender(c, err, options.ErrorHandler)
 					return
 				}
-				gors.ProtoBufRender(c, gors.HTTPStatusCode(ctx), resp, "")
+				gors.ResponseRender(c, gors.StatusCode(ctx), resp, "", gors.ProtoBufRender, options.ResponseWrapper)
 			},
 		),
 		gors.NewRoute(
 			http.MethodDelete,
 			"/api/BindingRender/MsgPackBindingMsgPackRender",
 			func(c *gin.Context) {
+				var ctx = gors.NewContext(c)
 				var req *MsgPackBindingReq
 				var resp *MsgPackRenderResp
 				var err error
 				req = new(MsgPackBindingReq)
-				if err = gors.ShouldBind(
-					c, req, "",
+				if err = gors.RequestBind(
+					c, req, options.Tag,
 					gors.MsgPackBinding,
 				); err != nil {
-					gors.HTTPErrorRender(c, gors.BindError(err))
+					gors.ErrorRender(c, err, options.ErrorHandler)
 					return
 				}
-				ctx := gors.NewContext(c)
 				resp, err = srv.MsgPackBindingMsgPackRender(ctx, req)
 				if err != nil {
-					gors.HTTPErrorRender(c, err)
+					gors.ErrorRender(c, err, options.ErrorHandler)
 					return
 				}
-				gors.MsgPackRender(c, gors.HTTPStatusCode(ctx), resp, "")
+				gors.ResponseRender(c, gors.StatusCode(ctx), resp, "", gors.MsgPackRender, options.ResponseWrapper)
 			},
 		),
 		gors.NewRoute(
 			http.MethodDelete,
 			"/api/BindingRender/YAMLBindingYAMLRender/:id",
 			func(c *gin.Context) {
+				var ctx = gors.NewContext(c)
 				var req *YAMLBindingReq
 				var resp *YAMLRenderResp
 				var err error
 				req = new(YAMLBindingReq)
-				if err = gors.ShouldBind(
-					c, req, "",
+				if err = gors.RequestBind(
+					c, req, options.Tag,
 					gors.UriBinding,
 					gors.QueryBinding,
 					gors.HeaderBinding,
 					gors.YAMLBinding,
 				); err != nil {
-					gors.HTTPErrorRender(c, gors.BindError(err))
+					gors.ErrorRender(c, err, options.ErrorHandler)
 					return
 				}
-				ctx := gors.NewContext(c)
 				resp, err = srv.YAMLBindingYAMLRender(ctx, req)
 				if err != nil {
-					gors.HTTPErrorRender(c, err)
+					gors.ErrorRender(c, err, options.ErrorHandler)
 					return
 				}
-				gors.YAMLRender(c, gors.HTTPStatusCode(ctx), resp, "")
+				gors.ResponseRender(c, gors.StatusCode(ctx), resp, "", gors.YAMLRender, options.ResponseWrapper)
 			},
 		),
 		gors.NewRoute(
 			http.MethodPut,
 			"/api/BindingRender/TOMLBindingTOMLRender/:id",
 			func(c *gin.Context) {
+				var ctx = gors.NewContext(c)
 				var req *TOMLBindingReq
 				var resp *TOMLRenderResp
 				var err error
 				req = new(TOMLBindingReq)
-				if err = gors.ShouldBind(
-					c, req, "",
+				if err = gors.RequestBind(
+					c, req, options.Tag,
 					gors.UriBinding,
 					gors.QueryBinding,
 					gors.HeaderBinding,
 					gors.TOMLBinding,
 				); err != nil {
-					gors.HTTPErrorRender(c, gors.BindError(err))
+					gors.ErrorRender(c, err, options.ErrorHandler)
 					return
 				}
-				ctx := gors.NewContext(c)
 				resp, err = srv.TOMLBindingTOMLRender(ctx, req)
 				if err != nil {
-					gors.HTTPErrorRender(c, err)
+					gors.ErrorRender(c, err, options.ErrorHandler)
 					return
 				}
-				gors.TOMLRender(c, gors.HTTPStatusCode(ctx), resp, "")
+				gors.ResponseRender(c, gors.StatusCode(ctx), resp, "", gors.TOMLRender, options.ResponseWrapper)
+			},
+		),
+		gors.NewRoute(
+			http.MethodPut,
+			"/api/BindingRender/ProtoJSONBindingProtoJSONRender/:id",
+			func(c *gin.Context) {
+				var ctx = gors.NewContext(c)
+				var req *TOMLBindingReq
+				var resp *TOMLRenderResp
+				var err error
+				req = new(TOMLBindingReq)
+				if err = gors.RequestBind(
+					c, req, options.Tag,
+					gors.UriBinding,
+					gors.QueryBinding,
+					gors.HeaderBinding,
+					gors.ProtoJSONBinding,
+				); err != nil {
+					gors.ErrorRender(c, err, options.ErrorHandler)
+					return
+				}
+				resp, err = srv.ProtoJSONBindingProtoJSONRender(ctx, req)
+				if err != nil {
+					gors.ErrorRender(c, err, options.ErrorHandler)
+					return
+				}
+				gors.ResponseRender(c, gors.StatusCode(ctx), resp, "", gors.ProtoJSONRender, options.ResponseWrapper)
 			},
 		),
 	}

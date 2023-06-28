@@ -116,7 +116,7 @@ At a minimum, the RemoteAddr is included in the fashion of "X-Forwarded-For",
 except that the forwarded destination is not another HTTP service but rather
 a gRPC service.
 */
-func NewGRPCContext(c *gin.Context, rpcMethodName string) (context.Context, error) {
+func NewGRPCContext(ctx context.Context, rpcMethodName string) (context.Context, error) {
 	ctx := c.Request.Context()
 	ctx, md, err := annotateContext(ctx, c, rpcMethodName)
 	if err != nil {

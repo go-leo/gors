@@ -5,57 +5,58 @@ package demo
 import (
 	gin "github.com/gin-gonic/gin"
 	gors "github.com/go-leo/gors"
-	convx "github.com/go-leo/gox/convx"
 	io "io"
 	http "net/http"
 )
 
-func StringStringRoutes(srv StringString) []gors.Route {
+func StringStringRoutes(srv StringString, opts ...gors.Option) []gors.Route {
+	options := gors.New(opts...)
+	_ = options
 	return []gors.Route{
 		gors.NewRoute(
 			http.MethodGet,
 			"/api/StringString/Get",
 			func(c *gin.Context) {
+				var ctx = gors.NewContext(c)
 				var req string
 				var resp string
 				var err error
 				var body []byte
 				body, err = io.ReadAll(c.Request.Body)
 				if err != nil {
-					gors.HandleBadRequest(c, err)
+					gors.ErrorRender(c, err, options.ErrorHandler)
 					return
 				}
-				req = convx.BytesToString(body)
-				ctx := gors.NewContext(c)
+				req = string(body)
 				resp, err = srv.GetStringString(ctx, req)
 				if err != nil {
-					gors.HTTPErrorRender(c, err)
+					gors.ErrorRender(c, err, options.ErrorHandler)
 					return
 				}
-				gors.StringRender(c, gors.HTTPStatusCode(ctx), resp, "text/go")
+				gors.ResponseRender(c, gors.StatusCode(ctx), resp, "text/go", gors.StringRender, options.ResponseWrapper)
 			},
 		),
 		gors.NewRoute(
 			http.MethodPatch,
 			"/api/StringString/Patch",
 			func(c *gin.Context) {
+				var ctx = gors.NewContext(c)
 				var req string
 				var resp string
 				var err error
 				var body []byte
 				body, err = io.ReadAll(c.Request.Body)
 				if err != nil {
-					gors.HandleBadRequest(c, err)
+					gors.ErrorRender(c, err, options.ErrorHandler)
 					return
 				}
-				req = convx.BytesToString(body)
-				ctx := gors.NewContext(c)
+				req = string(body)
 				resp, err = srv.PatchStringString(ctx, req)
 				if err != nil {
-					gors.HTTPErrorRender(c, err)
+					gors.ErrorRender(c, err, options.ErrorHandler)
 					return
 				}
-				gors.StringRender(c, gors.HTTPStatusCode(ctx), resp, "text/go")
+				gors.ResponseRender(c, gors.StatusCode(ctx), resp, "text/go", gors.StringRender, options.ResponseWrapper)
 			},
 		),
 	}

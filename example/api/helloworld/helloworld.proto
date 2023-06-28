@@ -1,0 +1,22 @@
+syntax = "proto3";
+package helloworld;
+option go_package = "github.com/go-leo/grpcproxy/example/api/helloworld;helloworld";
+
+// @GORS @Path(/v1)
+service Greeter {
+  // @GORS @GET @Path(/SayHello) @UriBinding @QueryBinding @HeaderBinding @FormBinding @JSONBinding @ProtoBufBinding @CustomBinding @MsgPackBinding @JSONRender
+  rpc SayHello (HelloRequest) returns (HelloReply) {}
+
+  // @GORS @POST @Path(/v2/p) @ProtoBufRender
+  rpc PostV2 (HelloRequest) returns (HelloReply) {}
+}
+
+
+
+message HelloRequest {
+  string name = 1;
+}
+
+message HelloReply {
+  string message = 1;
+}

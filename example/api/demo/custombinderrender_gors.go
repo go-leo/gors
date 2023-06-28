@@ -8,30 +8,32 @@ import (
 	http "net/http"
 )
 
-func CustomBinderRenderRoutes(srv CustomBinderRender) []gors.Route {
+func CustomBinderRenderRoutes(srv CustomBinderRender, opts ...gors.Option) []gors.Route {
+	options := gors.New(opts...)
+	_ = options
 	return []gors.Route{
 		gors.NewRoute(
 			http.MethodPost,
 			"/api/CustomBinderRender/Custom",
 			func(c *gin.Context) {
+				var ctx = gors.NewContext(c)
 				var req *CustomReq
 				var resp *CustomResp
 				var err error
 				req = new(CustomReq)
-				if err = gors.ShouldBind(
-					c, req, "",
+				if err = gors.RequestBind(
+					c, req, options.Tag,
 					gors.CustomBinding,
 				); err != nil {
-					gors.HTTPErrorRender(c, gors.BindError(err))
+					gors.ErrorRender(c, err, options.ErrorHandler)
 					return
 				}
-				ctx := gors.NewContext(c)
 				resp, err = srv.Custom(ctx, req)
 				if err != nil {
-					gors.HTTPErrorRender(c, err)
+					gors.ErrorRender(c, err, options.ErrorHandler)
 					return
 				}
-				gors.CustomRender(c, gors.HTTPStatusCode(ctx), resp, "")
+				gors.ResponseRender(c, gors.StatusCode(ctx), resp, "", gors.CustomRender, options.ResponseWrapper)
 			},
 		),
 	}

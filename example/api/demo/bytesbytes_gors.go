@@ -9,52 +9,54 @@ import (
 	http "net/http"
 )
 
-func BytesBytesRoutes(srv BytesBytes) []gors.Route {
+func BytesBytesRoutes(srv BytesBytes, opts ...gors.Option) []gors.Route {
+	options := gors.New(opts...)
+	_ = options
 	return []gors.Route{
 		gors.NewRoute(
 			http.MethodGet,
 			"/api/BytesBytes/Get",
 			func(c *gin.Context) {
+				var ctx = gors.NewContext(c)
 				var req []byte
 				var resp []byte
 				var err error
 				var body []byte
 				body, err = io.ReadAll(c.Request.Body)
 				if err != nil {
-					gors.HandleBadRequest(c, err)
+					gors.ErrorRender(c, err, options.ErrorHandler)
 					return
 				}
 				req = body
-				ctx := gors.NewContext(c)
 				resp, err = srv.GetBytesBytes(ctx, req)
 				if err != nil {
-					gors.HTTPErrorRender(c, err)
+					gors.ErrorRender(c, err, options.ErrorHandler)
 					return
 				}
-				gors.BytesRender(c, gors.HTTPStatusCode(ctx), resp, "ttt.sss")
+				gors.ResponseRender(c, gors.StatusCode(ctx), resp, "ttt.sss", gors.BytesRender, options.ResponseWrapper)
 			},
 		),
 		gors.NewRoute(
 			http.MethodPost,
 			"/api/BytesBytes/Post",
 			func(c *gin.Context) {
+				var ctx = gors.NewContext(c)
 				var req []byte
 				var resp []byte
 				var err error
 				var body []byte
 				body, err = io.ReadAll(c.Request.Body)
 				if err != nil {
-					gors.HandleBadRequest(c, err)
+					gors.ErrorRender(c, err, options.ErrorHandler)
 					return
 				}
 				req = body
-				ctx := gors.NewContext(c)
 				resp, err = srv.PostBytesBytes(ctx, req)
 				if err != nil {
-					gors.HTTPErrorRender(c, err)
+					gors.ErrorRender(c, err, options.ErrorHandler)
 					return
 				}
-				gors.BytesRender(c, gors.HTTPStatusCode(ctx), resp, "text/go")
+				gors.ResponseRender(c, gors.StatusCode(ctx), resp, "text/go", gors.BytesRender, options.ResponseWrapper)
 			},
 		),
 	}
