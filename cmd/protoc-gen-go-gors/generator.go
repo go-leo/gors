@@ -86,11 +86,7 @@ func genClientFunction(gen *protogen.Plugin, file *protogen.File, g *protogen.Ge
 			}
 
 			g.P("if ctx, err = ", gorsPackage.Ident("NewGRPCContext"), "(c, rpcMethodName,  options.HeaderMatcher, options.MetadataAnnotators); err != nil {")
-			name, err := renderMethodName(router, fmName)
-			if err != nil {
-				return err
-			}
-			g.P(gorsPackage.Ident("GRPCErrorRender"), "(c, err, headerMD, trailerMD,", gorsPackage.Ident(name), ")")
+			g.P(gorsPackage.Ident("ErrorRender"), "(c, err, options.ErrorHandler)")
 			g.P("return")
 			g.P("}")
 			g.P("resp, err = cli.", method.GoName, "(ctx, req, ", grpcPackage.Ident("Header"), "(&headerMD), ", grpcPackage.Ident("Trailer"), "(&trailerMD))")
