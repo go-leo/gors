@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"github.com/go-leo/gox/stringx"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -114,10 +113,11 @@ func NewGRPCContext(
 	ctx context.Context,
 	rpcMethodName string,
 	headerMatcher func(key string) (string, bool),
-	metadataAnnotators []func(c *gin.Context) metadata.MD,
+	metadataAnnotators []func(ctx context.Context) metadata.MD,
 ) (context.Context, error) {
 	c := FromContext(ctx)
 	ctx = context.WithValue(ctx, rpcMethodKey{}, rpcMethodName)
+
 	timeout := DefaultContextTimeout
 	if tm := c.GetHeader(metadataGrpcTimeout); tm != "" {
 		var err error
@@ -188,11 +188,15 @@ func NewGRPCContext(
 	if timeout > 0 {
 		ctx, _ = context.WithTimeout(ctx, timeout) //nolint:govet  the context outlives this function
 	}
+
+	var md metadata.MD
 	if len(pairs) > 0 {
-		md := metadata.Pairs(pairs...)
-		for _, mda := range metadataAnnotators {
-			md = metadata.Join(md, mda(c))
-		}
+		md = metadata.Join(md, metadata.Pairs(pairs...))
+	}
+	for _, mda := range metadataAnnotators {
+		md = metadata.Join(md, mda(ctx))
+	}
+	if md.Len() > 0 {
 		ctx = metadata.NewOutgoingContext(ctx, md)
 	}
 	return ctx, nil

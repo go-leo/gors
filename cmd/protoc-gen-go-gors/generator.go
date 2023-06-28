@@ -72,6 +72,7 @@ func genClientFunction(gen *protogen.Plugin, file *protogen.File, g *protogen.Ge
 			g.P(httpPackage.Ident(router.Method), ",")
 			g.P(strconv.Quote(router.Path), ",")
 			g.P("func(c *", ginPackage.Ident("Context"), ") {")
+			g.P("var rpcMethodName = ", strconv.Quote(fmName))
 			g.P("var ctx = ", gorsPackage.Ident("NewContext"), "(c)")
 			g.P("var req *", method.Input.GoIdent)
 			g.P("var resp *", method.Output.GoIdent)
@@ -84,7 +85,7 @@ func genClientFunction(gen *protogen.Plugin, file *protogen.File, g *protogen.Ge
 				return err
 			}
 
-			g.P("if ctx, err = ", gorsPackage.Ident("NewGRPCContext"), "(c, ", strconv.Quote(fmName), "); err != nil {")
+			g.P("if ctx, err = ", gorsPackage.Ident("NewGRPCContext"), "(c, rpcMethodName,  options.HeaderMatcher, options.MetadataAnnotators); err != nil {")
 			name, err := renderMethodName(router, fmName)
 			if err != nil {
 				return err
