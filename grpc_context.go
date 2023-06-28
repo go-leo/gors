@@ -49,21 +49,28 @@ var _ grpc.ServerTransportStream = new(ServerTransportStream)
 // It should only be used by the generated files to support grpc.SendHeader
 // outside of gRPC server use.
 type ServerTransportStream struct {
-	mu      sync.Mutex
+	mu      sync.RWMutex
 	header  metadata.MD
 	trailer metadata.MD
 	method  string
 }
 
 func (s *ServerTransportStream) Method() string {
-	//TODO implement me
-	panic("implement me")
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	return s.method
+}
+
+func (s *ServerTransportStream) SetMethod(m string) {
+	s.mu.Lock()
+	s.method = m
+	s.mu.Unlock()
 }
 
 // Header returns the header metadata of the stream.
 func (s *ServerTransportStream) Header() metadata.MD {
-	s.mu.Lock()
-	defer s.mu.Unlock()
+	s.mu.RLock()
+	defer s.mu.RUnlock()
 	return s.header.Copy()
 }
 
@@ -85,8 +92,8 @@ func (s *ServerTransportStream) SendHeader(md metadata.MD) error {
 
 // Trailer returns the cached trailer metadata.
 func (s *ServerTransportStream) Trailer() metadata.MD {
-	s.mu.Lock()
-	defer s.mu.Unlock()
+	s.mu.RLock()
+	defer s.mu.RUnlock()
 	return s.trailer.Copy()
 }
 
