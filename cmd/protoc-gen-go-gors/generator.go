@@ -58,6 +58,9 @@ func genClientFunction(gen *protogen.Plugin, file *protogen.File, g *protogen.Ge
 	g.P("func ", funcName, "(cli ", clientName, ", opts ...", gorsPackage.Ident("Option"), ") []", gorsPackage.Ident("Route"), " {")
 	g.P("options := ", gorsPackage.Ident("New"), "(opts...)")
 	g.P("_ = options")
+	g.P("if len(options.Tag) == 0 {")
+	g.P("options.Tag = ", strconv.Quote("json"))
+	g.P("}")
 	g.P("return []", gorsPackage.Ident("Route"), "{")
 	for _, method := range service.Methods {
 		if !method.Desc.IsStreamingServer() && !method.Desc.IsStreamingClient() {
@@ -109,49 +112,49 @@ func genClientFunction(gen *protogen.Plugin, file *protogen.File, g *protogen.Ge
 	return nil
 }
 
-func genServerFunction(gen *protogen.Plugin, file *protogen.File, g *protogen.GeneratedFile, service *protogen.Service) {
-	serverName := service.GoName + "Server"
-	funcName := serverName + "Routes"
-
-	basePath := extractBasePath(service)
-	g.P("func ", funcName, "(srv ", serverName, ") []", gorsPackage.Ident("Route"), " {")
-	g.P("return []", gorsPackage.Ident("Route"), "{")
-	for _, method := range service.Methods {
-		if !method.Desc.IsStreamingServer() && !method.Desc.IsStreamingClient() {
-			// Unary RPC method
-			fmName := fmt.Sprintf("/%s/%s", service.Desc.FullName(), method.Desc.Name())
-
-			router := newRouter(method, basePath)
-			g.P(gorsPackage.Ident("NewRoute"), "(")
-			g.P(httpPackage.Ident(router.Method), ",")
-			g.P(strconv.Quote(router.Path), ",")
-			g.P("func(c *", ginPackage.Ident("Context"), ") {")
-			g.P("var req *", method.Input.GoIdent)
-			g.P("var resp *", method.Output.GoIdent)
-			g.P("var err error")
-			g.P("req = new(", method.Input.GoIdent, ")")
-
-			printRequestBinding(gen, g, router, fmName)
-
-			g.P("ctx := ", gorsPackage.Ident("NewContext"), "(c)")
-			g.P("resp, err = srv.", method.GoName, "(ctx, req)")
-
-			printResponseRender(gen, g, router, fmName)
-
-			g.P("},")
-			g.P("),")
-			//
-			//	var headerMD, trailerMD metadata.MD
-			//	resp, err := cli.SayHello(ctx, req, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
-			//	grpcproxy.Render(c, headerMD, trailerMD, resp, err)
-		} else {
-			// Streaming RPC method
-			continue
-		}
-	}
-	g.P("}")
-	g.P("}")
-}
+//func genServerFunction(gen *protogen.Plugin, file *protogen.File, g *protogen.GeneratedFile, service *protogen.Service) {
+//	serverName := service.GoName + "Server"
+//	funcName := serverName + "Routes"
+//
+//	basePath := extractBasePath(service)
+//	g.P("func ", funcName, "(srv ", serverName, ") []", gorsPackage.Ident("Route"), " {")
+//	g.P("return []", gorsPackage.Ident("Route"), "{")
+//	for _, method := range service.Methods {
+//		if !method.Desc.IsStreamingServer() && !method.Desc.IsStreamingClient() {
+//			// Unary RPC method
+//			fmName := fmt.Sprintf("/%s/%s", service.Desc.FullName(), method.Desc.Name())
+//
+//			router := newRouter(method, basePath)
+//			g.P(gorsPackage.Ident("NewRoute"), "(")
+//			g.P(httpPackage.Ident(router.Method), ",")
+//			g.P(strconv.Quote(router.Path), ",")
+//			g.P("func(c *", ginPackage.Ident("Context"), ") {")
+//			g.P("var req *", method.Input.GoIdent)
+//			g.P("var resp *", method.Output.GoIdent)
+//			g.P("var err error")
+//			g.P("req = new(", method.Input.GoIdent, ")")
+//
+//			printRequestBinding(gen, g, router, fmName)
+//
+//			g.P("ctx := ", gorsPackage.Ident("NewContext"), "(c)")
+//			g.P("resp, err = srv.", method.GoName, "(ctx, req)")
+//
+//			printResponseRender(gen, g, router, fmName)
+//
+//			g.P("},")
+//			g.P("),")
+//			//
+//			//	var headerMD, trailerMD metadata.MD
+//			//	resp, err := cli.SayHello(ctx, req, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
+//			//	grpcproxy.Render(c, headerMD, trailerMD, resp, err)
+//		} else {
+//			// Streaming RPC method
+//			continue
+//		}
+//	}
+//	g.P("}")
+//	g.P("}")
+//}
 
 func printRequestBinding(gen *protogen.Plugin, g *protogen.GeneratedFile, router *gors.RouterInfo, fmName string) error {
 	var bindings []string
@@ -194,8 +197,8 @@ func printRequestBinding(gen *protogen.Plugin, g *protogen.GeneratedFile, router
 	if router.TOMLBinding {
 		return fmt.Errorf("%s, @TOMLBinding is not supported", fmName)
 	}
-	g.P("if err = ", gorsPackage.Ident("ShouldBind"), "(")
-	g.P("c, req, ", strconv.Quote("json"), ",")
+	g.P("if err = ", gorsPackage.Ident("RequestBind"), "(")
+	g.P("ctx, req, options.Tag,")
 	for _, binding := range bindings {
 		g.P(gorsPackage.Ident(binding), ",")
 	}
@@ -208,28 +211,28 @@ func printRequestBinding(gen *protogen.Plugin, g *protogen.GeneratedFile, router
 }
 
 func printResponseRender(gen *protogen.Plugin, g *protogen.GeneratedFile, router *gors.RouterInfo, fmName string) {
+	var renderMethodName string
 	switch {
 	case router.JSONRender:
-		g.P(gorsPackage.Ident("JSONRender"), "(c, ", gorsPackage.Ident("HTTPStatusCode"), "(ctx), resp, ", strconv.Quote(router.RenderContentType), ")")
+		renderMethodName = "JSONRender"
 	case router.IndentedJSONRender:
-		g.P(gorsPackage.Ident("IndentedJSONRender"), "(c, ", gorsPackage.Ident("HTTPStatusCode"), "(ctx), resp, ", strconv.Quote(router.RenderContentType), ")")
+		renderMethodName = "IndentedJSONRender"
 	case router.SecureJSONRender:
-		g.P(gorsPackage.Ident("SecureJSONRender"), "(c, ", gorsPackage.Ident("HTTPStatusCode"), "(ctx), resp, ", strconv.Quote(router.RenderContentType), ")")
+		renderMethodName = "SecureJSONRender"
 	case router.JSONPJSONRender:
-		g.P(gorsPackage.Ident("JSONPJSONRender"), "(c, ", gorsPackage.Ident("HTTPStatusCode"), "(ctx), resp, ", strconv.Quote(router.RenderContentType), ")")
+		renderMethodName = "JSONPJSONRender"
 	case router.PureJSONRender:
-		g.P(gorsPackage.Ident("PureJSONRender"), "(c, ", gorsPackage.Ident("HTTPStatusCode"), "(ctx), resp, ", strconv.Quote(router.RenderContentType), ")")
+		renderMethodName = "PureJSONRender"
 	case router.AsciiJSONRender:
-		g.P(gorsPackage.Ident("AsciiJSONRender"), "(c, ", gorsPackage.Ident("HTTPStatusCode"), "(ctx), resp, ", strconv.Quote(router.RenderContentType), ")")
-	case router.ProtoBufRender:
-		g.P(gorsPackage.Ident("ProtoBufRender"), "(c, ", gorsPackage.Ident("HTTPStatusCode"), "(ctx), resp, ", strconv.Quote(router.RenderContentType), ")")
-	case router.MsgPackRender:
-		g.P(gorsPackage.Ident("MsgPackRender"), "(c, ", gorsPackage.Ident("HTTPStatusCode"), "(ctx), resp, ", strconv.Quote(router.RenderContentType), ")")
-	case router.CustomRender:
-		g.P(gorsPackage.Ident("CustomRender"), "(c, ", gorsPackage.Ident("HTTPStatusCode"), "(ctx), resp, ", strconv.Quote(router.RenderContentType), ")")
+		renderMethodName = "AsciiJSONRender"
 	case router.ProtoJSONRender:
-		g.P(gorsPackage.Ident("ProtoJSONRender"), "(c, ", gorsPackage.Ident("HTTPStatusCode"), "(ctx), resp, ", strconv.Quote(router.RenderContentType), ")")
-
+		renderMethodName = "ProtoJSONRender"
+	case router.ProtoBufRender:
+		renderMethodName = "ProtoBufRender"
+	case router.MsgPackRender:
+		renderMethodName = "MsgPackRender"
+	case router.CustomRender:
+		renderMethodName = "CustomRender"
 	case router.BytesRender:
 		gen.Error(fmt.Errorf("%s, @BytesRender is not supported", fmName))
 		return
@@ -261,6 +264,10 @@ func printResponseRender(gen *protogen.Plugin, g *protogen.GeneratedFile, router
 		gen.Error(fmt.Errorf("%s, render not defined", fmName))
 		return
 	}
+	g.P(gorsPackage.Ident("ResponseRender"),
+		"(ctx, ", gorsPackage.Ident("StatusCode"), "(ctx), resp,",
+		strconv.Quote(router.RenderContentType), ",", gorsPackage.Ident(renderMethodName),
+		", options.ResponseWrapper)")
 }
 
 func renderMethodName(router *gors.RouterInfo, fmName string) (string, error) {

@@ -24,10 +24,10 @@ func ReaderReaderRoutes(srv ReaderReader, opts ...gors.Option) []gors.Route {
 				req = c.Request.Body
 				resp, err = srv.GetReaderReader(ctx, req)
 				if err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler)
 					return
 				}
-				gors.ResponseRender(c, gors.StatusCode(ctx), resp, "", gors.ReaderRender, options.ResponseWrapper)
+				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.ReaderRender, options.ResponseWrapper)
 			},
 		),
 		gors.NewRoute(
@@ -41,10 +41,10 @@ func ReaderReaderRoutes(srv ReaderReader, opts ...gors.Option) []gors.Route {
 				req = c.Request.Body
 				resp, err = srv.HeadReaderReader(ctx, req)
 				if err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler)
 					return
 				}
-				gors.ResponseRender(c, gors.StatusCode(ctx), resp, "", gors.ReaderRender, options.ResponseWrapper)
+				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.ReaderRender, options.ResponseWrapper)
 			},
 		),
 	}

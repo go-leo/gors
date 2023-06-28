@@ -24,16 +24,16 @@ func BytesBytesRoutes(srv BytesBytes, opts ...gors.Option) []gors.Route {
 				var body []byte
 				body, err = io.ReadAll(c.Request.Body)
 				if err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler)
 					return
 				}
 				req = body
 				resp, err = srv.GetBytesBytes(ctx, req)
 				if err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler)
 					return
 				}
-				gors.ResponseRender(c, gors.StatusCode(ctx), resp, "ttt.sss", gors.BytesRender, options.ResponseWrapper)
+				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "ttt.sss", gors.BytesRender, options.ResponseWrapper)
 			},
 		),
 		gors.NewRoute(
@@ -47,16 +47,16 @@ func BytesBytesRoutes(srv BytesBytes, opts ...gors.Option) []gors.Route {
 				var body []byte
 				body, err = io.ReadAll(c.Request.Body)
 				if err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler)
 					return
 				}
 				req = body
 				resp, err = srv.PostBytesBytes(ctx, req)
 				if err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler)
 					return
 				}
-				gors.ResponseRender(c, gors.StatusCode(ctx), resp, "text/go", gors.BytesRender, options.ResponseWrapper)
+				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "text/go", gors.BytesRender, options.ResponseWrapper)
 			},
 		),
 	}

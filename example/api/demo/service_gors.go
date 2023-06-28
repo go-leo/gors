@@ -22,18 +22,18 @@ func ServiceRoutes(srv Service, opts ...gors.Option) []gors.Route {
 				var err error
 				req = new(MethodReq)
 				if err = gors.RequestBind(
-					c, req, options.Tag,
+					ctx, req, options.Tag,
 					gors.UriBinding,
 				); err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler)
 					return
 				}
 				resp, err = srv.Method(ctx, req)
 				if err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler)
 					return
 				}
-				gors.ResponseRender(c, gors.StatusCode(ctx), resp, "", gors.JSONRender, options.ResponseWrapper)
+				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.JSONRender, options.ResponseWrapper)
 			},
 		),
 	}

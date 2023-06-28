@@ -304,7 +304,7 @@ func (g *generate) printBytesReq(info *gors.RouterInfo) {
 	g.P(g.functionBuf, "var body []byte")
 	g.P(g.functionBuf, "body, err = ", ioPackage.Ident("ReadAll"), "(c.Request.Body)")
 	g.P(g.functionBuf, "if err != nil {")
-	g.P(g.functionBuf, gorsPackage.Ident("ErrorRender"), "(c, err, options.ErrorHandler)")
+	g.P(g.functionBuf, gorsPackage.Ident("ErrorRender"), "(ctx, err, options.ErrorHandler)")
 	g.P(g.functionBuf, "return")
 	g.P(g.functionBuf, "}")
 }
@@ -356,19 +356,19 @@ func (g *generate) printObjectReq(info *gors.RouterInfo) {
 		bindings = append(bindings, "ProtoJSONBinding")
 	}
 	g.P(g.functionBuf, "if err = ", gorsPackage.Ident("RequestBind"), "(")
-	g.P(g.functionBuf, "c, req, options.Tag,")
+	g.P(g.functionBuf, "ctx, req, options.Tag,")
 	for _, binding := range bindings {
 		g.P(g.functionBuf, gorsPackage.Ident(binding), ",")
 	}
 	g.P(g.functionBuf, "); err != nil {")
-	g.P(g.functionBuf, gorsPackage.Ident("ErrorRender"), "(c, err, options.ErrorHandler)")
+	g.P(g.functionBuf, gorsPackage.Ident("ErrorRender"), "(ctx, err, options.ErrorHandler)")
 	g.P(g.functionBuf, "return")
 	g.P(g.functionBuf, "}")
 }
 
 func (g *generate) printResponseRender(info *gors.RouterInfo) {
 	g.P(g.functionBuf, "if err != nil {")
-	g.P(g.functionBuf, gorsPackage.Ident("ErrorRender"), "(c, err, options.ErrorHandler)")
+	g.P(g.functionBuf, gorsPackage.Ident("ErrorRender"), "(ctx, err, options.ErrorHandler)")
 	g.P(g.functionBuf, "return")
 	g.P(g.functionBuf, "}")
 
@@ -438,7 +438,7 @@ func (g *generate) printResponseRender(info *gors.RouterInfo) {
 	}
 
 	g.P(g.functionBuf, gorsPackage.Ident("ResponseRender"),
-		"(c, ", gorsPackage.Ident("StatusCode"), "(ctx), resp,",
+		"(ctx, ", gorsPackage.Ident("StatusCode"), "(ctx), resp,",
 		strconv.Quote(info.RenderContentType), ",", gorsPackage.Ident(renderMethodName),
 		", options.ResponseWrapper)")
 }

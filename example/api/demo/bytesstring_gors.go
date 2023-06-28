@@ -24,16 +24,16 @@ func BytesStringRoutes(srv BytesString, opts ...gors.Option) []gors.Route {
 				var body []byte
 				body, err = io.ReadAll(c.Request.Body)
 				if err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler)
 					return
 				}
 				req = body
 				resp, err = srv.GetBytesString(ctx, req)
 				if err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler)
 					return
 				}
-				gors.ResponseRender(c, gors.StatusCode(ctx), resp, "text/html; charset=utf-8", gors.HTMLRender, options.ResponseWrapper)
+				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "text/html; charset=utf-8", gors.HTMLRender, options.ResponseWrapper)
 			},
 		),
 		gors.NewRoute(
@@ -47,16 +47,16 @@ func BytesStringRoutes(srv BytesString, opts ...gors.Option) []gors.Route {
 				var body []byte
 				body, err = io.ReadAll(c.Request.Body)
 				if err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler)
 					return
 				}
 				req = body
 				resp, err = srv.PutBytesString(ctx, req)
 				if err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler)
 					return
 				}
-				gors.ResponseRender(c, gors.StatusCode(ctx), resp, "", gors.RedirectRender, options.ResponseWrapper)
+				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.RedirectRender, options.ResponseWrapper)
 			},
 		),
 	}
