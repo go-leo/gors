@@ -98,6 +98,7 @@ type RouterInfo struct {
 	QueryBinding         bool
 	HeaderBinding        bool
 	JSONBinding          bool
+	ProtoJSONBinding     bool
 	XMLBinding           bool
 	FormBinding          bool
 	FormPostBinding      bool
@@ -107,7 +108,6 @@ type RouterInfo struct {
 	YAMLBinding          bool
 	TOMLBinding          bool
 	CustomBinding        bool
-	ProtoJSONBinding     bool
 
 	RenderContentType string
 
@@ -119,6 +119,7 @@ type RouterInfo struct {
 	RedirectRender bool
 
 	JSONRender         bool
+	ProtoJSONRender    bool
 	IndentedJSONRender bool
 	SecureJSONRender   bool
 	JSONPJSONRender    bool
@@ -130,7 +131,6 @@ type RouterInfo struct {
 	MsgPackRender      bool
 	TOMLRender         bool
 	CustomRender       bool
-	ProtoJSONRender    bool
 
 	RpcMethodName string
 	Param2        *Param

@@ -127,11 +127,12 @@ func RedirectRender(ctx context.Context, code int, resp any, _ string) {
 
 func ReaderRender(ctx context.Context, code int, resp any, contentType string) {
 	r := resp.(io.Reader)
+	length := int64(-1)
 	l, ok := iox.Len(r)
-	if !ok {
-		l = -1
+	if ok {
+		length = int64(l)
 	}
-	FromContext(ctx).Render(code, render.Reader{ContentType: contentType, ContentLength: int64(l), Reader: r})
+	FromContext(ctx).Render(code, render.Reader{ContentType: contentType, ContentLength: length, Reader: r})
 }
 
 func JSONRender(ctx context.Context, code int, resp any, _ string) {

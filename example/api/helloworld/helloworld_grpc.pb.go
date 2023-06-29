@@ -19,18 +19,44 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Greeter_SayHello_FullMethodName = "/helloworld.Greeter/SayHello"
-	Greeter_PostV2_FullMethodName   = "/helloworld.Greeter/PostV2"
+	Greeter_DELETEUriBindingJSONRender_FullMethodName                = "/helloworld.Greeter/DELETEUriBindingJSONRender"
+	Greeter_GETUriBindingIndentedJSONRender_FullMethodName           = "/helloworld.Greeter/GETUriBindingIndentedJSONRender"
+	Greeter_GETUriQueryBindingSecureJSONRender_FullMethodName        = "/helloworld.Greeter/GETUriQueryBindingSecureJSONRender"
+	Greeter_POSTHeaderFormPostBindingJSONPJSONRender_FullMethodName  = "/helloworld.Greeter/POSTHeaderFormPostBindingJSONPJSONRender"
+	Greeter_PATCHHeaderProtoFormBindingPureJSONRender_FullMethodName = "/helloworld.Greeter/PATCHHeaderProtoFormBindingPureJSONRender"
+	Greeter_PUTHeaderJSONBindingAsciiJSONRender_FullMethodName       = "/helloworld.Greeter/PUTHeaderJSONBindingAsciiJSONRender"
+	Greeter_POSTProtoBufBindingProtoBufRender_FullMethodName         = "/helloworld.Greeter/POSTProtoBufBindingProtoBufRender"
+	Greeter_POSTProtoJSONBindingProtoJSONRender_FullMethodName       = "/helloworld.Greeter/POSTProtoJSONBindingProtoJSONRender"
+	Greeter_HeaderMsgPackBindingMsgPackRender_FullMethodName         = "/helloworld.Greeter/HeaderMsgPackBindingMsgPackRender"
+	Greeter_POSTCustomBindingCustomRender_FullMethodName             = "/helloworld.Greeter/POSTCustomBindingCustomRender"
+	Greeter_NotDefine_FullMethodName                                 = "/helloworld.Greeter/NotDefine"
 )
 
 // GreeterClient is the client API for Greeter service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type GreeterClient interface {
-	// @GORS @GET @Path(/SayHello) @UriBinding @QueryBinding @HeaderBinding @FormBinding @JSONBinding @ProtoBufBinding @CustomBinding @MsgPackBinding @JSONRender
-	SayHello(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error)
-	// @GORS @POST @Path(/v2/p) @ProtoBufRender
-	PostV2(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error)
+	// @GORS @DELETE @Path(/UriBinding/JSONRender/:name) @UriBinding @JSONRender
+	DELETEUriBindingJSONRender(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error)
+	// @GORS @GET @Path(/UriBinding/IndentedJSONRender/:name) @UriBinding @IndentedJSONRender
+	GETUriBindingIndentedJSONRender(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error)
+	// @GORS @GET @Path(/UriQueryBinding/SecureJSONRender/:name) @UriBinding @QueryBinding @SecureJSONRender
+	GETUriQueryBindingSecureJSONRender(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error)
+	// @GORS @POST @Path(/HeaderFormPostBinding/JSONPJSONRender) @HeaderBinding @FormPostBinding @JSONPJSONRender
+	POSTHeaderFormPostBindingJSONPJSONRender(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error)
+	// @GORS @PATCH @Path(/HeaderProtoFormBinding/PureJSONRender) @HeaderBinding @FormBinding @PureJSONRender
+	PATCHHeaderProtoFormBindingPureJSONRender(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error)
+	// @GORS @PUT @Path(/HeaderJSONBinding/AsciiJSONRender) @HeaderBinding @JSONBinding @AsciiJSONRender
+	PUTHeaderJSONBindingAsciiJSONRender(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error)
+	// @GORS @POST @Path(/ProtoBufBinding/ProtoBufRender) @ProtoBufBinding @ProtoBufRender
+	POSTProtoBufBindingProtoBufRender(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error)
+	// @GORS @POST @Path(/ProtoJSONBinding/ProtoJSONRender) @ProtoJSONBinding @ProtoJSONRender
+	POSTProtoJSONBindingProtoJSONRender(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error)
+	// @GORS @POST @Path(/MsgPackBinding/MsgPackRender) @MsgPackBinding @MsgPackRender
+	HeaderMsgPackBindingMsgPackRender(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error)
+	// @GORS @POST @Path(/CustomBinding/CustomRender) @CustomBinding @CustomRender
+	POSTCustomBindingCustomRender(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error)
+	NotDefine(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error)
 }
 
 type greeterClient struct {
@@ -41,18 +67,99 @@ func NewGreeterClient(cc grpc.ClientConnInterface) GreeterClient {
 	return &greeterClient{cc}
 }
 
-func (c *greeterClient) SayHello(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error) {
+func (c *greeterClient) DELETEUriBindingJSONRender(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error) {
 	out := new(HelloReply)
-	err := c.cc.Invoke(ctx, Greeter_SayHello_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, Greeter_DELETEUriBindingJSONRender_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *greeterClient) PostV2(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error) {
+func (c *greeterClient) GETUriBindingIndentedJSONRender(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error) {
 	out := new(HelloReply)
-	err := c.cc.Invoke(ctx, Greeter_PostV2_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, Greeter_GETUriBindingIndentedJSONRender_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *greeterClient) GETUriQueryBindingSecureJSONRender(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error) {
+	out := new(HelloReply)
+	err := c.cc.Invoke(ctx, Greeter_GETUriQueryBindingSecureJSONRender_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *greeterClient) POSTHeaderFormPostBindingJSONPJSONRender(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error) {
+	out := new(HelloReply)
+	err := c.cc.Invoke(ctx, Greeter_POSTHeaderFormPostBindingJSONPJSONRender_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *greeterClient) PATCHHeaderProtoFormBindingPureJSONRender(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error) {
+	out := new(HelloReply)
+	err := c.cc.Invoke(ctx, Greeter_PATCHHeaderProtoFormBindingPureJSONRender_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *greeterClient) PUTHeaderJSONBindingAsciiJSONRender(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error) {
+	out := new(HelloReply)
+	err := c.cc.Invoke(ctx, Greeter_PUTHeaderJSONBindingAsciiJSONRender_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *greeterClient) POSTProtoBufBindingProtoBufRender(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error) {
+	out := new(HelloReply)
+	err := c.cc.Invoke(ctx, Greeter_POSTProtoBufBindingProtoBufRender_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *greeterClient) POSTProtoJSONBindingProtoJSONRender(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error) {
+	out := new(HelloReply)
+	err := c.cc.Invoke(ctx, Greeter_POSTProtoJSONBindingProtoJSONRender_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *greeterClient) HeaderMsgPackBindingMsgPackRender(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error) {
+	out := new(HelloReply)
+	err := c.cc.Invoke(ctx, Greeter_HeaderMsgPackBindingMsgPackRender_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *greeterClient) POSTCustomBindingCustomRender(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error) {
+	out := new(HelloReply)
+	err := c.cc.Invoke(ctx, Greeter_POSTCustomBindingCustomRender_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *greeterClient) NotDefine(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error) {
+	out := new(HelloReply)
+	err := c.cc.Invoke(ctx, Greeter_NotDefine_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -63,10 +170,27 @@ func (c *greeterClient) PostV2(ctx context.Context, in *HelloRequest, opts ...gr
 // All implementations must embed UnimplementedGreeterServer
 // for forward compatibility
 type GreeterServer interface {
-	// @GORS @GET @Path(/SayHello) @UriBinding @QueryBinding @HeaderBinding @FormBinding @JSONBinding @ProtoBufBinding @CustomBinding @MsgPackBinding @JSONRender
-	SayHello(context.Context, *HelloRequest) (*HelloReply, error)
-	// @GORS @POST @Path(/v2/p) @ProtoBufRender
-	PostV2(context.Context, *HelloRequest) (*HelloReply, error)
+	// @GORS @DELETE @Path(/UriBinding/JSONRender/:name) @UriBinding @JSONRender
+	DELETEUriBindingJSONRender(context.Context, *HelloRequest) (*HelloReply, error)
+	// @GORS @GET @Path(/UriBinding/IndentedJSONRender/:name) @UriBinding @IndentedJSONRender
+	GETUriBindingIndentedJSONRender(context.Context, *HelloRequest) (*HelloReply, error)
+	// @GORS @GET @Path(/UriQueryBinding/SecureJSONRender/:name) @UriBinding @QueryBinding @SecureJSONRender
+	GETUriQueryBindingSecureJSONRender(context.Context, *HelloRequest) (*HelloReply, error)
+	// @GORS @POST @Path(/HeaderFormPostBinding/JSONPJSONRender) @HeaderBinding @FormPostBinding @JSONPJSONRender
+	POSTHeaderFormPostBindingJSONPJSONRender(context.Context, *HelloRequest) (*HelloReply, error)
+	// @GORS @PATCH @Path(/HeaderProtoFormBinding/PureJSONRender) @HeaderBinding @FormBinding @PureJSONRender
+	PATCHHeaderProtoFormBindingPureJSONRender(context.Context, *HelloRequest) (*HelloReply, error)
+	// @GORS @PUT @Path(/HeaderJSONBinding/AsciiJSONRender) @HeaderBinding @JSONBinding @AsciiJSONRender
+	PUTHeaderJSONBindingAsciiJSONRender(context.Context, *HelloRequest) (*HelloReply, error)
+	// @GORS @POST @Path(/ProtoBufBinding/ProtoBufRender) @ProtoBufBinding @ProtoBufRender
+	POSTProtoBufBindingProtoBufRender(context.Context, *HelloRequest) (*HelloReply, error)
+	// @GORS @POST @Path(/ProtoJSONBinding/ProtoJSONRender) @ProtoJSONBinding @ProtoJSONRender
+	POSTProtoJSONBindingProtoJSONRender(context.Context, *HelloRequest) (*HelloReply, error)
+	// @GORS @POST @Path(/MsgPackBinding/MsgPackRender) @MsgPackBinding @MsgPackRender
+	HeaderMsgPackBindingMsgPackRender(context.Context, *HelloRequest) (*HelloReply, error)
+	// @GORS @POST @Path(/CustomBinding/CustomRender) @CustomBinding @CustomRender
+	POSTCustomBindingCustomRender(context.Context, *HelloRequest) (*HelloReply, error)
+	NotDefine(context.Context, *HelloRequest) (*HelloReply, error)
 	mustEmbedUnimplementedGreeterServer()
 }
 
@@ -74,11 +198,38 @@ type GreeterServer interface {
 type UnimplementedGreeterServer struct {
 }
 
-func (UnimplementedGreeterServer) SayHello(context.Context, *HelloRequest) (*HelloReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SayHello not implemented")
+func (UnimplementedGreeterServer) DELETEUriBindingJSONRender(context.Context, *HelloRequest) (*HelloReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DELETEUriBindingJSONRender not implemented")
 }
-func (UnimplementedGreeterServer) PostV2(context.Context, *HelloRequest) (*HelloReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method PostV2 not implemented")
+func (UnimplementedGreeterServer) GETUriBindingIndentedJSONRender(context.Context, *HelloRequest) (*HelloReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GETUriBindingIndentedJSONRender not implemented")
+}
+func (UnimplementedGreeterServer) GETUriQueryBindingSecureJSONRender(context.Context, *HelloRequest) (*HelloReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GETUriQueryBindingSecureJSONRender not implemented")
+}
+func (UnimplementedGreeterServer) POSTHeaderFormPostBindingJSONPJSONRender(context.Context, *HelloRequest) (*HelloReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method POSTHeaderFormPostBindingJSONPJSONRender not implemented")
+}
+func (UnimplementedGreeterServer) PATCHHeaderProtoFormBindingPureJSONRender(context.Context, *HelloRequest) (*HelloReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PATCHHeaderProtoFormBindingPureJSONRender not implemented")
+}
+func (UnimplementedGreeterServer) PUTHeaderJSONBindingAsciiJSONRender(context.Context, *HelloRequest) (*HelloReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PUTHeaderJSONBindingAsciiJSONRender not implemented")
+}
+func (UnimplementedGreeterServer) POSTProtoBufBindingProtoBufRender(context.Context, *HelloRequest) (*HelloReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method POSTProtoBufBindingProtoBufRender not implemented")
+}
+func (UnimplementedGreeterServer) POSTProtoJSONBindingProtoJSONRender(context.Context, *HelloRequest) (*HelloReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method POSTProtoJSONBindingProtoJSONRender not implemented")
+}
+func (UnimplementedGreeterServer) HeaderMsgPackBindingMsgPackRender(context.Context, *HelloRequest) (*HelloReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method HeaderMsgPackBindingMsgPackRender not implemented")
+}
+func (UnimplementedGreeterServer) POSTCustomBindingCustomRender(context.Context, *HelloRequest) (*HelloReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method POSTCustomBindingCustomRender not implemented")
+}
+func (UnimplementedGreeterServer) NotDefine(context.Context, *HelloRequest) (*HelloReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method NotDefine not implemented")
 }
 func (UnimplementedGreeterServer) mustEmbedUnimplementedGreeterServer() {}
 
@@ -93,38 +244,200 @@ func RegisterGreeterServer(s grpc.ServiceRegistrar, srv GreeterServer) {
 	s.RegisterService(&Greeter_ServiceDesc, srv)
 }
 
-func _Greeter_SayHello_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Greeter_DELETEUriBindingJSONRender_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(HelloRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GreeterServer).SayHello(ctx, in)
+		return srv.(GreeterServer).DELETEUriBindingJSONRender(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Greeter_SayHello_FullMethodName,
+		FullMethod: Greeter_DELETEUriBindingJSONRender_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GreeterServer).SayHello(ctx, req.(*HelloRequest))
+		return srv.(GreeterServer).DELETEUriBindingJSONRender(ctx, req.(*HelloRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Greeter_PostV2_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Greeter_GETUriBindingIndentedJSONRender_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(HelloRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GreeterServer).PostV2(ctx, in)
+		return srv.(GreeterServer).GETUriBindingIndentedJSONRender(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Greeter_PostV2_FullMethodName,
+		FullMethod: Greeter_GETUriBindingIndentedJSONRender_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GreeterServer).PostV2(ctx, req.(*HelloRequest))
+		return srv.(GreeterServer).GETUriBindingIndentedJSONRender(ctx, req.(*HelloRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Greeter_GETUriQueryBindingSecureJSONRender_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(HelloRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GreeterServer).GETUriQueryBindingSecureJSONRender(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Greeter_GETUriQueryBindingSecureJSONRender_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GreeterServer).GETUriQueryBindingSecureJSONRender(ctx, req.(*HelloRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Greeter_POSTHeaderFormPostBindingJSONPJSONRender_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(HelloRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GreeterServer).POSTHeaderFormPostBindingJSONPJSONRender(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Greeter_POSTHeaderFormPostBindingJSONPJSONRender_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GreeterServer).POSTHeaderFormPostBindingJSONPJSONRender(ctx, req.(*HelloRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Greeter_PATCHHeaderProtoFormBindingPureJSONRender_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(HelloRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GreeterServer).PATCHHeaderProtoFormBindingPureJSONRender(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Greeter_PATCHHeaderProtoFormBindingPureJSONRender_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GreeterServer).PATCHHeaderProtoFormBindingPureJSONRender(ctx, req.(*HelloRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Greeter_PUTHeaderJSONBindingAsciiJSONRender_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(HelloRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GreeterServer).PUTHeaderJSONBindingAsciiJSONRender(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Greeter_PUTHeaderJSONBindingAsciiJSONRender_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GreeterServer).PUTHeaderJSONBindingAsciiJSONRender(ctx, req.(*HelloRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Greeter_POSTProtoBufBindingProtoBufRender_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(HelloRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GreeterServer).POSTProtoBufBindingProtoBufRender(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Greeter_POSTProtoBufBindingProtoBufRender_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GreeterServer).POSTProtoBufBindingProtoBufRender(ctx, req.(*HelloRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Greeter_POSTProtoJSONBindingProtoJSONRender_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(HelloRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GreeterServer).POSTProtoJSONBindingProtoJSONRender(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Greeter_POSTProtoJSONBindingProtoJSONRender_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GreeterServer).POSTProtoJSONBindingProtoJSONRender(ctx, req.(*HelloRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Greeter_HeaderMsgPackBindingMsgPackRender_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(HelloRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GreeterServer).HeaderMsgPackBindingMsgPackRender(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Greeter_HeaderMsgPackBindingMsgPackRender_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GreeterServer).HeaderMsgPackBindingMsgPackRender(ctx, req.(*HelloRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Greeter_POSTCustomBindingCustomRender_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(HelloRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GreeterServer).POSTCustomBindingCustomRender(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Greeter_POSTCustomBindingCustomRender_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GreeterServer).POSTCustomBindingCustomRender(ctx, req.(*HelloRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Greeter_NotDefine_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(HelloRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GreeterServer).NotDefine(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Greeter_NotDefine_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GreeterServer).NotDefine(ctx, req.(*HelloRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -137,12 +450,48 @@ var Greeter_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*GreeterServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "SayHello",
-			Handler:    _Greeter_SayHello_Handler,
+			MethodName: "DELETEUriBindingJSONRender",
+			Handler:    _Greeter_DELETEUriBindingJSONRender_Handler,
 		},
 		{
-			MethodName: "PostV2",
-			Handler:    _Greeter_PostV2_Handler,
+			MethodName: "GETUriBindingIndentedJSONRender",
+			Handler:    _Greeter_GETUriBindingIndentedJSONRender_Handler,
+		},
+		{
+			MethodName: "GETUriQueryBindingSecureJSONRender",
+			Handler:    _Greeter_GETUriQueryBindingSecureJSONRender_Handler,
+		},
+		{
+			MethodName: "POSTHeaderFormPostBindingJSONPJSONRender",
+			Handler:    _Greeter_POSTHeaderFormPostBindingJSONPJSONRender_Handler,
+		},
+		{
+			MethodName: "PATCHHeaderProtoFormBindingPureJSONRender",
+			Handler:    _Greeter_PATCHHeaderProtoFormBindingPureJSONRender_Handler,
+		},
+		{
+			MethodName: "PUTHeaderJSONBindingAsciiJSONRender",
+			Handler:    _Greeter_PUTHeaderJSONBindingAsciiJSONRender_Handler,
+		},
+		{
+			MethodName: "POSTProtoBufBindingProtoBufRender",
+			Handler:    _Greeter_POSTProtoBufBindingProtoBufRender_Handler,
+		},
+		{
+			MethodName: "POSTProtoJSONBindingProtoJSONRender",
+			Handler:    _Greeter_POSTProtoJSONBindingProtoJSONRender_Handler,
+		},
+		{
+			MethodName: "HeaderMsgPackBindingMsgPackRender",
+			Handler:    _Greeter_HeaderMsgPackBindingMsgPackRender_Handler,
+		},
+		{
+			MethodName: "POSTCustomBindingCustomRender",
+			Handler:    _Greeter_POSTCustomBindingCustomRender_Handler,
+		},
+		{
+			MethodName: "NotDefine",
+			Handler:    _Greeter_NotDefine_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

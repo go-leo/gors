@@ -106,7 +106,6 @@ func (s *ServerTransportStream) SetTrailer(md metadata.MD) error {
 // a gRPC service.
 func NewGRPCContext(
 	ctx context.Context,
-
 	headerMatcher func(key string) (string, bool),
 	metadataAnnotators []func(ctx context.Context) metadata.MD,
 ) (context.Context, error) {

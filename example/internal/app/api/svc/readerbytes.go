@@ -15,7 +15,7 @@ type ReaderBytesService struct {
 func (svc *ReaderBytesService) GetReaderBytes(ctx context.Context, reader io.Reader) ([]byte, error) {
 	data, err := ioutil.ReadAll(reader)
 	if err != nil {
-		return nil, gors.NewHttpError(http.StatusBadRequest, err)
+		return nil, gors.Error{StatusCode: http.StatusBadRequest, Message: err.Error()}
 	}
 	return append([]byte("hello "), data...), nil
 }
@@ -23,7 +23,7 @@ func (svc *ReaderBytesService) GetReaderBytes(ctx context.Context, reader io.Rea
 func (svc *ReaderBytesService) PostReaderBytes(ctx context.Context, reader io.Reader) ([]byte, error) {
 	data, err := ioutil.ReadAll(reader)
 	if err != nil {
-		return nil, gors.NewHttpError(http.StatusBadRequest, err)
+		return nil, gors.Error{StatusCode: http.StatusBadRequest, Message: err.Error()}
 	}
 	return append([]byte("hello "), data...), nil
 }

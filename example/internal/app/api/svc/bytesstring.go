@@ -15,6 +15,6 @@ func (svc *BytesStringService) GetBytesString(ctx context.Context, req []byte) (
 }
 
 func (svc *BytesStringService) PutBytesString(ctx context.Context, req []byte) (string, error) {
-	gors.SetCodeToContext(ctx, http.StatusSeeOther)
+	gors.SetStatusCode(ctx, http.StatusSeeOther)
 	return "/api/BytesString/Get", nil
 }

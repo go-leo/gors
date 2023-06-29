@@ -6,6 +6,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/go-leo/gors/internal/pkg/gors"
+	"github.com/go-leo/gors/internal/pkg/httpmethod"
 	"github.com/go-leo/gox/slicex"
 	"go/ast"
 	"go/format"
@@ -91,6 +92,7 @@ func main() {
 			methodName := method.Names[0]
 			routerInfo := newRouter(methodName.String(), basePath, method.Doc.List)
 			if routerInfo == nil {
+				//routerInfo = defaultRouterInfo()
 				continue
 			}
 			routerInfo.RpcMethodName = methodName.Name
@@ -141,6 +143,50 @@ func main() {
 		log.Fatalf("writing output: %s", err)
 	}
 	log.Printf("%s.%s wrote %s", pkg.PkgPath, *serviceName, outputPath)
+}
+
+func defaultRouterInfo() *gors.RouterInfo {
+	return &gors.RouterInfo{
+		Method:               httpmethod.PostMethod,
+		Path:                 "",
+		UriBinding:           true,
+		QueryBinding:         true,
+		HeaderBinding:        true,
+		JSONBinding:          true,
+		XMLBinding:           false,
+		FormBinding:          false,
+		FormPostBinding:      false,
+		FormMultipartBinding: false,
+		ProtoBufBinding:      false,
+		MsgPackBinding:       false,
+		YAMLBinding:          false,
+		TOMLBinding:          false,
+		CustomBinding:        false,
+		ProtoJSONBinding:     false,
+		RenderContentType:    "",
+		BytesRender:          false,
+		StringRender:         false,
+		TextRender:           false,
+		HTMLRender:           false,
+		ReaderRender:         false,
+		RedirectRender:       false,
+		JSONRender:           false,
+		IndentedJSONRender:   false,
+		SecureJSONRender:     false,
+		JSONPJSONRender:      false,
+		PureJSONRender:       false,
+		AsciiJSONRender:      false,
+		XMLRender:            false,
+		YAMLRender:           false,
+		ProtoBufRender:       false,
+		MsgPackRender:        false,
+		TOMLRender:           false,
+		CustomRender:         false,
+		ProtoJSONRender:      false,
+		RpcMethodName:        "",
+		Param2:               nil,
+		Result1:              nil,
+	}
 }
 
 func loadPkg(args []string) *packages.Package {

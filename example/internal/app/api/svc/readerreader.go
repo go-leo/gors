@@ -16,7 +16,7 @@ type ReaderReaderService struct {
 func (svc *ReaderReaderService) GetReaderReader(ctx context.Context, reader io.Reader) (io.Reader, error) {
 	data, err := ioutil.ReadAll(reader)
 	if err != nil {
-		return nil, gors.NewHttpError(http.StatusBadRequest, err)
+		return nil, gors.Error{StatusCode: http.StatusBadRequest, Message: err.Error()}
 	}
 	return bytes.NewReader(append([]byte("hello "), data...)), nil
 }
@@ -24,7 +24,7 @@ func (svc *ReaderReaderService) GetReaderReader(ctx context.Context, reader io.R
 func (svc *ReaderReaderService) HeadReaderReader(ctx context.Context, reader io.Reader) (io.Reader, error) {
 	data, err := ioutil.ReadAll(reader)
 	if err != nil {
-		return nil, gors.NewHttpError(http.StatusBadRequest, err)
+		return nil, gors.Error{StatusCode: http.StatusBadRequest, Message: err.Error()}
 	}
 	return bytes.NewReader(append([]byte("hello "), data...)), nil
 }

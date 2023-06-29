@@ -1,20 +1,47 @@
 syntax = "proto3";
 package helloworld;
-option go_package = "github.com/go-leo/grpcproxy/example/api/helloworld;helloworld";
+option go_package = "github.com/go-leo/gors/example/api/helloworld;helloworld";
 
 // @GORS @Path(/v1)
 service Greeter {
-  // @GORS @GET @Path(/SayHello) @UriBinding @QueryBinding @HeaderBinding @FormBinding @JSONBinding @ProtoBufBinding @CustomBinding @MsgPackBinding @JSONRender
-  rpc SayHello (HelloRequest) returns (HelloReply) {}
+  // @GORS @DELETE @Path(/UriBinding/JSONRender/:name) @UriBinding @JSONRender
+  rpc DELETEUriBindingJSONRender (HelloRequest) returns (HelloReply) {}
 
-  // @GORS @POST @Path(/v2/p) @ProtoBufRender
-  rpc PostV2 (HelloRequest) returns (HelloReply) {}
+  // @GORS @GET @Path(/UriBinding/IndentedJSONRender/:name) @UriBinding @IndentedJSONRender
+  rpc GETUriBindingIndentedJSONRender (HelloRequest) returns (HelloReply) {}
+
+  // @GORS @GET @Path(/UriQueryBinding/SecureJSONRender/:name) @UriBinding @QueryBinding @SecureJSONRender
+  rpc GETUriQueryBindingSecureJSONRender (HelloRequest) returns (HelloReply) {}
+
+  // @GORS @POST @Path(/HeaderFormPostBinding/JSONPJSONRender) @HeaderBinding @FormPostBinding @JSONPJSONRender
+  rpc POSTHeaderFormPostBindingJSONPJSONRender (HelloRequest) returns (HelloReply) {}
+
+  // @GORS @PATCH @Path(/HeaderProtoFormBinding/PureJSONRender) @HeaderBinding @FormBinding @PureJSONRender
+  rpc PATCHHeaderProtoFormBindingPureJSONRender (HelloRequest) returns (HelloReply) {}
+
+  // @GORS @PUT @Path(/HeaderJSONBinding/AsciiJSONRender) @HeaderBinding @JSONBinding @AsciiJSONRender
+  rpc PUTHeaderJSONBindingAsciiJSONRender (HelloRequest) returns (HelloReply) {}
+
+  // @GORS @POST @Path(/ProtoBufBinding/ProtoBufRender) @ProtoBufBinding @ProtoBufRender
+  rpc POSTProtoBufBindingProtoBufRender (HelloRequest) returns (HelloReply) {}
+
+  // @GORS @POST @Path(/ProtoJSONBinding/ProtoJSONRender) @ProtoJSONBinding @ProtoJSONRender
+  rpc POSTProtoJSONBindingProtoJSONRender (HelloRequest) returns (HelloReply) {}
+
+  // @GORS @POST @Path(/MsgPackBinding/MsgPackRender) @MsgPackBinding @MsgPackRender
+  rpc HeaderMsgPackBindingMsgPackRender (HelloRequest) returns (HelloReply) {}
+
+  // @GORS @POST @Path(/CustomBinding/CustomRender) @CustomBinding @CustomRender
+  rpc POSTCustomBindingCustomRender (HelloRequest) returns (HelloReply) {}
+
+  rpc NotDefine (HelloRequest) returns (HelloReply) {}
 }
 
-
-
+// @FormBinding @JSONBinding @ProtoBufBinding @CustomBinding @MsgPackBinding @JSONRender
 message HelloRequest {
   string name = 1;
+  int32 age = 2;
+  double salary = 3;
 }
 
 message HelloReply {

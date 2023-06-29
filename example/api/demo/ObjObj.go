@@ -8,11 +8,11 @@ import (
 	"github.com/go-leo/gors/example/api/pb"
 )
 
-//go:generate gors -service BindingRender
+//go:generate gors -service ObjObj
 
-// BindingRender
-// @GORS @Path(/api/BindingRender)
-type BindingRender interface {
+// ObjObj
+// @GORS @Path(/api/ObjObj)
+type ObjObj interface {
 	// UriBindingIndentedJSONRender
 	// @GORS @GET @Path(/UriBindingIndentedJSONRender/:id) @UriBinding @IndentedJSONRender
 	UriBindingIndentedJSONRender(context.Context, *UriBindingReq) (*IndentedJSONRenderResp, error)
