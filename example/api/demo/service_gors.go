@@ -16,7 +16,8 @@ func ServiceRoutes(srv Service, opts ...gors.Option) []gors.Route {
 			http.MethodGet,
 			"/api/v1/method/:id",
 			func(c *gin.Context) {
-				var ctx = gors.NewContext(c)
+				var rpcMethodName = "/demo.Service/Method"
+				var ctx = gors.NewContext(c, rpcMethodName)
 				var req *MethodReq
 				var resp *MethodResp
 				var err error

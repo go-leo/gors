@@ -17,7 +17,8 @@ func StringBytesRoutes(srv StringBytes, opts ...gors.Option) []gors.Route {
 			http.MethodGet,
 			"/api/StringBytes/Get",
 			func(c *gin.Context) {
-				var ctx = gors.NewContext(c)
+				var rpcMethodName = "/demo.StringBytes/GetStringBytes"
+				var ctx = gors.NewContext(c, rpcMethodName)
 				var req string
 				var resp []byte
 				var err error
@@ -40,7 +41,8 @@ func StringBytesRoutes(srv StringBytes, opts ...gors.Option) []gors.Route {
 			http.MethodOptions,
 			"/api/StringBytes/Options",
 			func(c *gin.Context) {
-				var ctx = gors.NewContext(c)
+				var rpcMethodName = "/demo.StringBytes/OptionsStringBytes"
+				var ctx = gors.NewContext(c, rpcMethodName)
 				var req string
 				var resp []byte
 				var err error

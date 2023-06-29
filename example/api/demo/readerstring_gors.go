@@ -17,7 +17,8 @@ func ReaderStringRoutes(srv ReaderString, opts ...gors.Option) []gors.Route {
 			http.MethodGet,
 			"/api/ReaderString/Get",
 			func(c *gin.Context) {
-				var ctx = gors.NewContext(c)
+				var rpcMethodName = "/demo.ReaderString/GetReaderString"
+				var ctx = gors.NewContext(c, rpcMethodName)
 				var req io.Reader
 				var resp string
 				var err error
@@ -27,14 +28,15 @@ func ReaderStringRoutes(srv ReaderString, opts ...gors.Option) []gors.Route {
 					gors.ErrorRender(ctx, err, options.ErrorHandler)
 					return
 				}
-				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "text/plain; charset=utf-8", gors.TextRender, options.ResponseWrapper)
+				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.TextRender, options.ResponseWrapper)
 			},
 		),
 		gors.NewRoute(
 			http.MethodPost,
 			"/api/ReaderString/Post",
 			func(c *gin.Context) {
-				var ctx = gors.NewContext(c)
+				var rpcMethodName = "/demo.ReaderString/PostReaderString"
+				var ctx = gors.NewContext(c, rpcMethodName)
 				var req io.Reader
 				var resp string
 				var err error

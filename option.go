@@ -6,11 +6,12 @@ import (
 )
 
 type Options struct {
-	Tag                string
-	ResponseWrapper    func(resp any) any
-	ErrorHandler       func(ctx context.Context, err error)
-	HeaderMatcher      func(key string) (string, bool)
-	MetadataAnnotators []func(ctx context.Context) metadata.MD
+	Tag                   string
+	ResponseWrapper       func(resp any) any
+	ErrorHandler          func(ctx context.Context, err error)
+	IncomingHeaderMatcher func(key string) (string, bool)
+	OutgoingHeaderMatcher func(key string) (string, bool)
+	MetadataAnnotators    []func(ctx context.Context) metadata.MD
 }
 
 type Option func(o *Options)
@@ -41,9 +42,15 @@ func ErrorHandler(h func(ctx context.Context, err error)) Option {
 	}
 }
 
-func HeaderMatcher(m func(key string) (string, bool)) Option {
+func IncomingHeaderMatcher(m func(key string) (string, bool)) Option {
 	return func(o *Options) {
-		o.HeaderMatcher = m
+		o.IncomingHeaderMatcher = m
+	}
+}
+
+func OutgoingHeaderMatcher(m func(key string) (string, bool)) Option {
+	return func(o *Options) {
+		o.OutgoingHeaderMatcher = m
 	}
 }
 

@@ -9,8 +9,9 @@ import (
 type key struct{}
 
 // NewContext 向context注入gin.Context
-func NewContext(c *gin.Context) context.Context {
+func NewContext(c *gin.Context, rpcMethodName string) context.Context {
 	ctx := c.Request.Context()
+	ctx = context.WithValue(ctx, rpcMethodKey{}, rpcMethodName)
 	ctx = context.WithValue(ctx, key{}, c)
 	c.Request = c.Request.WithContext(ctx)
 	return c.Request.Context()
@@ -20,6 +21,15 @@ func NewContext(c *gin.Context) context.Context {
 func FromContext(ctx context.Context) *gin.Context {
 	v, _ := ctx.Value(key{}).(*gin.Context)
 	return v
+}
+
+type rpcMethodKey struct{}
+
+// RPCMethod returns the method string for the server context. The returned
+// string is in the format of "/package.Service/method".
+func RPCMethod(ctx context.Context) (string, bool) {
+	method, ok := ctx.Value(rpcMethodKey{}).(string)
+	return method, ok
 }
 
 // SetStatusCode 向context设置status code

@@ -17,7 +17,8 @@ func StringReaderRoutes(srv StringReader, opts ...gors.Option) []gors.Route {
 			http.MethodGet,
 			"/api/StringReader/Get",
 			func(c *gin.Context) {
-				var ctx = gors.NewContext(c)
+				var rpcMethodName = "/demo.StringReader/GetStringRender"
+				var ctx = gors.NewContext(c, rpcMethodName)
 				var req string
 				var resp io.Reader
 				var err error
@@ -40,7 +41,8 @@ func StringReaderRoutes(srv StringReader, opts ...gors.Option) []gors.Route {
 			http.MethodOptions,
 			"/api/StringReader/Options",
 			func(c *gin.Context) {
-				var ctx = gors.NewContext(c)
+				var rpcMethodName = "/demo.StringReader/OptionsStringReader"
+				var ctx = gors.NewContext(c, rpcMethodName)
 				var req string
 				var resp io.Reader
 				var err error

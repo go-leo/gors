@@ -17,7 +17,8 @@ func BytesStringRoutes(srv BytesString, opts ...gors.Option) []gors.Route {
 			http.MethodGet,
 			"/api/BytesString/Get",
 			func(c *gin.Context) {
-				var ctx = gors.NewContext(c)
+				var rpcMethodName = "/demo.BytesString/GetBytesString"
+				var ctx = gors.NewContext(c, rpcMethodName)
 				var req []byte
 				var resp string
 				var err error
@@ -33,14 +34,15 @@ func BytesStringRoutes(srv BytesString, opts ...gors.Option) []gors.Route {
 					gors.ErrorRender(ctx, err, options.ErrorHandler)
 					return
 				}
-				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "text/html; charset=utf-8", gors.HTMLRender, options.ResponseWrapper)
+				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.HTMLRender, options.ResponseWrapper)
 			},
 		),
 		gors.NewRoute(
 			http.MethodPut,
 			"/api/BytesString/Put",
 			func(c *gin.Context) {
-				var ctx = gors.NewContext(c)
+				var rpcMethodName = "/demo.BytesString/PutBytesString"
+				var ctx = gors.NewContext(c, rpcMethodName)
 				var req []byte
 				var resp string
 				var err error

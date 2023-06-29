@@ -2,7 +2,6 @@ package gors
 
 import (
 	"fmt"
-	"github.com/go-leo/gors/internal/pkg/status"
 )
 
 // Error 指定http状态码和错误信息
@@ -19,9 +18,11 @@ func (e Error) Error() string {
 	return fmt.Sprintf("Code: %d, Message: %s", e.Code, e.Message)
 }
 
-func (e Error) Proto() *status.Status {
-	return &status.Status{
-		Code:    int32(e.Code),
-		Message: e.Message,
-	}
+func (e Error) Status() *Status {
+	return &Status{Code: int32(e.Code), Message: e.Message}
+}
+
+type Status struct {
+	Code    int32  `json:"code,omitempty" yaml:"code,omitempty" xml:"code,omitempty" toml:"code,omitempty" codec:"code,omitempty" mapstructure:"code,omitempty"`
+	Message string `json:"message,omitempty" yaml:"message,omitempty" xml:"message,omitempty" toml:"message,omitempty" codec:"message,omitempty" mapstructure:"message,omitempty"`
 }

@@ -29,7 +29,6 @@ const metadataHeaderBinarySuffix = "-Bin"
 
 const xForwardedFor = "X-Forwarded-For"
 const xForwardedHost = "X-Forwarded-Host"
-
 const authorization = "Authorization"
 
 // GorsMetadataPrefix is prepended to permanent HTTP header keys when added to the gRPC context.
@@ -51,16 +50,12 @@ type ServerTransportStream struct {
 	method  string
 }
 
-func (s *ServerTransportStream) Method() string {
-	s.mu.RLock()
-	defer s.mu.RUnlock()
-	return s.method
+func NewServerTransportStream(method string) *ServerTransportStream {
+	return &ServerTransportStream{method: method}
 }
 
-func (s *ServerTransportStream) SetMethod(m string) {
-	s.mu.Lock()
-	s.method = m
-	s.mu.Unlock()
+func (s *ServerTransportStream) Method() string {
+	return s.method
 }
 
 // Header returns the header metadata of the stream.
@@ -111,12 +106,11 @@ func (s *ServerTransportStream) SetTrailer(md metadata.MD) error {
 // a gRPC service.
 func NewGRPCContext(
 	ctx context.Context,
-	rpcMethodName string,
+
 	headerMatcher func(key string) (string, bool),
 	metadataAnnotators []func(ctx context.Context) metadata.MD,
 ) (context.Context, error) {
 	c := FromContext(ctx)
-	ctx = context.WithValue(ctx, rpcMethodKey{}, rpcMethodName)
 
 	timeout := DefaultContextTimeout
 	if tm := c.GetHeader(metadataGrpcTimeout); tm != "" {
@@ -148,7 +142,7 @@ func NewGRPCContext(
 	}
 
 	if headerMatcher == nil {
-		headerMatcher = defaultHeaderMatcher
+		headerMatcher = defaultIncomingHeaderMatcher
 	}
 	for key, values := range c.Request.Header {
 		key = textproto.CanonicalMIMEHeaderKey(key)
@@ -202,22 +196,6 @@ func NewGRPCContext(
 	return ctx, nil
 }
 
-type rpcMethodKey struct{}
-
-// RPCMethod returns the method string for the server context. The returned
-// string is in the format of "/package.service/method".
-func RPCMethod(ctx context.Context) (string, bool) {
-	m := ctx.Value(rpcMethodKey{})
-	if m == nil {
-		return "", false
-	}
-	ms, ok := m.(string)
-	if !ok {
-		return "", false
-	}
-	return ms, true
-}
-
 func timeoutDecode(s string) (time.Duration, error) {
 	size := len(s)
 	if size < 2 {
@@ -253,11 +231,11 @@ func timeoutUnitToDuration(u uint8) (d time.Duration, ok bool) {
 	}
 }
 
-// defaultHeaderMatcher is used to pass http request headers to/from gRPC context. This adds permanent HTTP header
+// defaultIncomingHeaderMatcher is used to pass http request headers to/from gRPC context. This adds permanent HTTP header
 // keys (as specified by the IANA, e.g: Accept, Cookie, Host) to the gRPC metadata with the grpcgateway- prefix. If you want to know which headers are considered permanent, you can view the isPermanentHTTPHeader function.
 // HTTP headers that start with 'Grpc-Metadata-' are mapped to gRPC metadata after removing the prefix 'Grpc-Metadata-'.
 // Other headers are not added to the gRPC metadata.
-func defaultHeaderMatcher(key string) (string, bool) {
+func defaultIncomingHeaderMatcher(key string) (string, bool) {
 	switch key = textproto.CanonicalMIMEHeaderKey(key); {
 	case isPermanentHTTPHeader(key):
 		return GorsMetadataPrefix + key, true

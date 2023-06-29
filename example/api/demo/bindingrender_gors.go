@@ -17,7 +17,8 @@ func BindingRenderRoutes(srv BindingRender, opts ...gors.Option) []gors.Route {
 			http.MethodGet,
 			"/api/BindingRender/UriBindingIndentedJSONRender/:id",
 			func(c *gin.Context) {
-				var ctx = gors.NewContext(c)
+				var rpcMethodName = "/demo.BindingRender/UriBindingIndentedJSONRender"
+				var ctx = gors.NewContext(c, rpcMethodName)
 				var req *UriBindingReq
 				var resp *IndentedJSONRenderResp
 				var err error
@@ -41,7 +42,8 @@ func BindingRenderRoutes(srv BindingRender, opts ...gors.Option) []gors.Route {
 			http.MethodGet,
 			"/api/BindingRender/QueryBindingSecureJSONRender/:id",
 			func(c *gin.Context) {
-				var ctx = gors.NewContext(c)
+				var rpcMethodName = "/demo.BindingRender/QueryBindingSecureJSONRender"
+				var ctx = gors.NewContext(c, rpcMethodName)
 				var req *QueryBindingReq
 				var resp *SecureJSONRenderResp
 				var err error
@@ -66,7 +68,8 @@ func BindingRenderRoutes(srv BindingRender, opts ...gors.Option) []gors.Route {
 			http.MethodGet,
 			"/api/BindingRender/HeaderBindingJsonpJSONRender/:id",
 			func(c *gin.Context) {
-				var ctx = gors.NewContext(c)
+				var rpcMethodName = "/demo.BindingRender/HeaderBindingJsonpJSONRender"
+				var ctx = gors.NewContext(c, rpcMethodName)
 				var req *HeaderBindingReq
 				var resp *JsonpJSONRenderResp
 				var err error
@@ -92,7 +95,8 @@ func BindingRenderRoutes(srv BindingRender, opts ...gors.Option) []gors.Route {
 			http.MethodPost,
 			"/api/BindingRender/JSONBindingJSONRender/:id",
 			func(c *gin.Context) {
-				var ctx = gors.NewContext(c)
+				var rpcMethodName = "/demo.BindingRender/JSONBindingJSONRender"
+				var ctx = gors.NewContext(c, rpcMethodName)
 				var req *JSONBindingReq
 				var resp *JSONRenderResp
 				var err error
@@ -119,7 +123,8 @@ func BindingRenderRoutes(srv BindingRender, opts ...gors.Option) []gors.Route {
 			http.MethodPatch,
 			"/api/BindingRender/XMLBindingXMLRender/:id",
 			func(c *gin.Context) {
-				var ctx = gors.NewContext(c)
+				var rpcMethodName = "/demo.BindingRender/XMLBindingXMLRender"
+				var ctx = gors.NewContext(c, rpcMethodName)
 				var req *XMLBindingReq
 				var resp *XMLRenderResp
 				var err error
@@ -146,7 +151,8 @@ func BindingRenderRoutes(srv BindingRender, opts ...gors.Option) []gors.Route {
 			http.MethodPost,
 			"/api/BindingRender/FormBindingJSONRender/:id",
 			func(c *gin.Context) {
-				var ctx = gors.NewContext(c)
+				var rpcMethodName = "/demo.BindingRender/FormBindingJSONRender"
+				var ctx = gors.NewContext(c, rpcMethodName)
 				var req *FormBindingReq
 				var resp *JSONRenderResp
 				var err error
@@ -172,7 +178,8 @@ func BindingRenderRoutes(srv BindingRender, opts ...gors.Option) []gors.Route {
 			http.MethodPost,
 			"/api/BindingRender/FormPostBindingPureJSONRender/:id",
 			func(c *gin.Context) {
-				var ctx = gors.NewContext(c)
+				var rpcMethodName = "/demo.BindingRender/FormPostBindingPureJSONRender"
+				var ctx = gors.NewContext(c, rpcMethodName)
 				var req *FormPostBindingReq
 				var resp *PureJSONRenderResp
 				var err error
@@ -199,7 +206,8 @@ func BindingRenderRoutes(srv BindingRender, opts ...gors.Option) []gors.Route {
 			http.MethodPost,
 			"/api/BindingRender/FormMultipartBindingAsciiJSONRender/:id",
 			func(c *gin.Context) {
-				var ctx = gors.NewContext(c)
+				var rpcMethodName = "/demo.BindingRender/FormMultipartBindingAsciiJSONRender"
+				var ctx = gors.NewContext(c, rpcMethodName)
 				var req *FormMultipartBindingReq
 				var resp *AsciiJSONRenderResp
 				var err error
@@ -226,7 +234,8 @@ func BindingRenderRoutes(srv BindingRender, opts ...gors.Option) []gors.Route {
 			http.MethodPut,
 			"/api/BindingRender/ProtoBufBindingProtoBufRender",
 			func(c *gin.Context) {
-				var ctx = gors.NewContext(c)
+				var rpcMethodName = "/demo.BindingRender/ProtoBufBindingProtoBufRender"
+				var ctx = gors.NewContext(c, rpcMethodName)
 				var req *pb.ProtoBufReq
 				var resp *pb.ProtoBufResp
 				var err error
@@ -250,7 +259,8 @@ func BindingRenderRoutes(srv BindingRender, opts ...gors.Option) []gors.Route {
 			http.MethodDelete,
 			"/api/BindingRender/MsgPackBindingMsgPackRender",
 			func(c *gin.Context) {
-				var ctx = gors.NewContext(c)
+				var rpcMethodName = "/demo.BindingRender/MsgPackBindingMsgPackRender"
+				var ctx = gors.NewContext(c, rpcMethodName)
 				var req *MsgPackBindingReq
 				var resp *MsgPackRenderResp
 				var err error
@@ -274,7 +284,8 @@ func BindingRenderRoutes(srv BindingRender, opts ...gors.Option) []gors.Route {
 			http.MethodDelete,
 			"/api/BindingRender/YAMLBindingYAMLRender/:id",
 			func(c *gin.Context) {
-				var ctx = gors.NewContext(c)
+				var rpcMethodName = "/demo.BindingRender/YAMLBindingYAMLRender"
+				var ctx = gors.NewContext(c, rpcMethodName)
 				var req *YAMLBindingReq
 				var resp *YAMLRenderResp
 				var err error
@@ -301,7 +312,8 @@ func BindingRenderRoutes(srv BindingRender, opts ...gors.Option) []gors.Route {
 			http.MethodPut,
 			"/api/BindingRender/TOMLBindingTOMLRender/:id",
 			func(c *gin.Context) {
-				var ctx = gors.NewContext(c)
+				var rpcMethodName = "/demo.BindingRender/TOMLBindingTOMLRender"
+				var ctx = gors.NewContext(c, rpcMethodName)
 				var req *TOMLBindingReq
 				var resp *TOMLRenderResp
 				var err error
@@ -328,7 +340,8 @@ func BindingRenderRoutes(srv BindingRender, opts ...gors.Option) []gors.Route {
 			http.MethodPut,
 			"/api/BindingRender/ProtoJSONBindingProtoJSONRender/:id",
 			func(c *gin.Context) {
-				var ctx = gors.NewContext(c)
+				var rpcMethodName = "/demo.BindingRender/ProtoJSONBindingProtoJSONRender"
+				var ctx = gors.NewContext(c, rpcMethodName)
 				var req *TOMLBindingReq
 				var resp *TOMLRenderResp
 				var err error

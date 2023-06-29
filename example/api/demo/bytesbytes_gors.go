@@ -17,7 +17,8 @@ func BytesBytesRoutes(srv BytesBytes, opts ...gors.Option) []gors.Route {
 			http.MethodGet,
 			"/api/BytesBytes/Get",
 			func(c *gin.Context) {
-				var ctx = gors.NewContext(c)
+				var rpcMethodName = "/demo.BytesBytes/GetBytesBytes"
+				var ctx = gors.NewContext(c, rpcMethodName)
 				var req []byte
 				var resp []byte
 				var err error
@@ -40,7 +41,8 @@ func BytesBytesRoutes(srv BytesBytes, opts ...gors.Option) []gors.Route {
 			http.MethodPost,
 			"/api/BytesBytes/Post",
 			func(c *gin.Context) {
-				var ctx = gors.NewContext(c)
+				var rpcMethodName = "/demo.BytesBytes/PostBytesBytes"
+				var ctx = gors.NewContext(c, rpcMethodName)
 				var req []byte
 				var resp []byte
 				var err error

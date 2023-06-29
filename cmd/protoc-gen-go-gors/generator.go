@@ -73,10 +73,9 @@ func genClientFunction(gen *protogen.Plugin, file *protogen.File, g *protogen.Ge
 			g.P(strconv.Quote(router.Path), ",")
 			g.P("func(c *", ginPackage.Ident("Context"), ") {")
 			g.P("var rpcMethodName = ", strconv.Quote(fmName))
-			g.P("var ctx = ", gorsPackage.Ident("NewContext"), "(c)")
+			g.P("var ctx = ", gorsPackage.Ident("NewContext"), "(c, rpcMethodName)")
 			g.P("var req *", method.Input.GoIdent)
 			g.P("var resp *", method.Output.GoIdent)
-			g.P("var headerMD, trailerMD ", metadataPackage.Ident("MD"))
 			g.P("var err error")
 			g.P("req = new(", method.Input.GoIdent, ")")
 
@@ -85,11 +84,18 @@ func genClientFunction(gen *protogen.Plugin, file *protogen.File, g *protogen.Ge
 				return err
 			}
 
-			g.P("if ctx, err = ", gorsPackage.Ident("NewGRPCContext"), "(c, rpcMethodName,  options.HeaderMatcher, options.MetadataAnnotators); err != nil {")
+			g.P("if ctx, err = ", gorsPackage.Ident("NewGRPCContext"), "(c, rpcMethodName,  options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {")
 			g.P(gorsPackage.Ident("ErrorRender"), "(c, err, options.ErrorHandler)")
 			g.P("return")
 			g.P("}")
+
+			g.P("var headerMD, trailerMD ", metadataPackage.Ident("MD"))
 			g.P("resp, err = cli.", method.GoName, "(ctx, req, ", grpcPackage.Ident("Header"), "(&headerMD), ", grpcPackage.Ident("Trailer"), "(&trailerMD))")
+			g.P(gorsPackage.Ident("AddGRPCMetadata"), "(ctx, headerMD, trailerMD, options.OutgoingHeaderMatcher)")
+			g.P("if err != nil {")
+			g.P(gorsPackage.Ident("ErrorRender"), "(c, err, options.ErrorHandler)")
+			g.P("return")
+			g.P("}")
 
 			printResponseRender(gen, g, router, fmName)
 

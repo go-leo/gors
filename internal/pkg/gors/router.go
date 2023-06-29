@@ -248,10 +248,10 @@ func NewRouter(methodName string, basePath string, comments []string) *RouterInf
 				r.RenderContentType = v
 				r.StringRender = true
 			case strings.ToUpper(s) == strings.ToUpper(annotation.TextRender):
-				r.RenderContentType = "text/plain; charset=utf-8"
+				//r.RenderContentType = "text/plain; charset=utf-8"
 				r.TextRender = true
 			case strings.ToUpper(s) == strings.ToUpper(annotation.HTMLRender):
-				r.RenderContentType = "text/html; charset=utf-8"
+				//r.RenderContentType = "text/html; charset=utf-8"
 				r.HTMLRender = true
 			case strings.ToUpper(s) == strings.ToUpper(annotation.RedirectRender):
 				r.RedirectRender = true
@@ -272,6 +272,8 @@ func NewRouter(methodName string, basePath string, comments []string) *RouterInf
 				r.PureJSONRender = true
 			case strings.ToUpper(s) == strings.ToUpper(annotation.AsciiJSONRender):
 				r.AsciiJSONRender = true
+			case strings.ToUpper(s) == strings.ToUpper(annotation.ProtoJSONRender):
+				r.ProtoJSONRender = true
 			case strings.ToUpper(s) == strings.ToUpper(annotation.XMLRender):
 				r.XMLRender = true
 			case strings.ToUpper(s) == strings.ToUpper(annotation.YAMLRender):
@@ -284,8 +286,7 @@ func NewRouter(methodName string, basePath string, comments []string) *RouterInf
 				r.TOMLRender = true
 			case strings.ToUpper(s) == strings.ToUpper(annotation.CustomRender):
 				r.CustomRender = true
-			case strings.ToUpper(s) == strings.ToUpper(annotation.ProtoJSONRender):
-				r.ProtoJSONRender = true
+
 				// render end
 
 			case strings.HasPrefix(s, annotation.GORS):

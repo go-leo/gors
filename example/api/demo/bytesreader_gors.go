@@ -17,7 +17,8 @@ func BytesReaderRoutes(srv BytesReader, opts ...gors.Option) []gors.Route {
 			http.MethodGet,
 			"/api/BytesReader/Get",
 			func(c *gin.Context) {
-				var ctx = gors.NewContext(c)
+				var rpcMethodName = "/demo.BytesReader/GetBytesReader"
+				var ctx = gors.NewContext(c, rpcMethodName)
 				var req []byte
 				var resp io.Reader
 				var err error
@@ -40,7 +41,8 @@ func BytesReaderRoutes(srv BytesReader, opts ...gors.Option) []gors.Route {
 			http.MethodPatch,
 			"/api/BytesReader/Patch",
 			func(c *gin.Context) {
-				var ctx = gors.NewContext(c)
+				var rpcMethodName = "/demo.BytesReader/PatchBytesReader"
+				var ctx = gors.NewContext(c, rpcMethodName)
 				var req []byte
 				var resp io.Reader
 				var err error

@@ -16,7 +16,8 @@ func CustomBinderRenderRoutes(srv CustomBinderRender, opts ...gors.Option) []gor
 			http.MethodPost,
 			"/api/CustomBinderRender/Custom",
 			func(c *gin.Context) {
-				var ctx = gors.NewContext(c)
+				var rpcMethodName = "/demo.CustomBinderRender/Custom"
+				var ctx = gors.NewContext(c, rpcMethodName)
 				var req *CustomReq
 				var resp *CustomResp
 				var err error

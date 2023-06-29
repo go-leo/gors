@@ -17,7 +17,8 @@ func StringStringRoutes(srv StringString, opts ...gors.Option) []gors.Route {
 			http.MethodGet,
 			"/api/StringString/Get",
 			func(c *gin.Context) {
-				var ctx = gors.NewContext(c)
+				var rpcMethodName = "/demo.StringString/GetStringString"
+				var ctx = gors.NewContext(c, rpcMethodName)
 				var req string
 				var resp string
 				var err error
@@ -40,7 +41,8 @@ func StringStringRoutes(srv StringString, opts ...gors.Option) []gors.Route {
 			http.MethodPatch,
 			"/api/StringString/Patch",
 			func(c *gin.Context) {
-				var ctx = gors.NewContext(c)
+				var rpcMethodName = "/demo.StringString/PatchStringString"
+				var ctx = gors.NewContext(c, rpcMethodName)
 				var req string
 				var resp string
 				var err error

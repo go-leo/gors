@@ -27,7 +27,7 @@ type generate struct {
 	importsBuf       *bytes.Buffer
 	functionBuf      *bytes.Buffer
 	header           string
-	pkg              string
+	pkgName          string
 	imports          map[string]*gors.GoImport
 	srvName          string
 	usedPackageNames map[string]bool
@@ -226,7 +226,7 @@ func (g *generate) content() []byte {
 func (g *generate) printHeader() {
 	g.P(g.headerBuf, g.header)
 	g.P(g.headerBuf)
-	g.P(g.headerBuf, g.pkg)
+	g.P(g.headerBuf, fmt.Sprintf("package %s", g.pkgName))
 }
 
 func (g *generate) printFunction() {
@@ -254,7 +254,9 @@ func (g *generate) printRouterInfo(info *gors.RouterInfo) {
 }
 
 func (g *generate) printHandler(info *gors.RouterInfo) {
-	g.P(g.functionBuf, "var ctx = ", gorsPackage.Ident("NewContext"), "(c)")
+	fmName := fmt.Sprintf("/%s.%s/%s", g.pkgName, g.srvName, info.RpcMethodName)
+	g.P(g.functionBuf, "var rpcMethodName = ", strconv.Quote(fmName))
+	g.P(g.functionBuf, "var ctx = ", gorsPackage.Ident("NewContext"), "(c, rpcMethodName)")
 
 	if info.Param2.Bytes {
 		g.P(g.functionBuf, "var req []byte")
