@@ -27,9 +27,11 @@ const (
 	Greeter_PUTHeaderJSONBindingAsciiJSONRender_FullMethodName       = "/helloworld.Greeter/PUTHeaderJSONBindingAsciiJSONRender"
 	Greeter_POSTProtoBufBindingProtoBufRender_FullMethodName         = "/helloworld.Greeter/POSTProtoBufBindingProtoBufRender"
 	Greeter_POSTProtoJSONBindingProtoJSONRender_FullMethodName       = "/helloworld.Greeter/POSTProtoJSONBindingProtoJSONRender"
-	Greeter_HeaderMsgPackBindingMsgPackRender_FullMethodName         = "/helloworld.Greeter/HeaderMsgPackBindingMsgPackRender"
 	Greeter_POSTCustomBindingCustomRender_FullMethodName             = "/helloworld.Greeter/POSTCustomBindingCustomRender"
 	Greeter_NotDefine_FullMethodName                                 = "/helloworld.Greeter/NotDefine"
+	Greeter_POSTSetHeaderTrailer_FullMethodName                      = "/helloworld.Greeter/POSTSetHeaderTrailer"
+	Greeter_POSTError_FullMethodName                                 = "/helloworld.Greeter/POSTError"
+	Greeter_POSTGRPCStatus_FullMethodName                            = "/helloworld.Greeter/POSTGRPCStatus"
 )
 
 // GreeterClient is the client API for Greeter service.
@@ -52,11 +54,15 @@ type GreeterClient interface {
 	POSTProtoBufBindingProtoBufRender(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error)
 	// @GORS @POST @Path(/ProtoJSONBinding/ProtoJSONRender) @ProtoJSONBinding @ProtoJSONRender
 	POSTProtoJSONBindingProtoJSONRender(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error)
-	// @GORS @POST @Path(/MsgPackBinding/MsgPackRender) @MsgPackBinding @MsgPackRender
-	HeaderMsgPackBindingMsgPackRender(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error)
 	// @GORS @POST @Path(/CustomBinding/CustomRender) @CustomBinding @CustomRender
 	POSTCustomBindingCustomRender(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error)
 	NotDefine(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error)
+	// @GORS @POST @Path(/POSTSetHeaderTrailer) @ProtoJSONBinding @ProtoJSONRender
+	POSTSetHeaderTrailer(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error)
+	// @GORS @POST @Path(/Error) @ProtoJSONBinding @ProtoJSONRender
+	POSTError(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error)
+	// @GORS @POST @Path(/GRPCStatus) @ProtoJSONBinding @ProtoJSONRender
+	POSTGRPCStatus(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error)
 }
 
 type greeterClient struct {
@@ -139,15 +145,6 @@ func (c *greeterClient) POSTProtoJSONBindingProtoJSONRender(ctx context.Context,
 	return out, nil
 }
 
-func (c *greeterClient) HeaderMsgPackBindingMsgPackRender(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error) {
-	out := new(HelloReply)
-	err := c.cc.Invoke(ctx, Greeter_HeaderMsgPackBindingMsgPackRender_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *greeterClient) POSTCustomBindingCustomRender(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error) {
 	out := new(HelloReply)
 	err := c.cc.Invoke(ctx, Greeter_POSTCustomBindingCustomRender_FullMethodName, in, out, opts...)
@@ -160,6 +157,33 @@ func (c *greeterClient) POSTCustomBindingCustomRender(ctx context.Context, in *H
 func (c *greeterClient) NotDefine(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error) {
 	out := new(HelloReply)
 	err := c.cc.Invoke(ctx, Greeter_NotDefine_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *greeterClient) POSTSetHeaderTrailer(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error) {
+	out := new(HelloReply)
+	err := c.cc.Invoke(ctx, Greeter_POSTSetHeaderTrailer_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *greeterClient) POSTError(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error) {
+	out := new(HelloReply)
+	err := c.cc.Invoke(ctx, Greeter_POSTError_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *greeterClient) POSTGRPCStatus(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error) {
+	out := new(HelloReply)
+	err := c.cc.Invoke(ctx, Greeter_POSTGRPCStatus_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -186,11 +210,15 @@ type GreeterServer interface {
 	POSTProtoBufBindingProtoBufRender(context.Context, *HelloRequest) (*HelloReply, error)
 	// @GORS @POST @Path(/ProtoJSONBinding/ProtoJSONRender) @ProtoJSONBinding @ProtoJSONRender
 	POSTProtoJSONBindingProtoJSONRender(context.Context, *HelloRequest) (*HelloReply, error)
-	// @GORS @POST @Path(/MsgPackBinding/MsgPackRender) @MsgPackBinding @MsgPackRender
-	HeaderMsgPackBindingMsgPackRender(context.Context, *HelloRequest) (*HelloReply, error)
 	// @GORS @POST @Path(/CustomBinding/CustomRender) @CustomBinding @CustomRender
 	POSTCustomBindingCustomRender(context.Context, *HelloRequest) (*HelloReply, error)
 	NotDefine(context.Context, *HelloRequest) (*HelloReply, error)
+	// @GORS @POST @Path(/POSTSetHeaderTrailer) @ProtoJSONBinding @ProtoJSONRender
+	POSTSetHeaderTrailer(context.Context, *HelloRequest) (*HelloReply, error)
+	// @GORS @POST @Path(/Error) @ProtoJSONBinding @ProtoJSONRender
+	POSTError(context.Context, *HelloRequest) (*HelloReply, error)
+	// @GORS @POST @Path(/GRPCStatus) @ProtoJSONBinding @ProtoJSONRender
+	POSTGRPCStatus(context.Context, *HelloRequest) (*HelloReply, error)
 	mustEmbedUnimplementedGreeterServer()
 }
 
@@ -222,14 +250,20 @@ func (UnimplementedGreeterServer) POSTProtoBufBindingProtoBufRender(context.Cont
 func (UnimplementedGreeterServer) POSTProtoJSONBindingProtoJSONRender(context.Context, *HelloRequest) (*HelloReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method POSTProtoJSONBindingProtoJSONRender not implemented")
 }
-func (UnimplementedGreeterServer) HeaderMsgPackBindingMsgPackRender(context.Context, *HelloRequest) (*HelloReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method HeaderMsgPackBindingMsgPackRender not implemented")
-}
 func (UnimplementedGreeterServer) POSTCustomBindingCustomRender(context.Context, *HelloRequest) (*HelloReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method POSTCustomBindingCustomRender not implemented")
 }
 func (UnimplementedGreeterServer) NotDefine(context.Context, *HelloRequest) (*HelloReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method NotDefine not implemented")
+}
+func (UnimplementedGreeterServer) POSTSetHeaderTrailer(context.Context, *HelloRequest) (*HelloReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method POSTSetHeaderTrailer not implemented")
+}
+func (UnimplementedGreeterServer) POSTError(context.Context, *HelloRequest) (*HelloReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method POSTError not implemented")
+}
+func (UnimplementedGreeterServer) POSTGRPCStatus(context.Context, *HelloRequest) (*HelloReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method POSTGRPCStatus not implemented")
 }
 func (UnimplementedGreeterServer) mustEmbedUnimplementedGreeterServer() {}
 
@@ -388,24 +422,6 @@ func _Greeter_POSTProtoJSONBindingProtoJSONRender_Handler(srv interface{}, ctx c
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Greeter_HeaderMsgPackBindingMsgPackRender_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(HelloRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(GreeterServer).HeaderMsgPackBindingMsgPackRender(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Greeter_HeaderMsgPackBindingMsgPackRender_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GreeterServer).HeaderMsgPackBindingMsgPackRender(ctx, req.(*HelloRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _Greeter_POSTCustomBindingCustomRender_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(HelloRequest)
 	if err := dec(in); err != nil {
@@ -438,6 +454,60 @@ func _Greeter_NotDefine_Handler(srv interface{}, ctx context.Context, dec func(i
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(GreeterServer).NotDefine(ctx, req.(*HelloRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Greeter_POSTSetHeaderTrailer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(HelloRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GreeterServer).POSTSetHeaderTrailer(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Greeter_POSTSetHeaderTrailer_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GreeterServer).POSTSetHeaderTrailer(ctx, req.(*HelloRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Greeter_POSTError_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(HelloRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GreeterServer).POSTError(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Greeter_POSTError_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GreeterServer).POSTError(ctx, req.(*HelloRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Greeter_POSTGRPCStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(HelloRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(GreeterServer).POSTGRPCStatus(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Greeter_POSTGRPCStatus_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(GreeterServer).POSTGRPCStatus(ctx, req.(*HelloRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -482,16 +552,24 @@ var Greeter_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Greeter_POSTProtoJSONBindingProtoJSONRender_Handler,
 		},
 		{
-			MethodName: "HeaderMsgPackBindingMsgPackRender",
-			Handler:    _Greeter_HeaderMsgPackBindingMsgPackRender_Handler,
-		},
-		{
 			MethodName: "POSTCustomBindingCustomRender",
 			Handler:    _Greeter_POSTCustomBindingCustomRender_Handler,
 		},
 		{
 			MethodName: "NotDefine",
 			Handler:    _Greeter_NotDefine_Handler,
+		},
+		{
+			MethodName: "POSTSetHeaderTrailer",
+			Handler:    _Greeter_POSTSetHeaderTrailer_Handler,
+		},
+		{
+			MethodName: "POSTError",
+			Handler:    _Greeter_POSTError_Handler,
+		},
+		{
+			MethodName: "POSTGRPCStatus",
+			Handler:    _Greeter_POSTGRPCStatus_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

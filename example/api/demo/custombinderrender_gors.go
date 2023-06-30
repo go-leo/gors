@@ -26,12 +26,12 @@ func CustomBinderRenderRoutes(srv CustomBinderRender, opts ...gors.Option) []gor
 					ctx, req, options.Tag,
 					gors.CustomBinding,
 				); err != nil {
-					gors.ErrorRender(ctx, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				resp, err = srv.Custom(ctx, req)
 				if err != nil {
-					gors.ErrorRender(ctx, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.CustomRender, options.ResponseWrapper)

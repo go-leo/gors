@@ -25,7 +25,7 @@ func ReaderStringRoutes(srv ReaderString, opts ...gors.Option) []gors.Route {
 				req = c.Request.Body
 				resp, err = srv.GetReaderString(ctx, req)
 				if err != nil {
-					gors.ErrorRender(ctx, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.TextRender, options.ResponseWrapper)
@@ -43,7 +43,7 @@ func ReaderStringRoutes(srv ReaderString, opts ...gors.Option) []gors.Route {
 				req = c.Request.Body
 				resp, err = srv.PostReaderString(ctx, req)
 				if err != nil {
-					gors.ErrorRender(ctx, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "text/go", gors.StringRender, options.ResponseWrapper)

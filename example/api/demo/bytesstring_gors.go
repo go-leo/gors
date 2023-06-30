@@ -25,13 +25,13 @@ func BytesStringRoutes(srv BytesString, opts ...gors.Option) []gors.Route {
 				var body []byte
 				body, err = io.ReadAll(c.Request.Body)
 				if err != nil {
-					gors.ErrorRender(ctx, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				req = body
 				resp, err = srv.GetBytesString(ctx, req)
 				if err != nil {
-					gors.ErrorRender(ctx, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.HTMLRender, options.ResponseWrapper)
@@ -49,13 +49,13 @@ func BytesStringRoutes(srv BytesString, opts ...gors.Option) []gors.Route {
 				var body []byte
 				body, err = io.ReadAll(c.Request.Body)
 				if err != nil {
-					gors.ErrorRender(ctx, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				req = body
 				resp, err = srv.PutBytesString(ctx, req)
 				if err != nil {
-					gors.ErrorRender(ctx, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.RedirectRender, options.ResponseWrapper)

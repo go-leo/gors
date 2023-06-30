@@ -89,7 +89,7 @@ func genClientFunction(gen *protogen.Plugin, file *protogen.File, g *protogen.Ge
 			}
 
 			g.P("if ctx, err = ", gorsPackage.Ident("NewGRPCContext"), "(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {")
-			g.P(gorsPackage.Ident("ErrorRender"), "(c, err, options.ErrorHandler)")
+			g.P(gorsPackage.Ident("ErrorRender"), "(ctx, err, options.ErrorHandler, options.ResponseWrapper)")
 			g.P("return")
 			g.P("}")
 
@@ -97,11 +97,13 @@ func genClientFunction(gen *protogen.Plugin, file *protogen.File, g *protogen.Ge
 			g.P("resp, err = cli.", method.GoName, "(ctx, req, ", grpcPackage.Ident("Header"), "(&headerMD), ", grpcPackage.Ident("Trailer"), "(&trailerMD))")
 			g.P(gorsPackage.Ident("AddGRPCMetadata"), "(ctx, headerMD, trailerMD, options.OutgoingHeaderMatcher)")
 			g.P("if err != nil {")
-			g.P(gorsPackage.Ident("ErrorRender"), "(c, err, options.ErrorHandler)")
+			g.P(gorsPackage.Ident("ErrorRender"), "(ctx, err, options.ErrorHandler, options.ResponseWrapper)")
 			g.P("return")
 			g.P("}")
 
-			printResponseRender(gen, g, router, fmName)
+			if err := printResponseRender(gen, g, router, fmName); err != nil {
+				return err
+			}
 
 			g.P("},")
 			g.P("),")
@@ -150,7 +152,7 @@ func genServerFunction(gen *protogen.Plugin, file *protogen.File, g *protogen.Ge
 			}
 
 			g.P("if ctx, err = ", gorsPackage.Ident("NewGRPCContext"), "(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {")
-			g.P(gorsPackage.Ident("ErrorRender"), "(c, err, options.ErrorHandler)")
+			g.P(gorsPackage.Ident("ErrorRender"), "(ctx, err, options.ErrorHandler, options.ResponseWrapper)")
 			g.P("return")
 			g.P("}")
 
@@ -159,11 +161,13 @@ func genServerFunction(gen *protogen.Plugin, file *protogen.File, g *protogen.Ge
 			g.P("resp, err = srv.", method.GoName, "(ctx, req)")
 			g.P(gorsPackage.Ident("AddGRPCMetadata"), "(ctx, stream.Header(), stream.Trailer(), options.OutgoingHeaderMatcher)")
 			g.P("if err != nil {")
-			g.P(gorsPackage.Ident("ErrorRender"), "(c, err, options.ErrorHandler)")
+			g.P(gorsPackage.Ident("ErrorRender"), "(ctx, err, options.ErrorHandler, options.ResponseWrapper)")
 			g.P("return")
 			g.P("}")
 
-			printResponseRender(gen, g, router, fmName)
+			if err := printResponseRender(gen, g, router, fmName); err != nil {
+				return err
+			}
 
 			g.P("},")
 			g.P("),")
@@ -204,11 +208,12 @@ func printRequestBinding(gen *protogen.Plugin, g *protogen.GeneratedFile, router
 	if router.CustomBinding {
 		bindings = append(bindings, "CustomBinding")
 	}
-	if router.MsgPackBinding {
-		bindings = append(bindings, "MsgPackBinding")
-	}
+
 	if router.ProtoJSONBinding {
 		bindings = append(bindings, "ProtoJSONBinding")
+	}
+	if router.MsgPackBinding {
+		return fmt.Errorf("%s, @MsgPackBinding is not supported", fmName)
 	}
 	if router.XMLBinding {
 		return fmt.Errorf("%s, @XMLBinding is not supported", fmName)
@@ -226,13 +231,13 @@ func printRequestBinding(gen *protogen.Plugin, g *protogen.GeneratedFile, router
 	}
 	g.P("); err != nil {")
 
-	g.P(gorsPackage.Ident("ErrorRender"), "(c, err, options.ErrorHandler)")
+	g.P(gorsPackage.Ident("ErrorRender"), "(ctx, err, options.ErrorHandler, options.ResponseWrapper)")
 	g.P("return")
 	g.P("}")
 	return nil
 }
 
-func printResponseRender(gen *protogen.Plugin, g *protogen.GeneratedFile, router *gors.RouterInfo, fmName string) {
+func printResponseRender(gen *protogen.Plugin, g *protogen.GeneratedFile, router *gors.RouterInfo, fmName string) error {
 	var renderMethodName string
 	switch {
 	case router.JSONRender:
@@ -251,45 +256,38 @@ func printResponseRender(gen *protogen.Plugin, g *protogen.GeneratedFile, router
 		renderMethodName = "ProtoJSONRender"
 	case router.ProtoBufRender:
 		renderMethodName = "ProtoBufRender"
-	case router.MsgPackRender:
-		renderMethodName = "MsgPackRender"
 	case router.CustomRender:
 		renderMethodName = "CustomRender"
+
 	case router.BytesRender:
-		gen.Error(fmt.Errorf("%s, @BytesRender is not supported", fmName))
-		return
+		return fmt.Errorf("%s, @BytesRender is not supported", fmName)
 	case router.StringRender:
-		gen.Error(fmt.Errorf("%s, @StringRender is not supported", fmName))
-		return
+		return fmt.Errorf("%s, @StringRender is not supported", fmName)
 	case router.TextRender:
-		gen.Error(fmt.Errorf("%s, @TextRender is not supported", fmName))
-		return
+		return fmt.Errorf("%s, @TextRender is not supported", fmName)
 	case router.HTMLRender:
-		gen.Error(fmt.Errorf("%s, @HTMLRender is not supported", fmName))
-		return
+		return fmt.Errorf("%s, @HTMLRender is not supported", fmName)
 	case router.RedirectRender:
-		gen.Error(fmt.Errorf("%s, @RedirectRender is not supported", fmName))
-		return
+		return fmt.Errorf("%s, @RedirectRender is not supported", fmName)
 	case router.ReaderRender:
-		gen.Error(fmt.Errorf("%s, @ReaderRender is not supported", fmName))
-		return
+		return fmt.Errorf("%s, @ReaderRender is not supported", fmName)
 	case router.XMLRender:
-		gen.Error(fmt.Errorf("%s, @XMLRender is not supported", fmName))
-		return
+		return fmt.Errorf("%s, @XMLRender is not supported", fmName)
 	case router.YAMLRender:
-		gen.Error(fmt.Errorf("%s, @YAMLRender is not supported", fmName))
-		return
+		return fmt.Errorf("%s, @YAMLRender is not supported", fmName)
 	case router.TOMLRender:
-		gen.Error(fmt.Errorf("%s, @TOMLRender is not supported", fmName))
-		return
+		return fmt.Errorf("%s, @TOMLRender is not supported", fmName)
+	case router.MsgPackRender:
+		return fmt.Errorf("%s, @MsgPackRender is not supported", fmName)
 	default:
-		gen.Error(fmt.Errorf("%s, render not defined", fmName))
-		return
+		return fmt.Errorf("%s, render not defined", fmName)
 	}
 	g.P(gorsPackage.Ident("ResponseRender"),
 		"(ctx, ", gorsPackage.Ident("StatusCode"), "(ctx), resp,",
 		strconv.Quote(router.RenderContentType), ",", gorsPackage.Ident(renderMethodName),
 		", options.ResponseWrapper)")
+
+	return nil
 }
 
 func renderMethodName(router *gors.RouterInfo, fmName string) (string, error) {

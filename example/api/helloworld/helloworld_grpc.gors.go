@@ -31,18 +31,18 @@ func GreeterClientRoutes(cli GreeterClient, opts ...gors.Option) []gors.Route {
 					ctx, req, options.Tag,
 					gors.UriBinding,
 				); err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				var headerMD, trailerMD metadata.MD
 				resp, err = cli.DELETEUriBindingJSONRender(ctx, req, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
 				gors.AddGRPCMetadata(ctx, headerMD, trailerMD, options.OutgoingHeaderMatcher)
 				if err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.JSONRender, options.ResponseWrapper)
@@ -62,18 +62,18 @@ func GreeterClientRoutes(cli GreeterClient, opts ...gors.Option) []gors.Route {
 					ctx, req, options.Tag,
 					gors.UriBinding,
 				); err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				var headerMD, trailerMD metadata.MD
 				resp, err = cli.GETUriBindingIndentedJSONRender(ctx, req, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
 				gors.AddGRPCMetadata(ctx, headerMD, trailerMD, options.OutgoingHeaderMatcher)
 				if err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.IndentedJSONRender, options.ResponseWrapper)
@@ -94,18 +94,18 @@ func GreeterClientRoutes(cli GreeterClient, opts ...gors.Option) []gors.Route {
 					gors.UriBinding,
 					gors.QueryBinding,
 				); err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				var headerMD, trailerMD metadata.MD
 				resp, err = cli.GETUriQueryBindingSecureJSONRender(ctx, req, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
 				gors.AddGRPCMetadata(ctx, headerMD, trailerMD, options.OutgoingHeaderMatcher)
 				if err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.SecureJSONRender, options.ResponseWrapper)
@@ -126,18 +126,18 @@ func GreeterClientRoutes(cli GreeterClient, opts ...gors.Option) []gors.Route {
 					gors.HeaderBinding,
 					gors.FormPostBinding,
 				); err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				var headerMD, trailerMD metadata.MD
 				resp, err = cli.POSTHeaderFormPostBindingJSONPJSONRender(ctx, req, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
 				gors.AddGRPCMetadata(ctx, headerMD, trailerMD, options.OutgoingHeaderMatcher)
 				if err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.JSONPJSONRender, options.ResponseWrapper)
@@ -158,18 +158,18 @@ func GreeterClientRoutes(cli GreeterClient, opts ...gors.Option) []gors.Route {
 					gors.HeaderBinding,
 					gors.FormBinding,
 				); err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				var headerMD, trailerMD metadata.MD
 				resp, err = cli.PATCHHeaderProtoFormBindingPureJSONRender(ctx, req, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
 				gors.AddGRPCMetadata(ctx, headerMD, trailerMD, options.OutgoingHeaderMatcher)
 				if err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.PureJSONRender, options.ResponseWrapper)
@@ -190,18 +190,18 @@ func GreeterClientRoutes(cli GreeterClient, opts ...gors.Option) []gors.Route {
 					gors.HeaderBinding,
 					gors.JSONBinding,
 				); err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				var headerMD, trailerMD metadata.MD
 				resp, err = cli.PUTHeaderJSONBindingAsciiJSONRender(ctx, req, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
 				gors.AddGRPCMetadata(ctx, headerMD, trailerMD, options.OutgoingHeaderMatcher)
 				if err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.AsciiJSONRender, options.ResponseWrapper)
@@ -221,18 +221,18 @@ func GreeterClientRoutes(cli GreeterClient, opts ...gors.Option) []gors.Route {
 					ctx, req, options.Tag,
 					gors.ProtoBufBinding,
 				); err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				var headerMD, trailerMD metadata.MD
 				resp, err = cli.POSTProtoBufBindingProtoBufRender(ctx, req, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
 				gors.AddGRPCMetadata(ctx, headerMD, trailerMD, options.OutgoingHeaderMatcher)
 				if err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.ProtoBufRender, options.ResponseWrapper)
@@ -252,52 +252,21 @@ func GreeterClientRoutes(cli GreeterClient, opts ...gors.Option) []gors.Route {
 					ctx, req, options.Tag,
 					gors.ProtoJSONBinding,
 				); err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				var headerMD, trailerMD metadata.MD
 				resp, err = cli.POSTProtoJSONBindingProtoJSONRender(ctx, req, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
 				gors.AddGRPCMetadata(ctx, headerMD, trailerMD, options.OutgoingHeaderMatcher)
 				if err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.ProtoJSONRender, options.ResponseWrapper)
-			},
-		),
-		gors.NewRoute(
-			http.MethodPost,
-			"/v1/MsgPackBinding/MsgPackRender",
-			func(c *gin.Context) {
-				var rpcMethodName = "/helloworld.Greeter/HeaderMsgPackBindingMsgPackRender"
-				var ctx = gors.NewContext(c, rpcMethodName)
-				var req *HelloRequest
-				var resp *HelloReply
-				var err error
-				req = new(HelloRequest)
-				if err = gors.RequestBind(
-					ctx, req, options.Tag,
-					gors.MsgPackBinding,
-				); err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
-					return
-				}
-				if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
-					return
-				}
-				var headerMD, trailerMD metadata.MD
-				resp, err = cli.HeaderMsgPackBindingMsgPackRender(ctx, req, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
-				gors.AddGRPCMetadata(ctx, headerMD, trailerMD, options.OutgoingHeaderMatcher)
-				if err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
-					return
-				}
-				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.MsgPackRender, options.ResponseWrapper)
 			},
 		),
 		gors.NewRoute(
@@ -314,18 +283,18 @@ func GreeterClientRoutes(cli GreeterClient, opts ...gors.Option) []gors.Route {
 					ctx, req, options.Tag,
 					gors.CustomBinding,
 				); err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				var headerMD, trailerMD metadata.MD
 				resp, err = cli.POSTCustomBindingCustomRender(ctx, req, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
 				gors.AddGRPCMetadata(ctx, headerMD, trailerMD, options.OutgoingHeaderMatcher)
 				if err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.CustomRender, options.ResponseWrapper)
@@ -348,18 +317,111 @@ func GreeterClientRoutes(cli GreeterClient, opts ...gors.Option) []gors.Route {
 					gors.HeaderBinding,
 					gors.ProtoJSONBinding,
 				); err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				var headerMD, trailerMD metadata.MD
 				resp, err = cli.NotDefine(ctx, req, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
 				gors.AddGRPCMetadata(ctx, headerMD, trailerMD, options.OutgoingHeaderMatcher)
 				if err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+					return
+				}
+				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.ProtoJSONRender, options.ResponseWrapper)
+			},
+		),
+		gors.NewRoute(
+			http.MethodPost,
+			"/v1/POSTSetHeaderTrailer",
+			func(c *gin.Context) {
+				var rpcMethodName = "/helloworld.Greeter/POSTSetHeaderTrailer"
+				var ctx = gors.NewContext(c, rpcMethodName)
+				var req *HelloRequest
+				var resp *HelloReply
+				var err error
+				req = new(HelloRequest)
+				if err = gors.RequestBind(
+					ctx, req, options.Tag,
+					gors.ProtoJSONBinding,
+				); err != nil {
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+					return
+				}
+				if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+					return
+				}
+				var headerMD, trailerMD metadata.MD
+				resp, err = cli.POSTSetHeaderTrailer(ctx, req, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
+				gors.AddGRPCMetadata(ctx, headerMD, trailerMD, options.OutgoingHeaderMatcher)
+				if err != nil {
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+					return
+				}
+				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.ProtoJSONRender, options.ResponseWrapper)
+			},
+		),
+		gors.NewRoute(
+			http.MethodPost,
+			"/v1/Error",
+			func(c *gin.Context) {
+				var rpcMethodName = "/helloworld.Greeter/POSTError"
+				var ctx = gors.NewContext(c, rpcMethodName)
+				var req *HelloRequest
+				var resp *HelloReply
+				var err error
+				req = new(HelloRequest)
+				if err = gors.RequestBind(
+					ctx, req, options.Tag,
+					gors.ProtoJSONBinding,
+				); err != nil {
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+					return
+				}
+				if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+					return
+				}
+				var headerMD, trailerMD metadata.MD
+				resp, err = cli.POSTError(ctx, req, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
+				gors.AddGRPCMetadata(ctx, headerMD, trailerMD, options.OutgoingHeaderMatcher)
+				if err != nil {
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+					return
+				}
+				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.ProtoJSONRender, options.ResponseWrapper)
+			},
+		),
+		gors.NewRoute(
+			http.MethodPost,
+			"/v1/GRPCStatus",
+			func(c *gin.Context) {
+				var rpcMethodName = "/helloworld.Greeter/POSTGRPCStatus"
+				var ctx = gors.NewContext(c, rpcMethodName)
+				var req *HelloRequest
+				var resp *HelloReply
+				var err error
+				req = new(HelloRequest)
+				if err = gors.RequestBind(
+					ctx, req, options.Tag,
+					gors.ProtoJSONBinding,
+				); err != nil {
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+					return
+				}
+				if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+					return
+				}
+				var headerMD, trailerMD metadata.MD
+				resp, err = cli.POSTGRPCStatus(ctx, req, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
+				gors.AddGRPCMetadata(ctx, headerMD, trailerMD, options.OutgoingHeaderMatcher)
+				if err != nil {
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.ProtoJSONRender, options.ResponseWrapper)
@@ -389,11 +451,11 @@ func GreeterServerRoutes(srv GreeterServer, opts ...gors.Option) []gors.Route {
 					ctx, req, options.Tag,
 					gors.UriBinding,
 				); err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				stream := gors.NewServerTransportStream(rpcMethodName)
@@ -401,7 +463,7 @@ func GreeterServerRoutes(srv GreeterServer, opts ...gors.Option) []gors.Route {
 				resp, err = srv.DELETEUriBindingJSONRender(ctx, req)
 				gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), options.OutgoingHeaderMatcher)
 				if err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.JSONRender, options.ResponseWrapper)
@@ -421,11 +483,11 @@ func GreeterServerRoutes(srv GreeterServer, opts ...gors.Option) []gors.Route {
 					ctx, req, options.Tag,
 					gors.UriBinding,
 				); err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				stream := gors.NewServerTransportStream(rpcMethodName)
@@ -433,7 +495,7 @@ func GreeterServerRoutes(srv GreeterServer, opts ...gors.Option) []gors.Route {
 				resp, err = srv.GETUriBindingIndentedJSONRender(ctx, req)
 				gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), options.OutgoingHeaderMatcher)
 				if err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.IndentedJSONRender, options.ResponseWrapper)
@@ -454,11 +516,11 @@ func GreeterServerRoutes(srv GreeterServer, opts ...gors.Option) []gors.Route {
 					gors.UriBinding,
 					gors.QueryBinding,
 				); err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				stream := gors.NewServerTransportStream(rpcMethodName)
@@ -466,7 +528,7 @@ func GreeterServerRoutes(srv GreeterServer, opts ...gors.Option) []gors.Route {
 				resp, err = srv.GETUriQueryBindingSecureJSONRender(ctx, req)
 				gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), options.OutgoingHeaderMatcher)
 				if err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.SecureJSONRender, options.ResponseWrapper)
@@ -487,11 +549,11 @@ func GreeterServerRoutes(srv GreeterServer, opts ...gors.Option) []gors.Route {
 					gors.HeaderBinding,
 					gors.FormPostBinding,
 				); err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				stream := gors.NewServerTransportStream(rpcMethodName)
@@ -499,7 +561,7 @@ func GreeterServerRoutes(srv GreeterServer, opts ...gors.Option) []gors.Route {
 				resp, err = srv.POSTHeaderFormPostBindingJSONPJSONRender(ctx, req)
 				gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), options.OutgoingHeaderMatcher)
 				if err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.JSONPJSONRender, options.ResponseWrapper)
@@ -520,11 +582,11 @@ func GreeterServerRoutes(srv GreeterServer, opts ...gors.Option) []gors.Route {
 					gors.HeaderBinding,
 					gors.FormBinding,
 				); err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				stream := gors.NewServerTransportStream(rpcMethodName)
@@ -532,7 +594,7 @@ func GreeterServerRoutes(srv GreeterServer, opts ...gors.Option) []gors.Route {
 				resp, err = srv.PATCHHeaderProtoFormBindingPureJSONRender(ctx, req)
 				gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), options.OutgoingHeaderMatcher)
 				if err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.PureJSONRender, options.ResponseWrapper)
@@ -553,11 +615,11 @@ func GreeterServerRoutes(srv GreeterServer, opts ...gors.Option) []gors.Route {
 					gors.HeaderBinding,
 					gors.JSONBinding,
 				); err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				stream := gors.NewServerTransportStream(rpcMethodName)
@@ -565,7 +627,7 @@ func GreeterServerRoutes(srv GreeterServer, opts ...gors.Option) []gors.Route {
 				resp, err = srv.PUTHeaderJSONBindingAsciiJSONRender(ctx, req)
 				gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), options.OutgoingHeaderMatcher)
 				if err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.AsciiJSONRender, options.ResponseWrapper)
@@ -585,11 +647,11 @@ func GreeterServerRoutes(srv GreeterServer, opts ...gors.Option) []gors.Route {
 					ctx, req, options.Tag,
 					gors.ProtoBufBinding,
 				); err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				stream := gors.NewServerTransportStream(rpcMethodName)
@@ -597,7 +659,7 @@ func GreeterServerRoutes(srv GreeterServer, opts ...gors.Option) []gors.Route {
 				resp, err = srv.POSTProtoBufBindingProtoBufRender(ctx, req)
 				gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), options.OutgoingHeaderMatcher)
 				if err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.ProtoBufRender, options.ResponseWrapper)
@@ -617,11 +679,11 @@ func GreeterServerRoutes(srv GreeterServer, opts ...gors.Option) []gors.Route {
 					ctx, req, options.Tag,
 					gors.ProtoJSONBinding,
 				); err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				stream := gors.NewServerTransportStream(rpcMethodName)
@@ -629,42 +691,10 @@ func GreeterServerRoutes(srv GreeterServer, opts ...gors.Option) []gors.Route {
 				resp, err = srv.POSTProtoJSONBindingProtoJSONRender(ctx, req)
 				gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), options.OutgoingHeaderMatcher)
 				if err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.ProtoJSONRender, options.ResponseWrapper)
-			},
-		),
-		gors.NewRoute(
-			http.MethodPost,
-			"/v1/MsgPackBinding/MsgPackRender",
-			func(c *gin.Context) {
-				var rpcMethodName = "/helloworld.Greeter/HeaderMsgPackBindingMsgPackRender"
-				var ctx = gors.NewContext(c, rpcMethodName)
-				var req *HelloRequest
-				var resp *HelloReply
-				var err error
-				req = new(HelloRequest)
-				if err = gors.RequestBind(
-					ctx, req, options.Tag,
-					gors.MsgPackBinding,
-				); err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
-					return
-				}
-				if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
-					return
-				}
-				stream := gors.NewServerTransportStream(rpcMethodName)
-				ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
-				resp, err = srv.HeaderMsgPackBindingMsgPackRender(ctx, req)
-				gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), options.OutgoingHeaderMatcher)
-				if err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
-					return
-				}
-				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.MsgPackRender, options.ResponseWrapper)
 			},
 		),
 		gors.NewRoute(
@@ -681,11 +711,11 @@ func GreeterServerRoutes(srv GreeterServer, opts ...gors.Option) []gors.Route {
 					ctx, req, options.Tag,
 					gors.CustomBinding,
 				); err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				stream := gors.NewServerTransportStream(rpcMethodName)
@@ -693,7 +723,7 @@ func GreeterServerRoutes(srv GreeterServer, opts ...gors.Option) []gors.Route {
 				resp, err = srv.POSTCustomBindingCustomRender(ctx, req)
 				gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), options.OutgoingHeaderMatcher)
 				if err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.CustomRender, options.ResponseWrapper)
@@ -716,11 +746,11 @@ func GreeterServerRoutes(srv GreeterServer, opts ...gors.Option) []gors.Route {
 					gors.HeaderBinding,
 					gors.ProtoJSONBinding,
 				); err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				stream := gors.NewServerTransportStream(rpcMethodName)
@@ -728,7 +758,103 @@ func GreeterServerRoutes(srv GreeterServer, opts ...gors.Option) []gors.Route {
 				resp, err = srv.NotDefine(ctx, req)
 				gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), options.OutgoingHeaderMatcher)
 				if err != nil {
-					gors.ErrorRender(c, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+					return
+				}
+				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.ProtoJSONRender, options.ResponseWrapper)
+			},
+		),
+		gors.NewRoute(
+			http.MethodPost,
+			"/v1/POSTSetHeaderTrailer",
+			func(c *gin.Context) {
+				var rpcMethodName = "/helloworld.Greeter/POSTSetHeaderTrailer"
+				var ctx = gors.NewContext(c, rpcMethodName)
+				var req *HelloRequest
+				var resp *HelloReply
+				var err error
+				req = new(HelloRequest)
+				if err = gors.RequestBind(
+					ctx, req, options.Tag,
+					gors.ProtoJSONBinding,
+				); err != nil {
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+					return
+				}
+				if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+					return
+				}
+				stream := gors.NewServerTransportStream(rpcMethodName)
+				ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
+				resp, err = srv.POSTSetHeaderTrailer(ctx, req)
+				gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), options.OutgoingHeaderMatcher)
+				if err != nil {
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+					return
+				}
+				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.ProtoJSONRender, options.ResponseWrapper)
+			},
+		),
+		gors.NewRoute(
+			http.MethodPost,
+			"/v1/Error",
+			func(c *gin.Context) {
+				var rpcMethodName = "/helloworld.Greeter/POSTError"
+				var ctx = gors.NewContext(c, rpcMethodName)
+				var req *HelloRequest
+				var resp *HelloReply
+				var err error
+				req = new(HelloRequest)
+				if err = gors.RequestBind(
+					ctx, req, options.Tag,
+					gors.ProtoJSONBinding,
+				); err != nil {
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+					return
+				}
+				if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+					return
+				}
+				stream := gors.NewServerTransportStream(rpcMethodName)
+				ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
+				resp, err = srv.POSTError(ctx, req)
+				gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), options.OutgoingHeaderMatcher)
+				if err != nil {
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+					return
+				}
+				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.ProtoJSONRender, options.ResponseWrapper)
+			},
+		),
+		gors.NewRoute(
+			http.MethodPost,
+			"/v1/GRPCStatus",
+			func(c *gin.Context) {
+				var rpcMethodName = "/helloworld.Greeter/POSTGRPCStatus"
+				var ctx = gors.NewContext(c, rpcMethodName)
+				var req *HelloRequest
+				var resp *HelloReply
+				var err error
+				req = new(HelloRequest)
+				if err = gors.RequestBind(
+					ctx, req, options.Tag,
+					gors.ProtoJSONBinding,
+				); err != nil {
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+					return
+				}
+				if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+					return
+				}
+				stream := gors.NewServerTransportStream(rpcMethodName)
+				ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
+				resp, err = srv.POSTGRPCStatus(ctx, req)
+				gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), options.OutgoingHeaderMatcher)
+				if err != nil {
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.ProtoJSONRender, options.ResponseWrapper)

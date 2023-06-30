@@ -20,6 +20,7 @@ func ErrorRender(
 	ctx context.Context,
 	err error,
 	handler func(ctx context.Context, err error),
+	wrapper func(resp any) any,
 ) {
 	if handler != nil {
 		handler(ctx, err)
@@ -27,20 +28,20 @@ func ErrorRender(
 	}
 	var e Error
 	if errors.As(err, &e) {
-		ResponseRender(ctx, e.StatusCode, e.Status(), "", PureJSONRender, nil)
+		ResponseRender(ctx, e.StatusCode, e.Status(), "", PureJSONRender, wrapper)
 		return
 	}
 	var ePtr *Error
 	if errors.As(err, &ePtr) {
-		ResponseRender(ctx, ePtr.StatusCode, ePtr.Status(), "", PureJSONRender, nil)
+		ResponseRender(ctx, ePtr.StatusCode, ePtr.Status(), "", PureJSONRender, wrapper)
 		return
 	}
 	status, ok := grpcstatus.FromError(err)
 	if ok {
-		ResponseRender(ctx, httpStatusFromCode(status.Code()), status.Proto(), "", ProtoJSONRender, nil)
+		ResponseRender(ctx, httpStatusFromCode(status.Code()), status.Proto(), "", ProtoJSONRender, wrapper)
 		return
 	}
-	ResponseRender(ctx, http.StatusInternalServerError, err.Error(), "", TextRender, nil)
+	ResponseRender(ctx, http.StatusInternalServerError, err.Error(), "", TextRender, wrapper)
 }
 
 func ResponseRender(
@@ -240,6 +241,9 @@ func AddGRPCMetadata(
 	headerMD, trailerMD metadata.MD,
 	headerMatcher func(key string) (string, bool),
 ) {
+	if headerMatcher == nil {
+		headerMatcher = defaultOutgoingHeaderMatcher
+	}
 	header := Header(ctx)
 	for key, values := range headerMD {
 		if h, ok := headerMatcher(key); ok {

@@ -149,14 +149,9 @@ func (svc *ObjObjService) TOMLBindingTOMLRender(ctx context.Context, req *demo.T
 	}, nil
 }
 
-func (svc *ObjObjService) ProtoJSONBindingProtoJSONRender(ctx context.Context, req *demo.TOMLBindingReq) (*demo.TOMLRenderResp, error) {
-	return &demo.TOMLRenderResp{
-		ID:         req.ID,
-		Name:       "Jax",
-		Auth:       "xxxxxxxx",
-		Address:    "shanghai",
-		Birthday:   time.Now(),
-		CreateTime: time.Now(),
-		UnixTime:   time.Now(),
+func (svc *ObjObjService) ProtoJSONBindingProtoJSONRender(ctx context.Context, req *pb.ProtoBufReq) (*pb.ProtoBufResp, error) {
+	return &pb.ProtoBufResp{
+		Id:   req.Id,
+		Name: "Jax",
 	}, nil
 }

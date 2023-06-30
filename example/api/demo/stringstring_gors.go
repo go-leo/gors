@@ -25,13 +25,13 @@ func StringStringRoutes(srv StringString, opts ...gors.Option) []gors.Route {
 				var body []byte
 				body, err = io.ReadAll(c.Request.Body)
 				if err != nil {
-					gors.ErrorRender(ctx, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				req = string(body)
 				resp, err = srv.GetStringString(ctx, req)
 				if err != nil {
-					gors.ErrorRender(ctx, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "text/go", gors.StringRender, options.ResponseWrapper)
@@ -49,13 +49,13 @@ func StringStringRoutes(srv StringString, opts ...gors.Option) []gors.Route {
 				var body []byte
 				body, err = io.ReadAll(c.Request.Body)
 				if err != nil {
-					gors.ErrorRender(ctx, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				req = string(body)
 				resp, err = srv.PatchStringString(ctx, req)
 				if err != nil {
-					gors.ErrorRender(ctx, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "text/go", gors.StringRender, options.ResponseWrapper)

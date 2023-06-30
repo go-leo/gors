@@ -28,20 +28,26 @@ service Greeter {
   // @GORS @POST @Path(/ProtoJSONBinding/ProtoJSONRender) @ProtoJSONBinding @ProtoJSONRender
   rpc POSTProtoJSONBindingProtoJSONRender (HelloRequest) returns (HelloReply) {}
 
-  // @GORS @POST @Path(/MsgPackBinding/MsgPackRender) @MsgPackBinding @MsgPackRender
-  rpc HeaderMsgPackBindingMsgPackRender (HelloRequest) returns (HelloReply) {}
-
   // @GORS @POST @Path(/CustomBinding/CustomRender) @CustomBinding @CustomRender
   rpc POSTCustomBindingCustomRender (HelloRequest) returns (HelloReply) {}
 
   rpc NotDefine (HelloRequest) returns (HelloReply) {}
+
+  // @GORS @POST @Path(/POSTSetHeaderTrailer) @ProtoJSONBinding @ProtoJSONRender
+  rpc POSTSetHeaderTrailer (HelloRequest) returns (HelloReply) {}
+
+  // @GORS @POST @Path(/Error) @ProtoJSONBinding @ProtoJSONRender
+  rpc POSTError (HelloRequest) returns (HelloReply) {}
+
+  // @GORS @POST @Path(/GRPCStatus) @ProtoJSONBinding @ProtoJSONRender
+  rpc POSTGRPCStatus (HelloRequest) returns (HelloReply) {}
 }
 
-// @FormBinding @JSONBinding @ProtoBufBinding @CustomBinding @MsgPackBinding @JSONRender
 message HelloRequest {
   string name = 1;
   int32 age = 2;
   double salary = 3;
+  string Token = 4;
 }
 
 message HelloReply {

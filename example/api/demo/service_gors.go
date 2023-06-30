@@ -26,12 +26,12 @@ func ServiceRoutes(srv Service, opts ...gors.Option) []gors.Route {
 					ctx, req, options.Tag,
 					gors.UriBinding,
 				); err != nil {
-					gors.ErrorRender(ctx, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				resp, err = srv.Method(ctx, req)
 				if err != nil {
-					gors.ErrorRender(ctx, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.JSONRender, options.ResponseWrapper)

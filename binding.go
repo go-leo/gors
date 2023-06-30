@@ -76,50 +76,41 @@ func FormPostBinding(ctx context.Context, req any, tag string) error {
 }
 
 func FormMultipartBinding(ctx context.Context, req any, tag string) error {
-	c := FromContext(ctx)
-	return c.ShouldBindWith(req, binding.FormMultipart)
+	return FromContext(ctx).ShouldBindWith(req, binding.FormMultipart)
 }
 
 func JSONBinding(ctx context.Context, req any, _ string) error {
-	c := FromContext(ctx)
-	return c.ShouldBindWith(req, binding.JSON)
+	return FromContext(ctx).ShouldBindWith(req, binding.JSON)
 }
 
 func ProtoJSONBinding(ctx context.Context, req any, _ string) error {
-	c := FromContext(ctx)
-	return c.ShouldBindWith(req, internalbinding.ProtoJSON)
+	return FromContext(ctx).ShouldBindWith(req, internalbinding.ProtoJSON)
 }
 
 func XMLBinding(ctx context.Context, req any, _ string) error {
-	c := FromContext(ctx)
-	return c.ShouldBindWith(req, binding.XML)
+	return FromContext(ctx).ShouldBindWith(req, binding.XML)
 }
 
 func ProtoBufBinding(ctx context.Context, req any, _ string) error {
-	c := FromContext(ctx)
-	return c.ShouldBindWith(req, binding.ProtoBuf)
+	return FromContext(ctx).ShouldBindWith(req, binding.ProtoBuf)
 }
 
 func MsgPackBinding(ctx context.Context, req any, _ string) error {
-	c := FromContext(ctx)
-	return c.ShouldBindWith(req, binding.MsgPack)
+	return FromContext(ctx).ShouldBindWith(req, binding.MsgPack)
 }
 
 func YAMLBinding(ctx context.Context, req any, _ string) error {
-	c := FromContext(ctx)
-	return c.ShouldBindWith(req, binding.YAML)
+	return FromContext(ctx).ShouldBindWith(req, binding.YAML)
 }
 
 func TOMLBinding(ctx context.Context, req any, _ string) error {
-	c := FromContext(ctx)
-	return c.ShouldBindWith(req, binding.TOML)
+	return FromContext(ctx).ShouldBindWith(req, binding.TOML)
 }
 
 func CustomBinding(ctx context.Context, req any, _ string) error {
-	c := FromContext(ctx)
 	customBinding, ok := req.(Binding)
 	if !ok {
 		return nil
 	}
-	return customBinding.Bind(c)
+	return customBinding.Bind(ctx)
 }

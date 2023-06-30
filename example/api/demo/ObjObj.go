@@ -61,8 +61,8 @@ type ObjObj interface {
 	TOMLBindingTOMLRender(context.Context, *TOMLBindingReq) (*TOMLRenderResp, error)
 
 	// ProtoJSONBindingProtoJSONRender
-	// @GORS @PUT @Path(/ProtoJSONBindingProtoJSONRender/:id) @UriBinding @QueryBinding @HeaderBinding @ProtoJSONBinding @ProtoJSONRender
-	ProtoJSONBindingProtoJSONRender(context.Context, *TOMLBindingReq) (*TOMLRenderResp, error)
+	// @GORS @PUT @Path(/ProtoJSONBindingProtoJSONRender) @ProtoJSONBinding @ProtoJSONRender
+	ProtoJSONBindingProtoJSONRender(context.Context, *pb.ProtoBufReq) (*pb.ProtoBufResp, error)
 }
 
 type UriBindingReq struct {

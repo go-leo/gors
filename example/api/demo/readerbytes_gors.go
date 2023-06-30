@@ -25,7 +25,7 @@ func ReaderBytesRoutes(srv ReaderBytes, opts ...gors.Option) []gors.Route {
 				req = c.Request.Body
 				resp, err = srv.GetReaderBytes(ctx, req)
 				if err != nil {
-					gors.ErrorRender(ctx, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.BytesRender, options.ResponseWrapper)
@@ -43,7 +43,7 @@ func ReaderBytesRoutes(srv ReaderBytes, opts ...gors.Option) []gors.Route {
 				req = c.Request.Body
 				resp, err = srv.PostReaderBytes(ctx, req)
 				if err != nil {
-					gors.ErrorRender(ctx, err, options.ErrorHandler)
+					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 					return
 				}
 				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "text/go", gors.BytesRender, options.ResponseWrapper)
