@@ -349,9 +349,13 @@ func newRouter(method *protogen.Method, basePath string, fmName string) *gors.Ro
 }
 
 func defaultRouter(method *protogen.Method, basePath string, fmName string) *gors.RouterInfo {
+	path := path.Join(basePath, fmName)
+	if *pathToLower {
+		path = strings.ToLower(path)
+	}
 	return &gors.RouterInfo{
 		Method:           httpmethod.PostMethod,
-		Path:             path.Join(basePath, fmName),
+		Path:             path,
 		UriBinding:       true,
 		QueryBinding:     true,
 		HeaderBinding:    true,
