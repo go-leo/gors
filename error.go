@@ -2,9 +2,13 @@ package gors
 
 import (
 	"fmt"
+	"github.com/go-leo/gox/convx"
+	"regexp"
 )
 
-// Error 指定http状态码和错误信息
+var msgRegExp = regexp.MustCompile("^gors.Error, Code: (\\d+), Message: (.+)$")
+
+// Error 指定http状态码和错误信
 type Error struct {
 	// StatusCode http status code
 	StatusCode int
@@ -15,12 +19,30 @@ type Error struct {
 }
 
 func (e Error) Error() string {
-	return fmt.Sprintf("Code: %d, Message: %s", e.Code, e.Message)
+	return fmt.Sprintf("gors.Error, Code: %d, Message: %s", e.Code, e.Message)
 }
 
 func (e Error) Status() *Status {
 	return &Status{Code: int32(e.Code), Message: e.Message}
 }
+
+func ErrorFromMessage(msg string) (Error, bool) {
+	if !msgRegExp.MatchString(msg) {
+		return Error{}, false
+	}
+	subStrings := msgRegExp.FindAllStringSubmatch(msg, -1)
+	if len(subStrings) != 1 {
+		return Error{}, false
+	}
+	if len(subStrings[0]) != 3 {
+		return Error{}, false
+	}
+	return Error{Code: convx.ToInt(subStrings[0][1]), Message: subStrings[0][2]}, true
+}
+
+func errorValue() Error { return Error{} }
+
+func errorPointer() *Error { return &Error{} }
 
 type Status struct {
 	Code    int32  `json:"code,omitempty" yaml:"code,omitempty" xml:"code,omitempty" toml:"code,omitempty" codec:"code,omitempty" mapstructure:"code,omitempty"`

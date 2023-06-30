@@ -15,7 +15,5 @@ protoc_gen:
 		--go-grpc_opt=module=github.com/go-leo/gors \
 		--go-gors_out=. \
 		--go-gors_opt=module=github.com/go-leo/gors \
-		--go-gors_opt=path_to_lower=true \
-		--go-gors_opt=restful=true \
 		example/api/*/*.proto
 	@echo "--- protoc generate end ---"

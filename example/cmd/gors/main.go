@@ -24,6 +24,7 @@ func main() {
 	engine = gors.AppendRoutes(engine, demo.StringStringRoutes(new(svc.StringStringService))...)
 	engine = gors.AppendRoutes(engine, demo.CustomBinderRenderRoutes(new(svc.Custom))...)
 	engine = gors.AppendRoutes(engine, demo.ObjObjRoutes(new(svc.ObjObjService))...)
+	engine = gors.AppendRoutes(engine, demo.ServiceRoutes(new(svc.Service))...)
 
 	srv := http.Server{Handler: engine}
 	listen, err := net.Listen("tcp", ":8088")

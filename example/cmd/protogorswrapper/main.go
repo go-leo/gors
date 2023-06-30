@@ -1,8 +1,7 @@
 package main
 
 import (
-	"github.com/go-leo/gors/example/api/helloworld"
-	"github.com/go-leo/gors/example/api/hellowrapper"
+	"github.com/go-leo/gors/example/api/protodemo"
 	"github.com/go-leo/gors/example/internal/app/api/svc"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
@@ -16,21 +15,20 @@ import (
 
 func main() {
 	engine := gin.New()
-	engine = gors.AppendRoutes(engine, helloworld.GreeterServerRoutes(new(svc.HelloWorldService))...)
-
-	engine = gors.AppendRoutes(engine,
-		hellowrapper.GreeterServerRoutes(
-			new(svc.HelloWrapperService),
+	engine = gors.AppendRoutes(
+		engine,
+		protodemo.ProtoDemoServerRoutes(
+			new(svc.ProtoDemoServer),
 			gors.ResponseWrapper(func(resp any) any {
 				switch t := resp.(type) {
 				case *gors.Status:
-					return &hellowrapper.CommonReply{
+					return &protodemo.CommonReply{
 						Code: t.Code,
 						Msg:  t.Message,
 					}
 				default:
 					a, _ := anypb.New(resp.(proto.Message))
-					return &hellowrapper.CommonReply{
+					return &protodemo.CommonReply{
 						Code: 200,
 						Msg:  "ok",
 						Data: a,

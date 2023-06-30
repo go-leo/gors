@@ -26,18 +26,20 @@ func ErrorRender(
 		handler(ctx, err)
 		return
 	}
-	var e Error
-	if errors.As(err, &e) {
+	if e := errorValue(); errors.As(err, &e) {
 		ResponseRender(ctx, e.StatusCode, e.Status(), "", PureJSONRender, wrapper)
 		return
 	}
-	var ePtr *Error
-	if errors.As(err, &ePtr) {
+	if ePtr := errorPointer(); errors.As(err, &ePtr) {
 		ResponseRender(ctx, ePtr.StatusCode, ePtr.Status(), "", PureJSONRender, wrapper)
 		return
 	}
 	status, ok := grpcstatus.FromError(err)
 	if ok {
+		if e, ok := ErrorFromMessage(status.Message()); ok {
+			ResponseRender(ctx, e.StatusCode, e.Status(), "", PureJSONRender, wrapper)
+			return
+		}
 		ResponseRender(ctx, httpStatusFromCode(status.Code()), status.Proto(), "", ProtoJSONRender, wrapper)
 		return
 	}

@@ -1,4 +1,4 @@
-package helloworld
+package protodemo
 
 import (
 	"bytes"
