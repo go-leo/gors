@@ -7,7 +7,10 @@ import (
 	"fmt"
 	"github.com/go-leo/gors/internal/pkg/gors"
 	"github.com/go-leo/gors/internal/pkg/httpmethod"
+	"github.com/go-leo/gox/slicex"
+	"github.com/go-leo/gox/stringx"
 	"google.golang.org/protobuf/compiler/protogen"
+	"log"
 	"path"
 	"strconv"
 	"strings"
@@ -183,50 +186,9 @@ func genServerFunction(gen *protogen.Plugin, file *protogen.File, g *protogen.Ge
 }
 
 func printRequestBinding(gen *protogen.Plugin, g *protogen.GeneratedFile, router *gors.RouterInfo, fmName string) error {
-	var bindings []string
-	if router.UriBinding {
-		bindings = append(bindings, "UriBinding")
-	}
-	if router.QueryBinding {
-		bindings = append(bindings, "QueryBinding")
-	}
-	if router.HeaderBinding {
-		bindings = append(bindings, "HeaderBinding")
-	}
-	if router.FormBinding {
-		bindings = append(bindings, "FormBinding")
-	}
-	if router.FormPostBinding {
-		bindings = append(bindings, "FormPostBinding")
-	}
-	if router.JSONBinding {
-		bindings = append(bindings, "JSONBinding")
-	}
-	if router.ProtoBufBinding {
-		bindings = append(bindings, "ProtoBufBinding")
-	}
-	if router.CustomBinding {
-		bindings = append(bindings, "CustomBinding")
-	}
-
-	if router.ProtoJSONBinding {
-		bindings = append(bindings, "ProtoJSONBinding")
-	}
-	if router.MsgPackBinding {
-		return fmt.Errorf("%s, @MsgPackBinding is not supported", fmName)
-	}
-	if router.XMLBinding {
-		return fmt.Errorf("%s, @XMLBinding is not supported", fmName)
-	}
-	if router.YAMLBinding {
-		return fmt.Errorf("%s, @YAMLBinding is not supported", fmName)
-	}
-	if router.TOMLBinding {
-		return fmt.Errorf("%s, @TOMLBinding is not supported", fmName)
-	}
 	g.P("if err = ", gorsPackage.Ident("RequestBind"), "(")
 	g.P("ctx, req, options.Tag,")
-	for _, binding := range bindings {
+	for _, binding := range router.Bindings {
 		g.P(gorsPackage.Ident(binding), ",")
 	}
 	g.P("); err != nil {")
@@ -342,27 +304,33 @@ func extractBasePath(service *protogen.Service) string {
 
 func newRouter(method *protogen.Method, basePath string, fmName string) *gors.RouterInfo {
 	router := gors.NewRouter(method.GoName, basePath, splitComment(method.Comments.Leading.String()))
-	if router == nil {
-		router = defaultRouter(method, basePath, fmName)
-	}
+	defaultRouter(router, method, basePath, fmName)
 	return router
 }
 
-func defaultRouter(method *protogen.Method, basePath string, fmName string) *gors.RouterInfo {
-	path := path.Join(basePath, fmName)
-	if *pathToLower {
-		path = strings.ToLower(path)
+func defaultRouter(router *gors.RouterInfo, method *protogen.Method, basePath string, fmName string) {
+	if stringx.IsBlank(router.Method) {
+		router.Method = httpmethod.PostMethod
+		log.Printf("rpcmethod %s, http method default POST\n ", method.GoName)
 	}
-	return &gors.RouterInfo{
-		Method:           httpmethod.PostMethod,
-		Path:             path,
-		UriBinding:       true,
-		QueryBinding:     true,
-		HeaderBinding:    true,
-		ProtoJSONBinding: true,
-		ProtoJSONRender:  true,
-		RpcMethodName:    fmName,
+	if stringx.IsBlank(router.Path) || router.Path == basePath {
+		p := path.Join(basePath, fmName)
+		if *pathToLower {
+			p = strings.ToLower(p)
+		}
+		router.Path = p
+		log.Printf("rpcmethod %s, path default is %s\n ", method.GoName, p)
 	}
+	if slicex.IsEmpty(router.Bindings) {
+		router.Bindings = []string{"UriBinding", "QueryBinding", "HeaderBinding", "ProtoJSONBinding"}
+		log.Printf("rpcmethod %s, bindings are %v\n ", method.GoName, router.Bindings)
+	}
+	if stringx.IsBlank(router.Render) {
+		router.ProtoJSONRender = true
+		router.Render = "ProtoJSONRender"
+	}
+
+	router.RpcMethodName = fmName
 }
 
 func splitComment(leadingComment string) []string {

@@ -314,52 +314,9 @@ func (g *generate) printBytesReq(info *gors.RouterInfo) {
 func (g *generate) printObjectReq(info *gors.RouterInfo) {
 	objArgs := info.Param2.ObjectArgs
 	g.P(g.functionBuf, "req = new(", objArgs.GoImportPath.Ident(objArgs.Name), ")")
-	var bindings []string
-	if info.UriBinding {
-		bindings = append(bindings, "UriBinding")
-	}
-	if info.QueryBinding {
-		bindings = append(bindings, "QueryBinding")
-	}
-	if info.HeaderBinding {
-		bindings = append(bindings, "HeaderBinding")
-	}
-	if info.FormBinding {
-		bindings = append(bindings, "FormBinding")
-	}
-	if info.FormPostBinding {
-		bindings = append(bindings, "FormPostBinding")
-	}
-	if info.FormMultipartBinding {
-		bindings = append(bindings, "FormMultipartBinding")
-	}
-	if info.JSONBinding {
-		bindings = append(bindings, "JSONBinding")
-	}
-	if info.XMLBinding {
-		bindings = append(bindings, "XMLBinding")
-	}
-	if info.ProtoBufBinding {
-		bindings = append(bindings, "ProtoBufBinding")
-	}
-	if info.MsgPackBinding {
-		bindings = append(bindings, "MsgPackBinding")
-	}
-	if info.YAMLBinding {
-		bindings = append(bindings, "YAMLBinding")
-	}
-	if info.TOMLBinding {
-		bindings = append(bindings, "TOMLBinding")
-	}
-	if info.CustomBinding {
-		bindings = append(bindings, "CustomBinding")
-	}
-	if info.ProtoJSONBinding {
-		bindings = append(bindings, "ProtoJSONBinding")
-	}
 	g.P(g.functionBuf, "if err = ", gorsPackage.Ident("RequestBind"), "(")
 	g.P(g.functionBuf, "ctx, req, options.Tag,")
-	for _, binding := range bindings {
+	for _, binding := range info.Bindings {
 		g.P(g.functionBuf, gorsPackage.Ident(binding), ",")
 	}
 	g.P(g.functionBuf, "); err != nil {")
