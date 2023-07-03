@@ -45,7 +45,6 @@ func _ReaderReader_HeadReaderReader_Handler(srv ReaderReader, options *gors.Opti
 
 func ReaderReaderRoutes(srv ReaderReader, opts ...gors.Option) []gors.Route {
 	options := gors.New(opts...)
-	_ = options
 	return []gors.Route{
 		gors.NewRoute(http.MethodGet, "/api/ReaderReader/Get", _ReaderReader_GetReaderReader_Handler(srv, options)),
 		gors.NewRoute(http.MethodHead, "/api/ReaderReader/head", _ReaderReader_HeadReaderReader_Handler(srv, options)),

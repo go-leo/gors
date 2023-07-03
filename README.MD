@@ -539,22 +539,22 @@ func main() {
 ### @MsgPackBinding
 >将请求的Body以msgpack形式解析出来并绑定到结构体指针中。
 >* 接口定义形式，默认的tag是codec
->* grpc定义形式不支持
+>* grpc定义形式，默认的tag是codec
 
 ### @XMLBinding
 >将请求的Body以XML形式解析出来,并绑定到结构体指针中。
 >* 接口定义形式，默认的tag是xml
->* grpc定义形式不支持
+>* grpc定义形式，默认的tag是xml
 
 ### @YAMLBinding
 >将请求的Body以YAML形式解析出来并绑定到结构体指针中。
 >* 接口定义形式，默认的tag是yaml
->* grpc定义形式不支持
+>* grpc定义形式，默认的tag是yaml
 
 ### @TOMLBinding
 >将请求的Body以TOML形式解析出来并绑定到结构体指针中。
 >* 接口定义形式，默认的tag是toml
->* grpc定义形式不支持
+>* grpc定义形式，默认的tag是toml
 
 ### @CustomBinding
 >预定义的Binding策略不能满足需求，需要使用自定义Binding策略，请求结构体需要实现gors.Binding接口。
@@ -616,6 +616,7 @@ func main() {
 >jsonp方式渲染，jsonp可以跨域请求，如果查询参数callback存在，则将callback添加到响应体中。
 >
 >只有当方法的第一个返回参数类型为`结构体指针`时才能使用。参考[gin文档-jsonp](https://github.com/gin-gonic/gin#jsonp)
+>* grpc定义形式不支持
 
 ### @PureJSONRender
 >纯净的JSON渲染，普通的JSON渲染，会将一些html特殊字符会被转义，比如`<`转成`\u003c`。`@PureJSONRender`则不会转义。
@@ -636,13 +637,11 @@ func main() {
 >XML渲染。
 >
 >只有当方法的第一个返回参数类型为`结构体指针`时才能使用，`@XMLRender`将结构体指针以XML格式序列化并且写入响应的Body中，`Content-Type`固定为`application/xml; charset=utf-8`。参考[gin文档-XMLRender](https://github.com/gin-gonic/gin#xml-json-yaml-toml-and-protobuf-rendering)
->* grpc定义形式不支持
 
 ### @YAMLRender
 >YAML渲染。
 >
 >只有当方法的第一个返回参数类型为`结构体指针`时才能使用，`@YAMLRender`将结构体指针以YAML格式序列化并且写入响应的Body中，`Content-Type`固定为`application/x-yaml; charset=utf-8`。参考[gin文档-YAMLRender](https://github.com/gin-gonic/gin#xml-json-yaml-toml-and-protobuf-rendering)
->* grpc定义形式不支持
 
 ### @ProtoBufRender
 >ProtoBuf渲染。
@@ -653,13 +652,11 @@ func main() {
 >MsgPack渲染。
 >
 >只有当方法的第一个返回参数类型为`结构体指针`时才能使用，`@MsgPackRender`将结构体指针以MsgPack格式序列化并且写入响应的Body中，`Content-Type`固定为`application/msgpack; charset=utf-8`。
->* grpc定义形式不支持
 
 ### @TOMLRender
 >TOML渲染。
 >
 >只有当方法的第一个返回参数类型为`结构体指针`时才能使用，`@TOMLRender`将结构体指针以TOML格式序列化并且写入响应的Body中，`Content-Type`固定为`application/toml`。参考[gin文档-TOMLRender](https://github.com/gin-gonic/gin#xml-json-yaml-toml-and-protobuf-rendering)
->* grpc定义形式不支持
 
 ### @CustomRender
 >预定义的Render策略不能满足需求，需要使用自定义Render策略，响应结构体需要实现gors.Render接口。

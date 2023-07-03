@@ -29,7 +29,7 @@ func _ObjObj_UriBindingIndentedJSONRender_Handler(srv ObjObj, options *gors.Opti
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.IndentedJSONRender, options.ResponseWrapper)
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json; charset=utf-8", gors.IndentedJSONRender, options.ResponseWrapper)
 	}
 }
 
@@ -54,7 +54,7 @@ func _ObjObj_QueryBindingSecureJSONRender_Handler(srv ObjObj, options *gors.Opti
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.SecureJSONRender, options.ResponseWrapper)
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json; charset=utf-8", gors.SecureJSONRender, options.ResponseWrapper)
 	}
 }
 
@@ -80,7 +80,7 @@ func _ObjObj_HeaderBindingJsonpJSONRender_Handler(srv ObjObj, options *gors.Opti
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.JSONPJSONRender, options.ResponseWrapper)
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/javascript; charset=utf-8", gors.JSONPJSONRender, options.ResponseWrapper)
 	}
 }
 
@@ -107,7 +107,7 @@ func _ObjObj_JSONBindingJSONRender_Handler(srv ObjObj, options *gors.Options) fu
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.JSONRender, options.ResponseWrapper)
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json; charset=utf-8", gors.JSONRender, options.ResponseWrapper)
 	}
 }
 
@@ -134,7 +134,7 @@ func _ObjObj_XMLBindingXMLRender_Handler(srv ObjObj, options *gors.Options) func
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.XMLRender, options.ResponseWrapper)
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/xml; charset=utf-8", gors.XMLRender, options.ResponseWrapper)
 	}
 }
 
@@ -160,7 +160,7 @@ func _ObjObj_FormBindingJSONRender_Handler(srv ObjObj, options *gors.Options) fu
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.JSONRender, options.ResponseWrapper)
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json; charset=utf-8", gors.JSONRender, options.ResponseWrapper)
 	}
 }
 
@@ -187,7 +187,7 @@ func _ObjObj_FormPostBindingPureJSONRender_Handler(srv ObjObj, options *gors.Opt
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.PureJSONRender, options.ResponseWrapper)
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json; charset=utf-8", gors.PureJSONRender, options.ResponseWrapper)
 	}
 }
 
@@ -214,7 +214,7 @@ func _ObjObj_FormMultipartBindingAsciiJSONRender_Handler(srv ObjObj, options *go
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.AsciiJSONRender, options.ResponseWrapper)
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json", gors.AsciiJSONRender, options.ResponseWrapper)
 	}
 }
 
@@ -238,7 +238,7 @@ func _ObjObj_ProtoBufBindingProtoBufRender_Handler(srv ObjObj, options *gors.Opt
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.ProtoBufRender, options.ResponseWrapper)
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/x-protobuf", gors.ProtoBufRender, options.ResponseWrapper)
 	}
 }
 
@@ -262,7 +262,7 @@ func _ObjObj_MsgPackBindingMsgPackRender_Handler(srv ObjObj, options *gors.Optio
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.MsgPackRender, options.ResponseWrapper)
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/msgpack", gors.MsgPackRender, options.ResponseWrapper)
 	}
 }
 
@@ -289,7 +289,7 @@ func _ObjObj_YAMLBindingYAMLRender_Handler(srv ObjObj, options *gors.Options) fu
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.YAMLRender, options.ResponseWrapper)
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/x-yaml; charset=utf-8", gors.YAMLRender, options.ResponseWrapper)
 	}
 }
 
@@ -316,7 +316,7 @@ func _ObjObj_TOMLBindingTOMLRender_Handler(srv ObjObj, options *gors.Options) fu
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.TOMLRender, options.ResponseWrapper)
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/toml; charset=utf-8", gors.TOMLRender, options.ResponseWrapper)
 	}
 }
 
@@ -340,13 +340,12 @@ func _ObjObj_ProtoJSONBindingProtoJSONRender_Handler(srv ObjObj, options *gors.O
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.ProtoJSONRender, options.ResponseWrapper)
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json; charset=utf-8", gors.ProtoJSONRender, options.ResponseWrapper)
 	}
 }
 
 func ObjObjRoutes(srv ObjObj, opts ...gors.Option) []gors.Route {
 	options := gors.New(opts...)
-	_ = options
 	return []gors.Route{
 		gors.NewRoute(http.MethodGet, "/api/ObjObj/UriBindingIndentedJSONRender/:id", _ObjObj_UriBindingIndentedJSONRender_Handler(srv, options)),
 		gors.NewRoute(http.MethodGet, "/api/ObjObj/QueryBindingSecureJSONRender/:id", _ObjObj_QueryBindingSecureJSONRender_Handler(srv, options)),

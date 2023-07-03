@@ -45,7 +45,6 @@ func _ReaderBytes_PostReaderBytes_Handler(srv ReaderBytes, options *gors.Options
 
 func ReaderBytesRoutes(srv ReaderBytes, opts ...gors.Option) []gors.Route {
 	options := gors.New(opts...)
-	_ = options
 	return []gors.Route{
 		gors.NewRoute(http.MethodGet, "/api/ReaderBytes/Get", _ReaderBytes_GetReaderBytes_Handler(srv, options)),
 		gors.NewRoute(http.MethodPost, "/api/ReaderBytes/Post", _ReaderBytes_PostReaderBytes_Handler(srv, options)),

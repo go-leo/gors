@@ -57,7 +57,6 @@ func _StringBytes_OptionsStringBytes_Handler(srv StringBytes, options *gors.Opti
 
 func StringBytesRoutes(srv StringBytes, opts ...gors.Option) []gors.Route {
 	options := gors.New(opts...)
-	_ = options
 	return []gors.Route{
 		gors.NewRoute(http.MethodGet, "/api/StringBytes/Get", _StringBytes_GetStringBytes_Handler(srv, options)),
 		gors.NewRoute(http.MethodOptions, "/api/StringBytes/Options", _StringBytes_OptionsStringBytes_Handler(srv, options)),

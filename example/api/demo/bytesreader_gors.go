@@ -57,7 +57,6 @@ func _BytesReader_PatchBytesReader_Handler(srv BytesReader, options *gors.Option
 
 func BytesReaderRoutes(srv BytesReader, opts ...gors.Option) []gors.Route {
 	options := gors.New(opts...)
-	_ = options
 	return []gors.Route{
 		gors.NewRoute(http.MethodGet, "/api/BytesReader/Get", _BytesReader_GetBytesReader_Handler(srv, options)),
 		gors.NewRoute(http.MethodPatch, "/api/BytesReader/Patch", _BytesReader_PatchBytesReader_Handler(srv, options)),

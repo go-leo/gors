@@ -57,7 +57,6 @@ func _BytesBytes_PostBytesBytes_Handler(srv BytesBytes, options *gors.Options) f
 
 func BytesBytesRoutes(srv BytesBytes, opts ...gors.Option) []gors.Route {
 	options := gors.New(opts...)
-	_ = options
 	return []gors.Route{
 		gors.NewRoute(http.MethodGet, "/api/BytesBytes/Get", _BytesBytes_GetBytesBytes_Handler(srv, options)),
 		gors.NewRoute(http.MethodPost, "/api/BytesBytes/Post", _BytesBytes_PostBytesBytes_Handler(srv, options)),

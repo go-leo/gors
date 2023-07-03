@@ -22,7 +22,7 @@ func _ReaderString_GetReaderString_Handler(srv ReaderString, options *gors.Optio
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.TextRender, options.ResponseWrapper)
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "text/plain; charset=utf-8", gors.TextRender, options.ResponseWrapper)
 	}
 }
 
@@ -45,7 +45,6 @@ func _ReaderString_PostReaderString_Handler(srv ReaderString, options *gors.Opti
 
 func ReaderStringRoutes(srv ReaderString, opts ...gors.Option) []gors.Route {
 	options := gors.New(opts...)
-	_ = options
 	return []gors.Route{
 		gors.NewRoute(http.MethodGet, "/api/ReaderString/Get", _ReaderString_GetReaderString_Handler(srv, options)),
 		gors.NewRoute(http.MethodPost, "/api/ReaderString/Post", _ReaderString_PostReaderString_Handler(srv, options)),

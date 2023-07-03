@@ -3,6 +3,7 @@
 package protoservice
 
 import (
+	context "context"
 	gin "github.com/gin-gonic/gin"
 	gors "github.com/go-leo/gors"
 	grpc "google.golang.org/grpc"
@@ -10,85 +11,79 @@ import (
 	http "net/http"
 )
 
-func ProtoServiceClientRoutes(cli ProtoServiceClient, opts ...gors.Option) []gors.Route {
-	options := gors.New(opts...)
-	_ = options
+type _ProtoServiceClientWrapper struct {
+	UnimplementedProtoServiceServer
+	cli     ProtoServiceClient
+	options *gors.Options
+}
+
+func (wrapper *_ProtoServiceClientWrapper) Method(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
+	var headerMD, trailerMD metadata.MD
+	resp, err := wrapper.cli.Method(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
+	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher)
+	return resp, err
+}
+
+type _ProtoServiceServerWrapper struct {
+	UnimplementedProtoServiceServer
+	srv     ProtoServiceServer
+	options *gors.Options
+}
+
+func (wrapper *_ProtoServiceServerWrapper) Method(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
+	rpcMethodName := "/protoservice.ProtoService/Method"
+	stream := gors.NewServerTransportStream(rpcMethodName)
+	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
+	resp, err := wrapper.srv.Method(ctx, request)
+	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher)
+	return resp, err
+}
+
+func _ProtoService_Method_GORS_Handler(wrapper ProtoServiceServer, options *gors.Options) func(c *gin.Context) {
+	return func(c *gin.Context) {
+		var rpcMethodName = "/protoservice.ProtoService/Method"
+		var ctx = gors.NewContext(c, rpcMethodName)
+		var req *HelloRequest
+		var resp *HelloReply
+		var err error
+		req = new(HelloRequest)
+		if err = gors.RequestBind(
+			ctx, req, options.Tag,
+			gors.ProtoJSONBinding,
+		); err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
+		if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
+		resp, err = wrapper.Method(ctx, req)
+		if err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json; charset=utf-8", gors.ProtoJSONRender, options.ResponseWrapper)
+	}
+}
+
+func _ProtoServiceRoutes(wrapper ProtoServiceServer, options *gors.Options) []gors.Route {
 	if len(options.Tag) == 0 {
 		options.Tag = "json"
 	}
 	return []gors.Route{
-		gors.NewRoute(
-			http.MethodPost,
-			"/v1/Method",
-			func(c *gin.Context) {
-				var rpcMethodName = "/protoservice.ProtoService/Method"
-				var ctx = gors.NewContext(c, rpcMethodName)
-				var req *HelloRequest
-				var resp *HelloReply
-				var err error
-				req = new(HelloRequest)
-				if err = gors.RequestBind(
-					ctx, req, options.Tag,
-					gors.ProtoJSONBinding,
-				); err != nil {
-					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
-					return
-				}
-				if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
-					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
-					return
-				}
-				var headerMD, trailerMD metadata.MD
-				resp, err = cli.Method(ctx, req, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
-				gors.AddGRPCMetadata(ctx, headerMD, trailerMD, options.OutgoingHeaderMatcher)
-				if err != nil {
-					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
-					return
-				}
-				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.ProtoJSONRender, options.ResponseWrapper)
-			},
-		),
+		gors.NewRoute(http.MethodPost, "/v1/Method", _ProtoService_Method_GORS_Handler(wrapper, options)),
 	}
+}
+
+func ProtoServiceClientRoutes(cli ProtoServiceClient, opts ...gors.Option) []gors.Route {
+	options := gors.New(opts...)
+	wrapper := &_ProtoServiceClientWrapper{cli: cli, options: options}
+	return _ProtoServiceRoutes(wrapper, options)
 }
 
 func ProtoServiceServerRoutes(srv ProtoServiceServer, opts ...gors.Option) []gors.Route {
 	options := gors.New(opts...)
-	_ = options
-	if len(options.Tag) == 0 {
-		options.Tag = "json"
-	}
-	return []gors.Route{
-		gors.NewRoute(
-			http.MethodPost,
-			"/v1/Method",
-			func(c *gin.Context) {
-				var rpcMethodName = "/protoservice.ProtoService/Method"
-				var ctx = gors.NewContext(c, rpcMethodName)
-				var req *HelloRequest
-				var resp *HelloReply
-				var err error
-				req = new(HelloRequest)
-				if err = gors.RequestBind(
-					ctx, req, options.Tag,
-					gors.ProtoJSONBinding,
-				); err != nil {
-					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
-					return
-				}
-				if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
-					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
-					return
-				}
-				stream := gors.NewServerTransportStream(rpcMethodName)
-				ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
-				resp, err = srv.Method(ctx, req)
-				gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), options.OutgoingHeaderMatcher)
-				if err != nil {
-					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
-					return
-				}
-				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.ProtoJSONRender, options.ResponseWrapper)
-			},
-		),
-	}
+	wrapper := &_ProtoServiceServerWrapper{srv: srv, options: options}
+	return _ProtoServiceRoutes(wrapper, options)
 }

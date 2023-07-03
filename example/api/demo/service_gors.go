@@ -28,13 +28,12 @@ func _Service_Method_Handler(srv Service, options *gors.Options) func(c *gin.Con
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.JSONRender, options.ResponseWrapper)
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json; charset=utf-8", gors.JSONRender, options.ResponseWrapper)
 	}
 }
 
 func ServiceRoutes(srv Service, opts ...gors.Option) []gors.Route {
 	options := gors.New(opts...)
-	_ = options
 	return []gors.Route{
 		gors.NewRoute(http.MethodGet, "/api/v1/method/:id", _Service_Method_Handler(srv, options)),
 	}

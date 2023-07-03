@@ -57,7 +57,6 @@ func _StringReader_OptionsStringReader_Handler(srv StringReader, options *gors.O
 
 func StringReaderRoutes(srv StringReader, opts ...gors.Option) []gors.Route {
 	options := gors.New(opts...)
-	_ = options
 	return []gors.Route{
 		gors.NewRoute(http.MethodGet, "/api/StringReader/Get", _StringReader_GetStringRender_Handler(srv, options)),
 		gors.NewRoute(http.MethodOptions, "/api/StringReader/Options", _StringReader_OptionsStringReader_Handler(srv, options)),

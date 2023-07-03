@@ -7,11 +7,12 @@ import (
 )
 
 var pathToLower *bool
+var requireUnimplemented *bool
 
 func main() {
 	var flags flag.FlagSet
 	pathToLower = flags.Bool("path_to_lower", false, "make path to lower case")
-
+	requireUnimplemented = flags.Bool("require_unimplemented_servers", true, "set to false to match legacy behavior")
 	protogen.Options{
 		ParamFunc: flags.Set,
 	}.Run(func(gen *protogen.Plugin) error {

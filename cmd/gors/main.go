@@ -5,7 +5,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"github.com/go-leo/gors/internal/pkg/gors"
+	"github.com/go-leo/gors/internal/pkg/annotation"
 	"github.com/go-leo/gox/slicex"
 	"go/ast"
 	"go/format"
@@ -211,34 +211,34 @@ func extractBasePath(serviceDecl *ast.GenDecl) string {
 	for _, comment := range serviceDecl.Doc.List {
 		comments = append(comments, comment.Text)
 	}
-	return gors.ExtractBasePath(comments)
+	return annotation.ExtractBasePath(comments)
 }
 
-func getGoImports(serviceFile *ast.File) map[string]*gors.GoImport {
-	goImports := make(map[string]*gors.GoImport)
+func getGoImports(serviceFile *ast.File) map[string]*annotation.GoImport {
+	goImports := make(map[string]*annotation.GoImport)
 	for _, importSpec := range serviceFile.Imports {
 		importPath, err := strconv.Unquote(importSpec.Path.Value)
 		if err != nil {
 			log.Panicf("warning: unquote error: %s", err)
 		}
-		item := &gors.GoImport{
+		item := &annotation.GoImport{
 			ImportPath: importPath,
 		}
 		if importSpec.Name != nil {
 			item.PackageName = importSpec.Name.Name
 		} else {
-			item.PackageName = gors.CleanPackageName(path.Base(importPath))
+			item.PackageName = annotation.CleanPackageName(path.Base(importPath))
 		}
 		goImports[item.ImportPath] = item
 	}
 	return goImports
 }
 
-func newRouter(methodName string, basePath string, commentList []*ast.Comment) *gors.RouterInfo {
+func newRouter(methodName string, basePath string, commentList []*ast.Comment) *annotation.RouterInfo {
 	comments := slicex.Map[[]*ast.Comment, []string](commentList, func(i int, e1 *ast.Comment) string {
 		return e1.Text
 	})
-	return gors.NewRouter(methodName, basePath, comments)
+	return annotation.NewRouter(methodName, basePath, comments)
 }
 
 func detectOutputDir(paths []string) (string, error) {

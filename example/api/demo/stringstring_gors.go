@@ -57,7 +57,6 @@ func _StringString_PatchStringString_Handler(srv StringString, options *gors.Opt
 
 func StringStringRoutes(srv StringString, opts ...gors.Option) []gors.Route {
 	options := gors.New(opts...)
-	_ = options
 	return []gors.Route{
 		gors.NewRoute(http.MethodGet, "/api/StringString/Get", _StringString_GetStringString_Handler(srv, options)),
 		gors.NewRoute(http.MethodPatch, "/api/StringString/Patch", _StringString_PatchStringString_Handler(srv, options)),

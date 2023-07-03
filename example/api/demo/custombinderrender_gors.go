@@ -34,7 +34,6 @@ func _CustomBinderRender_Custom_Handler(srv CustomBinderRender, options *gors.Op
 
 func CustomBinderRenderRoutes(srv CustomBinderRender, opts ...gors.Option) []gors.Route {
 	options := gors.New(opts...)
-	_ = options
 	return []gors.Route{
 		gors.NewRoute(http.MethodPost, "/api/CustomBinderRender/Custom", _CustomBinderRender_Custom_Handler(srv, options)),
 	}
