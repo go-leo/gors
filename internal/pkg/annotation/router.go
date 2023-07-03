@@ -3,6 +3,7 @@ package annotation
 import (
 	"github.com/go-leo/gox/stringx"
 	"go/token"
+	"google.golang.org/protobuf/compiler/protogen"
 	"log"
 	"path"
 	"regexp"
@@ -89,19 +90,26 @@ type Result struct {
 }
 
 type RouterInfo struct {
-	Method            Method
+	HttpMethod        Method
+	BasePath          string
 	Path              string
+	MethodName        string
+	FullMethodName    string
 	Bindings          []string
 	RenderContentType string
 	Render            string
-	RpcMethodName     string
 	Param2            *Param
 	Result1           *Result
 	HandlerName       string
+	Method            *protogen.Method
 }
 
-func NewRouter(methodName string, basePath string, comments []string) *RouterInfo {
-	r := &RouterInfo{}
+func NewRouter(methodName string, rpcMethodName string, basePath string, comments []string) *RouterInfo {
+	r := &RouterInfo{
+		MethodName:     methodName,
+		FullMethodName: rpcMethodName,
+		BasePath:       basePath,
+	}
 	for _, comment := range comments {
 		text := strings.TrimSpace(strings.TrimPrefix(strings.TrimSpace(comment), "//"))
 		seg := strings.Split(text, " ")
@@ -127,50 +135,50 @@ func NewRouter(methodName string, basePath string, comments []string) *RouterInf
 
 				// method start
 			case GET.EqualsIgnoreCase(s):
-				if stringx.IsNotBlank(r.Method) {
+				if stringx.IsNotBlank(r.HttpMethod) {
 					log.Fatalf("error: rpcmethod %s, there are multiple methods", methodName)
 				}
-				r.Method = GET
+				r.HttpMethod = GET
 			case POST.EqualsIgnoreCase(s):
-				if stringx.IsNotBlank(r.Method) {
+				if stringx.IsNotBlank(r.HttpMethod) {
 					log.Fatalf("error: rpcmethod %s, there are multiple methods", methodName)
 				}
-				r.Method = POST
+				r.HttpMethod = POST
 			case PUT.EqualsIgnoreCase(s):
-				if stringx.IsNotBlank(r.Method) {
+				if stringx.IsNotBlank(r.HttpMethod) {
 					log.Fatalf("error: rpcmethod %s, there are multiple methods", methodName)
 				}
-				r.Method = PUT
+				r.HttpMethod = PUT
 			case DELETE.EqualsIgnoreCase(s):
-				if stringx.IsNotBlank(r.Method) {
+				if stringx.IsNotBlank(r.HttpMethod) {
 					log.Fatalf("error: rpcmethod %s, there are multiple methods", methodName)
 				}
-				r.Method = DELETE
+				r.HttpMethod = DELETE
 			case PATCH.EqualsIgnoreCase(s):
-				if stringx.IsNotBlank(r.Method) {
+				if stringx.IsNotBlank(r.HttpMethod) {
 					log.Fatalf("error: rpcmethod %s, there are multiple methods", methodName)
 				}
-				r.Method = PATCH
+				r.HttpMethod = PATCH
 			case HEAD.EqualsIgnoreCase(s):
-				if stringx.IsNotBlank(r.Method) {
+				if stringx.IsNotBlank(r.HttpMethod) {
 					log.Fatalf("error: rpcmethod %s, there are multiple methods", methodName)
 				}
-				r.Method = HEAD
+				r.HttpMethod = HEAD
 			case CONNECT.EqualsIgnoreCase(s):
-				if stringx.IsNotBlank(r.Method) {
+				if stringx.IsNotBlank(r.HttpMethod) {
 					log.Fatalf("error: rpcmethod %s, there are multiple methods", methodName)
 				}
-				r.Method = CONNECT
+				r.HttpMethod = CONNECT
 			case OPTIONS.EqualsIgnoreCase(s):
-				if stringx.IsNotBlank(r.Method) {
+				if stringx.IsNotBlank(r.HttpMethod) {
 					log.Fatalf("error: rpcmethod %s, there are multiple methods", methodName)
 				}
-				r.Method = OPTIONS
+				r.HttpMethod = OPTIONS
 			case TRACE.EqualsIgnoreCase(s):
-				if stringx.IsNotBlank(r.Method) {
+				if stringx.IsNotBlank(r.HttpMethod) {
 					log.Fatalf("error: rpcmethod %s, there are multiple methods", methodName)
 				}
-				r.Method = TRACE
+				r.HttpMethod = TRACE
 				// method end
 
 				// binding start
@@ -270,7 +278,6 @@ func NewRouter(methodName string, basePath string, comments []string) *RouterInf
 			}
 		}
 	}
-	r.Path = path.Join(basePath, r.Path)
 	return r
 }
 

@@ -4,10 +4,12 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/go-leo/gors/internal/pkg/annotation"
+	"github.com/go-leo/gox/stringx"
 	"go/ast"
 	"golang.org/x/exp/slices"
 	"io"
 	"log"
+	"path"
 	"strconv"
 	"strings"
 )
@@ -250,7 +252,7 @@ func (g *generate) printFunction() {
 }
 
 func (g *generate) printRouterMethod(serviceName string, info *annotation.RouterInfo) {
-	handlerName := fmt.Sprintf("_%s_%s_Handler", g.srvName, info.RpcMethodName)
+	handlerName := fmt.Sprintf("_%s_%s_Handler", g.srvName, info.MethodName)
 	info.HandlerName = handlerName
 	g.P(g.functionBuf, "func ", handlerName, "(srv ", serviceName, ", options *", gorsPackage.Ident("Options"), ")", "func(c *", ginPackage.Ident("Context"), ") {")
 	g.P(g.functionBuf, "return func(c *", ginPackage.Ident("Context"), ") {")
@@ -261,12 +263,12 @@ func (g *generate) printRouterMethod(serviceName string, info *annotation.Router
 }
 
 func (g *generate) printRouterInfo(serviceName string, info *annotation.RouterInfo) {
-	g.P(g.functionBuf, gorsPackage.Ident("NewRoute"), "(", httpPackage.Ident(info.Method.HttpMethod()), ",", strconv.Quote(info.Path), ",", info.HandlerName, "(srv, options),", "),")
+	p := path.Join(info.BasePath, info.Path)
+	g.P(g.functionBuf, gorsPackage.Ident("NewRoute"), "(", httpPackage.Ident(info.HttpMethod.HttpMethod()), ",", strconv.Quote(p), ",", info.HandlerName, "(srv, options),", "),")
 }
 
 func (g *generate) printHandler(info *annotation.RouterInfo) {
-	fmName := fmt.Sprintf("/%s.%s/%s", g.pkgName, g.srvName, info.RpcMethodName)
-	g.P(g.functionBuf, "var rpcMethodName = ", strconv.Quote(fmName))
+	g.P(g.functionBuf, "var rpcMethodName = ", strconv.Quote(info.FullMethodName))
 	g.P(g.functionBuf, "var ctx = ", gorsPackage.Ident("NewContext"), "(c, rpcMethodName)")
 
 	if info.Param2.Bytes {
@@ -278,7 +280,7 @@ func (g *generate) printHandler(info *annotation.RouterInfo) {
 	} else if objectArgs := info.Param2.ObjectArgs; objectArgs != nil {
 		g.P(g.functionBuf, "var req *", objectArgs.GoImportPath.Ident(objectArgs.Name))
 	} else {
-		log.Fatalf("error: func %s 2th param is invalid, must be []byte or string or *struct{}", info.RpcMethodName)
+		log.Fatalf("error: func %s 2th param is invalid, must be []byte or string or *struct{}", info.FullMethodName)
 	}
 	if info.Result1.Bytes {
 		g.P(g.functionBuf, "var resp []byte")
@@ -289,7 +291,7 @@ func (g *generate) printHandler(info *annotation.RouterInfo) {
 	} else if objectArgs := info.Result1.ObjectArgs; objectArgs != nil {
 		g.P(g.functionBuf, "var resp *", objectArgs.GoImportPath.Ident(objectArgs.Name))
 	} else {
-		log.Fatalf("error: func %s 1th result is invalid, must be []byte or string or *struct{}", info.RpcMethodName)
+		log.Fatalf("error: func %s 1th result is invalid, must be []byte or string or *struct{}", info.FullMethodName)
 	}
 	g.P(g.functionBuf, "var err error")
 
@@ -304,10 +306,10 @@ func (g *generate) printHandler(info *annotation.RouterInfo) {
 	} else if info.Param2.ObjectArgs != nil {
 		g.printObjectReq(info)
 	} else {
-		log.Fatalf("error: func %s 2th param is invalid, must be []byte or string or *struct{}", info.RpcMethodName)
+		log.Fatalf("error: func %s 2th param is invalid, must be []byte or string or *struct{}", info.FullMethodName)
 	}
 
-	g.P(g.functionBuf, "resp, err = srv.", info.RpcMethodName, "(ctx, req)")
+	g.P(g.functionBuf, "resp, err = srv.", info.MethodName, "(ctx, req)")
 
 	g.printResponseRender(info)
 
@@ -344,21 +346,34 @@ func (g *generate) printResponseRender(info *annotation.RouterInfo) {
 
 	switch {
 	case info.Result1.Bytes:
+		if stringx.IsBlank(info.Render) {
+			info.Render = annotation.BytesRender
+		}
 		if info.Render != annotation.BytesRender {
-			log.Fatalf("error: func %s []byte result must be set %s", info.RpcMethodName, annotation.BytesRender)
+			log.Fatalf("error: func %s []byte result must be set %s", info.FullMethodName, annotation.BytesRender)
 			return
 		}
 	case info.Result1.String:
+		if stringx.IsBlank(info.Render) {
+			info.Render = annotation.StringRender
+		}
 		renders := []string{annotation.StringRender, annotation.TextRender, annotation.HTMLRender, annotation.RedirectRender}
 		if !slices.Contains(renders, info.Render) {
-			log.Fatalf("error: func %s string result must be set %v", info.RpcMethodName, renders)
+			log.Fatalf("error: func %s string result must be set %v", info.FullMethodName, renders)
 		}
 	case info.Result1.Reader:
+		if stringx.IsBlank(info.Render) {
+			info.Render = annotation.ReaderRender
+		}
 		if info.Render != annotation.ReaderRender {
-			log.Fatalf("error: func %s io.Reader result must be set %s", info.RpcMethodName, annotation.ReaderRender)
+			log.Fatalf("error: func %s io.Reader result must be set %s", info.FullMethodName, annotation.ReaderRender)
 			return
 		}
 	case info.Result1.ObjectArgs != nil:
+		if stringx.IsBlank(info.Render) {
+			info.Render = annotation.JSONRender
+			info.RenderContentType = annotation.JSONContentType
+		}
 		renders := []string{
 			annotation.JSONRender, annotation.IndentedJSONRender, annotation.SecureJSONRender, annotation.JSONPJSONRender,
 			annotation.PureJSONRender, annotation.AsciiJSONRender, annotation.ProtoJSONRender, annotation.XMLRender,
@@ -366,10 +381,10 @@ func (g *generate) printResponseRender(info *annotation.RouterInfo) {
 			annotation.CustomRender,
 		}
 		if !slices.Contains(renders, info.Render) {
-			log.Fatalf("error: func %s *struct result must be set %v", info.RpcMethodName, renders)
+			log.Fatalf("error: func %s *struct result must be set %v", info.FullMethodName, renders)
 		}
 	default:
-		log.Fatalf("error: func %s 1th result is invalid, must be io.Reader or []byte or string or *struct{}", info.RpcMethodName)
+		log.Fatalf("error: func %s 1th result is invalid, must be io.Reader or []byte or string or *struct{}", info.FullMethodName)
 	}
 
 	g.P(g.functionBuf, gorsPackage.Ident("ResponseRender"),

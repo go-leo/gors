@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/go-leo/gors/internal/pkg/annotation"
 	"github.com/go-leo/gox/slicex"
+	"github.com/go-leo/gox/stringx"
 	"go/ast"
 	"go/format"
 	"go/token"
@@ -21,6 +22,7 @@ import (
 
 var (
 	serviceName = flag.String("service", "", "service interface Name; must be set")
+	pathToLower = flag.Bool("path_to_lower", false, "make path to lower case")
 )
 
 // Usage is a replacement usage function for the flags package.
@@ -82,31 +84,20 @@ func main() {
 		basePath = extractBasePath(serviceDecl)
 		// generate router by method comment
 		for _, method := range serviceMethods {
-			if method.Doc == nil && len(method.Doc.List) <= 0 {
-				continue
-			}
 			if slicex.IsEmpty(method.Names) {
 				continue
 			}
 			methodName := method.Names[0]
-			routerInfo := newRouter(methodName.String(), basePath, method.Doc.List)
-			if routerInfo == nil {
-				//routerInfo = defaultRouterInfo()
-				continue
-			}
-			routerInfo.RpcMethodName = methodName.Name
 			rpcType, ok := method.Type.(*ast.FuncType)
 			if !ok {
 				log.Fatalf("error: func %s not convert to *ast.FuncType", methodName)
 			}
-
 			// params
 			g.checkParams(rpcType, methodName)
 			// param1
 			g.checkParam1MustBeContext(rpcType, methodName)
 			// param2
 			param2 := g.checkAndGetParam2(rpcType, methodName)
-			routerInfo.Param2 = param2
 
 			// results
 			g.checkResults(rpcType, methodName)
@@ -114,8 +105,32 @@ func main() {
 			g.checkResult2MustBeError(rpcType, methodName)
 			// result1
 			result1 := g.checkAndGetResult1(rpcType, methodName)
+
+			fmName := fmt.Sprintf("/%s.%s/%s", g.pkgName, g.srvName, methodName.String())
+			var routerInfo *annotation.RouterInfo
+			if method.Doc == nil {
+				routerInfo = annotation.NewRouter(methodName.String(), fmName, basePath, nil)
+			} else {
+				comments := slicex.Map[[]*ast.Comment, []string](
+					method.Doc.List,
+					func(i int, e1 *ast.Comment) string { return e1.Text },
+				)
+				routerInfo = annotation.NewRouter(methodName.String(), fmName, basePath, comments)
+			}
+			routerInfo.Param2 = param2
 			routerInfo.Result1 = result1
 
+			if stringx.IsBlank(routerInfo.HttpMethod) {
+				routerInfo.HttpMethod = annotation.GET
+			}
+			if stringx.IsBlank(routerInfo.Path) {
+				routerInfo.Path = routerInfo.FullMethodName
+				if *pathToLower {
+					routerInfo.Path = strings.ToLower(routerInfo.Path)
+				}
+			}
+			defaultBindingName(routerInfo)
+			defaultRenderName(routerInfo)
 			g.routerInfos = append(g.routerInfos, routerInfo)
 		}
 	}
@@ -142,6 +157,26 @@ func main() {
 		log.Fatalf("writing output: %s", err)
 	}
 	log.Printf("%s.%s wrote %s", pkg.PkgPath, *serviceName, outputPath)
+}
+
+func defaultBindingName(info *annotation.RouterInfo) {
+	if info.Param2.Bytes {
+		info.Bindings = nil
+	} else if info.Param2.String {
+		info.Bindings = nil
+	} else if info.Param2.Reader {
+		info.Bindings = nil
+	} else if objectArgs := info.Param2.ObjectArgs; objectArgs != nil {
+		if slicex.IsEmpty(info.Bindings) {
+			info.Bindings = []string{
+				annotation.UriBinding,
+				annotation.HeaderBinding,
+				annotation.QueryBinding,
+			}
+		}
+	} else {
+		log.Fatalf("error: func %s 2th param is invalid, must be []byte or string or *struct{}", info.FullMethodName)
+	}
 }
 
 func loadPkg(args []string) *packages.Package {
@@ -207,6 +242,9 @@ func inspect(pkg *packages.Package) (*ast.File, *ast.GenDecl, *ast.TypeSpec, *as
 }
 
 func extractBasePath(serviceDecl *ast.GenDecl) string {
+	if serviceDecl == nil || serviceDecl.Doc == nil {
+		return ""
+	}
 	var comments []string
 	for _, comment := range serviceDecl.Doc.List {
 		comments = append(comments, comment.Text)
@@ -234,13 +272,6 @@ func getGoImports(serviceFile *ast.File) map[string]*annotation.GoImport {
 	return goImports
 }
 
-func newRouter(methodName string, basePath string, commentList []*ast.Comment) *annotation.RouterInfo {
-	comments := slicex.Map[[]*ast.Comment, []string](commentList, func(i int, e1 *ast.Comment) string {
-		return e1.Text
-	})
-	return annotation.NewRouter(methodName, basePath, comments)
-}
-
 func detectOutputDir(paths []string) (string, error) {
 	if len(paths) == 0 {
 		return "", errors.New("no files to derive output directory from")
@@ -252,4 +283,28 @@ func detectOutputDir(paths []string) (string, error) {
 		}
 	}
 	return dir, nil
+}
+
+func defaultRenderName(info *annotation.RouterInfo) {
+	switch {
+	case info.Result1.Bytes:
+		if stringx.IsBlank(info.Render) {
+			info.Render = annotation.BytesRender
+		}
+	case info.Result1.String:
+		if stringx.IsBlank(info.Render) {
+			info.Render = annotation.StringRender
+		}
+	case info.Result1.Reader:
+		if stringx.IsBlank(info.Render) {
+			info.Render = annotation.ReaderRender
+		}
+	case info.Result1.ObjectArgs != nil:
+		if stringx.IsBlank(info.Render) {
+			info.Render = annotation.JSONRender
+			info.RenderContentType = annotation.JSONContentType
+		}
+	default:
+		log.Fatalf("error: func %s 1th result is invalid, must be io.Reader or []byte or string or *struct{}", info.FullMethodName)
+	}
 }
