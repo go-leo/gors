@@ -2,7 +2,6 @@ package gors
 
 import (
 	"github.com/go-leo/gors/internal/pkg/annotation"
-	"github.com/go-leo/gors/internal/pkg/httpmethod"
 	"github.com/go-leo/gox/stringx"
 	"go/token"
 	"log"
@@ -91,39 +90,14 @@ type Result struct {
 }
 
 type RouterInfo struct {
-	Method string
-	Path   string
-
-	Bindings []string
-
+	Method            annotation.Method
+	Path              string
+	Bindings          []string
 	RenderContentType string
-
-	Render string
-
-	//BytesRender    bool
-	//StringRender   bool
-	//TextRender     bool
-	//HTMLRender     bool
-	//ReaderRender   bool
-	//RedirectRender bool
-	//
-	//JSONRender         bool
-	//ProtoJSONRender    bool
-	//IndentedJSONRender bool
-	//SecureJSONRender   bool
-	//JSONPJSONRender    bool
-	//PureJSONRender     bool
-	//AsciiJSONRender    bool
-	//XMLRender          bool
-	//YAMLRender         bool
-	//ProtoBufRender     bool
-	//MsgPackRender      bool
-	//TOMLRender         bool
-	//CustomRender       bool
-
-	RpcMethodName string
-	Param2        *Param
-	Result1       *Result
+	Render            string
+	RpcMethodName     string
+	Param2            *Param
+	Result1           *Result
 }
 
 func NewRouter(methodName string, basePath string, comments []string) *RouterInfo {
@@ -138,6 +112,8 @@ func NewRouter(methodName string, basePath string, comments []string) *RouterInf
 		for _, s := range seg {
 			s = strings.TrimSpace(s)
 			switch {
+
+			// path
 			case strings.HasPrefix(strings.ToUpper(s), strings.ToUpper(annotation.Path)):
 				v, ok := FindPath(s)
 				if !ok {
@@ -146,51 +122,51 @@ func NewRouter(methodName string, basePath string, comments []string) *RouterInf
 				r.Path = path.Join(r.Path, v)
 
 				// method start
-			case strings.ToUpper(s) == annotation.GET:
+			case annotation.GET.EqualsIgnoreCase(s):
 				if stringx.IsNotBlank(r.Method) {
 					log.Fatalf("error: rpcmethod %s, there are multiple methods", methodName)
 				}
-				r.Method = httpmethod.GetMethod
-			case strings.ToUpper(s) == annotation.POST:
+				r.Method = annotation.GET
+			case annotation.POST.EqualsIgnoreCase(s):
 				if stringx.IsNotBlank(r.Method) {
 					log.Fatalf("error: rpcmethod %s, there are multiple methods", methodName)
 				}
-				r.Method = httpmethod.PostMethod
-			case strings.ToUpper(s) == annotation.PUT:
+				r.Method = annotation.POST
+			case annotation.PUT.EqualsIgnoreCase(s):
 				if stringx.IsNotBlank(r.Method) {
 					log.Fatalf("error: rpcmethod %s, there are multiple methods", methodName)
 				}
-				r.Method = httpmethod.PutMethod
-			case strings.ToUpper(s) == annotation.DELETE:
+				r.Method = annotation.PUT
+			case annotation.DELETE.EqualsIgnoreCase(s):
 				if stringx.IsNotBlank(r.Method) {
 					log.Fatalf("error: rpcmethod %s, there are multiple methods", methodName)
 				}
-				r.Method = httpmethod.DeleteMethod
-			case strings.ToUpper(s) == annotation.PATCH:
+				r.Method = annotation.DELETE
+			case annotation.PATCH.EqualsIgnoreCase(s):
 				if stringx.IsNotBlank(r.Method) {
 					log.Fatalf("error: rpcmethod %s, there are multiple methods", methodName)
 				}
-				r.Method = httpmethod.PatchMethod
-			case strings.ToUpper(s) == annotation.HEAD:
+				r.Method = annotation.PATCH
+			case annotation.HEAD.EqualsIgnoreCase(s):
 				if stringx.IsNotBlank(r.Method) {
 					log.Fatalf("error: rpcmethod %s, there are multiple methods", methodName)
 				}
-				r.Method = httpmethod.HeadMethod
-			case strings.ToUpper(s) == annotation.CONNECT:
+				r.Method = annotation.HEAD
+			case annotation.CONNECT.EqualsIgnoreCase(s):
 				if stringx.IsNotBlank(r.Method) {
 					log.Fatalf("error: rpcmethod %s, there are multiple methods", methodName)
 				}
-				r.Method = httpmethod.ConnectMethod
-			case strings.ToUpper(s) == annotation.OPTIONS:
+				r.Method = annotation.CONNECT
+			case annotation.OPTIONS.EqualsIgnoreCase(s):
 				if stringx.IsNotBlank(r.Method) {
 					log.Fatalf("error: rpcmethod %s, there are multiple methods", methodName)
 				}
-				r.Method = httpmethod.OptionsMethod
-			case strings.ToUpper(s) == annotation.TRACE:
+				r.Method = annotation.OPTIONS
+			case annotation.TRACE.EqualsIgnoreCase(s):
 				if stringx.IsNotBlank(r.Method) {
 					log.Fatalf("error: rpcmethod %s, there are multiple methods", methodName)
 				}
-				r.Method = httpmethod.TraceMethod
+				r.Method = annotation.TRACE
 				// method end
 
 				// binding start
@@ -228,49 +204,47 @@ func NewRouter(methodName string, basePath string, comments []string) *RouterInf
 			case strings.HasPrefix(strings.ToUpper(s), strings.ToUpper(annotation.BytesRender)):
 				v, _ := findBytesRender(s)
 				r.RenderContentType = v
-				//r.BytesRender = true
-				r.Render = strings.TrimPrefix(annotation.BytesRender, "@")
+				r.Render = annotation.BytesRender
 			case strings.HasPrefix(strings.ToUpper(s), strings.ToUpper(annotation.StringRender)):
 				v, _ := findStringRender(s)
 				r.RenderContentType = v
-				//r.StringRender = true
-				r.Render = strings.TrimPrefix(annotation.StringRender, "@")
+				r.Render = annotation.StringRender
 			case strings.ToUpper(s) == strings.ToUpper(annotation.TextRender):
-				r.Render = strings.TrimPrefix(annotation.TextRender, "@")
+				r.Render = annotation.TextRender
 			case strings.ToUpper(s) == strings.ToUpper(annotation.HTMLRender):
-				r.Render = strings.TrimPrefix(annotation.HTMLRender, "@")
+				r.Render = annotation.HTMLRender
 			case strings.ToUpper(s) == strings.ToUpper(annotation.RedirectRender):
-				r.Render = strings.TrimPrefix(annotation.RedirectRender, "@")
+				r.Render = annotation.RedirectRender
 			case strings.HasPrefix(strings.ToUpper(s), strings.ToUpper(annotation.ReaderRender)):
 				v, _ := findReaderRender(s)
 				r.RenderContentType = v
-				r.Render = strings.TrimPrefix(annotation.ReaderRender, "@")
+				r.Render = annotation.ReaderRender
 			case strings.ToUpper(s) == strings.ToUpper(annotation.JSONRender):
-				r.Render = strings.TrimPrefix(annotation.JSONRender, "@")
+				r.Render = annotation.JSONRender
 			case strings.ToUpper(s) == strings.ToUpper(annotation.IndentedJSONRender):
-				r.Render = strings.TrimPrefix(annotation.IndentedJSONRender, "@")
+				r.Render = annotation.IndentedJSONRender
 			case strings.ToUpper(s) == strings.ToUpper(annotation.SecureJSONRender):
-				r.Render = strings.TrimPrefix(annotation.SecureJSONRender, "@")
+				r.Render = annotation.SecureJSONRender
 			case strings.ToUpper(s) == strings.ToUpper(annotation.JSONPJSONRender):
-				r.Render = strings.TrimPrefix(annotation.JSONPJSONRender, "@")
+				r.Render = annotation.JSONPJSONRender
 			case strings.ToUpper(s) == strings.ToUpper(annotation.PureJSONRender):
-				r.Render = strings.TrimPrefix(annotation.PureJSONRender, "@")
+				r.Render = annotation.PureJSONRender
 			case strings.ToUpper(s) == strings.ToUpper(annotation.AsciiJSONRender):
-				r.Render = strings.TrimPrefix(annotation.AsciiJSONRender, "@")
+				r.Render = annotation.AsciiJSONRender
 			case strings.ToUpper(s) == strings.ToUpper(annotation.ProtoJSONRender):
-				r.Render = strings.TrimPrefix(annotation.ProtoJSONRender, "@")
+				r.Render = annotation.ProtoJSONRender
 			case strings.ToUpper(s) == strings.ToUpper(annotation.XMLRender):
-				r.Render = strings.TrimPrefix(annotation.XMLRender, "@")
+				r.Render = annotation.XMLRender
 			case strings.ToUpper(s) == strings.ToUpper(annotation.YAMLRender):
-				r.Render = strings.TrimPrefix(annotation.YAMLRender, "@")
+				r.Render = annotation.YAMLRender
 			case strings.ToUpper(s) == strings.ToUpper(annotation.ProtoBufRender):
-				r.Render = strings.TrimPrefix(annotation.ProtoBufRender, "@")
+				r.Render = annotation.ProtoBufRender
 			case strings.ToUpper(s) == strings.ToUpper(annotation.MsgPackRender):
-				r.Render = strings.TrimPrefix(annotation.MsgPackRender, "@")
+				r.Render = annotation.MsgPackRender
 			case strings.ToUpper(s) == strings.ToUpper(annotation.TOMLRender):
-				r.Render = strings.TrimPrefix(annotation.TOMLRender, "@")
+				r.Render = annotation.TOMLRender
 			case strings.ToUpper(s) == strings.ToUpper(annotation.CustomRender):
-				r.Render = strings.TrimPrefix(annotation.CustomRender, "@")
+				r.Render = annotation.CustomRender
 				// render end
 
 			case strings.HasPrefix(s, annotation.GORS):

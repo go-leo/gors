@@ -6,7 +6,6 @@ import (
 	"flag"
 	"fmt"
 	"github.com/go-leo/gors/internal/pkg/gors"
-	"github.com/go-leo/gors/internal/pkg/httpmethod"
 	"github.com/go-leo/gox/slicex"
 	"go/ast"
 	"go/format"
@@ -143,19 +142,6 @@ func main() {
 		log.Fatalf("writing output: %s", err)
 	}
 	log.Printf("%s.%s wrote %s", pkg.PkgPath, *serviceName, outputPath)
-}
-
-func defaultRouterInfo() *gors.RouterInfo {
-	return &gors.RouterInfo{
-		Method:            httpmethod.PostMethod,
-		Path:              "",
-		Bindings:          []string{"UriBinding", "QueryBinding", "HeaderBinding", "JSONBinding"},
-		RenderContentType: "",
-		Render:            "JSONRender",
-		RpcMethodName:     "",
-		Param2:            nil,
-		Result1:           nil,
-	}
 }
 
 func loadPkg(args []string) *packages.Package {

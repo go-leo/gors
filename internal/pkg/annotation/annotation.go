@@ -1,20 +1,25 @@
 package annotation
 
+import "strings"
+
 // The list of annotation.
+
+type Method string
+
 const (
 	GORS = "@GORS"
 
 	Path = "@Path"
 
-	GET     = "@GET"
-	POST    = "@POST"
-	PUT     = "@PUT"
-	DELETE  = "@DELETE"
-	PATCH   = "@PATCH"
-	HEAD    = "@HEAD"
-	CONNECT = "@CONNECT"
-	OPTIONS = "@OPTIONS"
-	TRACE   = "@TRACE"
+	GET     Method = "@GET"
+	POST    Method = "@POST"
+	PUT     Method = "@PUT"
+	DELETE  Method = "@DELETE"
+	PATCH   Method = "@PATCH"
+	HEAD    Method = "@HEAD"
+	CONNECT Method = "@CONNECT"
+	OPTIONS Method = "@OPTIONS"
+	TRACE   Method = "@TRACE"
 
 	UriBinding           = "@UriBinding"
 	QueryBinding         = "@QueryBinding"
@@ -52,3 +57,36 @@ const (
 	CustomRender       = "@CustomRender"
 	ProtoJSONRender    = "@ProtoJSONRender"
 )
+
+func (m Method) String() string {
+	return string(m)
+}
+
+func (m Method) EqualsIgnoreCase(str string) bool {
+	return strings.ToUpper(str) == m.String()
+}
+
+func (m Method) HttpMethod() string {
+	switch m {
+	case GET:
+		return "MethodGet"
+	case POST:
+		return "MethodPost"
+	case PUT:
+		return "MethodPut"
+	case DELETE:
+		return "MethodDelete"
+	case PATCH:
+		return "MethodPatch"
+	case HEAD:
+		return "MethodHead"
+	case CONNECT:
+		return "MethodConnect"
+	case OPTIONS:
+		return "MethodOptions"
+	case TRACE:
+		return "MethodTrace"
+	default:
+		return ""
+	}
+}

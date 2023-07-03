@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"github.com/go-leo/gors/internal/pkg/annotation"
 	"github.com/go-leo/gors/internal/pkg/gors"
-	"github.com/go-leo/gors/internal/pkg/httpmethod"
 	"github.com/go-leo/gox/slicex"
 	"github.com/go-leo/gox/stringx"
 	"golang.org/x/exp/slices"
@@ -78,7 +77,7 @@ func genClientFunction(gen *protogen.Plugin, file *protogen.File, g *protogen.Ge
 
 			router := newRouter(method, basePath, fmName)
 			g.P(gorsPackage.Ident("NewRoute"), "(")
-			g.P(httpPackage.Ident(router.Method), ",")
+			g.P(httpPackage.Ident(router.Method.HttpMethod()), ",")
 			g.P(strconv.Quote(router.Path), ",")
 			g.P("func(c *", ginPackage.Ident("Context"), ") {")
 			g.P("var rpcMethodName = ", strconv.Quote(fmName))
@@ -141,7 +140,7 @@ func genServerFunction(gen *protogen.Plugin, file *protogen.File, g *protogen.Ge
 
 			router := newRouter(method, basePath, fmName)
 			g.P(gorsPackage.Ident("NewRoute"), "(")
-			g.P(httpPackage.Ident(router.Method), ",")
+			g.P(httpPackage.Ident(router.Method.HttpMethod()), ",")
 			g.P(strconv.Quote(router.Path), ",")
 			g.P("func(c *", ginPackage.Ident("Context"), ") {")
 			g.P("var rpcMethodName = ", strconv.Quote(fmName))
@@ -217,12 +216,12 @@ func printResponseRender(gen *protogen.Plugin, g *protogen.GeneratedFile, router
 		annotation.PureJSONRender, annotation.AsciiJSONRender, annotation.ProtoJSONRender,
 		annotation.ProtoBufRender, annotation.CustomRender,
 	}
-	if !slices.Contains(renders, "@"+router.Render) {
+	if !slices.Contains(renders, router.Render) {
 		return fmt.Errorf("%s, %s is not supported", fmName, router.Render)
 	}
 	g.P(gorsPackage.Ident("ResponseRender"),
 		"(ctx, ", gorsPackage.Ident("StatusCode"), "(ctx), resp,",
-		strconv.Quote(router.RenderContentType), ",", gorsPackage.Ident(router.Render),
+		strconv.Quote(router.RenderContentType), ",", gorsPackage.Ident(strings.TrimPrefix(router.Render, "@")),
 		", options.ResponseWrapper)")
 
 	return nil
@@ -240,7 +239,7 @@ func newRouter(method *protogen.Method, basePath string, fmName string) *gors.Ro
 
 func defaultRouter(router *gors.RouterInfo, method *protogen.Method, basePath string, fmName string) {
 	if stringx.IsBlank(router.Method) {
-		router.Method = httpmethod.PostMethod
+		router.Method = annotation.POST
 		log.Printf("rpcmethod %s, http method default POST\n ", method.GoName)
 	}
 	if stringx.IsBlank(router.Path) || router.Path == basePath {
@@ -252,11 +251,11 @@ func defaultRouter(router *gors.RouterInfo, method *protogen.Method, basePath st
 		log.Printf("rpcmethod %s, path default is %s\n ", method.GoName, p)
 	}
 	if slicex.IsEmpty(router.Bindings) {
-		router.Bindings = []string{"UriBinding", "QueryBinding", "HeaderBinding", "ProtoJSONBinding"}
+		router.Bindings = []string{annotation.UriBinding, annotation.QueryBinding, annotation.HeaderBinding, annotation.ProtoJSONBinding}
 		log.Printf("rpcmethod %s, bindings are %v\n ", method.GoName, router.Bindings)
 	}
 	if stringx.IsBlank(router.Render) {
-		router.Render = strings.Trim(annotation.ProtoJSONRender, "@")
+		router.Render = annotation.ProtoJSONRender
 	}
 
 	router.RpcMethodName = fmName

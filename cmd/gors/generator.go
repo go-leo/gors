@@ -248,7 +248,7 @@ func (g *generate) printFunction() {
 
 func (g *generate) printRouterInfo(info *gors.RouterInfo) {
 	g.P(g.functionBuf, gorsPackage.Ident("NewRoute"), "(")
-	g.P(g.functionBuf, httpPackage.Ident(info.Method), ",")
+	g.P(g.functionBuf, httpPackage.Ident(info.Method.HttpMethod()), ",")
 	g.P(g.functionBuf, strconv.Quote(info.Path), ",")
 	g.P(g.functionBuf, "func(c *", ginPackage.Ident("Context"), ") {")
 	g.printHandler(info)
@@ -336,18 +336,18 @@ func (g *generate) printResponseRender(info *gors.RouterInfo) {
 
 	switch {
 	case info.Result1.Bytes:
-		if "@"+info.Render != annotation.BytesRender {
+		if info.Render != annotation.BytesRender {
 			log.Fatalf("error: func %s []byte result must be set %s", info.RpcMethodName, annotation.BytesRender)
 			return
 		}
 	case info.Result1.String:
 		renders := []string{annotation.StringRender, annotation.TextRender, annotation.HTMLRender, annotation.RedirectRender}
-		if !slices.Contains(renders, "@"+info.Render) {
-			log.Fatalf("error: func %s []byte result must be set %v", info.RpcMethodName, renders)
+		if !slices.Contains(renders, info.Render) {
+			log.Fatalf("error: func %s string result must be set %v", info.RpcMethodName, renders)
 		}
 	case info.Result1.Reader:
-		if "@"+info.Render != annotation.ReaderRender {
-			log.Fatalf("error: func %s []byte result must be set %s", info.RpcMethodName, annotation.ReaderRender)
+		if info.Render != annotation.ReaderRender {
+			log.Fatalf("error: func %s io.Reader result must be set %s", info.RpcMethodName, annotation.ReaderRender)
 			return
 		}
 	case info.Result1.ObjectArgs != nil:
@@ -357,8 +357,8 @@ func (g *generate) printResponseRender(info *gors.RouterInfo) {
 			annotation.YAMLRender, annotation.ProtoBufRender, annotation.MsgPackRender, annotation.TOMLRender,
 			annotation.CustomRender,
 		}
-		if !slices.Contains(renders, "@"+info.Render) {
-			log.Fatalf("error: func %s []byte result must be set %v", info.RpcMethodName, renders)
+		if !slices.Contains(renders, info.Render) {
+			log.Fatalf("error: func %s *struct result must be set %v", info.RpcMethodName, renders)
 		}
 	default:
 		log.Fatalf("error: func %s 1th result is invalid, must be io.Reader or []byte or string or *struct{}", info.RpcMethodName)
@@ -366,7 +366,7 @@ func (g *generate) printResponseRender(info *gors.RouterInfo) {
 
 	g.P(g.functionBuf, gorsPackage.Ident("ResponseRender"),
 		"(ctx, ", gorsPackage.Ident("StatusCode"), "(ctx), resp,",
-		strconv.Quote(info.RenderContentType), ",", gorsPackage.Ident(info.Render),
+		strconv.Quote(info.RenderContentType), ",", gorsPackage.Ident(strings.TrimPrefix(info.Render, "@")),
 		", options.ResponseWrapper)")
 }
 
