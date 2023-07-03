@@ -5,10 +5,12 @@ import (
 
 	"bufio"
 	"fmt"
+	"github.com/go-leo/gors/internal/pkg/annotation"
 	"github.com/go-leo/gors/internal/pkg/gors"
 	"github.com/go-leo/gors/internal/pkg/httpmethod"
 	"github.com/go-leo/gox/slicex"
 	"github.com/go-leo/gox/stringx"
+	"golang.org/x/exp/slices"
 	"google.golang.org/protobuf/compiler/protogen"
 	"log"
 	"path"
@@ -46,12 +48,12 @@ func generateFileContent(gen *protogen.Plugin, file *protogen.File, g *protogen.
 	}
 	for _, service := range file.Services {
 		if err := genClientFunction(gen, file, g, service); err != nil {
-			gen.Error(err)
+			gen.Error(fmt.Errorf("error: %w", err))
 			return
 		}
 		g.P()
 		if err := genServerFunction(gen, file, g, service); err != nil {
-			gen.Error(err)
+			gen.Error(fmt.Errorf("error: %w", err))
 			return
 		}
 	}
@@ -188,8 +190,18 @@ func genServerFunction(gen *protogen.Plugin, file *protogen.File, g *protogen.Ge
 func printRequestBinding(gen *protogen.Plugin, g *protogen.GeneratedFile, router *gors.RouterInfo, fmName string) error {
 	g.P("if err = ", gorsPackage.Ident("RequestBind"), "(")
 	g.P("ctx, req, options.Tag,")
+	bindings := []string{
+		annotation.MsgPackBinding,
+		annotation.XMLBinding,
+		annotation.YAMLBinding,
+		annotation.TOMLBinding,
+	}
 	for _, binding := range router.Bindings {
-		g.P(gorsPackage.Ident(binding), ",")
+		if slices.Contains(bindings, binding) {
+			return fmt.Errorf("%s, %v is not supported", fmName, bindings)
+		}
+
+		g.P(gorsPackage.Ident(strings.TrimPrefix(binding, "@")), ",")
 	}
 	g.P("); err != nil {")
 
@@ -200,102 +212,20 @@ func printRequestBinding(gen *protogen.Plugin, g *protogen.GeneratedFile, router
 }
 
 func printResponseRender(gen *protogen.Plugin, g *protogen.GeneratedFile, router *gors.RouterInfo, fmName string) error {
-	var renderMethodName string
-	switch {
-	case router.JSONRender:
-		renderMethodName = "JSONRender"
-	case router.IndentedJSONRender:
-		renderMethodName = "IndentedJSONRender"
-	case router.SecureJSONRender:
-		renderMethodName = "SecureJSONRender"
-	case router.JSONPJSONRender:
-		renderMethodName = "JSONPJSONRender"
-	case router.PureJSONRender:
-		renderMethodName = "PureJSONRender"
-	case router.AsciiJSONRender:
-		renderMethodName = "AsciiJSONRender"
-	case router.ProtoJSONRender:
-		renderMethodName = "ProtoJSONRender"
-	case router.ProtoBufRender:
-		renderMethodName = "ProtoBufRender"
-	case router.CustomRender:
-		renderMethodName = "CustomRender"
-
-	case router.BytesRender:
-		return fmt.Errorf("%s, @BytesRender is not supported", fmName)
-	case router.StringRender:
-		return fmt.Errorf("%s, @StringRender is not supported", fmName)
-	case router.TextRender:
-		return fmt.Errorf("%s, @TextRender is not supported", fmName)
-	case router.HTMLRender:
-		return fmt.Errorf("%s, @HTMLRender is not supported", fmName)
-	case router.RedirectRender:
-		return fmt.Errorf("%s, @RedirectRender is not supported", fmName)
-	case router.ReaderRender:
-		return fmt.Errorf("%s, @ReaderRender is not supported", fmName)
-	case router.XMLRender:
-		return fmt.Errorf("%s, @XMLRender is not supported", fmName)
-	case router.YAMLRender:
-		return fmt.Errorf("%s, @YAMLRender is not supported", fmName)
-	case router.TOMLRender:
-		return fmt.Errorf("%s, @TOMLRender is not supported", fmName)
-	case router.MsgPackRender:
-		return fmt.Errorf("%s, @MsgPackRender is not supported", fmName)
-	default:
-		return fmt.Errorf("%s, render not defined", fmName)
+	renders := []string{
+		annotation.JSONRender, annotation.IndentedJSONRender, annotation.SecureJSONRender,
+		annotation.PureJSONRender, annotation.AsciiJSONRender, annotation.ProtoJSONRender,
+		annotation.ProtoBufRender, annotation.CustomRender,
+	}
+	if !slices.Contains(renders, "@"+router.Render) {
+		return fmt.Errorf("%s, %s is not supported", fmName, router.Render)
 	}
 	g.P(gorsPackage.Ident("ResponseRender"),
 		"(ctx, ", gorsPackage.Ident("StatusCode"), "(ctx), resp,",
-		strconv.Quote(router.RenderContentType), ",", gorsPackage.Ident(renderMethodName),
+		strconv.Quote(router.RenderContentType), ",", gorsPackage.Ident(router.Render),
 		", options.ResponseWrapper)")
 
 	return nil
-}
-
-func renderMethodName(router *gors.RouterInfo, fmName string) (string, error) {
-	switch {
-	case router.JSONRender:
-		return "JSONRender", nil
-	case router.IndentedJSONRender:
-		return "IndentedJSONRender", nil
-	case router.SecureJSONRender:
-		return "SecureJSONRender", nil
-	case router.JSONPJSONRender:
-		return "JSONPJSONRender", nil
-	case router.PureJSONRender:
-		return "PureJSONRender", nil
-	case router.AsciiJSONRender:
-		return "AsciiJSONRender", nil
-	case router.ProtoBufRender:
-		return "ProtoBufRender", nil
-	case router.MsgPackRender:
-		return "MsgPackRender", nil
-	case router.CustomRender:
-		return "CustomRender", nil
-	case router.ProtoJSONRender:
-		return "ProtoJSONRender", nil
-
-	case router.BytesRender:
-		return "", fmt.Errorf("%s, @BytesRender is not supported", fmName)
-	case router.StringRender:
-		return "", fmt.Errorf("%s, @StringRender is not supported", fmName)
-	case router.TextRender:
-		return "", fmt.Errorf("%s, @TextRender is not supported", fmName)
-	case router.HTMLRender:
-		return "", fmt.Errorf("%s, @HTMLRender is not supported", fmName)
-	case router.RedirectRender:
-		return "", fmt.Errorf("%s, @RedirectRender is not supported", fmName)
-	case router.ReaderRender:
-		return "", fmt.Errorf("%s, @ReaderRender is not supported", fmName)
-	case router.XMLRender:
-		return "", fmt.Errorf("%s, @XMLRender is not supported", fmName)
-	case router.YAMLRender:
-		return "", fmt.Errorf("%s, @YAMLRender is not supported", fmName)
-	case router.TOMLRender:
-		return "", fmt.Errorf("%s, @TOMLRender is not supported", fmName)
-	default:
-		return "", fmt.Errorf("%s, render not defined", fmName)
-	}
 }
 
 func extractBasePath(service *protogen.Service) string {
@@ -326,8 +256,7 @@ func defaultRouter(router *gors.RouterInfo, method *protogen.Method, basePath st
 		log.Printf("rpcmethod %s, bindings are %v\n ", method.GoName, router.Bindings)
 	}
 	if stringx.IsBlank(router.Render) {
-		router.ProtoJSONRender = true
-		router.Render = "ProtoJSONRender"
+		router.Render = strings.Trim(annotation.ProtoJSONRender, "@")
 	}
 
 	router.RpcMethodName = fmName

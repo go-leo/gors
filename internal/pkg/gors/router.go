@@ -100,26 +100,26 @@ type RouterInfo struct {
 
 	Render string
 
-	BytesRender    bool
-	StringRender   bool
-	TextRender     bool
-	HTMLRender     bool
-	ReaderRender   bool
-	RedirectRender bool
-
-	JSONRender         bool
-	ProtoJSONRender    bool
-	IndentedJSONRender bool
-	SecureJSONRender   bool
-	JSONPJSONRender    bool
-	PureJSONRender     bool
-	AsciiJSONRender    bool
-	XMLRender          bool
-	YAMLRender         bool
-	ProtoBufRender     bool
-	MsgPackRender      bool
-	TOMLRender         bool
-	CustomRender       bool
+	//BytesRender    bool
+	//StringRender   bool
+	//TextRender     bool
+	//HTMLRender     bool
+	//ReaderRender   bool
+	//RedirectRender bool
+	//
+	//JSONRender         bool
+	//ProtoJSONRender    bool
+	//IndentedJSONRender bool
+	//SecureJSONRender   bool
+	//JSONPJSONRender    bool
+	//PureJSONRender     bool
+	//AsciiJSONRender    bool
+	//XMLRender          bool
+	//YAMLRender         bool
+	//ProtoBufRender     bool
+	//MsgPackRender      bool
+	//TOMLRender         bool
+	//CustomRender       bool
 
 	RpcMethodName string
 	Param2        *Param
@@ -195,101 +195,82 @@ func NewRouter(methodName string, basePath string, comments []string) *RouterInf
 
 				// binding start
 			case strings.ToUpper(s) == strings.ToUpper(annotation.UriBinding):
-				r.Bindings = append(r.Bindings, strings.TrimPrefix(annotation.UriBinding, "@"))
+				r.Bindings = append(r.Bindings, annotation.UriBinding)
 			case strings.ToUpper(s) == strings.ToUpper(annotation.QueryBinding):
-				r.Bindings = append(r.Bindings, strings.TrimPrefix(annotation.QueryBinding, "@"))
+				r.Bindings = append(r.Bindings, annotation.QueryBinding)
 			case strings.ToUpper(s) == strings.ToUpper(annotation.HeaderBinding):
-				r.Bindings = append(r.Bindings, strings.TrimPrefix(annotation.HeaderBinding, "@"))
+				r.Bindings = append(r.Bindings, annotation.HeaderBinding)
 			case strings.ToUpper(s) == strings.ToUpper(annotation.JSONBinding):
-				r.Bindings = append(r.Bindings, strings.TrimPrefix(annotation.JSONBinding, "@"))
+				r.Bindings = append(r.Bindings, annotation.JSONBinding)
 			case strings.ToUpper(s) == strings.ToUpper(annotation.ProtoJSONBinding):
-				r.Bindings = append(r.Bindings, strings.TrimPrefix(annotation.ProtoJSONBinding, "@"))
+				r.Bindings = append(r.Bindings, annotation.ProtoJSONBinding)
 			case strings.ToUpper(s) == strings.ToUpper(annotation.XMLBinding):
-				r.Bindings = append(r.Bindings, strings.TrimPrefix(annotation.XMLBinding, "@"))
+				r.Bindings = append(r.Bindings, annotation.XMLBinding)
 			case strings.ToUpper(s) == strings.ToUpper(annotation.FormBinding):
-				r.Bindings = append(r.Bindings, strings.TrimPrefix(annotation.FormBinding, "@"))
+				r.Bindings = append(r.Bindings, annotation.FormBinding)
 			case strings.ToUpper(s) == strings.ToUpper(annotation.FormPostBinding):
-				r.Bindings = append(r.Bindings, strings.TrimPrefix(annotation.FormPostBinding, "@"))
+				r.Bindings = append(r.Bindings, annotation.FormPostBinding)
 			case strings.ToUpper(s) == strings.ToUpper(annotation.FormMultipartBinding):
-				r.Bindings = append(r.Bindings, strings.TrimPrefix(annotation.FormMultipartBinding, "@"))
+				r.Bindings = append(r.Bindings, annotation.FormMultipartBinding)
 			case strings.ToUpper(s) == strings.ToUpper(annotation.ProtoBufBinding):
-				r.Bindings = append(r.Bindings, strings.TrimPrefix(annotation.ProtoBufBinding, "@"))
+				r.Bindings = append(r.Bindings, annotation.ProtoBufBinding)
 			case strings.ToUpper(s) == strings.ToUpper(annotation.MsgPackBinding):
-				r.Bindings = append(r.Bindings, strings.TrimPrefix(annotation.MsgPackBinding, "@"))
+				r.Bindings = append(r.Bindings, annotation.MsgPackBinding)
 			case strings.ToUpper(s) == strings.ToUpper(annotation.YAMLBinding):
-				r.Bindings = append(r.Bindings, strings.TrimPrefix(annotation.YAMLBinding, "@"))
+				r.Bindings = append(r.Bindings, annotation.YAMLBinding)
 			case strings.ToUpper(s) == strings.ToUpper(annotation.TOMLBinding):
-				r.Bindings = append(r.Bindings, strings.TrimPrefix(annotation.TOMLBinding, "@"))
+				r.Bindings = append(r.Bindings, annotation.TOMLBinding)
 			case strings.ToUpper(s) == strings.ToUpper(annotation.CustomBinding):
-				r.Bindings = append(r.Bindings, strings.TrimPrefix(annotation.CustomBinding, "@"))
+				r.Bindings = append(r.Bindings, annotation.CustomBinding)
 				// binding end
 
 				// render start
 			case strings.HasPrefix(strings.ToUpper(s), strings.ToUpper(annotation.BytesRender)):
 				v, _ := findBytesRender(s)
 				r.RenderContentType = v
-				r.BytesRender = true
-				r.Render = "BytesRender"
+				//r.BytesRender = true
+				r.Render = strings.TrimPrefix(annotation.BytesRender, "@")
 			case strings.HasPrefix(strings.ToUpper(s), strings.ToUpper(annotation.StringRender)):
 				v, _ := findStringRender(s)
 				r.RenderContentType = v
-				r.StringRender = true
-				r.Render = "StringRender"
+				//r.StringRender = true
+				r.Render = strings.TrimPrefix(annotation.StringRender, "@")
 			case strings.ToUpper(s) == strings.ToUpper(annotation.TextRender):
-				r.TextRender = true
-				r.Render = "TextRender"
+				r.Render = strings.TrimPrefix(annotation.TextRender, "@")
 			case strings.ToUpper(s) == strings.ToUpper(annotation.HTMLRender):
-				r.HTMLRender = true
-				r.Render = "HTMLRender"
+				r.Render = strings.TrimPrefix(annotation.HTMLRender, "@")
 			case strings.ToUpper(s) == strings.ToUpper(annotation.RedirectRender):
-				r.RedirectRender = true
-				r.Render = "RedirectRender"
+				r.Render = strings.TrimPrefix(annotation.RedirectRender, "@")
 			case strings.HasPrefix(strings.ToUpper(s), strings.ToUpper(annotation.ReaderRender)):
 				v, _ := findReaderRender(s)
 				r.RenderContentType = v
-				r.ReaderRender = true
-				r.Render = "ReaderRender"
-
+				r.Render = strings.TrimPrefix(annotation.ReaderRender, "@")
 			case strings.ToUpper(s) == strings.ToUpper(annotation.JSONRender):
-				r.JSONRender = true
-				r.Render = "JSONRender"
+				r.Render = strings.TrimPrefix(annotation.JSONRender, "@")
 			case strings.ToUpper(s) == strings.ToUpper(annotation.IndentedJSONRender):
-				r.IndentedJSONRender = true
-				r.Render = "IndentedJSONRender"
+				r.Render = strings.TrimPrefix(annotation.IndentedJSONRender, "@")
 			case strings.ToUpper(s) == strings.ToUpper(annotation.SecureJSONRender):
-				r.SecureJSONRender = true
-				r.Render = "SecureJSONRender"
+				r.Render = strings.TrimPrefix(annotation.SecureJSONRender, "@")
 			case strings.ToUpper(s) == strings.ToUpper(annotation.JSONPJSONRender):
-				r.JSONPJSONRender = true
-				r.Render = "JSONPJSONRender"
+				r.Render = strings.TrimPrefix(annotation.JSONPJSONRender, "@")
 			case strings.ToUpper(s) == strings.ToUpper(annotation.PureJSONRender):
-				r.PureJSONRender = true
-				r.Render = "PureJSONRender"
+				r.Render = strings.TrimPrefix(annotation.PureJSONRender, "@")
 			case strings.ToUpper(s) == strings.ToUpper(annotation.AsciiJSONRender):
-				r.AsciiJSONRender = true
-				r.Render = "AsciiJSONRender"
+				r.Render = strings.TrimPrefix(annotation.AsciiJSONRender, "@")
 			case strings.ToUpper(s) == strings.ToUpper(annotation.ProtoJSONRender):
-				r.ProtoJSONRender = true
-				r.Render = "ProtoJSONRender"
+				r.Render = strings.TrimPrefix(annotation.ProtoJSONRender, "@")
 			case strings.ToUpper(s) == strings.ToUpper(annotation.XMLRender):
-				r.XMLRender = true
-				r.Render = "XMLRender"
+				r.Render = strings.TrimPrefix(annotation.XMLRender, "@")
 			case strings.ToUpper(s) == strings.ToUpper(annotation.YAMLRender):
-				r.YAMLRender = true
-				r.Render = "YAMLRender"
+				r.Render = strings.TrimPrefix(annotation.YAMLRender, "@")
 			case strings.ToUpper(s) == strings.ToUpper(annotation.ProtoBufRender):
-				r.ProtoBufRender = true
-				r.Render = "ProtoBufRender"
+				r.Render = strings.TrimPrefix(annotation.ProtoBufRender, "@")
 			case strings.ToUpper(s) == strings.ToUpper(annotation.MsgPackRender):
-				r.MsgPackRender = true
-				r.Render = "MsgPackRender"
+				r.Render = strings.TrimPrefix(annotation.MsgPackRender, "@")
 			case strings.ToUpper(s) == strings.ToUpper(annotation.TOMLRender):
-				r.TOMLRender = true
-				r.Render = "TOMLRender"
+				r.Render = strings.TrimPrefix(annotation.TOMLRender, "@")
 			case strings.ToUpper(s) == strings.ToUpper(annotation.CustomRender):
-				r.CustomRender = true
-				r.Render = "CustomRender"
-
+				r.Render = strings.TrimPrefix(annotation.CustomRender, "@")
 				// render end
 
 			case strings.HasPrefix(s, annotation.GORS):

@@ -112,38 +112,6 @@ func ProtoDemoClientRoutes(cli ProtoDemoClient, opts ...gors.Option) []gors.Rout
 			},
 		),
 		gors.NewRoute(
-			http.MethodPost,
-			"/v1/HeaderFormPostBinding/JSONPJSONRender",
-			func(c *gin.Context) {
-				var rpcMethodName = "/protodemo.ProtoDemo/POSTHeaderFormPostBindingJSONPJSONRender"
-				var ctx = gors.NewContext(c, rpcMethodName)
-				var req *HelloRequest
-				var resp *HelloReply
-				var err error
-				req = new(HelloRequest)
-				if err = gors.RequestBind(
-					ctx, req, options.Tag,
-					gors.HeaderBinding,
-					gors.FormPostBinding,
-				); err != nil {
-					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
-					return
-				}
-				if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
-					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
-					return
-				}
-				var headerMD, trailerMD metadata.MD
-				resp, err = cli.POSTHeaderFormPostBindingJSONPJSONRender(ctx, req, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
-				gors.AddGRPCMetadata(ctx, headerMD, trailerMD, options.OutgoingHeaderMatcher)
-				if err != nil {
-					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
-					return
-				}
-				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.JSONPJSONRender, options.ResponseWrapper)
-			},
-		),
-		gors.NewRoute(
 			http.MethodPatch,
 			"/v1/HeaderProtoFormBinding/PureJSONRender",
 			func(c *gin.Context) {
@@ -532,39 +500,6 @@ func ProtoDemoServerRoutes(srv ProtoDemoServer, opts ...gors.Option) []gors.Rout
 					return
 				}
 				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.SecureJSONRender, options.ResponseWrapper)
-			},
-		),
-		gors.NewRoute(
-			http.MethodPost,
-			"/v1/HeaderFormPostBinding/JSONPJSONRender",
-			func(c *gin.Context) {
-				var rpcMethodName = "/protodemo.ProtoDemo/POSTHeaderFormPostBindingJSONPJSONRender"
-				var ctx = gors.NewContext(c, rpcMethodName)
-				var req *HelloRequest
-				var resp *HelloReply
-				var err error
-				req = new(HelloRequest)
-				if err = gors.RequestBind(
-					ctx, req, options.Tag,
-					gors.HeaderBinding,
-					gors.FormPostBinding,
-				); err != nil {
-					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
-					return
-				}
-				if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
-					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
-					return
-				}
-				stream := gors.NewServerTransportStream(rpcMethodName)
-				ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
-				resp, err = srv.POSTHeaderFormPostBindingJSONPJSONRender(ctx, req)
-				gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), options.OutgoingHeaderMatcher)
-				if err != nil {
-					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
-					return
-				}
-				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.JSONPJSONRender, options.ResponseWrapper)
 			},
 		),
 		gors.NewRoute(

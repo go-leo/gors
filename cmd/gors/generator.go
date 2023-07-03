@@ -3,11 +3,14 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"github.com/go-leo/gors/internal/pkg/annotation"
 	"github.com/go-leo/gors/internal/pkg/gors"
 	"go/ast"
+	"golang.org/x/exp/slices"
 	"io"
 	"log"
 	"strconv"
+	"strings"
 )
 
 const (
@@ -317,7 +320,7 @@ func (g *generate) printObjectReq(info *gors.RouterInfo) {
 	g.P(g.functionBuf, "if err = ", gorsPackage.Ident("RequestBind"), "(")
 	g.P(g.functionBuf, "ctx, req, options.Tag,")
 	for _, binding := range info.Bindings {
-		g.P(g.functionBuf, gorsPackage.Ident(binding), ",")
+		g.P(g.functionBuf, gorsPackage.Ident(strings.Trim(binding, "@")), ",")
 	}
 	g.P(g.functionBuf, "); err != nil {")
 	g.P(g.functionBuf, gorsPackage.Ident("ErrorRender"), "(ctx, err, options.ErrorHandler, options.ResponseWrapper)")
@@ -331,74 +334,39 @@ func (g *generate) printResponseRender(info *gors.RouterInfo) {
 	g.P(g.functionBuf, "return")
 	g.P(g.functionBuf, "}")
 
-	var renderMethodName string
 	switch {
 	case info.Result1.Bytes:
-		switch {
-		case info.BytesRender:
-			renderMethodName = "BytesRender"
-		default:
-			log.Fatalf("error: func %s []byte result must be set BytesRender", info.RpcMethodName)
+		if "@"+info.Render != annotation.BytesRender {
+			log.Fatalf("error: func %s []byte result must be set %s", info.RpcMethodName, annotation.BytesRender)
+			return
 		}
 	case info.Result1.String:
-		switch {
-		case info.StringRender:
-			renderMethodName = "StringRender"
-		case info.TextRender:
-			renderMethodName = "TextRender"
-		case info.HTMLRender:
-			renderMethodName = "HTMLRender"
-		case info.RedirectRender:
-			renderMethodName = "RedirectRender"
-		default:
-			log.Fatalf("error: func %s string result must be set BytesRender or StringRender or TextRender or HTMLRender or RedirectRender", info.RpcMethodName)
+		renders := []string{annotation.StringRender, annotation.TextRender, annotation.HTMLRender, annotation.RedirectRender}
+		if !slices.Contains(renders, "@"+info.Render) {
+			log.Fatalf("error: func %s []byte result must be set %v", info.RpcMethodName, renders)
 		}
 	case info.Result1.Reader:
-		switch {
-		case info.ReaderRender:
-			renderMethodName = "ReaderRender"
-		default:
-			log.Fatalf("error: func %s io.Reader result must be set ReaderRender", info.RpcMethodName)
+		if "@"+info.Render != annotation.ReaderRender {
+			log.Fatalf("error: func %s []byte result must be set %s", info.RpcMethodName, annotation.ReaderRender)
+			return
 		}
 	case info.Result1.ObjectArgs != nil:
-		switch {
-		case info.JSONRender:
-			renderMethodName = "JSONRender"
-		case info.IndentedJSONRender:
-			renderMethodName = "IndentedJSONRender"
-		case info.SecureJSONRender:
-			renderMethodName = "SecureJSONRender"
-		case info.JSONPJSONRender:
-			renderMethodName = "JSONPJSONRender"
-		case info.PureJSONRender:
-			renderMethodName = "PureJSONRender"
-		case info.AsciiJSONRender:
-			renderMethodName = "AsciiJSONRender"
-		case info.ProtoJSONRender:
-			renderMethodName = "ProtoJSONRender"
-		case info.XMLRender:
-			renderMethodName = "XMLRender"
-		case info.YAMLRender:
-			renderMethodName = "YAMLRender"
-		case info.ProtoBufRender:
-			renderMethodName = "ProtoBufRender"
-		case info.MsgPackRender:
-			renderMethodName = "MsgPackRender"
-		case info.TOMLRender:
-			renderMethodName = "TOMLRender"
-		case info.CustomRender:
-			renderMethodName = "CustomRender"
-
-		default:
-			log.Fatalf("error: func %s *struct{} result must be set a Render", info.RpcMethodName)
+		renders := []string{
+			annotation.JSONRender, annotation.IndentedJSONRender, annotation.SecureJSONRender, annotation.JSONPJSONRender,
+			annotation.PureJSONRender, annotation.AsciiJSONRender, annotation.ProtoJSONRender, annotation.XMLRender,
+			annotation.YAMLRender, annotation.ProtoBufRender, annotation.MsgPackRender, annotation.TOMLRender,
+			annotation.CustomRender,
+		}
+		if !slices.Contains(renders, "@"+info.Render) {
+			log.Fatalf("error: func %s []byte result must be set %v", info.RpcMethodName, renders)
 		}
 	default:
-		log.Fatalf("error: func %s 1th result is invalid, must be []byte or string or *struct{}", info.RpcMethodName)
+		log.Fatalf("error: func %s 1th result is invalid, must be io.Reader or []byte or string or *struct{}", info.RpcMethodName)
 	}
 
 	g.P(g.functionBuf, gorsPackage.Ident("ResponseRender"),
 		"(ctx, ", gorsPackage.Ident("StatusCode"), "(ctx), resp,",
-		strconv.Quote(info.RenderContentType), ",", gorsPackage.Ident(renderMethodName),
+		strconv.Quote(info.RenderContentType), ",", gorsPackage.Ident(info.Render),
 		", options.ResponseWrapper)")
 }
 

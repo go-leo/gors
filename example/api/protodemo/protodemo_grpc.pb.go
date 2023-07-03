@@ -22,7 +22,6 @@ const (
 	ProtoDemo_DELETEUriBindingJSONRender_FullMethodName                = "/protodemo.ProtoDemo/DELETEUriBindingJSONRender"
 	ProtoDemo_GETUriBindingIndentedJSONRender_FullMethodName           = "/protodemo.ProtoDemo/GETUriBindingIndentedJSONRender"
 	ProtoDemo_GETUriQueryBindingSecureJSONRender_FullMethodName        = "/protodemo.ProtoDemo/GETUriQueryBindingSecureJSONRender"
-	ProtoDemo_POSTHeaderFormPostBindingJSONPJSONRender_FullMethodName  = "/protodemo.ProtoDemo/POSTHeaderFormPostBindingJSONPJSONRender"
 	ProtoDemo_PATCHHeaderProtoFormBindingPureJSONRender_FullMethodName = "/protodemo.ProtoDemo/PATCHHeaderProtoFormBindingPureJSONRender"
 	ProtoDemo_PUTHeaderJSONBindingAsciiJSONRender_FullMethodName       = "/protodemo.ProtoDemo/PUTHeaderJSONBindingAsciiJSONRender"
 	ProtoDemo_POSTProtoBufBindingProtoBufRender_FullMethodName         = "/protodemo.ProtoDemo/POSTProtoBufBindingProtoBufRender"
@@ -44,8 +43,6 @@ type ProtoDemoClient interface {
 	GETUriBindingIndentedJSONRender(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error)
 	// @GORS @GET @Path(/UriQueryBinding/SecureJSONRender/:name) @UriBinding @QueryBinding @SecureJSONRender
 	GETUriQueryBindingSecureJSONRender(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error)
-	// @GORS @POST @Path(/HeaderFormPostBinding/JSONPJSONRender) @HeaderBinding @FormPostBinding @JSONPJSONRender
-	POSTHeaderFormPostBindingJSONPJSONRender(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error)
 	// @GORS @PATCH @Path(/HeaderProtoFormBinding/PureJSONRender) @HeaderBinding @FormBinding @PureJSONRender
 	PATCHHeaderProtoFormBindingPureJSONRender(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error)
 	// @GORS @PUT @Path(/HeaderJSONBinding/AsciiJSONRender) @HeaderBinding @JSONBinding @AsciiJSONRender
@@ -94,15 +91,6 @@ func (c *protoDemoClient) GETUriBindingIndentedJSONRender(ctx context.Context, i
 func (c *protoDemoClient) GETUriQueryBindingSecureJSONRender(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error) {
 	out := new(HelloReply)
 	err := c.cc.Invoke(ctx, ProtoDemo_GETUriQueryBindingSecureJSONRender_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *protoDemoClient) POSTHeaderFormPostBindingJSONPJSONRender(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error) {
-	out := new(HelloReply)
-	err := c.cc.Invoke(ctx, ProtoDemo_POSTHeaderFormPostBindingJSONPJSONRender_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -200,8 +188,6 @@ type ProtoDemoServer interface {
 	GETUriBindingIndentedJSONRender(context.Context, *HelloRequest) (*HelloReply, error)
 	// @GORS @GET @Path(/UriQueryBinding/SecureJSONRender/:name) @UriBinding @QueryBinding @SecureJSONRender
 	GETUriQueryBindingSecureJSONRender(context.Context, *HelloRequest) (*HelloReply, error)
-	// @GORS @POST @Path(/HeaderFormPostBinding/JSONPJSONRender) @HeaderBinding @FormPostBinding @JSONPJSONRender
-	POSTHeaderFormPostBindingJSONPJSONRender(context.Context, *HelloRequest) (*HelloReply, error)
 	// @GORS @PATCH @Path(/HeaderProtoFormBinding/PureJSONRender) @HeaderBinding @FormBinding @PureJSONRender
 	PATCHHeaderProtoFormBindingPureJSONRender(context.Context, *HelloRequest) (*HelloReply, error)
 	// @GORS @PUT @Path(/HeaderJSONBinding/AsciiJSONRender) @HeaderBinding @JSONBinding @AsciiJSONRender
@@ -234,9 +220,6 @@ func (UnimplementedProtoDemoServer) GETUriBindingIndentedJSONRender(context.Cont
 }
 func (UnimplementedProtoDemoServer) GETUriQueryBindingSecureJSONRender(context.Context, *HelloRequest) (*HelloReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GETUriQueryBindingSecureJSONRender not implemented")
-}
-func (UnimplementedProtoDemoServer) POSTHeaderFormPostBindingJSONPJSONRender(context.Context, *HelloRequest) (*HelloReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method POSTHeaderFormPostBindingJSONPJSONRender not implemented")
 }
 func (UnimplementedProtoDemoServer) PATCHHeaderProtoFormBindingPureJSONRender(context.Context, *HelloRequest) (*HelloReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PATCHHeaderProtoFormBindingPureJSONRender not implemented")
@@ -328,24 +311,6 @@ func _ProtoDemo_GETUriQueryBindingSecureJSONRender_Handler(srv interface{}, ctx 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ProtoDemoServer).GETUriQueryBindingSecureJSONRender(ctx, req.(*HelloRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ProtoDemo_POSTHeaderFormPostBindingJSONPJSONRender_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(HelloRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ProtoDemoServer).POSTHeaderFormPostBindingJSONPJSONRender(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ProtoDemo_POSTHeaderFormPostBindingJSONPJSONRender_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProtoDemoServer).POSTHeaderFormPostBindingJSONPJSONRender(ctx, req.(*HelloRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -530,10 +495,6 @@ var ProtoDemo_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GETUriQueryBindingSecureJSONRender",
 			Handler:    _ProtoDemo_GETUriQueryBindingSecureJSONRender_Handler,
-		},
-		{
-			MethodName: "POSTHeaderFormPostBindingJSONPJSONRender",
-			Handler:    _ProtoDemo_POSTHeaderFormPostBindingJSONPJSONRender_Handler,
 		},
 		{
 			MethodName: "PATCHHeaderProtoFormBindingPureJSONRender",
