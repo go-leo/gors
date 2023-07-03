@@ -234,26 +234,36 @@ func (g *generate) printHeader() {
 
 func (g *generate) printFunction() {
 	serviceName := g.srvName
+
+	for _, routerInfo := range g.routerInfos {
+		g.printRouterMethod(serviceName, routerInfo)
+	}
+
 	functionName := serviceName + "Routes"
 	g.P(g.functionBuf, "func ", functionName, "(srv ", serviceName, ", opts ...", gorsPackage.Ident("Option"), ") []", gorsPackage.Ident("Route"), " {")
 	g.P(g.functionBuf, "options := ", gorsPackage.Ident("New"), "(opts...)")
 	g.P(g.functionBuf, "_ = options")
 	g.P(g.functionBuf, "return []", gorsPackage.Ident("Route"), "{")
 	for _, routerInfo := range g.routerInfos {
-		g.printRouterInfo(routerInfo)
+		g.printRouterInfo(serviceName, routerInfo)
 	}
 	g.P(g.functionBuf, "}")
 	g.P(g.functionBuf, "}")
 }
 
-func (g *generate) printRouterInfo(info *gors.RouterInfo) {
-	g.P(g.functionBuf, gorsPackage.Ident("NewRoute"), "(")
-	g.P(g.functionBuf, httpPackage.Ident(info.Method.HttpMethod()), ",")
-	g.P(g.functionBuf, strconv.Quote(info.Path), ",")
-	g.P(g.functionBuf, "func(c *", ginPackage.Ident("Context"), ") {")
+func (g *generate) printRouterMethod(serviceName string, info *gors.RouterInfo) {
+	handlerName := fmt.Sprintf("_%s_%s_Handler", g.srvName, info.RpcMethodName)
+	info.HandlerName = handlerName
+	g.P(g.functionBuf, "func ", handlerName, "(srv ", serviceName, ", options *", gorsPackage.Ident("Options"), ")", "func(c *", ginPackage.Ident("Context"), ") {")
+	g.P(g.functionBuf, "return func(c *", ginPackage.Ident("Context"), ") {")
 	g.printHandler(info)
-	g.P(g.functionBuf, "},")
-	g.P(g.functionBuf, "),")
+	g.P(g.functionBuf, "}")
+	g.P(g.functionBuf, "}")
+	g.P(g.functionBuf, "")
+}
+
+func (g *generate) printRouterInfo(serviceName string, info *gors.RouterInfo) {
+	g.P(g.functionBuf, gorsPackage.Ident("NewRoute"), "(", httpPackage.Ident(info.Method.HttpMethod()), ",", strconv.Quote(info.Path), ",", info.HandlerName, "(srv, options),", "),")
 }
 
 func (g *generate) printHandler(info *gors.RouterInfo) {

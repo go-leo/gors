@@ -8,34 +8,34 @@ import (
 	http "net/http"
 )
 
+func _CustomBinderRender_Custom_Handler(srv CustomBinderRender, options *gors.Options) func(c *gin.Context) {
+	return func(c *gin.Context) {
+		var rpcMethodName = "/demo.CustomBinderRender/Custom"
+		var ctx = gors.NewContext(c, rpcMethodName)
+		var req *CustomReq
+		var resp *CustomResp
+		var err error
+		req = new(CustomReq)
+		if err = gors.RequestBind(
+			ctx, req, options.Tag,
+			gors.CustomBinding,
+		); err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
+		resp, err = srv.Custom(ctx, req)
+		if err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.CustomRender, options.ResponseWrapper)
+	}
+}
+
 func CustomBinderRenderRoutes(srv CustomBinderRender, opts ...gors.Option) []gors.Route {
 	options := gors.New(opts...)
 	_ = options
 	return []gors.Route{
-		gors.NewRoute(
-			http.MethodPost,
-			"/api/CustomBinderRender/Custom",
-			func(c *gin.Context) {
-				var rpcMethodName = "/demo.CustomBinderRender/Custom"
-				var ctx = gors.NewContext(c, rpcMethodName)
-				var req *CustomReq
-				var resp *CustomResp
-				var err error
-				req = new(CustomReq)
-				if err = gors.RequestBind(
-					ctx, req, options.Tag,
-					gors.CustomBinding,
-				); err != nil {
-					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
-					return
-				}
-				resp, err = srv.Custom(ctx, req)
-				if err != nil {
-					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
-					return
-				}
-				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.CustomRender, options.ResponseWrapper)
-			},
-		),
+		gors.NewRoute(http.MethodPost, "/api/CustomBinderRender/Custom", _CustomBinderRender_Custom_Handler(srv, options)),
 	}
 }

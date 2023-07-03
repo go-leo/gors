@@ -9,57 +9,57 @@ import (
 	http "net/http"
 )
 
+func _BytesString_GetBytesString_Handler(srv BytesString, options *gors.Options) func(c *gin.Context) {
+	return func(c *gin.Context) {
+		var rpcMethodName = "/demo.BytesString/GetBytesString"
+		var ctx = gors.NewContext(c, rpcMethodName)
+		var req []byte
+		var resp string
+		var err error
+		var body []byte
+		body, err = io.ReadAll(c.Request.Body)
+		if err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
+		req = body
+		resp, err = srv.GetBytesString(ctx, req)
+		if err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.HTMLRender, options.ResponseWrapper)
+	}
+}
+
+func _BytesString_PutBytesString_Handler(srv BytesString, options *gors.Options) func(c *gin.Context) {
+	return func(c *gin.Context) {
+		var rpcMethodName = "/demo.BytesString/PutBytesString"
+		var ctx = gors.NewContext(c, rpcMethodName)
+		var req []byte
+		var resp string
+		var err error
+		var body []byte
+		body, err = io.ReadAll(c.Request.Body)
+		if err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
+		req = body
+		resp, err = srv.PutBytesString(ctx, req)
+		if err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.RedirectRender, options.ResponseWrapper)
+	}
+}
+
 func BytesStringRoutes(srv BytesString, opts ...gors.Option) []gors.Route {
 	options := gors.New(opts...)
 	_ = options
 	return []gors.Route{
-		gors.NewRoute(
-			http.MethodGet,
-			"/api/BytesString/Get",
-			func(c *gin.Context) {
-				var rpcMethodName = "/demo.BytesString/GetBytesString"
-				var ctx = gors.NewContext(c, rpcMethodName)
-				var req []byte
-				var resp string
-				var err error
-				var body []byte
-				body, err = io.ReadAll(c.Request.Body)
-				if err != nil {
-					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
-					return
-				}
-				req = body
-				resp, err = srv.GetBytesString(ctx, req)
-				if err != nil {
-					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
-					return
-				}
-				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.HTMLRender, options.ResponseWrapper)
-			},
-		),
-		gors.NewRoute(
-			http.MethodPut,
-			"/api/BytesString/Put",
-			func(c *gin.Context) {
-				var rpcMethodName = "/demo.BytesString/PutBytesString"
-				var ctx = gors.NewContext(c, rpcMethodName)
-				var req []byte
-				var resp string
-				var err error
-				var body []byte
-				body, err = io.ReadAll(c.Request.Body)
-				if err != nil {
-					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
-					return
-				}
-				req = body
-				resp, err = srv.PutBytesString(ctx, req)
-				if err != nil {
-					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
-					return
-				}
-				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.RedirectRender, options.ResponseWrapper)
-			},
-		),
+		gors.NewRoute(http.MethodGet, "/api/BytesString/Get", _BytesString_GetBytesString_Handler(srv, options)),
+		gors.NewRoute(http.MethodPut, "/api/BytesString/Put", _BytesString_PutBytesString_Handler(srv, options)),
 	}
 }

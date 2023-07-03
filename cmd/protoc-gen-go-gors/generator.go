@@ -61,7 +61,6 @@ func generateFileContent(gen *protogen.Plugin, file *protogen.File, g *protogen.
 func genClientFunction(gen *protogen.Plugin, file *protogen.File, g *protogen.GeneratedFile, service *protogen.Service) error {
 	clientName := service.GoName + "Client"
 	funcName := clientName + "Routes"
-
 	basePath := extractBasePath(service)
 	g.P("func ", funcName, "(cli ", clientName, ", opts ...", gorsPackage.Ident("Option"), ") []", gorsPackage.Ident("Route"), " {")
 	g.P("options := ", gorsPackage.Ident("New"), "(opts...)")

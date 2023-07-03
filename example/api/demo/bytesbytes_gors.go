@@ -9,57 +9,57 @@ import (
 	http "net/http"
 )
 
+func _BytesBytes_GetBytesBytes_Handler(srv BytesBytes, options *gors.Options) func(c *gin.Context) {
+	return func(c *gin.Context) {
+		var rpcMethodName = "/demo.BytesBytes/GetBytesBytes"
+		var ctx = gors.NewContext(c, rpcMethodName)
+		var req []byte
+		var resp []byte
+		var err error
+		var body []byte
+		body, err = io.ReadAll(c.Request.Body)
+		if err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
+		req = body
+		resp, err = srv.GetBytesBytes(ctx, req)
+		if err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "ttt.sss", gors.BytesRender, options.ResponseWrapper)
+	}
+}
+
+func _BytesBytes_PostBytesBytes_Handler(srv BytesBytes, options *gors.Options) func(c *gin.Context) {
+	return func(c *gin.Context) {
+		var rpcMethodName = "/demo.BytesBytes/PostBytesBytes"
+		var ctx = gors.NewContext(c, rpcMethodName)
+		var req []byte
+		var resp []byte
+		var err error
+		var body []byte
+		body, err = io.ReadAll(c.Request.Body)
+		if err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
+		req = body
+		resp, err = srv.PostBytesBytes(ctx, req)
+		if err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "text/go", gors.BytesRender, options.ResponseWrapper)
+	}
+}
+
 func BytesBytesRoutes(srv BytesBytes, opts ...gors.Option) []gors.Route {
 	options := gors.New(opts...)
 	_ = options
 	return []gors.Route{
-		gors.NewRoute(
-			http.MethodGet,
-			"/api/BytesBytes/Get",
-			func(c *gin.Context) {
-				var rpcMethodName = "/demo.BytesBytes/GetBytesBytes"
-				var ctx = gors.NewContext(c, rpcMethodName)
-				var req []byte
-				var resp []byte
-				var err error
-				var body []byte
-				body, err = io.ReadAll(c.Request.Body)
-				if err != nil {
-					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
-					return
-				}
-				req = body
-				resp, err = srv.GetBytesBytes(ctx, req)
-				if err != nil {
-					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
-					return
-				}
-				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "ttt.sss", gors.BytesRender, options.ResponseWrapper)
-			},
-		),
-		gors.NewRoute(
-			http.MethodPost,
-			"/api/BytesBytes/Post",
-			func(c *gin.Context) {
-				var rpcMethodName = "/demo.BytesBytes/PostBytesBytes"
-				var ctx = gors.NewContext(c, rpcMethodName)
-				var req []byte
-				var resp []byte
-				var err error
-				var body []byte
-				body, err = io.ReadAll(c.Request.Body)
-				if err != nil {
-					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
-					return
-				}
-				req = body
-				resp, err = srv.PostBytesBytes(ctx, req)
-				if err != nil {
-					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
-					return
-				}
-				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "text/go", gors.BytesRender, options.ResponseWrapper)
-			},
-		),
+		gors.NewRoute(http.MethodGet, "/api/BytesBytes/Get", _BytesBytes_GetBytesBytes_Handler(srv, options)),
+		gors.NewRoute(http.MethodPost, "/api/BytesBytes/Post", _BytesBytes_PostBytesBytes_Handler(srv, options)),
 	}
 }

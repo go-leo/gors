@@ -8,34 +8,34 @@ import (
 	http "net/http"
 )
 
+func _Service_Method_Handler(srv Service, options *gors.Options) func(c *gin.Context) {
+	return func(c *gin.Context) {
+		var rpcMethodName = "/demo.Service/Method"
+		var ctx = gors.NewContext(c, rpcMethodName)
+		var req *MethodReq
+		var resp *MethodResp
+		var err error
+		req = new(MethodReq)
+		if err = gors.RequestBind(
+			ctx, req, options.Tag,
+			gors.UriBinding,
+		); err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
+		resp, err = srv.Method(ctx, req)
+		if err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.JSONRender, options.ResponseWrapper)
+	}
+}
+
 func ServiceRoutes(srv Service, opts ...gors.Option) []gors.Route {
 	options := gors.New(opts...)
 	_ = options
 	return []gors.Route{
-		gors.NewRoute(
-			http.MethodGet,
-			"/api/v1/method/:id",
-			func(c *gin.Context) {
-				var rpcMethodName = "/demo.Service/Method"
-				var ctx = gors.NewContext(c, rpcMethodName)
-				var req *MethodReq
-				var resp *MethodResp
-				var err error
-				req = new(MethodReq)
-				if err = gors.RequestBind(
-					ctx, req, options.Tag,
-					gors.UriBinding,
-				); err != nil {
-					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
-					return
-				}
-				resp, err = srv.Method(ctx, req)
-				if err != nil {
-					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
-					return
-				}
-				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.JSONRender, options.ResponseWrapper)
-			},
-		),
+		gors.NewRoute(http.MethodGet, "/api/v1/method/:id", _Service_Method_Handler(srv, options)),
 	}
 }

@@ -9,57 +9,57 @@ import (
 	http "net/http"
 )
 
+func _StringReader_GetStringRender_Handler(srv StringReader, options *gors.Options) func(c *gin.Context) {
+	return func(c *gin.Context) {
+		var rpcMethodName = "/demo.StringReader/GetStringRender"
+		var ctx = gors.NewContext(c, rpcMethodName)
+		var req string
+		var resp io.Reader
+		var err error
+		var body []byte
+		body, err = io.ReadAll(c.Request.Body)
+		if err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
+		req = string(body)
+		resp, err = srv.GetStringRender(ctx, req)
+		if err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "video/mpeg4", gors.ReaderRender, options.ResponseWrapper)
+	}
+}
+
+func _StringReader_OptionsStringReader_Handler(srv StringReader, options *gors.Options) func(c *gin.Context) {
+	return func(c *gin.Context) {
+		var rpcMethodName = "/demo.StringReader/OptionsStringReader"
+		var ctx = gors.NewContext(c, rpcMethodName)
+		var req string
+		var resp io.Reader
+		var err error
+		var body []byte
+		body, err = io.ReadAll(c.Request.Body)
+		if err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
+		req = string(body)
+		resp, err = srv.OptionsStringReader(ctx, req)
+		if err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "video/mpeg4", gors.ReaderRender, options.ResponseWrapper)
+	}
+}
+
 func StringReaderRoutes(srv StringReader, opts ...gors.Option) []gors.Route {
 	options := gors.New(opts...)
 	_ = options
 	return []gors.Route{
-		gors.NewRoute(
-			http.MethodGet,
-			"/api/StringReader/Get",
-			func(c *gin.Context) {
-				var rpcMethodName = "/demo.StringReader/GetStringRender"
-				var ctx = gors.NewContext(c, rpcMethodName)
-				var req string
-				var resp io.Reader
-				var err error
-				var body []byte
-				body, err = io.ReadAll(c.Request.Body)
-				if err != nil {
-					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
-					return
-				}
-				req = string(body)
-				resp, err = srv.GetStringRender(ctx, req)
-				if err != nil {
-					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
-					return
-				}
-				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "video/mpeg4", gors.ReaderRender, options.ResponseWrapper)
-			},
-		),
-		gors.NewRoute(
-			http.MethodOptions,
-			"/api/StringReader/Options",
-			func(c *gin.Context) {
-				var rpcMethodName = "/demo.StringReader/OptionsStringReader"
-				var ctx = gors.NewContext(c, rpcMethodName)
-				var req string
-				var resp io.Reader
-				var err error
-				var body []byte
-				body, err = io.ReadAll(c.Request.Body)
-				if err != nil {
-					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
-					return
-				}
-				req = string(body)
-				resp, err = srv.OptionsStringReader(ctx, req)
-				if err != nil {
-					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
-					return
-				}
-				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "video/mpeg4", gors.ReaderRender, options.ResponseWrapper)
-			},
-		),
+		gors.NewRoute(http.MethodGet, "/api/StringReader/Get", _StringReader_GetStringRender_Handler(srv, options)),
+		gors.NewRoute(http.MethodOptions, "/api/StringReader/Options", _StringReader_OptionsStringReader_Handler(srv, options)),
 	}
 }

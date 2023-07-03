@@ -98,6 +98,7 @@ type RouterInfo struct {
 	RpcMethodName     string
 	Param2            *Param
 	Result1           *Result
+	HandlerName       string
 }
 
 func NewRouter(methodName string, basePath string, comments []string) *RouterInfo {

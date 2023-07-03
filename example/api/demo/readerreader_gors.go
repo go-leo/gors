@@ -9,45 +9,45 @@ import (
 	http "net/http"
 )
 
+func _ReaderReader_GetReaderReader_Handler(srv ReaderReader, options *gors.Options) func(c *gin.Context) {
+	return func(c *gin.Context) {
+		var rpcMethodName = "/demo.ReaderReader/GetReaderReader"
+		var ctx = gors.NewContext(c, rpcMethodName)
+		var req io.Reader
+		var resp io.Reader
+		var err error
+		req = c.Request.Body
+		resp, err = srv.GetReaderReader(ctx, req)
+		if err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.ReaderRender, options.ResponseWrapper)
+	}
+}
+
+func _ReaderReader_HeadReaderReader_Handler(srv ReaderReader, options *gors.Options) func(c *gin.Context) {
+	return func(c *gin.Context) {
+		var rpcMethodName = "/demo.ReaderReader/HeadReaderReader"
+		var ctx = gors.NewContext(c, rpcMethodName)
+		var req io.Reader
+		var resp io.Reader
+		var err error
+		req = c.Request.Body
+		resp, err = srv.HeadReaderReader(ctx, req)
+		if err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.ReaderRender, options.ResponseWrapper)
+	}
+}
+
 func ReaderReaderRoutes(srv ReaderReader, opts ...gors.Option) []gors.Route {
 	options := gors.New(opts...)
 	_ = options
 	return []gors.Route{
-		gors.NewRoute(
-			http.MethodGet,
-			"/api/ReaderReader/Get",
-			func(c *gin.Context) {
-				var rpcMethodName = "/demo.ReaderReader/GetReaderReader"
-				var ctx = gors.NewContext(c, rpcMethodName)
-				var req io.Reader
-				var resp io.Reader
-				var err error
-				req = c.Request.Body
-				resp, err = srv.GetReaderReader(ctx, req)
-				if err != nil {
-					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
-					return
-				}
-				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.ReaderRender, options.ResponseWrapper)
-			},
-		),
-		gors.NewRoute(
-			http.MethodHead,
-			"/api/ReaderReader/head",
-			func(c *gin.Context) {
-				var rpcMethodName = "/demo.ReaderReader/HeadReaderReader"
-				var ctx = gors.NewContext(c, rpcMethodName)
-				var req io.Reader
-				var resp io.Reader
-				var err error
-				req = c.Request.Body
-				resp, err = srv.HeadReaderReader(ctx, req)
-				if err != nil {
-					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
-					return
-				}
-				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.ReaderRender, options.ResponseWrapper)
-			},
-		),
+		gors.NewRoute(http.MethodGet, "/api/ReaderReader/Get", _ReaderReader_GetReaderReader_Handler(srv, options)),
+		gors.NewRoute(http.MethodHead, "/api/ReaderReader/head", _ReaderReader_HeadReaderReader_Handler(srv, options)),
 	}
 }

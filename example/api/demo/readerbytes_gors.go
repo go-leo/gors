@@ -9,45 +9,45 @@ import (
 	http "net/http"
 )
 
+func _ReaderBytes_GetReaderBytes_Handler(srv ReaderBytes, options *gors.Options) func(c *gin.Context) {
+	return func(c *gin.Context) {
+		var rpcMethodName = "/demo.ReaderBytes/GetReaderBytes"
+		var ctx = gors.NewContext(c, rpcMethodName)
+		var req io.Reader
+		var resp []byte
+		var err error
+		req = c.Request.Body
+		resp, err = srv.GetReaderBytes(ctx, req)
+		if err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.BytesRender, options.ResponseWrapper)
+	}
+}
+
+func _ReaderBytes_PostReaderBytes_Handler(srv ReaderBytes, options *gors.Options) func(c *gin.Context) {
+	return func(c *gin.Context) {
+		var rpcMethodName = "/demo.ReaderBytes/PostReaderBytes"
+		var ctx = gors.NewContext(c, rpcMethodName)
+		var req io.Reader
+		var resp []byte
+		var err error
+		req = c.Request.Body
+		resp, err = srv.PostReaderBytes(ctx, req)
+		if err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "text/go", gors.BytesRender, options.ResponseWrapper)
+	}
+}
+
 func ReaderBytesRoutes(srv ReaderBytes, opts ...gors.Option) []gors.Route {
 	options := gors.New(opts...)
 	_ = options
 	return []gors.Route{
-		gors.NewRoute(
-			http.MethodGet,
-			"/api/ReaderBytes/Get",
-			func(c *gin.Context) {
-				var rpcMethodName = "/demo.ReaderBytes/GetReaderBytes"
-				var ctx = gors.NewContext(c, rpcMethodName)
-				var req io.Reader
-				var resp []byte
-				var err error
-				req = c.Request.Body
-				resp, err = srv.GetReaderBytes(ctx, req)
-				if err != nil {
-					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
-					return
-				}
-				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.BytesRender, options.ResponseWrapper)
-			},
-		),
-		gors.NewRoute(
-			http.MethodPost,
-			"/api/ReaderBytes/Post",
-			func(c *gin.Context) {
-				var rpcMethodName = "/demo.ReaderBytes/PostReaderBytes"
-				var ctx = gors.NewContext(c, rpcMethodName)
-				var req io.Reader
-				var resp []byte
-				var err error
-				req = c.Request.Body
-				resp, err = srv.PostReaderBytes(ctx, req)
-				if err != nil {
-					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
-					return
-				}
-				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "text/go", gors.BytesRender, options.ResponseWrapper)
-			},
-		),
+		gors.NewRoute(http.MethodGet, "/api/ReaderBytes/Get", _ReaderBytes_GetReaderBytes_Handler(srv, options)),
+		gors.NewRoute(http.MethodPost, "/api/ReaderBytes/Post", _ReaderBytes_PostReaderBytes_Handler(srv, options)),
 	}
 }

@@ -9,57 +9,57 @@ import (
 	http "net/http"
 )
 
+func _StringBytes_GetStringBytes_Handler(srv StringBytes, options *gors.Options) func(c *gin.Context) {
+	return func(c *gin.Context) {
+		var rpcMethodName = "/demo.StringBytes/GetStringBytes"
+		var ctx = gors.NewContext(c, rpcMethodName)
+		var req string
+		var resp []byte
+		var err error
+		var body []byte
+		body, err = io.ReadAll(c.Request.Body)
+		if err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
+		req = string(body)
+		resp, err = srv.GetStringBytes(ctx, req)
+		if err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.BytesRender, options.ResponseWrapper)
+	}
+}
+
+func _StringBytes_OptionsStringBytes_Handler(srv StringBytes, options *gors.Options) func(c *gin.Context) {
+	return func(c *gin.Context) {
+		var rpcMethodName = "/demo.StringBytes/OptionsStringBytes"
+		var ctx = gors.NewContext(c, rpcMethodName)
+		var req string
+		var resp []byte
+		var err error
+		var body []byte
+		body, err = io.ReadAll(c.Request.Body)
+		if err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
+		req = string(body)
+		resp, err = srv.OptionsStringBytes(ctx, req)
+		if err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.BytesRender, options.ResponseWrapper)
+	}
+}
+
 func StringBytesRoutes(srv StringBytes, opts ...gors.Option) []gors.Route {
 	options := gors.New(opts...)
 	_ = options
 	return []gors.Route{
-		gors.NewRoute(
-			http.MethodGet,
-			"/api/StringBytes/Get",
-			func(c *gin.Context) {
-				var rpcMethodName = "/demo.StringBytes/GetStringBytes"
-				var ctx = gors.NewContext(c, rpcMethodName)
-				var req string
-				var resp []byte
-				var err error
-				var body []byte
-				body, err = io.ReadAll(c.Request.Body)
-				if err != nil {
-					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
-					return
-				}
-				req = string(body)
-				resp, err = srv.GetStringBytes(ctx, req)
-				if err != nil {
-					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
-					return
-				}
-				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.BytesRender, options.ResponseWrapper)
-			},
-		),
-		gors.NewRoute(
-			http.MethodOptions,
-			"/api/StringBytes/Options",
-			func(c *gin.Context) {
-				var rpcMethodName = "/demo.StringBytes/OptionsStringBytes"
-				var ctx = gors.NewContext(c, rpcMethodName)
-				var req string
-				var resp []byte
-				var err error
-				var body []byte
-				body, err = io.ReadAll(c.Request.Body)
-				if err != nil {
-					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
-					return
-				}
-				req = string(body)
-				resp, err = srv.OptionsStringBytes(ctx, req)
-				if err != nil {
-					gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
-					return
-				}
-				gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.BytesRender, options.ResponseWrapper)
-			},
-		),
+		gors.NewRoute(http.MethodGet, "/api/StringBytes/Get", _StringBytes_GetStringBytes_Handler(srv, options)),
+		gors.NewRoute(http.MethodOptions, "/api/StringBytes/Options", _StringBytes_OptionsStringBytes_Handler(srv, options)),
 	}
 }
