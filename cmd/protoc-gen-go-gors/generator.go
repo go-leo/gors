@@ -5,7 +5,7 @@ import (
 
 	"bufio"
 	"fmt"
-	"github.com/go-leo/gors/internal/pkg/annotation"
+	"github.com/go-leo/gors/internal/pkg/parser"
 	"github.com/go-leo/gox/slicex"
 	"github.com/go-leo/gox/stringx"
 	"golang.org/x/exp/slices"
@@ -143,19 +143,19 @@ func genServerWrapper(gen *protogen.Plugin, file *protogen.File, g *protogen.Gen
 	return nil
 }
 
-func getServiceInfo(gen *protogen.Plugin, file *protogen.File, g *protogen.GeneratedFile, service *protogen.Service) (*annotation.ServiceInfo, error) {
-	serviceInfo := annotation.NewService(service.GoName, splitComment(service.Comments.Leading.String()))
-	var routers []*annotation.RouterInfo
+func getServiceInfo(gen *protogen.Plugin, file *protogen.File, g *protogen.GeneratedFile, service *protogen.Service) (*parser.ServiceInfo, error) {
+	serviceInfo := parser.NewService(service.GoName, splitComment(service.Comments.Leading.String()))
+	var routers []*parser.RouterInfo
 	for _, method := range service.Methods {
 		if !method.Desc.IsStreamingServer() && !method.Desc.IsStreamingClient() {
 			// Unary RPC method
-			router := annotation.NewRouter(
+			router := parser.NewRouter(
 				method.GoName,
 				fullMethodName(service, method),
 				splitComment(method.Comments.Leading.String()),
 			)
 			if stringx.IsBlank(router.HttpMethod) {
-				router.HttpMethod = annotation.POST
+				router.HttpMethod = parser.POST
 			}
 			if stringx.IsBlank(router.Path) {
 				router.Path = router.FullMethodName
@@ -165,16 +165,16 @@ func getServiceInfo(gen *protogen.Plugin, file *protogen.File, g *protogen.Gener
 			}
 			if slicex.IsEmpty(router.Bindings) {
 				router.Bindings = []string{
-					annotation.UriBinding,
-					annotation.QueryBinding,
-					annotation.HeaderBinding,
-					annotation.ProtoJSONBinding,
+					parser.UriBinding,
+					parser.QueryBinding,
+					parser.HeaderBinding,
+					parser.ProtoJSONBinding,
 				}
-				router.BindingContentType = annotation.JSONContentType
+				router.BindingContentType = parser.JSONContentType
 			}
 			if stringx.IsBlank(router.Render) {
-				router.Render = annotation.ProtoJSONRender
-				router.RenderContentType = annotation.JSONContentType
+				router.Render = parser.ProtoJSONRender
+				router.RenderContentType = parser.JSONContentType
 			}
 			router.HandlerName = handlerName(service, method)
 			router.Method = method
@@ -188,7 +188,7 @@ func getServiceInfo(gen *protogen.Plugin, file *protogen.File, g *protogen.Gener
 	return serviceInfo, nil
 }
 
-func genRoutesHandler(gen *protogen.Plugin, file *protogen.File, g *protogen.GeneratedFile, service *protogen.Service, serviceInfo *annotation.ServiceInfo) error {
+func genRoutesHandler(gen *protogen.Plugin, file *protogen.File, g *protogen.GeneratedFile, service *protogen.Service, serviceInfo *parser.ServiceInfo) error {
 	serverName := serverName(service)
 	for _, router := range serviceInfo.Routers {
 		g.P("func ", router.HandlerName, "(wrapper ", serverName, ", options *", gorsPackage.Ident("Options"), ") func(c *", ginPackage.Ident("Context"), ") {")
@@ -229,7 +229,7 @@ func genRoutesHandler(gen *protogen.Plugin, file *protogen.File, g *protogen.Gen
 	return nil
 }
 
-func genRoutesFunction(gen *protogen.Plugin, file *protogen.File, g *protogen.GeneratedFile, service *protogen.Service, serviceInfo *annotation.ServiceInfo) error {
+func genRoutesFunction(gen *protogen.Plugin, file *protogen.File, g *protogen.GeneratedFile, service *protogen.Service, serviceInfo *parser.ServiceInfo) error {
 	serverName := serverName(service)
 	routersFunctionName := routesFunctionName(service)
 	g.P("func ", routersFunctionName, "(wrapper ", serverName, ", options *", gorsPackage.Ident("Options"), ") []", gorsPackage.Ident("Route"), " {")
@@ -271,7 +271,7 @@ func genServerRoutesFunction(gen *protogen.Plugin, file *protogen.File, g *proto
 	return nil
 }
 
-func printRequestBinding(gen *protogen.Plugin, g *protogen.GeneratedFile, router *annotation.RouterInfo) error {
+func printRequestBinding(gen *protogen.Plugin, g *protogen.GeneratedFile, router *parser.RouterInfo) error {
 
 	g.P("if err = ", gorsPackage.Ident("RequestBind"), "(")
 	g.P("ctx, req, options.Tag,")
@@ -285,12 +285,12 @@ func printRequestBinding(gen *protogen.Plugin, g *protogen.GeneratedFile, router
 	return nil
 }
 
-func printResponseRender(gen *protogen.Plugin, g *protogen.GeneratedFile, router *annotation.RouterInfo) error {
+func printResponseRender(gen *protogen.Plugin, g *protogen.GeneratedFile, router *parser.RouterInfo) error {
 	renders := []string{
-		annotation.JSONRender, annotation.IndentedJSONRender, annotation.SecureJSONRender,
-		annotation.PureJSONRender, annotation.AsciiJSONRender, annotation.ProtoJSONRender,
-		annotation.ProtoBufRender, annotation.CustomRender, annotation.XMLRender,
-		annotation.YAMLRender, annotation.TOMLRender, annotation.MsgPackRender,
+		parser.JSONRender, parser.IndentedJSONRender, parser.SecureJSONRender,
+		parser.PureJSONRender, parser.AsciiJSONRender, parser.ProtoJSONRender,
+		parser.ProtoBufRender, parser.CustomRender, parser.XMLRender,
+		parser.YAMLRender, parser.TOMLRender, parser.MsgPackRender,
 	}
 	if !slices.Contains(renders, router.Render) {
 		return fmt.Errorf("%s, %s is not supported", router.FullMethodName, router.Render)

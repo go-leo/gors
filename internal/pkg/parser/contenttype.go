@@ -1,4 +1,4 @@
-package annotation
+package parser
 
 // Content-Type
 const (

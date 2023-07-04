@@ -1,101 +1,12 @@
-package annotation
+package parser
 
 import (
 	"github.com/go-leo/gox/stringx"
-	"go/token"
 	"google.golang.org/protobuf/compiler/protogen"
 	"log"
 	"path"
-	"regexp"
 	"strings"
-	"unicode"
-	"unicode/utf8"
 )
-
-type ServiceInfo struct {
-	Name     string
-	BasePath string
-	Routers  []*RouterInfo
-}
-
-func NewService(name string, comments []string) *ServiceInfo {
-	info := &ServiceInfo{Name: name}
-	for _, comment := range comments {
-		text := strings.TrimSpace(strings.TrimPrefix(strings.TrimSpace(comment), "//"))
-		seg := strings.Split(text, " ")
-		if seg[0] != GORS {
-			continue
-		}
-		for _, s := range seg {
-			s = strings.TrimSpace(s)
-			switch {
-			case strings.HasPrefix(strings.ToUpper(s), strings.ToUpper(Path)):
-				v, ok := ExtractValue(s, Path)
-				if !ok {
-					log.Fatalf("error: %s path invalid", s)
-				}
-				info.BasePath = path.Join(info.BasePath, v)
-			case strings.HasPrefix(s, GORS):
-				continue
-			case "" == s:
-				continue
-			default:
-				log.Printf("warning: format error: unsupport: %s", s)
-			}
-		}
-	}
-	return info
-}
-
-type GoImportPath string
-
-func (p GoImportPath) Ident(s string) *GoIdent {
-	importPath := string(p)
-	return &GoIdent{
-		GoName: s,
-		GoImport: &GoImport{
-			PackageName: CleanPackageName(path.Base(importPath)),
-			ImportPath:  importPath,
-		},
-	}
-}
-
-type GoIdent struct {
-	GoImport *GoImport
-	GoName   string
-}
-
-func (x *GoIdent) Qualify() string {
-	if x.GoImport.ImportPath == "" {
-		return x.GoName
-	}
-	return x.GoImport.PackageName + "." + x.GoName
-}
-
-type GoImport struct {
-	PackageName string
-	ImportPath  string
-	Enable      bool
-}
-
-type ObjectArgs struct {
-	Name         string
-	GoImportPath GoImportPath
-}
-
-type Param struct {
-	Bytes      bool
-	String     bool
-	ObjectArgs *ObjectArgs
-	Reader     bool
-}
-
-type Result struct {
-	Bytes      bool
-	String     bool
-	ObjectArgs *ObjectArgs
-	Reader     bool
-}
 
 type RouterInfo struct {
 	HttpMethod         Method
@@ -106,10 +17,10 @@ type RouterInfo struct {
 	Bindings           []string
 	RenderContentType  string
 	Render             string
-	Param2             *Param
-	Result1            *Result
-	HandlerName        string
-	Method             *protogen.Method
+	//Param2             *Param
+	//Result1            *Result
+	HandlerName string
+	Method      *protogen.Method
 }
 
 func NewRouter(methodName string, rpcMethodName string, comments []string) *RouterInfo {
@@ -312,30 +223,4 @@ func NewRouter(methodName string, rpcMethodName string, comments []string) *Rout
 		}
 	}
 	return r
-}
-
-func ExtractValue(s string, annotation string) (string, bool) {
-	reg := regexp.MustCompile(annotation + `\((.*)\)`)
-	if !reg.MatchString(s) {
-		return "", false
-	}
-	matchArr := reg.FindStringSubmatch(s)
-	return matchArr[len(matchArr)-1], true
-}
-
-func CleanPackageName(name string) string {
-	name = strings.Map(func(r rune) rune {
-		if unicode.IsLetter(r) || unicode.IsDigit(r) {
-			return r
-		}
-		return '_'
-	}, name)
-
-	// Prepend '_' in the event of a Go keyword conflict or if
-	// the identifier is invalid (does not start in the Unicode L category).
-	r, _ := utf8.DecodeRuneInString(name)
-	if token.Lookup(name).IsKeyword() || !unicode.IsLetter(r) {
-		return "_" + name
-	}
-	return name
 }

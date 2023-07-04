@@ -5,7 +5,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"github.com/go-leo/gors/internal/pkg/annotation"
+	"github.com/go-leo/gors/internal/pkg/parser"
 	"github.com/go-leo/gox/slicex"
 	"github.com/go-leo/gox/stringx"
 	"go/ast"
@@ -74,6 +74,9 @@ func main() {
 		pkgName:          pkg.Name,
 		imports:          imports,
 		usedPackageNames: make(map[string]bool),
+		serviceInfo:      nil,
+		Param2s:          map[*parser.RouterInfo]*Param{},
+		Result1s:         map[*parser.RouterInfo]*Result{},
 	}
 
 	if serviceDecl != nil && serviceSpec != nil && serviceType != nil && len(serviceMethods) > 0 {
@@ -104,21 +107,21 @@ func main() {
 			result1 := g.checkAndGetResult1(rpcType, methodName)
 
 			fmName := fmt.Sprintf("/%s.%s/%s", g.pkgName, g.serviceInfo.Name, methodName.String())
-			var routerInfo *annotation.RouterInfo
+			var routerInfo *parser.RouterInfo
 			if method.Doc == nil {
-				routerInfo = annotation.NewRouter(methodName.String(), fmName, nil)
+				routerInfo = parser.NewRouter(methodName.String(), fmName, nil)
 			} else {
 				comments := slicex.Map[[]*ast.Comment, []string](
 					method.Doc.List,
 					func(i int, e1 *ast.Comment) string { return e1.Text },
 				)
-				routerInfo = annotation.NewRouter(methodName.String(), fmName, comments)
+				routerInfo = parser.NewRouter(methodName.String(), fmName, comments)
 			}
-			routerInfo.Param2 = param2
-			routerInfo.Result1 = result1
+			g.Param2s[routerInfo] = param2
+			g.Result1s[routerInfo] = result1
 
 			if stringx.IsBlank(routerInfo.HttpMethod) {
-				routerInfo.HttpMethod = annotation.GET
+				routerInfo.HttpMethod = parser.GET
 			}
 			if stringx.IsBlank(routerInfo.Path) {
 				routerInfo.Path = routerInfo.FullMethodName
@@ -126,8 +129,8 @@ func main() {
 					routerInfo.Path = strings.ToLower(routerInfo.Path)
 				}
 			}
-			defaultBindingName(routerInfo)
-			defaultRenderName(routerInfo)
+			defaultBindingName(routerInfo, param2)
+			defaultRenderName(routerInfo, result1)
 			g.serviceInfo.Routers = append(g.serviceInfo.Routers, routerInfo)
 		}
 	}
@@ -218,31 +221,31 @@ func inspect(pkg *packages.Package) (*ast.File, *ast.GenDecl, *ast.TypeSpec, *as
 	return serviceFile, serviceDecl, serviceSpec, serviceType, serviceMethods
 }
 
-func extractBasePath(name string, serviceDecl *ast.GenDecl) *annotation.ServiceInfo {
+func extractBasePath(name string, serviceDecl *ast.GenDecl) *parser.ServiceInfo {
 	if serviceDecl == nil || serviceDecl.Doc == nil {
-		return &annotation.ServiceInfo{Name: name}
+		return &parser.ServiceInfo{Name: name}
 	}
 	var comments []string
 	for _, comment := range serviceDecl.Doc.List {
 		comments = append(comments, comment.Text)
 	}
-	return annotation.NewService(name, comments)
+	return parser.NewService(name, comments)
 }
 
-func getGoImports(serviceFile *ast.File) map[string]*annotation.GoImport {
-	goImports := make(map[string]*annotation.GoImport)
+func getGoImports(serviceFile *ast.File) map[string]*GoImport {
+	goImports := make(map[string]*GoImport)
 	for _, importSpec := range serviceFile.Imports {
 		importPath, err := strconv.Unquote(importSpec.Path.Value)
 		if err != nil {
 			log.Panicf("warning: unquote error: %s", err)
 		}
-		item := &annotation.GoImport{
+		item := &GoImport{
 			ImportPath: importPath,
 		}
 		if importSpec.Name != nil {
 			item.PackageName = importSpec.Name.Name
 		} else {
-			item.PackageName = annotation.CleanPackageName(path.Base(importPath))
+			item.PackageName = CleanPackageName(path.Base(importPath))
 		}
 		goImports[item.ImportPath] = item
 	}
@@ -262,55 +265,55 @@ func detectOutputDir(paths []string) (string, error) {
 	return dir, nil
 }
 
-func defaultRenderName(info *annotation.RouterInfo) {
+func defaultRenderName(info *parser.RouterInfo, Result1 *Result) {
 	switch {
-	case info.Result1.Bytes:
+	case Result1.Bytes:
 		if stringx.IsBlank(info.Render) {
-			info.Render = annotation.BytesRender
+			info.Render = parser.BytesRender
 		}
-	case info.Result1.String:
+	case Result1.String:
 		if stringx.IsBlank(info.Render) {
-			info.Render = annotation.StringRender
+			info.Render = parser.StringRender
 		}
-	case info.Result1.Reader:
+	case Result1.Reader:
 		if stringx.IsBlank(info.Render) {
-			info.Render = annotation.ReaderRender
+			info.Render = parser.ReaderRender
 		}
-	case info.Result1.ObjectArgs != nil:
+	case Result1.ObjectArgs != nil:
 		if stringx.IsBlank(info.Render) {
-			info.Render = annotation.JSONRender
-			info.RenderContentType = annotation.JSONContentType
+			info.Render = parser.JSONRender
+			info.RenderContentType = parser.JSONContentType
 		}
 	default:
 		log.Fatalf("error: func %s 1th result is invalid, must be io.Reader or []byte or string or *struct{}", info.FullMethodName)
 	}
 }
 
-func defaultBindingName(info *annotation.RouterInfo) {
-	if info.Param2.Reader {
+func defaultBindingName(info *parser.RouterInfo, Param2 *Param) {
+	if Param2.Reader {
 		if slicex.IsEmpty(info.Bindings) {
 			info.Bindings = []string{
-				annotation.ReaderBinding,
+				parser.ReaderBinding,
 			}
 		}
-	} else if info.Param2.Bytes {
+	} else if Param2.Bytes {
 		if slicex.IsEmpty(info.Bindings) {
 			info.Bindings = []string{
-				annotation.BytesBinding,
+				parser.BytesBinding,
 			}
 		}
-	} else if info.Param2.String {
+	} else if Param2.String {
 		if slicex.IsEmpty(info.Bindings) {
 			info.Bindings = []string{
-				annotation.StringBinding,
+				parser.StringBinding,
 			}
 		}
-	} else if objectArgs := info.Param2.ObjectArgs; objectArgs != nil {
+	} else if objectArgs := Param2.ObjectArgs; objectArgs != nil {
 		if slicex.IsEmpty(info.Bindings) {
 			info.Bindings = []string{
-				annotation.UriBinding,
-				annotation.HeaderBinding,
-				annotation.QueryBinding,
+				parser.UriBinding,
+				parser.HeaderBinding,
+				parser.QueryBinding,
 			}
 		}
 	} else {

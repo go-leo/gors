@@ -3,27 +3,80 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"github.com/go-leo/gors/internal/pkg/annotation"
+	"github.com/go-leo/gors/internal/pkg/parser"
 	"github.com/go-leo/gox/stringx"
 	"go/ast"
+	"go/token"
 	"golang.org/x/exp/slices"
 	"io"
 	"log"
 	"path"
 	"strconv"
 	"strings"
+	"unicode"
+	"unicode/utf8"
 )
 
 const (
-	contextPackage = annotation.GoImportPath("context")
-	gorsPackage    = annotation.GoImportPath("github.com/go-leo/gors")
-	ginPackage     = annotation.GoImportPath("github.com/gin-gonic/gin")
-	httpPackage    = annotation.GoImportPath("net/http")
-	ioPackage      = annotation.GoImportPath("io")
-	bindingPackage = annotation.GoImportPath("github.com/gin-gonic/gin/binding")
-	renderPackage  = annotation.GoImportPath("github.com/gin-gonic/gin/render")
-	convxPackage   = annotation.GoImportPath("github.com/go-leo/gox/convx")
+	contextPackage = GoImportPath("context")
+	gorsPackage    = GoImportPath("github.com/go-leo/gors")
+	ginPackage     = GoImportPath("github.com/gin-gonic/gin")
+	httpPackage    = GoImportPath("net/http")
+	ioPackage      = GoImportPath("io")
+	bindingPackage = GoImportPath("github.com/gin-gonic/gin/binding")
+	renderPackage  = GoImportPath("github.com/gin-gonic/gin/render")
+	convxPackage   = GoImportPath("github.com/go-leo/gox/convx")
 )
+
+type GoImportPath string
+
+func (p GoImportPath) Ident(s string) *GoIdent {
+	importPath := string(p)
+	return &GoIdent{
+		GoName: s,
+		GoImport: &GoImport{
+			PackageName: CleanPackageName(path.Base(importPath)),
+			ImportPath:  importPath,
+		},
+	}
+}
+
+type GoIdent struct {
+	GoImport *GoImport
+	GoName   string
+}
+
+func (x *GoIdent) Qualify() string {
+	if x.GoImport.ImportPath == "" {
+		return x.GoName
+	}
+	return x.GoImport.PackageName + "." + x.GoName
+}
+
+type GoImport struct {
+	PackageName string
+	ImportPath  string
+	Enable      bool
+}
+
+type ObjectArgs struct {
+	Name         string
+	GoImportPath GoImportPath
+}
+
+type Param struct {
+	Bytes      bool
+	String     bool
+	ObjectArgs *ObjectArgs
+	Reader     bool
+}
+
+type Result struct {
+	Bytes      bool
+	String     bool
+	ObjectArgs *ObjectArgs
+	Reader     bool
+}
 
 type generate struct {
 	buf              *bytes.Buffer
@@ -32,9 +85,11 @@ type generate struct {
 	functionBuf      *bytes.Buffer
 	header           string
 	pkgName          string
-	imports          map[string]*annotation.GoImport
+	imports          map[string]*GoImport
 	usedPackageNames map[string]bool
-	serviceInfo      *annotation.ServiceInfo
+	serviceInfo      *parser.ServiceInfo
+	Param2s          map[*parser.RouterInfo]*Param
+	Result1s         map[*parser.RouterInfo]*Result
 }
 
 func (g *generate) checkResult2MustBeError(rpcType *ast.FuncType, methodName *ast.Ident) {
@@ -48,7 +103,7 @@ func (g *generate) checkResult2MustBeError(rpcType *ast.FuncType, methodName *as
 	}
 }
 
-func (g *generate) checkAndGetResult1(rpcType *ast.FuncType, methodName *ast.Ident) *annotation.Result {
+func (g *generate) checkAndGetResult1(rpcType *ast.FuncType, methodName *ast.Ident) *Result {
 	result1 := rpcType.Results.List[0]
 	switch r1 := result1.Type.(type) {
 	case *ast.ArrayType:
@@ -59,17 +114,17 @@ func (g *generate) checkAndGetResult1(rpcType *ast.FuncType, methodName *ast.Ide
 		if ident.Name != "byte" {
 			log.Fatalf("error: func %s 1th result is invalid, must be []byte or string or io.Reader or *struct{}", methodName)
 		}
-		return &annotation.Result{Bytes: true}
+		return &Result{Bytes: true}
 	case *ast.Ident:
 		if r1.Name != "string" {
 			log.Fatalf("error: func %s 1th result is invalid, must be []byte or string or io.Reader or *struct{}", methodName)
 		}
-		return &annotation.Result{String: true}
+		return &Result{String: true}
 	case *ast.StarExpr:
 		switch x := r1.X.(type) {
 		case *ast.Ident:
 			name := x.Name
-			return &annotation.Result{ObjectArgs: &annotation.ObjectArgs{Name: name}}
+			return &Result{ObjectArgs: &ObjectArgs{Name: name}}
 		case *ast.SelectorExpr:
 			ident, ok := x.X.(*ast.Ident)
 			if !ok {
@@ -77,7 +132,7 @@ func (g *generate) checkAndGetResult1(rpcType *ast.FuncType, methodName *ast.Ide
 			}
 			for importPath, goImport := range g.imports {
 				if goImport.PackageName == ident.Name {
-					return &annotation.Result{ObjectArgs: &annotation.ObjectArgs{Name: x.Sel.Name, GoImportPath: annotation.GoImportPath(importPath)}}
+					return &Result{ObjectArgs: &ObjectArgs{Name: x.Sel.Name, GoImportPath: GoImportPath(importPath)}}
 				}
 			}
 			log.Fatalf("error: func %s 1th result is invalid, must be []byte or string or io.Reader or *struct{}", methodName)
@@ -104,7 +159,7 @@ func (g *generate) checkAndGetResult1(rpcType *ast.FuncType, methodName *ast.Ide
 		if ioImport.PackageName != ident.Name {
 			log.Fatalf("error: func %s 1th result is invalid, must be []byte or string or io.Reader or *struct{}", methodName)
 		}
-		return &annotation.Result{Reader: true}
+		return &Result{Reader: true}
 	default:
 
 	}
@@ -120,7 +175,7 @@ func (g *generate) checkResults(rpcType *ast.FuncType, methodName *ast.Ident) {
 	}
 }
 
-func (g *generate) checkAndGetParam2(rpcType *ast.FuncType, methodName *ast.Ident) *annotation.Param {
+func (g *generate) checkAndGetParam2(rpcType *ast.FuncType, methodName *ast.Ident) *Param {
 	param2 := rpcType.Params.List[1]
 	switch p2 := param2.Type.(type) {
 	case *ast.ArrayType:
@@ -131,17 +186,17 @@ func (g *generate) checkAndGetParam2(rpcType *ast.FuncType, methodName *ast.Iden
 		if ident.Name != "byte" {
 			log.Fatalf("error: func %s 2th param is invalid, must be []byte or string or io.Reader or *struct{}", methodName)
 		}
-		return &annotation.Param{Bytes: true}
+		return &Param{Bytes: true}
 	case *ast.Ident:
 		if p2.Name != "string" {
 			log.Fatalf("error: func %s 2th param is invalid, must be []byte or string or io.Reader or *struct{}", methodName)
 		}
-		return &annotation.Param{String: true}
+		return &Param{String: true}
 	case *ast.StarExpr:
 		switch x := p2.X.(type) {
 		case *ast.Ident:
 			name := x.Name
-			return &annotation.Param{ObjectArgs: &annotation.ObjectArgs{Name: name}}
+			return &Param{ObjectArgs: &ObjectArgs{Name: name}}
 		case *ast.SelectorExpr:
 			ident, ok := x.X.(*ast.Ident)
 			if !ok {
@@ -149,7 +204,7 @@ func (g *generate) checkAndGetParam2(rpcType *ast.FuncType, methodName *ast.Iden
 			}
 			for importPath, goImport := range g.imports {
 				if goImport.PackageName == ident.Name {
-					return &annotation.Param{ObjectArgs: &annotation.ObjectArgs{Name: x.Sel.Name, GoImportPath: annotation.GoImportPath(importPath)}}
+					return &Param{ObjectArgs: &ObjectArgs{Name: x.Sel.Name, GoImportPath: GoImportPath(importPath)}}
 				}
 			}
 			log.Fatalf("error: func %s 2th param is invalid, must be []byte or string or io.Reader or *struct{}", methodName)
@@ -177,7 +232,7 @@ func (g *generate) checkAndGetParam2(rpcType *ast.FuncType, methodName *ast.Iden
 		if ioImport.PackageName != ident.Name {
 			log.Fatalf("error: func %s 2th param is invalid, must be []byte or string or io.Reader or *struct{}", methodName)
 		}
-		return &annotation.Param{Reader: true}
+		return &Param{Reader: true}
 	default:
 		log.Fatalf("error: func %s 2th param is invalid, must be []byte or string or io.Reader or *struct{}", methodName)
 		return nil
@@ -247,7 +302,7 @@ func (g *generate) printFunction() {
 	g.P(g.functionBuf, "}")
 }
 
-func (g *generate) printRouterMethod(info *annotation.RouterInfo) {
+func (g *generate) printRouterMethod(info *parser.RouterInfo) {
 	handlerName := fmt.Sprintf("_%s_%s_Handler", g.serviceInfo.Name, info.MethodName)
 	info.HandlerName = handlerName
 	g.P(g.functionBuf, "func ", handlerName, "(srv ", g.serviceInfo.Name, ", options *", gorsPackage.Ident("Options"), ")", "func(c *", ginPackage.Ident("Context"), ") {")
@@ -258,46 +313,49 @@ func (g *generate) printRouterMethod(info *annotation.RouterInfo) {
 	g.P(g.functionBuf, "")
 }
 
-func (g *generate) printRouterInfo(info *annotation.RouterInfo) {
+func (g *generate) printRouterInfo(info *parser.RouterInfo) {
 	p := path.Join(g.serviceInfo.BasePath, info.Path)
 	g.P(g.functionBuf, gorsPackage.Ident("NewRoute"), "(", httpPackage.Ident(info.HttpMethod.HttpMethod()), ",", strconv.Quote(p), ",", info.HandlerName, "(srv, options),", "),")
 }
 
-func (g *generate) printHandler(info *annotation.RouterInfo) {
+func (g *generate) printHandler(info *parser.RouterInfo) {
 	g.P(g.functionBuf, "var rpcMethodName = ", strconv.Quote(info.FullMethodName))
 	g.P(g.functionBuf, "var ctx = ", gorsPackage.Ident("NewContext"), "(c, rpcMethodName)")
 
-	if info.Param2.Bytes {
+	Param2 := g.Param2s[info]
+	Result1 := g.Result1s[info]
+
+	if Param2.Bytes {
 		g.P(g.functionBuf, "var req []byte")
-	} else if info.Param2.String {
+	} else if Param2.String {
 		g.P(g.functionBuf, "var req string")
-	} else if info.Param2.Reader {
+	} else if Param2.Reader {
 		g.P(g.functionBuf, "var req ", ioPackage.Ident("Reader"))
-	} else if objectArgs := info.Param2.ObjectArgs; objectArgs != nil {
+	} else if objectArgs := Param2.ObjectArgs; objectArgs != nil {
 		g.P(g.functionBuf, "var req *", objectArgs.GoImportPath.Ident(objectArgs.Name))
 	} else {
 		log.Fatalf("error: func %s 2th param is invalid, must be []byte or string or *struct{}", info.FullMethodName)
 	}
-	if info.Result1.Bytes {
+	if Result1.Bytes {
 		g.P(g.functionBuf, "var resp []byte")
-	} else if info.Result1.String {
+	} else if Result1.String {
 		g.P(g.functionBuf, "var resp string")
-	} else if info.Result1.Reader {
+	} else if Result1.Reader {
 		g.P(g.functionBuf, "var resp ", ioPackage.Ident("Reader"))
-	} else if objectArgs := info.Result1.ObjectArgs; objectArgs != nil {
+	} else if objectArgs := Result1.ObjectArgs; objectArgs != nil {
 		g.P(g.functionBuf, "var resp *", objectArgs.GoImportPath.Ident(objectArgs.Name))
 	} else {
 		log.Fatalf("error: func %s 1th result is invalid, must be []byte or string or *struct{}", info.FullMethodName)
 	}
 	g.P(g.functionBuf, "var err error")
 
-	if info.Param2.Reader {
-		g.printPtrReq(info, annotation.ReaderBinding)
-	} else if info.Param2.Bytes {
-		g.printPtrReq(info, annotation.BytesBinding)
-	} else if info.Param2.String {
-		g.printPtrReq(info, annotation.StringBinding)
-	} else if info.Param2.ObjectArgs != nil {
+	if Param2.Reader {
+		g.printPtrReq(info, parser.ReaderBinding)
+	} else if Param2.Bytes {
+		g.printPtrReq(info, parser.BytesBinding)
+	} else if Param2.String {
+		g.printPtrReq(info, parser.StringBinding)
+	} else if Param2.ObjectArgs != nil {
 		g.printObjectReq(info)
 	} else {
 		log.Fatalf("error: func %s 2th param is invalid, must be []byte or string or *struct{}", info.FullMethodName)
@@ -309,7 +367,7 @@ func (g *generate) printHandler(info *annotation.RouterInfo) {
 
 }
 
-func (g *generate) printPtrReq(info *annotation.RouterInfo, binding string) {
+func (g *generate) printPtrReq(info *parser.RouterInfo, binding string) {
 	if len(info.Bindings) != 1 {
 		log.Fatalf("error: binding must be %s", binding)
 	}
@@ -322,8 +380,9 @@ func (g *generate) printPtrReq(info *annotation.RouterInfo, binding string) {
 	g.P(g.functionBuf, "}")
 }
 
-func (g *generate) printObjectReq(info *annotation.RouterInfo) {
-	objArgs := info.Param2.ObjectArgs
+func (g *generate) printObjectReq(info *parser.RouterInfo) {
+	Param2 := g.Param2s[info]
+	objArgs := Param2.ObjectArgs
 	g.P(g.functionBuf, "req = new(", objArgs.GoImportPath.Ident(objArgs.Name), ")")
 	g.P(g.functionBuf, "if err = ", gorsPackage.Ident("RequestBind"), "(")
 	g.P(g.functionBuf, "ctx, req, options.Tag,")
@@ -336,47 +395,48 @@ func (g *generate) printObjectReq(info *annotation.RouterInfo) {
 	g.P(g.functionBuf, "}")
 }
 
-func (g *generate) printResponseRender(info *annotation.RouterInfo) {
+func (g *generate) printResponseRender(info *parser.RouterInfo) {
 	g.P(g.functionBuf, "if err != nil {")
 	g.P(g.functionBuf, gorsPackage.Ident("ErrorRender"), "(ctx, err, options.ErrorHandler, options.ResponseWrapper)")
 	g.P(g.functionBuf, "return")
 	g.P(g.functionBuf, "}")
 
+	Result1 := g.Result1s[info]
 	switch {
-	case info.Result1.Bytes:
+	case Result1.Bytes:
 		if stringx.IsBlank(info.Render) {
-			info.Render = annotation.BytesRender
+			info.Render = parser.BytesRender
 		}
-		if info.Render != annotation.BytesRender {
-			log.Fatalf("error: func %s []byte result must be set %s", info.FullMethodName, annotation.BytesRender)
+		if info.Render != parser.BytesRender {
+			log.Fatalf("error: func %s []byte result must be set %s", info.FullMethodName, parser.BytesRender)
 			return
 		}
-	case info.Result1.String:
+	case Result1.String:
 		if stringx.IsBlank(info.Render) {
-			info.Render = annotation.StringRender
+			info.Render = parser.StringRender
 		}
-		renders := []string{annotation.StringRender, annotation.TextRender, annotation.HTMLRender, annotation.RedirectRender}
+		renders := []string{parser.StringRender, parser.TextRender, parser.HTMLRender, parser.RedirectRender}
 		if !slices.Contains(renders, info.Render) {
 			log.Fatalf("error: func %s string result must be set %v", info.FullMethodName, renders)
 		}
-	case info.Result1.Reader:
+	case Result1.Reader:
 		if stringx.IsBlank(info.Render) {
-			info.Render = annotation.ReaderRender
+			info.Render = parser.ReaderRender
 		}
-		if info.Render != annotation.ReaderRender {
-			log.Fatalf("error: func %s io.Reader result must be set %s", info.FullMethodName, annotation.ReaderRender)
+		if info.Render != parser.ReaderRender {
+			log.Fatalf("error: func %s io.Reader result must be set %s", info.FullMethodName, parser.ReaderRender)
 			return
 		}
-	case info.Result1.ObjectArgs != nil:
+	case Result1.ObjectArgs != nil:
 		if stringx.IsBlank(info.Render) {
-			info.Render = annotation.JSONRender
-			info.RenderContentType = annotation.JSONContentType
+			info.Render = parser.JSONRender
+			info.RenderContentType = parser.JSONContentType
 		}
 		renders := []string{
-			annotation.JSONRender, annotation.IndentedJSONRender, annotation.SecureJSONRender, annotation.JSONPJSONRender,
-			annotation.PureJSONRender, annotation.AsciiJSONRender, annotation.ProtoJSONRender, annotation.XMLRender,
-			annotation.YAMLRender, annotation.ProtoBufRender, annotation.MsgPackRender, annotation.TOMLRender,
-			annotation.CustomRender,
+			parser.JSONRender, parser.IndentedJSONRender, parser.SecureJSONRender, parser.JSONPJSONRender,
+			parser.PureJSONRender, parser.AsciiJSONRender, parser.ProtoJSONRender, parser.XMLRender,
+			parser.YAMLRender, parser.ProtoBufRender, parser.MsgPackRender, parser.TOMLRender,
+			parser.CustomRender,
 		}
 		if !slices.Contains(renders, info.Render) {
 			log.Fatalf("error: func %s *struct result must be set %v", info.FullMethodName, renders)
@@ -415,7 +475,7 @@ func (g *generate) combine() {
 func (g *generate) P(w io.Writer, v ...any) {
 	for _, x := range v {
 		switch x := x.(type) {
-		case *annotation.GoIdent:
+		case *GoIdent:
 			x.GoImport.Enable = true
 			g.imports[x.GoImport.ImportPath] = x.GoImport
 			_, _ = fmt.Fprint(w, x.Qualify())
@@ -430,4 +490,21 @@ func (g *generate) doc() []byte {
 	//
 
 	return nil
+}
+
+func CleanPackageName(name string) string {
+	name = strings.Map(func(r rune) rune {
+		if unicode.IsLetter(r) || unicode.IsDigit(r) {
+			return r
+		}
+		return '_'
+	}, name)
+
+	// Prepend '_' in the event of a Go keyword conflict or if
+	// the identifier is invalid (does not start in the Unicode L category).
+	r, _ := utf8.DecodeRuneInString(name)
+	if token.Lookup(name).IsKeyword() || !unicode.IsLetter(r) {
+		return "_" + name
+	}
+	return name
 }

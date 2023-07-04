@@ -1,6 +1,9 @@
-package annotation
+package parser
 
-import "strings"
+import (
+	"regexp"
+	"strings"
+)
 
 // The list of annotation.
 
@@ -92,4 +95,13 @@ func (m Method) HttpMethod() string {
 	default:
 		return ""
 	}
+}
+
+func ExtractValue(s string, annotation string) (string, bool) {
+	reg := regexp.MustCompile(annotation + `\((.*)\)`)
+	if !reg.MatchString(s) {
+		return "", false
+	}
+	matchArr := reg.FindStringSubmatch(s)
+	return matchArr[len(matchArr)-1], true
 }
