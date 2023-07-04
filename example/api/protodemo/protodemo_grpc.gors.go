@@ -239,7 +239,7 @@ func _ProtoDemo_DELETEUriBindingJSONRender_GORS_Handler(wrapper ProtoDemoServer,
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json; charset=utf-8", gors.JSONRender, options.ResponseWrapper)
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json", gors.JSONRender, options.ResponseWrapper)
 	}
 }
 
@@ -267,7 +267,7 @@ func _ProtoDemo_GETUriBindingIndentedJSONRender_GORS_Handler(wrapper ProtoDemoSe
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json; charset=utf-8", gors.IndentedJSONRender, options.ResponseWrapper)
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json", gors.IndentedJSONRender, options.ResponseWrapper)
 	}
 }
 
@@ -296,7 +296,7 @@ func _ProtoDemo_GETUriQueryBindingSecureJSONRender_GORS_Handler(wrapper ProtoDem
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json; charset=utf-8", gors.SecureJSONRender, options.ResponseWrapper)
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json", gors.SecureJSONRender, options.ResponseWrapper)
 	}
 }
 
@@ -325,7 +325,7 @@ func _ProtoDemo_PATCHHeaderProtoFormBindingPureJSONRender_GORS_Handler(wrapper P
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json; charset=utf-8", gors.PureJSONRender, options.ResponseWrapper)
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json", gors.PureJSONRender, options.ResponseWrapper)
 	}
 }
 
@@ -410,7 +410,7 @@ func _ProtoDemo_POSTProtoJSONBindingProtoJSONRender_GORS_Handler(wrapper ProtoDe
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json; charset=utf-8", gors.ProtoJSONRender, options.ResponseWrapper)
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json", gors.ProtoJSONRender, options.ResponseWrapper)
 	}
 }
 
@@ -469,7 +469,7 @@ func _ProtoDemo_NotDefine_GORS_Handler(wrapper ProtoDemoServer, options *gors.Op
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json; charset=utf-8", gors.ProtoJSONRender, options.ResponseWrapper)
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json", gors.ProtoJSONRender, options.ResponseWrapper)
 	}
 }
 
@@ -497,7 +497,7 @@ func _ProtoDemo_POSTSetHeaderTrailer_GORS_Handler(wrapper ProtoDemoServer, optio
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json; charset=utf-8", gors.ProtoJSONRender, options.ResponseWrapper)
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json", gors.ProtoJSONRender, options.ResponseWrapper)
 	}
 }
 
@@ -525,7 +525,7 @@ func _ProtoDemo_POSTError_GORS_Handler(wrapper ProtoDemoServer, options *gors.Op
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json; charset=utf-8", gors.ProtoJSONRender, options.ResponseWrapper)
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json", gors.ProtoJSONRender, options.ResponseWrapper)
 	}
 }
 
@@ -553,7 +553,7 @@ func _ProtoDemo_POSTGRPCStatus_GORS_Handler(wrapper ProtoDemoServer, options *go
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json; charset=utf-8", gors.ProtoJSONRender, options.ResponseWrapper)
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json", gors.ProtoJSONRender, options.ResponseWrapper)
 	}
 }
 

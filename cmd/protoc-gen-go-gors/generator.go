@@ -54,18 +54,18 @@ func generateFileContent(gen *protogen.Plugin, file *protogen.File, g *protogen.
 			return
 		}
 
-		routers, err := getRouterInfos(gen, file, g, service)
+		serviceInfo, err := getServiceInfo(gen, file, g, service)
 		if err != nil {
 			gen.Error(fmt.Errorf("error: %w", err))
 			return
 		}
 
-		if err := genRoutesHandler(gen, file, g, service, routers); err != nil {
+		if err := genRoutesHandler(gen, file, g, service, serviceInfo); err != nil {
 			gen.Error(fmt.Errorf("error: %w", err))
 			return
 		}
 
-		if err := genRoutesFunction(gen, file, g, service, routers); err != nil {
+		if err := genRoutesFunction(gen, file, g, service, serviceInfo); err != nil {
 			gen.Error(fmt.Errorf("error: %w", err))
 			return
 		}
@@ -143,8 +143,8 @@ func genServerWrapper(gen *protogen.Plugin, file *protogen.File, g *protogen.Gen
 	return nil
 }
 
-func getRouterInfos(gen *protogen.Plugin, file *protogen.File, g *protogen.GeneratedFile, service *protogen.Service) ([]*annotation.RouterInfo, error) {
-	basePath := annotation.ExtractBasePath(splitComment(service.Comments.Leading.String()))
+func getServiceInfo(gen *protogen.Plugin, file *protogen.File, g *protogen.GeneratedFile, service *protogen.Service) (*annotation.ServiceInfo, error) {
+	serviceInfo := annotation.NewService(service.GoName, splitComment(service.Comments.Leading.String()))
 	var routers []*annotation.RouterInfo
 	for _, method := range service.Methods {
 		if !method.Desc.IsStreamingServer() && !method.Desc.IsStreamingClient() {
@@ -152,7 +152,6 @@ func getRouterInfos(gen *protogen.Plugin, file *protogen.File, g *protogen.Gener
 			router := annotation.NewRouter(
 				method.GoName,
 				fullMethodName(service, method),
-				basePath,
 				splitComment(method.Comments.Leading.String()),
 			)
 			if stringx.IsBlank(router.HttpMethod) {
@@ -185,12 +184,13 @@ func getRouterInfos(gen *protogen.Plugin, file *protogen.File, g *protogen.Gener
 			continue
 		}
 	}
-	return routers, nil
+	serviceInfo.Routers = routers
+	return serviceInfo, nil
 }
 
-func genRoutesHandler(gen *protogen.Plugin, file *protogen.File, g *protogen.GeneratedFile, service *protogen.Service, routers []*annotation.RouterInfo) error {
+func genRoutesHandler(gen *protogen.Plugin, file *protogen.File, g *protogen.GeneratedFile, service *protogen.Service, serviceInfo *annotation.ServiceInfo) error {
 	serverName := serverName(service)
-	for _, router := range routers {
+	for _, router := range serviceInfo.Routers {
 		g.P("func ", router.HandlerName, "(wrapper ", serverName, ", options *", gorsPackage.Ident("Options"), ") func(c *", ginPackage.Ident("Context"), ") {")
 		g.P("return func(c *", ginPackage.Ident("Context"), ") {")
 		g.P("var rpcMethodName = ", strconv.Quote(router.FullMethodName))
@@ -229,7 +229,7 @@ func genRoutesHandler(gen *protogen.Plugin, file *protogen.File, g *protogen.Gen
 	return nil
 }
 
-func genRoutesFunction(gen *protogen.Plugin, file *protogen.File, g *protogen.GeneratedFile, service *protogen.Service, routers []*annotation.RouterInfo) error {
+func genRoutesFunction(gen *protogen.Plugin, file *protogen.File, g *protogen.GeneratedFile, service *protogen.Service, serviceInfo *annotation.ServiceInfo) error {
 	serverName := serverName(service)
 	routersFunctionName := routesFunctionName(service)
 	g.P("func ", routersFunctionName, "(wrapper ", serverName, ", options *", gorsPackage.Ident("Options"), ") []", gorsPackage.Ident("Route"), " {")
@@ -237,8 +237,8 @@ func genRoutesFunction(gen *protogen.Plugin, file *protogen.File, g *protogen.Ge
 	g.P("options.Tag = ", strconv.Quote("json"))
 	g.P("}")
 	g.P("return []", gorsPackage.Ident("Route"), "{")
-	for _, router := range routers {
-		p := path.Join(router.BasePath, router.Path)
+	for _, router := range serviceInfo.Routers {
+		p := path.Join(serviceInfo.BasePath, router.Path)
 		g.P(gorsPackage.Ident("NewRoute"), "(", httpPackage.Ident(router.HttpMethod.HttpMethod()), ",", strconv.Quote(p), ",", router.HandlerName, "(wrapper, options),", "),")
 	}
 	g.P("}")

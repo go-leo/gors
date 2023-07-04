@@ -33,9 +33,8 @@ type generate struct {
 	header           string
 	pkgName          string
 	imports          map[string]*annotation.GoImport
-	srvName          string
 	usedPackageNames map[string]bool
-	routerInfos      []*annotation.RouterInfo
+	serviceInfo      *annotation.ServiceInfo
 }
 
 func (g *generate) checkResult2MustBeError(rpcType *ast.FuncType, methodName *ast.Ident) {
@@ -234,27 +233,24 @@ func (g *generate) printHeader() {
 }
 
 func (g *generate) printFunction() {
-	serviceName := g.srvName
-
-	for _, routerInfo := range g.routerInfos {
-		g.printRouterMethod(serviceName, routerInfo)
+	for _, routerInfo := range g.serviceInfo.Routers {
+		g.printRouterMethod(routerInfo)
 	}
-
-	functionName := serviceName + "Routes"
-	g.P(g.functionBuf, "func ", functionName, "(srv ", serviceName, ", opts ...", gorsPackage.Ident("Option"), ") []", gorsPackage.Ident("Route"), " {")
+	functionName := g.serviceInfo.Name + "Routes"
+	g.P(g.functionBuf, "func ", functionName, "(srv ", g.serviceInfo.Name, ", opts ...", gorsPackage.Ident("Option"), ") []", gorsPackage.Ident("Route"), " {")
 	g.P(g.functionBuf, "options := ", gorsPackage.Ident("New"), "(opts...)")
 	g.P(g.functionBuf, "return []", gorsPackage.Ident("Route"), "{")
-	for _, routerInfo := range g.routerInfos {
-		g.printRouterInfo(serviceName, routerInfo)
+	for _, routerInfo := range g.serviceInfo.Routers {
+		g.printRouterInfo(routerInfo)
 	}
 	g.P(g.functionBuf, "}")
 	g.P(g.functionBuf, "}")
 }
 
-func (g *generate) printRouterMethod(serviceName string, info *annotation.RouterInfo) {
-	handlerName := fmt.Sprintf("_%s_%s_Handler", g.srvName, info.MethodName)
+func (g *generate) printRouterMethod(info *annotation.RouterInfo) {
+	handlerName := fmt.Sprintf("_%s_%s_Handler", g.serviceInfo.Name, info.MethodName)
 	info.HandlerName = handlerName
-	g.P(g.functionBuf, "func ", handlerName, "(srv ", serviceName, ", options *", gorsPackage.Ident("Options"), ")", "func(c *", ginPackage.Ident("Context"), ") {")
+	g.P(g.functionBuf, "func ", handlerName, "(srv ", g.serviceInfo.Name, ", options *", gorsPackage.Ident("Options"), ")", "func(c *", ginPackage.Ident("Context"), ") {")
 	g.P(g.functionBuf, "return func(c *", ginPackage.Ident("Context"), ") {")
 	g.printHandler(info)
 	g.P(g.functionBuf, "}")
@@ -262,8 +258,8 @@ func (g *generate) printRouterMethod(serviceName string, info *annotation.Router
 	g.P(g.functionBuf, "")
 }
 
-func (g *generate) printRouterInfo(serviceName string, info *annotation.RouterInfo) {
-	p := path.Join(info.BasePath, info.Path)
+func (g *generate) printRouterInfo(info *annotation.RouterInfo) {
+	p := path.Join(g.serviceInfo.BasePath, info.Path)
 	g.P(g.functionBuf, gorsPackage.Ident("NewRoute"), "(", httpPackage.Ident(info.HttpMethod.HttpMethod()), ",", strconv.Quote(p), ",", info.HandlerName, "(srv, options),", "),")
 }
 
@@ -428,4 +424,10 @@ func (g *generate) P(w io.Writer, v ...any) {
 		}
 	}
 	_, _ = fmt.Fprintln(w)
+}
+
+func (g *generate) doc() []byte {
+	//
+
+	return nil
 }

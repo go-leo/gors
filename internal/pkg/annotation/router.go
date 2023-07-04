@@ -12,8 +12,14 @@ import (
 	"unicode/utf8"
 )
 
-func ExtractBasePath(comments []string) string {
-	var basePath string
+type ServiceInfo struct {
+	Name     string
+	BasePath string
+	Routers  []*RouterInfo
+}
+
+func NewService(name string, comments []string) *ServiceInfo {
+	info := &ServiceInfo{Name: name}
 	for _, comment := range comments {
 		text := strings.TrimSpace(strings.TrimPrefix(strings.TrimSpace(comment), "//"))
 		seg := strings.Split(text, " ")
@@ -28,15 +34,17 @@ func ExtractBasePath(comments []string) string {
 				if !ok {
 					log.Fatalf("error: %s path invalid", s)
 				}
-				basePath = path.Join(basePath, v)
+				info.BasePath = path.Join(info.BasePath, v)
 			case strings.HasPrefix(s, GORS):
+				continue
 			case "" == s:
+				continue
 			default:
 				log.Printf("warning: format error: unsupport: %s", s)
 			}
 		}
 	}
-	return basePath
+	return info
 }
 
 type GoImportPath string
@@ -91,7 +99,6 @@ type Result struct {
 
 type RouterInfo struct {
 	HttpMethod         Method
-	BasePath           string
 	Path               string
 	MethodName         string
 	FullMethodName     string
@@ -105,11 +112,10 @@ type RouterInfo struct {
 	Method             *protogen.Method
 }
 
-func NewRouter(methodName string, rpcMethodName string, basePath string, comments []string) *RouterInfo {
+func NewRouter(methodName string, rpcMethodName string, comments []string) *RouterInfo {
 	r := &RouterInfo{
 		MethodName:     methodName,
 		FullMethodName: rpcMethodName,
-		BasePath:       basePath,
 	}
 	for _, comment := range comments {
 		text := strings.TrimSpace(strings.TrimPrefix(strings.TrimSpace(comment), "//"))

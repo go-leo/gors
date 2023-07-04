@@ -63,7 +63,7 @@ func _ProtoService_Method_GORS_Handler(wrapper ProtoServiceServer, options *gors
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json; charset=utf-8", gors.ProtoJSONRender, options.ResponseWrapper)
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json", gors.ProtoJSONRender, options.ResponseWrapper)
 	}
 }
 
