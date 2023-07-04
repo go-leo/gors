@@ -16,13 +16,13 @@ func _NotDefine_String_Handler(srv NotDefine, options *gors.Options) func(c *gin
 		var req string
 		var resp string
 		var err error
-		var body []byte
-		body, err = io.ReadAll(c.Request.Body)
-		if err != nil {
+		if err = gors.RequestBind(
+			ctx, &req, options.Tag,
+			gors.StringBinding,
+		); err != nil {
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		req = string(body)
 		resp, err = srv.String(ctx, req)
 		if err != nil {
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
@@ -39,13 +39,13 @@ func _NotDefine_Bytes_Handler(srv NotDefine, options *gors.Options) func(c *gin.
 		var req []byte
 		var resp []byte
 		var err error
-		var body []byte
-		body, err = io.ReadAll(c.Request.Body)
-		if err != nil {
+		if err = gors.RequestBind(
+			ctx, &req, options.Tag,
+			gors.BytesBinding,
+		); err != nil {
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		req = body
 		resp, err = srv.Bytes(ctx, req)
 		if err != nil {
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
@@ -62,7 +62,13 @@ func _NotDefine_Reader_Handler(srv NotDefine, options *gors.Options) func(c *gin
 		var req io.Reader
 		var resp io.Reader
 		var err error
-		req = c.Request.Body
+		if err = gors.RequestBind(
+			ctx, &req, options.Tag,
+			gors.ReaderBinding,
+		); err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
 		resp, err = srv.Reader(ctx, req)
 		if err != nil {
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
@@ -94,7 +100,7 @@ func _NotDefine_NotDefine_Handler(srv NotDefine, options *gors.Options) func(c *
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json; charset=utf-8", gors.JSONRender, options.ResponseWrapper)
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json", gors.JSONRender, options.ResponseWrapper)
 	}
 }
 

@@ -16,13 +16,13 @@ func _BytesReader_GetBytesReader_Handler(srv BytesReader, options *gors.Options)
 		var req []byte
 		var resp io.Reader
 		var err error
-		var body []byte
-		body, err = io.ReadAll(c.Request.Body)
-		if err != nil {
+		if err = gors.RequestBind(
+			ctx, &req, options.Tag,
+			gors.BytesBinding,
+		); err != nil {
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		req = body
 		resp, err = srv.GetBytesReader(ctx, req)
 		if err != nil {
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
@@ -39,13 +39,13 @@ func _BytesReader_PatchBytesReader_Handler(srv BytesReader, options *gors.Option
 		var req []byte
 		var resp io.Reader
 		var err error
-		var body []byte
-		body, err = io.ReadAll(c.Request.Body)
-		if err != nil {
+		if err = gors.RequestBind(
+			ctx, &req, options.Tag,
+			gors.BytesBinding,
+		); err != nil {
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		req = body
 		resp, err = srv.PatchBytesReader(ctx, req)
 		if err != nil {
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)

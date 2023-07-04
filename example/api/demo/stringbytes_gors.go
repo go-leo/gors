@@ -5,7 +5,6 @@ package demo
 import (
 	gin "github.com/gin-gonic/gin"
 	gors "github.com/go-leo/gors"
-	io "io"
 	http "net/http"
 )
 
@@ -16,13 +15,13 @@ func _StringBytes_GetStringBytes_Handler(srv StringBytes, options *gors.Options)
 		var req string
 		var resp []byte
 		var err error
-		var body []byte
-		body, err = io.ReadAll(c.Request.Body)
-		if err != nil {
+		if err = gors.RequestBind(
+			ctx, &req, options.Tag,
+			gors.StringBinding,
+		); err != nil {
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		req = string(body)
 		resp, err = srv.GetStringBytes(ctx, req)
 		if err != nil {
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
@@ -39,13 +38,13 @@ func _StringBytes_OptionsStringBytes_Handler(srv StringBytes, options *gors.Opti
 		var req string
 		var resp []byte
 		var err error
-		var body []byte
-		body, err = io.ReadAll(c.Request.Body)
-		if err != nil {
+		if err = gors.RequestBind(
+			ctx, &req, options.Tag,
+			gors.StringBinding,
+		); err != nil {
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		req = string(body)
 		resp, err = srv.OptionsStringBytes(ctx, req)
 		if err != nil {
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)

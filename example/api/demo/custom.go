@@ -14,7 +14,7 @@ import (
 // @GORS @Path(/api/CustomBinderRender)
 type CustomBinderRender interface {
 	// Custom
-	// @GORS @POST @Path(/Custom) @CustomBinding @CustomRender
+	// @GORS @POST @Path(/Custom) @CustomBinding(application/custom) @CustomRender(application/custom)
 	Custom(ctx context.Context, req *CustomReq) (*CustomResp, error)
 }
 

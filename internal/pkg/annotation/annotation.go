@@ -21,6 +21,9 @@ const (
 	OPTIONS Method = "@OPTIONS"
 	TRACE   Method = "@TRACE"
 
+	ReaderBinding        = "@ReaderBinding"
+	BytesBinding         = "@BytesBinding"
+	StringBinding        = "@StringBinding"
 	UriBinding           = "@UriBinding"
 	QueryBinding         = "@QueryBinding"
 	HeaderBinding        = "@HeaderBinding"
@@ -36,12 +39,12 @@ const (
 	CustomBinding        = "@CustomBinding"
 	ProtoJSONBinding     = "@ProtoJSONBinding"
 
+	ReaderRender   = "@ReaderRender"
 	BytesRender    = "@BytesRender"
 	StringRender   = "@StringRender"
 	TextRender     = "@TextRender"
 	HTMLRender     = "@HTMLRender"
 	RedirectRender = "@RedirectRender"
-	ReaderRender   = "@ReaderRender"
 
 	JSONRender         = "@JSONRender"
 	IndentedJSONRender = "@IndentedJSONRender"

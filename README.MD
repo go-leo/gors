@@ -439,10 +439,10 @@ func main() {
 通过Interface定义接口, 请求和响应参数需要满足一下：
 * 参数一：第一个参数必须是`context.Context`,其他类型都会生成失败。
 * 参数二： 第二个参数有四种类型：`io.Reader`、`[]byte`、`string`和`结构体指针`,其他类型都会生成失败。
-    - `io.Reader`，直接取`http.Request`里的`Body`。所有Binding策略都不能用。
-    - `[]byte`，将`http.Request`里的`Body`以字节数组形式全部读出。所有Binding策略都不能用。
-    - `string`，将`http.Request`里的`Body`以字符串形式全部读出。所有Binding策略都不能用。
-    - `结构体指针`，所有Binding策略都适用，将path、query、header和body中的参数，绑定到内部字段里。
+    - `io.Reader`，直接取`http.Request`里的`Body`。只能支持`@ReaderBinding`。
+    - `[]byte`，将`http.Request`里的`Body`以字节数组形式全部读出。只能支持`@BytesBinding`。
+    - `string`，将`http.Request`里的`Body`以字符串形式全部读出。只能支持`@StringBinding`。
+    - `结构体指针`，支持除以上三种以外的所有Binding，将path、query、header和body中的参数，绑定到内部字段里。
 * 响应一：第一个响应参数有四种类型：`string`、`[]byte`、`io.Reader`和`结构体指针`,其他类型都会生成失败。
     - `io.Reader`，将`io.Reader`写入响应的Body中，必须要配合`@ReaderRender`注解使用，可以自定义响应`Content-Type`，比如`@ReaderRender(video/mpeg4)`
     - `[]byte`，将`[]byte`写入响应的Body中，必须要配合`@BytesRender`注解使用，可以自定义响应`Content-Type`，比如`@BytesRender(image/png)`
@@ -491,6 +491,15 @@ func main() {
 数据绑定注解。
 - 当第二个参数是结构体指针时候，可以设置。
 - 可以设置多种Binding策略。
+### @ReaderBinding
+> 配合第二个参数是`io.Reader`类型使用，引用`request.Body`，可以设置`Content-Type`值，比如`@ReaderBinding(image/jpeg)`
+>* grpc定义形式不支持
+### @BytesBinding
+> 配合第二个参数是`[]byte`类型使用，将`request.Body`以字节形式全部读出，可以设置`Content-Type`值，比如`@ReaderBinding(image/jpeg)`
+>* grpc定义形式不支持
+### @StringBinding
+> 配合第二个参数是`string`类型使用，将`request.Body`以字节形式全部读出,并转成字符串，可以设置`Content-Type`值，比如`@ReaderBinding(application/javascript)`
+>* grpc定义形式不支持
 ### @UriBinding
 >将对应的Uri参数绑定到结构体指针中。
 >接口定义形式，默认的tag是uri,支持[gin的路径参数语法](https://github.com/gin-gonic/gin#parameters-in-path)和[gin的uri绑定策略](https://github.com/gin-gonic/gin#bind-uri)

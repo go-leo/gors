@@ -11,6 +11,6 @@ type StringString interface {
 	// @GORS @GET @Path(/Get) @StringRender(text/go)
 	GetStringString(context.Context, string) (string, error)
 	// PatchStringString
-	// @GORS @PATCH @Path(/Patch) @StringRender(text/go)
+	// @GORS @PATCH @Path(/Patch) @StringRender(application/java) @StringRender(application/go)
 	PatchStringString(context.Context, string) (string, error)
 }

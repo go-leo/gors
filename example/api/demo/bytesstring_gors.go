@@ -5,7 +5,6 @@ package demo
 import (
 	gin "github.com/gin-gonic/gin"
 	gors "github.com/go-leo/gors"
-	io "io"
 	http "net/http"
 )
 
@@ -16,19 +15,19 @@ func _BytesString_GetBytesString_Handler(srv BytesString, options *gors.Options)
 		var req []byte
 		var resp string
 		var err error
-		var body []byte
-		body, err = io.ReadAll(c.Request.Body)
-		if err != nil {
+		if err = gors.RequestBind(
+			ctx, &req, options.Tag,
+			gors.BytesBinding,
+		); err != nil {
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		req = body
 		resp, err = srv.GetBytesString(ctx, req)
 		if err != nil {
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "text/html; charset=utf-8", gors.HTMLRender, options.ResponseWrapper)
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "text/html", gors.HTMLRender, options.ResponseWrapper)
 	}
 }
 
@@ -39,13 +38,13 @@ func _BytesString_PutBytesString_Handler(srv BytesString, options *gors.Options)
 		var req []byte
 		var resp string
 		var err error
-		var body []byte
-		body, err = io.ReadAll(c.Request.Body)
-		if err != nil {
+		if err = gors.RequestBind(
+			ctx, &req, options.Tag,
+			gors.BytesBinding,
+		); err != nil {
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		req = body
 		resp, err = srv.PutBytesString(ctx, req)
 		if err != nil {
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)

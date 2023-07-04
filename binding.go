@@ -3,9 +3,11 @@ package gors
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/gin-gonic/gin/binding"
 	internalbinding "github.com/go-leo/gors/internal/pkg/binding"
 	"github.com/go-leo/gox/stringx"
+	"io"
 	"net/http"
 )
 
@@ -18,6 +20,44 @@ func RequestBind(ctx context.Context, req any, tag string, bindings ...func(ctx 
 	if err := Validate(req); err != nil {
 		return Error{StatusCode: http.StatusBadRequest, Message: err.Error()}
 	}
+	return nil
+}
+
+func StringBinding(ctx context.Context, req any, tag string) error {
+	c := FromContext(ctx)
+	body, err := io.ReadAll(c.Request.Body)
+	if err != nil {
+		return err
+	}
+	reqPtr, ok := req.(*string)
+	if !ok {
+		return fmt.Errorf("%T not converted to *string", req)
+	}
+	*reqPtr = string(body)
+	return nil
+}
+
+func BytesBinding(ctx context.Context, req any, tag string) error {
+	c := FromContext(ctx)
+	body, err := io.ReadAll(c.Request.Body)
+	if err != nil {
+		return err
+	}
+	reqPtr, ok := req.(*[]byte)
+	if !ok {
+		return fmt.Errorf("%T not converted to *[]byte", req)
+	}
+	*reqPtr = body
+	return nil
+}
+
+func ReaderBinding(ctx context.Context, req any, _ string) error {
+	c := FromContext(ctx)
+	reqPtr, ok := req.(*io.Reader)
+	if !ok {
+		return fmt.Errorf("%T not converted to *io.Reader", req)
+	}
+	*reqPtr = c.Request.Body
 	return nil
 }
 
@@ -114,3 +154,36 @@ func CustomBinding(ctx context.Context, req any, _ string) error {
 	}
 	return customBinding.Bind(ctx)
 }
+
+//
+//func AutoBinding(ctx context.Context, req any, _ string) error {
+//	c := FromContext(ctx)
+//	switch {
+//	case strings.Contains(c.ContentType(), annotation.FormContentType):
+//		return FormBinding(ctx, req, annotation.FormContentType)
+//	case strings.Contains(c.ContentType(), annotation.FormMultipartContentType):
+//		return FormMultipartBinding(ctx, req, annotation.FormMultipartContentType)
+//	case strings.Contains(c.ContentType(), annotation.JSONContentType):
+//		return JSONBinding(ctx, req, annotation.JSONContentType)
+//	case strings.Contains(c.ContentType(), annotation.XMLContentType):
+//		return XMLBinding(ctx, req, annotation.XMLContentType)
+//	case strings.Contains(c.ContentType(), annotation.XML2ContentType):
+//		return XMLBinding(ctx, req, annotation.XML2ContentType)
+//	case strings.Contains(c.ContentType(), annotation.ProtoBufContentType):
+//		return ProtoBufBinding(ctx, req, annotation.ProtoBufContentType)
+//	case strings.Contains(c.ContentType(), annotation.MsgPackContentType):
+//		return MsgPackBinding(ctx, req, annotation.MsgPackContentType)
+//	case strings.Contains(c.ContentType(), annotation.MsgPack2ContentType):
+//		return MsgPackBinding(ctx, req, annotation.MsgPack2ContentType)
+//	case strings.Contains(c.ContentType(), annotation.YAMLContentType):
+//		return YAMLBinding(ctx, req, annotation.YAMLContentType)
+//	case strings.Contains(c.ContentType(), annotation.TOMLContentType):
+//		return TOMLBinding(ctx, req, annotation.TOMLContentType)
+//	default:
+//		customBinding, ok := req.(Binding)
+//		if !ok {
+//			return nil
+//		}
+//		return customBinding.Bind(ctx)
+//	}
+//}

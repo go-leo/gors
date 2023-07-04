@@ -28,7 +28,7 @@ func _CustomBinderRender_Custom_Handler(srv CustomBinderRender, options *gors.Op
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.CustomRender, options.ResponseWrapper)
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/custom", gors.CustomRender, options.ResponseWrapper)
 	}
 }
 

@@ -159,26 +159,6 @@ func main() {
 	log.Printf("%s.%s wrote %s", pkg.PkgPath, *serviceName, outputPath)
 }
 
-func defaultBindingName(info *annotation.RouterInfo) {
-	if info.Param2.Bytes {
-		info.Bindings = nil
-	} else if info.Param2.String {
-		info.Bindings = nil
-	} else if info.Param2.Reader {
-		info.Bindings = nil
-	} else if objectArgs := info.Param2.ObjectArgs; objectArgs != nil {
-		if slicex.IsEmpty(info.Bindings) {
-			info.Bindings = []string{
-				annotation.UriBinding,
-				annotation.HeaderBinding,
-				annotation.QueryBinding,
-			}
-		}
-	} else {
-		log.Fatalf("error: func %s 2th param is invalid, must be []byte or string or *struct{}", info.FullMethodName)
-	}
-}
-
 func loadPkg(args []string) *packages.Package {
 	cfg := &packages.Config{
 		Mode: packages.NeedName | packages.NeedFiles | packages.NeedCompiledGoFiles |
@@ -306,5 +286,37 @@ func defaultRenderName(info *annotation.RouterInfo) {
 		}
 	default:
 		log.Fatalf("error: func %s 1th result is invalid, must be io.Reader or []byte or string or *struct{}", info.FullMethodName)
+	}
+}
+
+func defaultBindingName(info *annotation.RouterInfo) {
+	if info.Param2.Reader {
+		if slicex.IsEmpty(info.Bindings) {
+			info.Bindings = []string{
+				annotation.ReaderBinding,
+			}
+		}
+	} else if info.Param2.Bytes {
+		if slicex.IsEmpty(info.Bindings) {
+			info.Bindings = []string{
+				annotation.BytesBinding,
+			}
+		}
+	} else if info.Param2.String {
+		if slicex.IsEmpty(info.Bindings) {
+			info.Bindings = []string{
+				annotation.StringBinding,
+			}
+		}
+	} else if objectArgs := info.Param2.ObjectArgs; objectArgs != nil {
+		if slicex.IsEmpty(info.Bindings) {
+			info.Bindings = []string{
+				annotation.UriBinding,
+				annotation.HeaderBinding,
+				annotation.QueryBinding,
+			}
+		}
+	} else {
+		log.Fatalf("error: func %s 2th param is invalid, must be []byte or string or *struct{}", info.FullMethodName)
 	}
 }

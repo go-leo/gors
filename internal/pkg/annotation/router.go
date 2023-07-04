@@ -24,7 +24,7 @@ func ExtractBasePath(comments []string) string {
 			s = strings.TrimSpace(s)
 			switch {
 			case strings.HasPrefix(strings.ToUpper(s), strings.ToUpper(Path)):
-				v, ok := FindPath(s)
+				v, ok := ExtractValue(s, Path)
 				if !ok {
 					log.Fatalf("error: %s path invalid", s)
 				}
@@ -90,18 +90,19 @@ type Result struct {
 }
 
 type RouterInfo struct {
-	HttpMethod        Method
-	BasePath          string
-	Path              string
-	MethodName        string
-	FullMethodName    string
-	Bindings          []string
-	RenderContentType string
-	Render            string
-	Param2            *Param
-	Result1           *Result
-	HandlerName       string
-	Method            *protogen.Method
+	HttpMethod         Method
+	BasePath           string
+	Path               string
+	MethodName         string
+	FullMethodName     string
+	BindingContentType string
+	Bindings           []string
+	RenderContentType  string
+	Render             string
+	Param2             *Param
+	Result1            *Result
+	HandlerName        string
+	Method             *protogen.Method
 }
 
 func NewRouter(methodName string, rpcMethodName string, basePath string, comments []string) *RouterInfo {
@@ -127,7 +128,7 @@ func NewRouter(methodName string, rpcMethodName string, basePath string, comment
 
 				// path
 			case strings.HasPrefix(strings.ToUpper(s), strings.ToUpper(Path)):
-				v, ok := FindPath(s)
+				v, ok := ExtractValue(s, Path)
 				if !ok {
 					log.Fatalf("error: rpcmethod %s, %s path invalid", methodName, s)
 				}
@@ -182,6 +183,18 @@ func NewRouter(methodName string, rpcMethodName string, basePath string, comment
 				// method end
 
 				// binding start
+			case strings.HasPrefix(strings.ToUpper(s), strings.ToUpper(ReaderBinding)):
+				v, _ := ExtractValue(s, ReaderBinding)
+				r.BindingContentType = v
+				r.Bindings = append(r.Bindings, ReaderBinding)
+			case strings.HasPrefix(strings.ToUpper(s), strings.ToUpper(BytesBinding)):
+				v, _ := ExtractValue(s, BytesBinding)
+				r.BindingContentType = v
+				r.Bindings = append(r.Bindings, BytesBinding)
+			case strings.HasPrefix(strings.ToUpper(s), strings.ToUpper(StringBinding)):
+				v, _ := ExtractValue(s, StringBinding)
+				r.BindingContentType = v
+				r.Bindings = append(r.Bindings, StringBinding)
 			case strings.ToUpper(s) == strings.ToUpper(UriBinding):
 				r.Bindings = append(r.Bindings, UriBinding)
 			case strings.ToUpper(s) == strings.ToUpper(QueryBinding):
@@ -190,35 +203,51 @@ func NewRouter(methodName string, rpcMethodName string, basePath string, comment
 				r.Bindings = append(r.Bindings, HeaderBinding)
 			case strings.ToUpper(s) == strings.ToUpper(JSONBinding):
 				r.Bindings = append(r.Bindings, JSONBinding)
+				r.BindingContentType = JSONContentType
 			case strings.ToUpper(s) == strings.ToUpper(ProtoJSONBinding):
 				r.Bindings = append(r.Bindings, ProtoJSONBinding)
+				r.BindingContentType = JSONContentType
 			case strings.ToUpper(s) == strings.ToUpper(XMLBinding):
 				r.Bindings = append(r.Bindings, XMLBinding)
+				r.BindingContentType = XMLContentType
 			case strings.ToUpper(s) == strings.ToUpper(FormBinding):
 				r.Bindings = append(r.Bindings, FormBinding)
+				r.BindingContentType = FormContentType
 			case strings.ToUpper(s) == strings.ToUpper(FormPostBinding):
 				r.Bindings = append(r.Bindings, FormPostBinding)
+				r.BindingContentType = FormContentType
 			case strings.ToUpper(s) == strings.ToUpper(FormMultipartBinding):
 				r.Bindings = append(r.Bindings, FormMultipartBinding)
+				r.BindingContentType = FormMultipartContentType
 			case strings.ToUpper(s) == strings.ToUpper(ProtoBufBinding):
 				r.Bindings = append(r.Bindings, ProtoBufBinding)
+				r.BindingContentType = ProtoBufContentType
 			case strings.ToUpper(s) == strings.ToUpper(MsgPackBinding):
 				r.Bindings = append(r.Bindings, MsgPackBinding)
+				r.BindingContentType = MsgPackContentType
 			case strings.ToUpper(s) == strings.ToUpper(YAMLBinding):
 				r.Bindings = append(r.Bindings, YAMLBinding)
+				r.BindingContentType = YAMLContentType
 			case strings.ToUpper(s) == strings.ToUpper(TOMLBinding):
 				r.Bindings = append(r.Bindings, TOMLBinding)
-			case strings.ToUpper(s) == strings.ToUpper(CustomBinding):
+				r.BindingContentType = TOMLContentType
+			case strings.HasPrefix(strings.ToUpper(s), strings.ToUpper(CustomBinding)):
+				v, _ := ExtractValue(s, CustomBinding)
+				r.BindingContentType = v
 				r.Bindings = append(r.Bindings, CustomBinding)
 				// binding end
 
 				// render start
+			case strings.HasPrefix(strings.ToUpper(s), strings.ToUpper(ReaderRender)):
+				v, _ := ExtractValue(s, ReaderRender)
+				r.RenderContentType = v
+				r.Render = ReaderRender
 			case strings.HasPrefix(strings.ToUpper(s), strings.ToUpper(BytesRender)):
-				v, _ := findBytesRender(s)
+				v, _ := ExtractValue(s, BytesRender)
 				r.RenderContentType = v
 				r.Render = BytesRender
 			case strings.HasPrefix(strings.ToUpper(s), strings.ToUpper(StringRender)):
-				v, _ := findStringRender(s)
+				v, _ := ExtractValue(s, StringRender)
 				r.RenderContentType = v
 				r.Render = StringRender
 			case strings.ToUpper(s) == strings.ToUpper(TextRender):
@@ -229,10 +258,6 @@ func NewRouter(methodName string, rpcMethodName string, basePath string, comment
 				r.RenderContentType = HTMLContentType
 			case strings.ToUpper(s) == strings.ToUpper(RedirectRender):
 				r.Render = RedirectRender
-			case strings.HasPrefix(strings.ToUpper(s), strings.ToUpper(ReaderRender)):
-				v, _ := findReaderRender(s)
-				r.RenderContentType = v
-				r.Render = ReaderRender
 			case strings.ToUpper(s) == strings.ToUpper(JSONRender):
 				r.Render = JSONRender
 				r.RenderContentType = JSONContentType
@@ -250,7 +275,7 @@ func NewRouter(methodName string, rpcMethodName string, basePath string, comment
 				r.RenderContentType = JSONContentType
 			case strings.ToUpper(s) == strings.ToUpper(AsciiJSONRender):
 				r.Render = AsciiJSONRender
-				r.RenderContentType = AsciiJSONContentType
+				r.RenderContentType = JSONContentType
 			case strings.ToUpper(s) == strings.ToUpper(ProtoJSONRender):
 				r.Render = ProtoJSONRender
 				r.RenderContentType = JSONContentType
@@ -269,7 +294,9 @@ func NewRouter(methodName string, rpcMethodName string, basePath string, comment
 			case strings.ToUpper(s) == strings.ToUpper(TOMLRender):
 				r.Render = TOMLRender
 				r.RenderContentType = TOMLContentType
-			case strings.ToUpper(s) == strings.ToUpper(CustomRender):
+			case strings.HasPrefix(strings.ToUpper(s), strings.ToUpper(CustomRender)):
+				v, _ := ExtractValue(s, CustomRender)
+				r.RenderContentType = v
 				r.Render = CustomRender
 				// render end
 
@@ -281,35 +308,8 @@ func NewRouter(methodName string, rpcMethodName string, basePath string, comment
 	return r
 }
 
-func FindPath(s string) (string, bool) {
-	reg := regexp.MustCompile(`@Path\((.*)\)`)
-	if !reg.MatchString(s) {
-		return "", false
-	}
-	matchArr := reg.FindStringSubmatch(s)
-	return matchArr[len(matchArr)-1], true
-}
-
-func findStringRender(s string) (string, bool) {
-	reg := regexp.MustCompile(`@StringRender\((.*)\)`)
-	if !reg.MatchString(s) {
-		return "", false
-	}
-	matchArr := reg.FindStringSubmatch(s)
-	return matchArr[len(matchArr)-1], true
-}
-
-func findBytesRender(s string) (string, bool) {
-	reg := regexp.MustCompile(`@BytesRender\((.*)\)`)
-	if !reg.MatchString(s) {
-		return "", false
-	}
-	matchArr := reg.FindStringSubmatch(s)
-	return matchArr[len(matchArr)-1], true
-}
-
-func findReaderRender(s string) (string, bool) {
-	reg := regexp.MustCompile(`@ReaderRender\((.*)\)`)
+func ExtractValue(s string, annotation string) (string, bool) {
+	reg := regexp.MustCompile(annotation + `\((.*)\)`)
 	if !reg.MatchString(s) {
 		return "", false
 	}

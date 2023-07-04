@@ -295,14 +295,12 @@ func (g *generate) printHandler(info *annotation.RouterInfo) {
 	}
 	g.P(g.functionBuf, "var err error")
 
-	if info.Param2.Bytes {
-		g.printBytesReq(info)
-		g.P(g.functionBuf, "req = body")
+	if info.Param2.Reader {
+		g.printPtrReq(info, annotation.ReaderBinding)
+	} else if info.Param2.Bytes {
+		g.printPtrReq(info, annotation.BytesBinding)
 	} else if info.Param2.String {
-		g.printBytesReq(info)
-		g.P(g.functionBuf, "req = string(body)")
-	} else if info.Param2.Reader {
-		g.P(g.functionBuf, "req = c.Request.Body")
+		g.printPtrReq(info, annotation.StringBinding)
 	} else if info.Param2.ObjectArgs != nil {
 		g.printObjectReq(info)
 	} else {
@@ -315,10 +313,14 @@ func (g *generate) printHandler(info *annotation.RouterInfo) {
 
 }
 
-func (g *generate) printBytesReq(info *annotation.RouterInfo) {
-	g.P(g.functionBuf, "var body []byte")
-	g.P(g.functionBuf, "body, err = ", ioPackage.Ident("ReadAll"), "(c.Request.Body)")
-	g.P(g.functionBuf, "if err != nil {")
+func (g *generate) printPtrReq(info *annotation.RouterInfo, binding string) {
+	if len(info.Bindings) != 1 {
+		log.Fatalf("error: binding must be %s", binding)
+	}
+	g.P(g.functionBuf, "if err = ", gorsPackage.Ident("RequestBind"), "(")
+	g.P(g.functionBuf, "ctx, &req, options.Tag,")
+	g.P(g.functionBuf, gorsPackage.Ident(strings.Trim(info.Bindings[0], "@")), ",")
+	g.P(g.functionBuf, "); err != nil {")
 	g.P(g.functionBuf, gorsPackage.Ident("ErrorRender"), "(ctx, err, options.ErrorHandler, options.ResponseWrapper)")
 	g.P(g.functionBuf, "return")
 	g.P(g.functionBuf, "}")

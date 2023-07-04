@@ -171,6 +171,7 @@ func getRouterInfos(gen *protogen.Plugin, file *protogen.File, g *protogen.Gener
 					annotation.HeaderBinding,
 					annotation.ProtoJSONBinding,
 				}
+				router.BindingContentType = annotation.JSONContentType
 			}
 			if stringx.IsBlank(router.Render) {
 				router.Render = annotation.ProtoJSONRender
