@@ -7,7 +7,7 @@ import (
 	"google.golang.org/protobuf/types/pluginpb"
 )
 
-const version = "1.3.1"
+const version = "v1.3.2"
 
 var pathToLower *bool
 var requireUnimplemented *bool

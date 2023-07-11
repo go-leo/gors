@@ -20,6 +20,8 @@ import (
 	"strings"
 )
 
+const version = "v1.3.2"
+
 var (
 	serviceName = flag.String("service", "", "service interface Name; must be set")
 	pathToLower = flag.Bool("path_to_lower", false, "make path to lower case")
@@ -39,9 +41,13 @@ func init() {
 }
 
 func main() {
-
+	showVersion := flag.Bool("version", false, "print the version and exit")
 	flag.Usage = Usage
 	flag.Parse()
+	if *showVersion {
+		fmt.Printf("gors %v\n", version)
+		return
+	}
 
 	// must set service names
 	if len(*serviceName) == 0 {
