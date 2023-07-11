@@ -55,6 +55,10 @@ func _ReaderBytes_PostReaderBytes_Handler(srv ReaderBytes, options *gors.Options
 	}
 }
 
+// @title ReaderBytes
+// @description ReaderBytes
+// @BasePath /api/ReaderBytes
+// @schemes http https
 func ReaderBytesRoutes(srv ReaderBytes, opts ...gors.Option) []gors.Route {
 	options := gors.New(opts...)
 	return []gors.Route{

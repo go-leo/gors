@@ -54,6 +54,10 @@ func _StringString_PatchStringString_Handler(srv StringString, options *gors.Opt
 	}
 }
 
+// @title StringString
+// @description StringString
+// @BasePath /api/StringString
+// @schemes http https
 func StringStringRoutes(srv StringString, opts ...gors.Option) []gors.Route {
 	options := gors.New(opts...)
 	return []gors.Route{

@@ -104,6 +104,10 @@ func _NotDefine_NotDefine_Handler(srv NotDefine, options *gors.Options) func(c *
 	}
 }
 
+// @title NotDefine
+// @description
+// @BasePath
+// @schemes http https
 func NotDefineRoutes(srv NotDefine, opts ...gors.Option) []gors.Route {
 	options := gors.New(opts...)
 	return []gors.Route{

@@ -55,6 +55,10 @@ func _StringReader_OptionsStringReader_Handler(srv StringReader, options *gors.O
 	}
 }
 
+// @title StringReader
+// @description StringReader
+// @BasePath /api/StringReader
+// @schemes http https
 func StringReaderRoutes(srv StringReader, opts ...gors.Option) []gors.Route {
 	options := gors.New(opts...)
 	return []gors.Route{

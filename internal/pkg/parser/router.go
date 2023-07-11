@@ -1,7 +1,10 @@
 package parser
 
 import (
+	"bytes"
+	"fmt"
 	"github.com/go-leo/gox/stringx"
+	"go/ast"
 	"google.golang.org/protobuf/compiler/protogen"
 	"log"
 	"path"
@@ -10,6 +13,7 @@ import (
 
 type RouterInfo struct {
 	HttpMethod         Method
+	Description        string
 	Path               string
 	MethodName         string
 	FullMethodName     string
@@ -17,22 +21,75 @@ type RouterInfo struct {
 	Bindings           []string
 	RenderContentType  string
 	Render             string
-	//Param2             *Param
-	//Result1            *Result
-	HandlerName string
-	Method      *protogen.Method
+	HandlerName        string
+	ProtoMethod        *protogen.Method
+	FuncType           *ast.FuncType
 }
+
+func (i RouterInfo) PathParams() []string {
+	//count := countParams(i.Path)
+	var params []string
+	segs := strings.Split(i.Path, "/")
+	for _, seg := range segs {
+		seg = strings.TrimSpace(seg)
+		if stringx.IsBlank(seg) {
+			continue
+		}
+		if strings.HasPrefix(seg, ":") {
+			params = append(params, strings.TrimPrefix(seg, ":"))
+			continue
+		}
+		if strings.HasPrefix(seg, "*") {
+			params = append(params, strings.TrimPrefix(seg, "*"))
+			continue
+		}
+		continue
+	}
+	return params
+}
+
+func (i RouterInfo) QueryParams() []string {
+	var params []string
+
+	return params
+}
+
+func (i RouterInfo) HeaderParams() []string {
+	var params []string
+	//paramIdent := i.FuncType.Params.List[1]
+	return params
+}
+
+func (i RouterInfo) FormParams() []string {
+	var params []string
+
+	return params
+}
+
+func (i RouterInfo) FileParams() []string {
+	var params []string
+
+	return params
+}
+
+var (
+	strColon = []byte(":")
+	strStar  = []byte("*")
+	strSlash = []byte("/")
+)
 
 func NewRouter(methodName string, rpcMethodName string, comments []string) *RouterInfo {
 	r := &RouterInfo{
 		MethodName:     methodName,
 		FullMethodName: rpcMethodName,
 	}
+	desc := &bytes.Buffer{}
 	for _, comment := range comments {
 		text := strings.TrimSpace(strings.TrimPrefix(strings.TrimSpace(comment), "//"))
 		seg := strings.Split(text, " ")
 		// 注释的开始必须以 @GORS 开头
 		if seg[0] != GORS {
+			_, _ = fmt.Fprint(desc, text, " ")
 			continue
 		}
 		for _, s := range seg {
@@ -222,5 +279,6 @@ func NewRouter(methodName string, rpcMethodName string, comments []string) *Rout
 			}
 		}
 	}
+	r.Description = desc.String()
 	return r
 }

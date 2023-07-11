@@ -54,6 +54,10 @@ func _BytesString_PutBytesString_Handler(srv BytesString, options *gors.Options)
 	}
 }
 
+// @title BytesString
+// @description BytesString
+// @BasePath /api/BytesString
+// @schemes http https
 func BytesStringRoutes(srv BytesString, opts ...gors.Option) []gors.Route {
 	options := gors.New(opts...)
 	return []gors.Route{

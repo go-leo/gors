@@ -32,6 +32,10 @@ func _Service_Method_Handler(srv Service, options *gors.Options) func(c *gin.Con
 	}
 }
 
+// @title Service
+// @description Service
+// @BasePath /api/v1
+// @schemes http https
 func ServiceRoutes(srv Service, opts ...gors.Option) []gors.Route {
 	options := gors.New(opts...)
 	return []gors.Route{

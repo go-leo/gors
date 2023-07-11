@@ -67,6 +67,10 @@ func _ProtoService_Method_GORS_Handler(wrapper ProtoServiceServer, options *gors
 	}
 }
 
+// @title ProtoService
+// @description
+// @basePath /v1
+// @schemes http https
 func _ProtoServiceRoutes(wrapper ProtoServiceServer, options *gors.Options) []gors.Route {
 	if len(options.Tag) == 0 {
 		options.Tag = "json"

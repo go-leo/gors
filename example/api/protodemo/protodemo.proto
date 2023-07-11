@@ -3,6 +3,7 @@ package protodemo;
 option go_package = "github.com/go-leo/gors/example/api/protodemo;protodemo";
 import "google/protobuf/any.proto";
 
+// ProtoDemo is a grpc or restful demo
 // @GORS @Path(/v1)
 service ProtoDemo {
   // @GORS @DELETE @Path(/UriBinding/JSONRender/:name) @UriBinding @JSONRender

@@ -452,9 +452,6 @@ func _ProtoDemo_NotDefine_GORS_Handler(wrapper ProtoDemoServer, options *gors.Op
 		req = new(HelloRequest)
 		if err = gors.RequestBind(
 			ctx, req, options.Tag,
-			gors.UriBinding,
-			gors.QueryBinding,
-			gors.HeaderBinding,
 			gors.ProtoJSONBinding,
 		); err != nil {
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
@@ -557,6 +554,10 @@ func _ProtoDemo_POSTGRPCStatus_GORS_Handler(wrapper ProtoDemoServer, options *go
 	}
 }
 
+// @title ProtoDemo
+// @description ProtoDemo is a grpc or restful demo
+// @basePath /v1
+// @schemes http https
 func _ProtoDemoRoutes(wrapper ProtoDemoServer, options *gors.Options) []gors.Route {
 	if len(options.Tag) == 0 {
 		options.Tag = "json"

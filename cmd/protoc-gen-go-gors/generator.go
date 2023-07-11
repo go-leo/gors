@@ -164,12 +164,7 @@ func getServiceInfo(gen *protogen.Plugin, file *protogen.File, g *protogen.Gener
 				}
 			}
 			if slicex.IsEmpty(router.Bindings) {
-				router.Bindings = []string{
-					parser.UriBinding,
-					parser.QueryBinding,
-					parser.HeaderBinding,
-					parser.ProtoJSONBinding,
-				}
+				router.Bindings = []string{parser.ProtoJSONBinding}
 				router.BindingContentType = parser.JSONContentType
 			}
 			if stringx.IsBlank(router.Render) {
@@ -177,7 +172,7 @@ func getServiceInfo(gen *protogen.Plugin, file *protogen.File, g *protogen.Gener
 				router.RenderContentType = parser.JSONContentType
 			}
 			router.HandlerName = handlerName(service, method)
-			router.Method = method
+			router.ProtoMethod = method
 			routers = append(routers, router)
 		} else {
 			// Streaming RPC method
@@ -195,10 +190,10 @@ func genRoutesHandler(gen *protogen.Plugin, file *protogen.File, g *protogen.Gen
 		g.P("return func(c *", ginPackage.Ident("Context"), ") {")
 		g.P("var rpcMethodName = ", strconv.Quote(router.FullMethodName))
 		g.P("var ctx = ", gorsPackage.Ident("NewContext"), "(c, rpcMethodName)")
-		g.P("var req *", router.Method.Input.GoIdent)
-		g.P("var resp *", router.Method.Output.GoIdent)
+		g.P("var req *", router.ProtoMethod.Input.GoIdent)
+		g.P("var resp *", router.ProtoMethod.Output.GoIdent)
 		g.P("var err error")
-		g.P("req = new(", router.Method.Input.GoIdent, ")")
+		g.P("req = new(", router.ProtoMethod.Input.GoIdent, ")")
 
 		err := printRequestBinding(gen, g, router)
 		if err != nil {
@@ -232,6 +227,12 @@ func genRoutesHandler(gen *protogen.Plugin, file *protogen.File, g *protogen.Gen
 func genRoutesFunction(gen *protogen.Plugin, file *protogen.File, g *protogen.GeneratedFile, service *protogen.Service, serviceInfo *parser.ServiceInfo) error {
 	serverName := serverName(service)
 	routersFunctionName := routesFunctionName(service)
+
+	g.P("// @title ", serviceInfo.Name)
+	g.P("// @description ", serviceInfo.Description)
+	g.P("// @basePath ", serviceInfo.BasePath)
+	g.P("// @schemes http https")
+
 	g.P("func ", routersFunctionName, "(wrapper ", serverName, ", options *", gorsPackage.Ident("Options"), ") []", gorsPackage.Ident("Route"), " {")
 	g.P("if len(options.Tag) == 0 {")
 	g.P("options.Tag = ", strconv.Quote("json"))

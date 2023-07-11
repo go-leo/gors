@@ -119,6 +119,7 @@ func main() {
 			}
 			g.Param2s[routerInfo] = param2
 			g.Result1s[routerInfo] = result1
+			routerInfo.FuncType = rpcType
 
 			if stringx.IsBlank(routerInfo.HttpMethod) {
 				routerInfo.HttpMethod = parser.GET
@@ -265,30 +266,6 @@ func detectOutputDir(paths []string) (string, error) {
 	return dir, nil
 }
 
-func defaultRenderName(info *parser.RouterInfo, Result1 *Result) {
-	switch {
-	case Result1.Bytes:
-		if stringx.IsBlank(info.Render) {
-			info.Render = parser.BytesRender
-		}
-	case Result1.String:
-		if stringx.IsBlank(info.Render) {
-			info.Render = parser.StringRender
-		}
-	case Result1.Reader:
-		if stringx.IsBlank(info.Render) {
-			info.Render = parser.ReaderRender
-		}
-	case Result1.ObjectArgs != nil:
-		if stringx.IsBlank(info.Render) {
-			info.Render = parser.JSONRender
-			info.RenderContentType = parser.JSONContentType
-		}
-	default:
-		log.Fatalf("error: func %s 1th result is invalid, must be io.Reader or []byte or string or *struct{}", info.FullMethodName)
-	}
-}
-
 func defaultBindingName(info *parser.RouterInfo, Param2 *Param) {
 	if Param2.Reader {
 		if slicex.IsEmpty(info.Bindings) {
@@ -310,13 +287,34 @@ func defaultBindingName(info *parser.RouterInfo, Param2 *Param) {
 		}
 	} else if objectArgs := Param2.ObjectArgs; objectArgs != nil {
 		if slicex.IsEmpty(info.Bindings) {
-			info.Bindings = []string{
-				parser.UriBinding,
-				parser.HeaderBinding,
-				parser.QueryBinding,
-			}
+			info.Bindings = []string{parser.QueryBinding}
+			info.BindingContentType = ""
 		}
 	} else {
 		log.Fatalf("error: func %s 2th param is invalid, must be []byte or string or *struct{}", info.FullMethodName)
+	}
+}
+
+func defaultRenderName(info *parser.RouterInfo, Result1 *Result) {
+	switch {
+	case Result1.Bytes:
+		if stringx.IsBlank(info.Render) {
+			info.Render = parser.BytesRender
+		}
+	case Result1.String:
+		if stringx.IsBlank(info.Render) {
+			info.Render = parser.StringRender
+		}
+	case Result1.Reader:
+		if stringx.IsBlank(info.Render) {
+			info.Render = parser.ReaderRender
+		}
+	case Result1.ObjectArgs != nil:
+		if stringx.IsBlank(info.Render) {
+			info.Render = parser.JSONRender
+			info.RenderContentType = parser.JSONContentType
+		}
+	default:
+		log.Fatalf("error: func %s 1th result is invalid, must be io.Reader or []byte or string or *struct{}", info.FullMethodName)
 	}
 }

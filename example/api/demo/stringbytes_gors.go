@@ -54,6 +54,10 @@ func _StringBytes_OptionsStringBytes_Handler(srv StringBytes, options *gors.Opti
 	}
 }
 
+// @title StringBytes
+// @description StringBytes
+// @BasePath /api/StringBytes
+// @schemes http https
 func StringBytesRoutes(srv StringBytes, opts ...gors.Option) []gors.Route {
 	options := gors.New(opts...)
 	return []gors.Route{

@@ -32,6 +32,10 @@ func _CustomBinderRender_Custom_Handler(srv CustomBinderRender, options *gors.Op
 	}
 }
 
+// @title CustomBinderRender
+// @description CustomBinderRender
+// @BasePath /api/CustomBinderRender
+// @schemes http https
 func CustomBinderRenderRoutes(srv CustomBinderRender, opts ...gors.Option) []gors.Route {
 	options := gors.New(opts...)
 	return []gors.Route{

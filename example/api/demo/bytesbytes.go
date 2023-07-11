@@ -4,7 +4,8 @@ import "context"
 
 //go:generate gors -service BytesBytes
 
-// BytesBytes
+// BytesBytes this is bytes binding and bytes render demo
+// this is a interface
 // @GORS @Path(/api/BytesBytes)
 type BytesBytes interface {
 	// GetBytesBytes

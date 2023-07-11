@@ -55,6 +55,10 @@ func _ReaderReader_HeadReaderReader_Handler(srv ReaderReader, options *gors.Opti
 	}
 }
 
+// @title ReaderReader
+// @description ReaderReader
+// @BasePath /api/ReaderReader
+// @schemes http https
 func ReaderReaderRoutes(srv ReaderReader, opts ...gors.Option) []gors.Route {
 	options := gors.New(opts...)
 	return []gors.Route{

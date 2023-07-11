@@ -62,6 +62,7 @@ type GoImport struct {
 type ObjectArgs struct {
 	Name         string
 	GoImportPath GoImportPath
+	StarExpr     *ast.StarExpr
 }
 
 type Param struct {
@@ -124,7 +125,11 @@ func (g *generate) checkAndGetResult1(rpcType *ast.FuncType, methodName *ast.Ide
 		switch x := r1.X.(type) {
 		case *ast.Ident:
 			name := x.Name
-			return &Result{ObjectArgs: &ObjectArgs{Name: name}}
+			return &Result{
+				ObjectArgs: &ObjectArgs{
+					Name:     name,
+					StarExpr: r1,
+				}}
 		case *ast.SelectorExpr:
 			ident, ok := x.X.(*ast.Ident)
 			if !ok {
@@ -132,7 +137,12 @@ func (g *generate) checkAndGetResult1(rpcType *ast.FuncType, methodName *ast.Ide
 			}
 			for importPath, goImport := range g.imports {
 				if goImport.PackageName == ident.Name {
-					return &Result{ObjectArgs: &ObjectArgs{Name: x.Sel.Name, GoImportPath: GoImportPath(importPath)}}
+					return &Result{
+						ObjectArgs: &ObjectArgs{
+							Name:         x.Sel.Name,
+							GoImportPath: GoImportPath(importPath),
+							StarExpr:     r1,
+						}}
 				}
 			}
 			log.Fatalf("error: func %s 1th result is invalid, must be []byte or string or io.Reader or *struct{}", methodName)
@@ -196,7 +206,12 @@ func (g *generate) checkAndGetParam2(rpcType *ast.FuncType, methodName *ast.Iden
 		switch x := p2.X.(type) {
 		case *ast.Ident:
 			name := x.Name
-			return &Param{ObjectArgs: &ObjectArgs{Name: name}}
+			return &Param{
+				ObjectArgs: &ObjectArgs{
+					Name:     name,
+					StarExpr: p2,
+				},
+			}
 		case *ast.SelectorExpr:
 			ident, ok := x.X.(*ast.Ident)
 			if !ok {
@@ -204,7 +219,13 @@ func (g *generate) checkAndGetParam2(rpcType *ast.FuncType, methodName *ast.Iden
 			}
 			for importPath, goImport := range g.imports {
 				if goImport.PackageName == ident.Name {
-					return &Param{ObjectArgs: &ObjectArgs{Name: x.Sel.Name, GoImportPath: GoImportPath(importPath)}}
+					return &Param{
+						ObjectArgs: &ObjectArgs{
+							Name:         x.Sel.Name,
+							GoImportPath: GoImportPath(importPath),
+							StarExpr:     p2,
+						},
+					}
 				}
 			}
 			log.Fatalf("error: func %s 2th param is invalid, must be []byte or string or io.Reader or *struct{}", methodName)
@@ -292,6 +313,12 @@ func (g *generate) printFunction() {
 		g.printRouterMethod(routerInfo)
 	}
 	functionName := g.serviceInfo.Name + "Routes"
+
+	//g.P(g.functionBuf, "// @title ", g.serviceInfo.Name)
+	//g.P(g.functionBuf, "// @description ", g.serviceInfo.Description)
+	//g.P(g.functionBuf, "// @basePath ", g.serviceInfo.BasePath)
+	//g.P(g.functionBuf, "// @schemes http https")
+
 	g.P(g.functionBuf, "func ", functionName, "(srv ", g.serviceInfo.Name, ", opts ...", gorsPackage.Ident("Option"), ") []", gorsPackage.Ident("Route"), " {")
 	g.P(g.functionBuf, "options := ", gorsPackage.Ident("New"), "(opts...)")
 	g.P(g.functionBuf, "return []", gorsPackage.Ident("Route"), "{")
@@ -305,6 +332,12 @@ func (g *generate) printFunction() {
 func (g *generate) printRouterMethod(info *parser.RouterInfo) {
 	handlerName := fmt.Sprintf("_%s_%s_Handler", g.serviceInfo.Name, info.MethodName)
 	info.HandlerName = handlerName
+
+	//g.P(g.functionBuf, "// @httpMethod ", info.HttpMethod)
+	//g.P(g.functionBuf, "// @rpcMethod ", info.FullMethodName)
+	//g.P(g.functionBuf, "// @description ", info.Description)
+	//g.P(g.functionBuf, "// @consumes ", info.BindingContentType)
+	//g.P(g.functionBuf, "// @produces ", info.RenderContentType)
 	g.P(g.functionBuf, "func ", handlerName, "(srv ", g.serviceInfo.Name, ", options *", gorsPackage.Ident("Options"), ")", "func(c *", ginPackage.Ident("Context"), ") {")
 	g.P(g.functionBuf, "return func(c *", ginPackage.Ident("Context"), ") {")
 	g.printHandler(info)

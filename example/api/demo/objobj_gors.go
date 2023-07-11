@@ -344,6 +344,10 @@ func _ObjObj_ProtoJSONBindingProtoJSONRender_Handler(srv ObjObj, options *gors.O
 	}
 }
 
+// @title ObjObj
+// @description ObjObj
+// @BasePath /api/ObjObj
+// @schemes http https
 func ObjObjRoutes(srv ObjObj, opts ...gors.Option) []gors.Route {
 	options := gors.New(opts...)
 	return []gors.Route{

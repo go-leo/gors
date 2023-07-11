@@ -55,6 +55,10 @@ func _BytesReader_PatchBytesReader_Handler(srv BytesReader, options *gors.Option
 	}
 }
 
+// @title BytesReader
+// @description BytesReader
+// @BasePath /api/BytesReader
+// @schemes http https
 func BytesReaderRoutes(srv BytesReader, opts ...gors.Option) []gors.Route {
 	options := gors.New(opts...)
 	return []gors.Route{

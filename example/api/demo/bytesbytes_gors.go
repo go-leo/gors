@@ -54,6 +54,10 @@ func _BytesBytes_PostBytesBytes_Handler(srv BytesBytes, options *gors.Options) f
 	}
 }
 
+// @title BytesBytes
+// @description BytesBytes this is bytes binding and bytes render demo this is a interface
+// @BasePath /api/BytesBytes
+// @schemes http https
 func BytesBytesRoutes(srv BytesBytes, opts ...gors.Option) []gors.Route {
 	options := gors.New(opts...)
 	return []gors.Route{
