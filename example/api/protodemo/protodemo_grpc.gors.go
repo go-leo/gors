@@ -11,208 +11,42 @@ import (
 	http "net/http"
 )
 
-type _ProtoDemoClientWrapper struct {
-	UnimplementedProtoDemoServer
-	cli     ProtoDemoClient
-	options *gors.Options
+func ProtoDemoClientRoutes(cli ProtoDemoClient, opts ...gors.Option) []gors.Route {
+	options := gors.New(opts...)
+	wrapper := &_ProtoDemoClientWrapper{cli: cli, options: options}
+	return []gors.Route{
+		gors.NewRoute(http.MethodDelete, "/v1/UriBinding/JSONRender/:name", _ProtoDemo_DELETEUriBindingJSONRender_GORS_Handler(wrapper, options)),
+		gors.NewRoute(http.MethodGet, "/v1/UriBinding/IndentedJSONRender/:name", _ProtoDemo_GETUriBindingIndentedJSONRender_GORS_Handler(wrapper, options)),
+		gors.NewRoute(http.MethodGet, "/v1/UriQueryBinding/SecureJSONRender/:name", _ProtoDemo_GETUriQueryBindingSecureJSONRender_GORS_Handler(wrapper, options)),
+		gors.NewRoute(http.MethodPatch, "/v1/HeaderProtoFormBinding/PureJSONRender", _ProtoDemo_PATCHHeaderProtoFormBindingPureJSONRender_GORS_Handler(wrapper, options)),
+		gors.NewRoute(http.MethodPut, "/v1/HeaderJSONBinding/AsciiJSONRender", _ProtoDemo_PUTHeaderJSONBindingAsciiJSONRender_GORS_Handler(wrapper, options)),
+		gors.NewRoute(http.MethodPost, "/v1/ProtoBufBinding/ProtoBufRender", _ProtoDemo_POSTProtoBufBindingProtoBufRender_GORS_Handler(wrapper, options)),
+		gors.NewRoute(http.MethodPost, "/v1/ProtoJSONBinding/ProtoJSONRender", _ProtoDemo_POSTProtoJSONBindingProtoJSONRender_GORS_Handler(wrapper, options)),
+		gors.NewRoute(http.MethodPost, "/v1/CustomBinding/CustomRender", _ProtoDemo_POSTCustomBindingCustomRender_GORS_Handler(wrapper, options)),
+		gors.NewRoute(http.MethodPost, "/v1/protodemo.ProtoDemo/NotDefine", _ProtoDemo_NotDefine_GORS_Handler(wrapper, options)),
+		gors.NewRoute(http.MethodPost, "/v1/POSTSetHeaderTrailer", _ProtoDemo_POSTSetHeaderTrailer_GORS_Handler(wrapper, options)),
+		gors.NewRoute(http.MethodPost, "/v1/Error", _ProtoDemo_POSTError_GORS_Handler(wrapper, options)),
+		gors.NewRoute(http.MethodPost, "/v1/GRPCStatus", _ProtoDemo_POSTGRPCStatus_GORS_Handler(wrapper, options)),
+	}
 }
 
-func (wrapper *_ProtoDemoClientWrapper) DELETEUriBindingJSONRender(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
-	var headerMD, trailerMD metadata.MD
-	resp, err := wrapper.cli.DELETEUriBindingJSONRender(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
-	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher)
-	return resp, err
-}
-
-func (wrapper *_ProtoDemoClientWrapper) GETUriBindingIndentedJSONRender(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
-	var headerMD, trailerMD metadata.MD
-	resp, err := wrapper.cli.GETUriBindingIndentedJSONRender(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
-	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher)
-	return resp, err
-}
-
-func (wrapper *_ProtoDemoClientWrapper) GETUriQueryBindingSecureJSONRender(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
-	var headerMD, trailerMD metadata.MD
-	resp, err := wrapper.cli.GETUriQueryBindingSecureJSONRender(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
-	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher)
-	return resp, err
-}
-
-func (wrapper *_ProtoDemoClientWrapper) PATCHHeaderProtoFormBindingPureJSONRender(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
-	var headerMD, trailerMD metadata.MD
-	resp, err := wrapper.cli.PATCHHeaderProtoFormBindingPureJSONRender(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
-	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher)
-	return resp, err
-}
-
-func (wrapper *_ProtoDemoClientWrapper) PUTHeaderJSONBindingAsciiJSONRender(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
-	var headerMD, trailerMD metadata.MD
-	resp, err := wrapper.cli.PUTHeaderJSONBindingAsciiJSONRender(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
-	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher)
-	return resp, err
-}
-
-func (wrapper *_ProtoDemoClientWrapper) POSTProtoBufBindingProtoBufRender(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
-	var headerMD, trailerMD metadata.MD
-	resp, err := wrapper.cli.POSTProtoBufBindingProtoBufRender(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
-	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher)
-	return resp, err
-}
-
-func (wrapper *_ProtoDemoClientWrapper) POSTProtoJSONBindingProtoJSONRender(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
-	var headerMD, trailerMD metadata.MD
-	resp, err := wrapper.cli.POSTProtoJSONBindingProtoJSONRender(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
-	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher)
-	return resp, err
-}
-
-func (wrapper *_ProtoDemoClientWrapper) POSTCustomBindingCustomRender(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
-	var headerMD, trailerMD metadata.MD
-	resp, err := wrapper.cli.POSTCustomBindingCustomRender(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
-	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher)
-	return resp, err
-}
-
-func (wrapper *_ProtoDemoClientWrapper) NotDefine(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
-	var headerMD, trailerMD metadata.MD
-	resp, err := wrapper.cli.NotDefine(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
-	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher)
-	return resp, err
-}
-
-func (wrapper *_ProtoDemoClientWrapper) POSTSetHeaderTrailer(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
-	var headerMD, trailerMD metadata.MD
-	resp, err := wrapper.cli.POSTSetHeaderTrailer(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
-	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher)
-	return resp, err
-}
-
-func (wrapper *_ProtoDemoClientWrapper) POSTError(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
-	var headerMD, trailerMD metadata.MD
-	resp, err := wrapper.cli.POSTError(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
-	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher)
-	return resp, err
-}
-
-func (wrapper *_ProtoDemoClientWrapper) POSTGRPCStatus(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
-	var headerMD, trailerMD metadata.MD
-	resp, err := wrapper.cli.POSTGRPCStatus(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
-	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher)
-	return resp, err
-}
-
-type _ProtoDemoServerWrapper struct {
-	UnimplementedProtoDemoServer
-	srv     ProtoDemoServer
-	options *gors.Options
-}
-
-func (wrapper *_ProtoDemoServerWrapper) DELETEUriBindingJSONRender(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
-	rpcMethodName := "/protodemo.ProtoDemo/DELETEUriBindingJSONRender"
-	stream := gors.NewServerTransportStream(rpcMethodName)
-	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
-	resp, err := wrapper.srv.DELETEUriBindingJSONRender(ctx, request)
-	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher)
-	return resp, err
-}
-
-func (wrapper *_ProtoDemoServerWrapper) GETUriBindingIndentedJSONRender(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
-	rpcMethodName := "/protodemo.ProtoDemo/GETUriBindingIndentedJSONRender"
-	stream := gors.NewServerTransportStream(rpcMethodName)
-	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
-	resp, err := wrapper.srv.GETUriBindingIndentedJSONRender(ctx, request)
-	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher)
-	return resp, err
-}
-
-func (wrapper *_ProtoDemoServerWrapper) GETUriQueryBindingSecureJSONRender(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
-	rpcMethodName := "/protodemo.ProtoDemo/GETUriQueryBindingSecureJSONRender"
-	stream := gors.NewServerTransportStream(rpcMethodName)
-	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
-	resp, err := wrapper.srv.GETUriQueryBindingSecureJSONRender(ctx, request)
-	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher)
-	return resp, err
-}
-
-func (wrapper *_ProtoDemoServerWrapper) PATCHHeaderProtoFormBindingPureJSONRender(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
-	rpcMethodName := "/protodemo.ProtoDemo/PATCHHeaderProtoFormBindingPureJSONRender"
-	stream := gors.NewServerTransportStream(rpcMethodName)
-	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
-	resp, err := wrapper.srv.PATCHHeaderProtoFormBindingPureJSONRender(ctx, request)
-	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher)
-	return resp, err
-}
-
-func (wrapper *_ProtoDemoServerWrapper) PUTHeaderJSONBindingAsciiJSONRender(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
-	rpcMethodName := "/protodemo.ProtoDemo/PUTHeaderJSONBindingAsciiJSONRender"
-	stream := gors.NewServerTransportStream(rpcMethodName)
-	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
-	resp, err := wrapper.srv.PUTHeaderJSONBindingAsciiJSONRender(ctx, request)
-	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher)
-	return resp, err
-}
-
-func (wrapper *_ProtoDemoServerWrapper) POSTProtoBufBindingProtoBufRender(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
-	rpcMethodName := "/protodemo.ProtoDemo/POSTProtoBufBindingProtoBufRender"
-	stream := gors.NewServerTransportStream(rpcMethodName)
-	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
-	resp, err := wrapper.srv.POSTProtoBufBindingProtoBufRender(ctx, request)
-	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher)
-	return resp, err
-}
-
-func (wrapper *_ProtoDemoServerWrapper) POSTProtoJSONBindingProtoJSONRender(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
-	rpcMethodName := "/protodemo.ProtoDemo/POSTProtoJSONBindingProtoJSONRender"
-	stream := gors.NewServerTransportStream(rpcMethodName)
-	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
-	resp, err := wrapper.srv.POSTProtoJSONBindingProtoJSONRender(ctx, request)
-	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher)
-	return resp, err
-}
-
-func (wrapper *_ProtoDemoServerWrapper) POSTCustomBindingCustomRender(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
-	rpcMethodName := "/protodemo.ProtoDemo/POSTCustomBindingCustomRender"
-	stream := gors.NewServerTransportStream(rpcMethodName)
-	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
-	resp, err := wrapper.srv.POSTCustomBindingCustomRender(ctx, request)
-	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher)
-	return resp, err
-}
-
-func (wrapper *_ProtoDemoServerWrapper) NotDefine(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
-	rpcMethodName := "/protodemo.ProtoDemo/NotDefine"
-	stream := gors.NewServerTransportStream(rpcMethodName)
-	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
-	resp, err := wrapper.srv.NotDefine(ctx, request)
-	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher)
-	return resp, err
-}
-
-func (wrapper *_ProtoDemoServerWrapper) POSTSetHeaderTrailer(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
-	rpcMethodName := "/protodemo.ProtoDemo/POSTSetHeaderTrailer"
-	stream := gors.NewServerTransportStream(rpcMethodName)
-	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
-	resp, err := wrapper.srv.POSTSetHeaderTrailer(ctx, request)
-	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher)
-	return resp, err
-}
-
-func (wrapper *_ProtoDemoServerWrapper) POSTError(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
-	rpcMethodName := "/protodemo.ProtoDemo/POSTError"
-	stream := gors.NewServerTransportStream(rpcMethodName)
-	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
-	resp, err := wrapper.srv.POSTError(ctx, request)
-	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher)
-	return resp, err
-}
-
-func (wrapper *_ProtoDemoServerWrapper) POSTGRPCStatus(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
-	rpcMethodName := "/protodemo.ProtoDemo/POSTGRPCStatus"
-	stream := gors.NewServerTransportStream(rpcMethodName)
-	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
-	resp, err := wrapper.srv.POSTGRPCStatus(ctx, request)
-	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher)
-	return resp, err
+func ProtoDemoServerRoutes(srv ProtoDemoServer, opts ...gors.Option) []gors.Route {
+	options := gors.New(opts...)
+	wrapper := &_ProtoDemoServerWrapper{srv: srv, options: options}
+	return []gors.Route{
+		gors.NewRoute(http.MethodDelete, "/v1/UriBinding/JSONRender/:name", _ProtoDemo_DELETEUriBindingJSONRender_GORS_Handler(wrapper, options)),
+		gors.NewRoute(http.MethodGet, "/v1/UriBinding/IndentedJSONRender/:name", _ProtoDemo_GETUriBindingIndentedJSONRender_GORS_Handler(wrapper, options)),
+		gors.NewRoute(http.MethodGet, "/v1/UriQueryBinding/SecureJSONRender/:name", _ProtoDemo_GETUriQueryBindingSecureJSONRender_GORS_Handler(wrapper, options)),
+		gors.NewRoute(http.MethodPatch, "/v1/HeaderProtoFormBinding/PureJSONRender", _ProtoDemo_PATCHHeaderProtoFormBindingPureJSONRender_GORS_Handler(wrapper, options)),
+		gors.NewRoute(http.MethodPut, "/v1/HeaderJSONBinding/AsciiJSONRender", _ProtoDemo_PUTHeaderJSONBindingAsciiJSONRender_GORS_Handler(wrapper, options)),
+		gors.NewRoute(http.MethodPost, "/v1/ProtoBufBinding/ProtoBufRender", _ProtoDemo_POSTProtoBufBindingProtoBufRender_GORS_Handler(wrapper, options)),
+		gors.NewRoute(http.MethodPost, "/v1/ProtoJSONBinding/ProtoJSONRender", _ProtoDemo_POSTProtoJSONBindingProtoJSONRender_GORS_Handler(wrapper, options)),
+		gors.NewRoute(http.MethodPost, "/v1/CustomBinding/CustomRender", _ProtoDemo_POSTCustomBindingCustomRender_GORS_Handler(wrapper, options)),
+		gors.NewRoute(http.MethodPost, "/v1/protodemo.ProtoDemo/NotDefine", _ProtoDemo_NotDefine_GORS_Handler(wrapper, options)),
+		gors.NewRoute(http.MethodPost, "/v1/POSTSetHeaderTrailer", _ProtoDemo_POSTSetHeaderTrailer_GORS_Handler(wrapper, options)),
+		gors.NewRoute(http.MethodPost, "/v1/Error", _ProtoDemo_POSTError_GORS_Handler(wrapper, options)),
+		gors.NewRoute(http.MethodPost, "/v1/GRPCStatus", _ProtoDemo_POSTGRPCStatus_GORS_Handler(wrapper, options)),
+	}
 }
 
 func _ProtoDemo_DELETEUriBindingJSONRender_GORS_Handler(wrapper ProtoDemoServer, options *gors.Options) func(c *gin.Context) {
@@ -554,38 +388,206 @@ func _ProtoDemo_POSTGRPCStatus_GORS_Handler(wrapper ProtoDemoServer, options *go
 	}
 }
 
-// @title ProtoDemo
-// @description ProtoDemo is a grpc or restful demo
-// @basePath /v1
-// @schemes http https
-func _ProtoDemoRoutes(wrapper ProtoDemoServer, options *gors.Options) []gors.Route {
-	if len(options.Tag) == 0 {
-		options.Tag = "json"
-	}
-	return []gors.Route{
-		gors.NewRoute(http.MethodDelete, "/v1/UriBinding/JSONRender/:name", _ProtoDemo_DELETEUriBindingJSONRender_GORS_Handler(wrapper, options)),
-		gors.NewRoute(http.MethodGet, "/v1/UriBinding/IndentedJSONRender/:name", _ProtoDemo_GETUriBindingIndentedJSONRender_GORS_Handler(wrapper, options)),
-		gors.NewRoute(http.MethodGet, "/v1/UriQueryBinding/SecureJSONRender/:name", _ProtoDemo_GETUriQueryBindingSecureJSONRender_GORS_Handler(wrapper, options)),
-		gors.NewRoute(http.MethodPatch, "/v1/HeaderProtoFormBinding/PureJSONRender", _ProtoDemo_PATCHHeaderProtoFormBindingPureJSONRender_GORS_Handler(wrapper, options)),
-		gors.NewRoute(http.MethodPut, "/v1/HeaderJSONBinding/AsciiJSONRender", _ProtoDemo_PUTHeaderJSONBindingAsciiJSONRender_GORS_Handler(wrapper, options)),
-		gors.NewRoute(http.MethodPost, "/v1/ProtoBufBinding/ProtoBufRender", _ProtoDemo_POSTProtoBufBindingProtoBufRender_GORS_Handler(wrapper, options)),
-		gors.NewRoute(http.MethodPost, "/v1/ProtoJSONBinding/ProtoJSONRender", _ProtoDemo_POSTProtoJSONBindingProtoJSONRender_GORS_Handler(wrapper, options)),
-		gors.NewRoute(http.MethodPost, "/v1/CustomBinding/CustomRender", _ProtoDemo_POSTCustomBindingCustomRender_GORS_Handler(wrapper, options)),
-		gors.NewRoute(http.MethodPost, "/v1/protodemo.ProtoDemo/NotDefine", _ProtoDemo_NotDefine_GORS_Handler(wrapper, options)),
-		gors.NewRoute(http.MethodPost, "/v1/POSTSetHeaderTrailer", _ProtoDemo_POSTSetHeaderTrailer_GORS_Handler(wrapper, options)),
-		gors.NewRoute(http.MethodPost, "/v1/Error", _ProtoDemo_POSTError_GORS_Handler(wrapper, options)),
-		gors.NewRoute(http.MethodPost, "/v1/GRPCStatus", _ProtoDemo_POSTGRPCStatus_GORS_Handler(wrapper, options)),
-	}
+type _ProtoDemoClientWrapper struct {
+	UnimplementedProtoDemoServer
+	cli     ProtoDemoClient
+	options *gors.Options
 }
 
-func ProtoDemoClientRoutes(cli ProtoDemoClient, opts ...gors.Option) []gors.Route {
-	options := gors.New(opts...)
-	wrapper := &_ProtoDemoClientWrapper{cli: cli, options: options}
-	return _ProtoDemoRoutes(wrapper, options)
+func (wrapper *_ProtoDemoClientWrapper) DELETEUriBindingJSONRender(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
+	var headerMD, trailerMD metadata.MD
+	resp, err := wrapper.cli.DELETEUriBindingJSONRender(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
+	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher)
+	return resp, err
 }
 
-func ProtoDemoServerRoutes(srv ProtoDemoServer, opts ...gors.Option) []gors.Route {
-	options := gors.New(opts...)
-	wrapper := &_ProtoDemoServerWrapper{srv: srv, options: options}
-	return _ProtoDemoRoutes(wrapper, options)
+func (wrapper *_ProtoDemoClientWrapper) GETUriBindingIndentedJSONRender(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
+	var headerMD, trailerMD metadata.MD
+	resp, err := wrapper.cli.GETUriBindingIndentedJSONRender(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
+	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher)
+	return resp, err
+}
+
+func (wrapper *_ProtoDemoClientWrapper) GETUriQueryBindingSecureJSONRender(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
+	var headerMD, trailerMD metadata.MD
+	resp, err := wrapper.cli.GETUriQueryBindingSecureJSONRender(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
+	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher)
+	return resp, err
+}
+
+func (wrapper *_ProtoDemoClientWrapper) PATCHHeaderProtoFormBindingPureJSONRender(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
+	var headerMD, trailerMD metadata.MD
+	resp, err := wrapper.cli.PATCHHeaderProtoFormBindingPureJSONRender(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
+	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher)
+	return resp, err
+}
+
+func (wrapper *_ProtoDemoClientWrapper) PUTHeaderJSONBindingAsciiJSONRender(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
+	var headerMD, trailerMD metadata.MD
+	resp, err := wrapper.cli.PUTHeaderJSONBindingAsciiJSONRender(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
+	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher)
+	return resp, err
+}
+
+func (wrapper *_ProtoDemoClientWrapper) POSTProtoBufBindingProtoBufRender(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
+	var headerMD, trailerMD metadata.MD
+	resp, err := wrapper.cli.POSTProtoBufBindingProtoBufRender(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
+	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher)
+	return resp, err
+}
+
+func (wrapper *_ProtoDemoClientWrapper) POSTProtoJSONBindingProtoJSONRender(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
+	var headerMD, trailerMD metadata.MD
+	resp, err := wrapper.cli.POSTProtoJSONBindingProtoJSONRender(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
+	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher)
+	return resp, err
+}
+
+func (wrapper *_ProtoDemoClientWrapper) POSTCustomBindingCustomRender(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
+	var headerMD, trailerMD metadata.MD
+	resp, err := wrapper.cli.POSTCustomBindingCustomRender(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
+	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher)
+	return resp, err
+}
+
+func (wrapper *_ProtoDemoClientWrapper) NotDefine(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
+	var headerMD, trailerMD metadata.MD
+	resp, err := wrapper.cli.NotDefine(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
+	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher)
+	return resp, err
+}
+
+func (wrapper *_ProtoDemoClientWrapper) POSTSetHeaderTrailer(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
+	var headerMD, trailerMD metadata.MD
+	resp, err := wrapper.cli.POSTSetHeaderTrailer(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
+	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher)
+	return resp, err
+}
+
+func (wrapper *_ProtoDemoClientWrapper) POSTError(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
+	var headerMD, trailerMD metadata.MD
+	resp, err := wrapper.cli.POSTError(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
+	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher)
+	return resp, err
+}
+
+func (wrapper *_ProtoDemoClientWrapper) POSTGRPCStatus(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
+	var headerMD, trailerMD metadata.MD
+	resp, err := wrapper.cli.POSTGRPCStatus(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
+	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher)
+	return resp, err
+}
+
+type _ProtoDemoServerWrapper struct {
+	UnimplementedProtoDemoServer
+	srv     ProtoDemoServer
+	options *gors.Options
+}
+
+func (wrapper *_ProtoDemoServerWrapper) DELETEUriBindingJSONRender(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
+	rpcMethodName := "/protodemo.ProtoDemo/DELETEUriBindingJSONRender"
+	stream := gors.NewServerTransportStream(rpcMethodName)
+	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
+	resp, err := wrapper.srv.DELETEUriBindingJSONRender(ctx, request)
+	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher)
+	return resp, err
+}
+
+func (wrapper *_ProtoDemoServerWrapper) GETUriBindingIndentedJSONRender(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
+	rpcMethodName := "/protodemo.ProtoDemo/GETUriBindingIndentedJSONRender"
+	stream := gors.NewServerTransportStream(rpcMethodName)
+	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
+	resp, err := wrapper.srv.GETUriBindingIndentedJSONRender(ctx, request)
+	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher)
+	return resp, err
+}
+
+func (wrapper *_ProtoDemoServerWrapper) GETUriQueryBindingSecureJSONRender(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
+	rpcMethodName := "/protodemo.ProtoDemo/GETUriQueryBindingSecureJSONRender"
+	stream := gors.NewServerTransportStream(rpcMethodName)
+	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
+	resp, err := wrapper.srv.GETUriQueryBindingSecureJSONRender(ctx, request)
+	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher)
+	return resp, err
+}
+
+func (wrapper *_ProtoDemoServerWrapper) PATCHHeaderProtoFormBindingPureJSONRender(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
+	rpcMethodName := "/protodemo.ProtoDemo/PATCHHeaderProtoFormBindingPureJSONRender"
+	stream := gors.NewServerTransportStream(rpcMethodName)
+	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
+	resp, err := wrapper.srv.PATCHHeaderProtoFormBindingPureJSONRender(ctx, request)
+	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher)
+	return resp, err
+}
+
+func (wrapper *_ProtoDemoServerWrapper) PUTHeaderJSONBindingAsciiJSONRender(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
+	rpcMethodName := "/protodemo.ProtoDemo/PUTHeaderJSONBindingAsciiJSONRender"
+	stream := gors.NewServerTransportStream(rpcMethodName)
+	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
+	resp, err := wrapper.srv.PUTHeaderJSONBindingAsciiJSONRender(ctx, request)
+	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher)
+	return resp, err
+}
+
+func (wrapper *_ProtoDemoServerWrapper) POSTProtoBufBindingProtoBufRender(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
+	rpcMethodName := "/protodemo.ProtoDemo/POSTProtoBufBindingProtoBufRender"
+	stream := gors.NewServerTransportStream(rpcMethodName)
+	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
+	resp, err := wrapper.srv.POSTProtoBufBindingProtoBufRender(ctx, request)
+	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher)
+	return resp, err
+}
+
+func (wrapper *_ProtoDemoServerWrapper) POSTProtoJSONBindingProtoJSONRender(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
+	rpcMethodName := "/protodemo.ProtoDemo/POSTProtoJSONBindingProtoJSONRender"
+	stream := gors.NewServerTransportStream(rpcMethodName)
+	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
+	resp, err := wrapper.srv.POSTProtoJSONBindingProtoJSONRender(ctx, request)
+	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher)
+	return resp, err
+}
+
+func (wrapper *_ProtoDemoServerWrapper) POSTCustomBindingCustomRender(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
+	rpcMethodName := "/protodemo.ProtoDemo/POSTCustomBindingCustomRender"
+	stream := gors.NewServerTransportStream(rpcMethodName)
+	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
+	resp, err := wrapper.srv.POSTCustomBindingCustomRender(ctx, request)
+	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher)
+	return resp, err
+}
+
+func (wrapper *_ProtoDemoServerWrapper) NotDefine(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
+	rpcMethodName := "/protodemo.ProtoDemo/NotDefine"
+	stream := gors.NewServerTransportStream(rpcMethodName)
+	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
+	resp, err := wrapper.srv.NotDefine(ctx, request)
+	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher)
+	return resp, err
+}
+
+func (wrapper *_ProtoDemoServerWrapper) POSTSetHeaderTrailer(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
+	rpcMethodName := "/protodemo.ProtoDemo/POSTSetHeaderTrailer"
+	stream := gors.NewServerTransportStream(rpcMethodName)
+	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
+	resp, err := wrapper.srv.POSTSetHeaderTrailer(ctx, request)
+	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher)
+	return resp, err
+}
+
+func (wrapper *_ProtoDemoServerWrapper) POSTError(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
+	rpcMethodName := "/protodemo.ProtoDemo/POSTError"
+	stream := gors.NewServerTransportStream(rpcMethodName)
+	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
+	resp, err := wrapper.srv.POSTError(ctx, request)
+	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher)
+	return resp, err
+}
+
+func (wrapper *_ProtoDemoServerWrapper) POSTGRPCStatus(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
+	rpcMethodName := "/protodemo.ProtoDemo/POSTGRPCStatus"
+	stream := gors.NewServerTransportStream(rpcMethodName)
+	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
+	resp, err := wrapper.srv.POSTGRPCStatus(ctx, request)
+	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher)
+	return resp, err
 }

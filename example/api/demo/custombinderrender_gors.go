@@ -8,6 +8,12 @@ import (
 	http "net/http"
 )
 
+func CustomBinderRenderRoutes(srv CustomBinderRender, opts ...gors.Option) []gors.Route {
+	options := gors.New(opts...)
+	return []gors.Route{
+		gors.NewRoute(http.MethodPost, "/api/CustomBinderRender/Custom", _CustomBinderRender_Custom_Handler(srv, options)),
+	}
+}
 func _CustomBinderRender_Custom_Handler(srv CustomBinderRender, options *gors.Options) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var rpcMethodName = "/demo.CustomBinderRender/Custom"
@@ -29,16 +35,5 @@ func _CustomBinderRender_Custom_Handler(srv CustomBinderRender, options *gors.Op
 			return
 		}
 		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/custom", gors.CustomRender, options.ResponseWrapper)
-	}
-}
-
-// @title CustomBinderRender
-// @description CustomBinderRender
-// @BasePath /api/CustomBinderRender
-// @schemes http https
-func CustomBinderRenderRoutes(srv CustomBinderRender, opts ...gors.Option) []gors.Route {
-	options := gors.New(opts...)
-	return []gors.Route{
-		gors.NewRoute(http.MethodPost, "/api/CustomBinderRender/Custom", _CustomBinderRender_Custom_Handler(srv, options)),
 	}
 }

@@ -8,6 +8,13 @@ import (
 	http "net/http"
 )
 
+func StringStringRoutes(srv StringString, opts ...gors.Option) []gors.Route {
+	options := gors.New(opts...)
+	return []gors.Route{
+		gors.NewRoute(http.MethodGet, "/api/StringString/Get", _StringString_GetStringString_Handler(srv, options)),
+		gors.NewRoute(http.MethodPatch, "/api/StringString/Patch", _StringString_PatchStringString_Handler(srv, options)),
+	}
+}
 func _StringString_GetStringString_Handler(srv StringString, options *gors.Options) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var rpcMethodName = "/demo.StringString/GetStringString"
@@ -51,17 +58,5 @@ func _StringString_PatchStringString_Handler(srv StringString, options *gors.Opt
 			return
 		}
 		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/go", gors.StringRender, options.ResponseWrapper)
-	}
-}
-
-// @title StringString
-// @description StringString
-// @BasePath /api/StringString
-// @schemes http https
-func StringStringRoutes(srv StringString, opts ...gors.Option) []gors.Route {
-	options := gors.New(opts...)
-	return []gors.Route{
-		gors.NewRoute(http.MethodGet, "/api/StringString/Get", _StringString_GetStringString_Handler(srv, options)),
-		gors.NewRoute(http.MethodPatch, "/api/StringString/Patch", _StringString_PatchStringString_Handler(srv, options)),
 	}
 }

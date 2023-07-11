@@ -309,16 +309,12 @@ func (g *generate) printHeader() {
 }
 
 func (g *generate) printFunction() {
-	for _, routerInfo := range g.serviceInfo.Routers {
-		g.printRouterMethod(routerInfo)
-	}
+	g.printRoutesMethod()
+	g.printHandlerMethods()
+}
+
+func (g *generate) printRoutesMethod() {
 	functionName := g.serviceInfo.Name + "Routes"
-
-	//g.P(g.functionBuf, "// @title ", g.serviceInfo.Name)
-	//g.P(g.functionBuf, "// @description ", g.serviceInfo.Description)
-	//g.P(g.functionBuf, "// @basePath ", g.serviceInfo.BasePath)
-	//g.P(g.functionBuf, "// @schemes http https")
-
 	g.P(g.functionBuf, "func ", functionName, "(srv ", g.serviceInfo.Name, ", opts ...", gorsPackage.Ident("Option"), ") []", gorsPackage.Ident("Route"), " {")
 	g.P(g.functionBuf, "options := ", gorsPackage.Ident("New"), "(opts...)")
 	g.P(g.functionBuf, "return []", gorsPackage.Ident("Route"), "{")
@@ -329,16 +325,14 @@ func (g *generate) printFunction() {
 	g.P(g.functionBuf, "}")
 }
 
-func (g *generate) printRouterMethod(info *parser.RouterInfo) {
-	handlerName := fmt.Sprintf("_%s_%s_Handler", g.serviceInfo.Name, info.MethodName)
-	info.HandlerName = handlerName
+func (g *generate) printHandlerMethods() {
+	for _, routerInfo := range g.serviceInfo.Routers {
+		g.printHandlerMethod(routerInfo)
+	}
+}
 
-	//g.P(g.functionBuf, "// @httpMethod ", info.HttpMethod)
-	//g.P(g.functionBuf, "// @rpcMethod ", info.FullMethodName)
-	//g.P(g.functionBuf, "// @description ", info.Description)
-	//g.P(g.functionBuf, "// @consumes ", info.BindingContentType)
-	//g.P(g.functionBuf, "// @produces ", info.RenderContentType)
-	g.P(g.functionBuf, "func ", handlerName, "(srv ", g.serviceInfo.Name, ", options *", gorsPackage.Ident("Options"), ")", "func(c *", ginPackage.Ident("Context"), ") {")
+func (g *generate) printHandlerMethod(info *parser.RouterInfo) {
+	g.P(g.functionBuf, "func ", info.HandlerName, "(srv ", g.serviceInfo.Name, ", options *", gorsPackage.Ident("Options"), ")", "func(c *", ginPackage.Ident("Context"), ") {")
 	g.P(g.functionBuf, "return func(c *", ginPackage.Ident("Context"), ") {")
 	g.printHandler(info)
 	g.P(g.functionBuf, "}")
@@ -540,4 +534,8 @@ func CleanPackageName(name string) string {
 		return "_" + name
 	}
 	return name
+}
+
+func handlerName(info *parser.RouterInfo, serviceInfo *parser.ServiceInfo) string {
+	return fmt.Sprintf("_%s_%s_Handler", serviceInfo.Name, info.MethodName)
 }

@@ -8,6 +8,13 @@ import (
 	http "net/http"
 )
 
+func StringBytesRoutes(srv StringBytes, opts ...gors.Option) []gors.Route {
+	options := gors.New(opts...)
+	return []gors.Route{
+		gors.NewRoute(http.MethodGet, "/api/StringBytes/Get", _StringBytes_GetStringBytes_Handler(srv, options)),
+		gors.NewRoute(http.MethodOptions, "/api/StringBytes/Options", _StringBytes_OptionsStringBytes_Handler(srv, options)),
+	}
+}
 func _StringBytes_GetStringBytes_Handler(srv StringBytes, options *gors.Options) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var rpcMethodName = "/demo.StringBytes/GetStringBytes"
@@ -51,17 +58,5 @@ func _StringBytes_OptionsStringBytes_Handler(srv StringBytes, options *gors.Opti
 			return
 		}
 		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.BytesRender, options.ResponseWrapper)
-	}
-}
-
-// @title StringBytes
-// @description StringBytes
-// @BasePath /api/StringBytes
-// @schemes http https
-func StringBytesRoutes(srv StringBytes, opts ...gors.Option) []gors.Route {
-	options := gors.New(opts...)
-	return []gors.Route{
-		gors.NewRoute(http.MethodGet, "/api/StringBytes/Get", _StringBytes_GetStringBytes_Handler(srv, options)),
-		gors.NewRoute(http.MethodOptions, "/api/StringBytes/Options", _StringBytes_OptionsStringBytes_Handler(srv, options)),
 	}
 }

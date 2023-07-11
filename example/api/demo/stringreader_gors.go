@@ -9,6 +9,13 @@ import (
 	http "net/http"
 )
 
+func StringReaderRoutes(srv StringReader, opts ...gors.Option) []gors.Route {
+	options := gors.New(opts...)
+	return []gors.Route{
+		gors.NewRoute(http.MethodGet, "/api/StringReader/Get", _StringReader_GetStringRender_Handler(srv, options)),
+		gors.NewRoute(http.MethodOptions, "/api/StringReader/Options", _StringReader_OptionsStringReader_Handler(srv, options)),
+	}
+}
 func _StringReader_GetStringRender_Handler(srv StringReader, options *gors.Options) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var rpcMethodName = "/demo.StringReader/GetStringRender"
@@ -52,17 +59,5 @@ func _StringReader_OptionsStringReader_Handler(srv StringReader, options *gors.O
 			return
 		}
 		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "video/mpeg4", gors.ReaderRender, options.ResponseWrapper)
-	}
-}
-
-// @title StringReader
-// @description StringReader
-// @BasePath /api/StringReader
-// @schemes http https
-func StringReaderRoutes(srv StringReader, opts ...gors.Option) []gors.Route {
-	options := gors.New(opts...)
-	return []gors.Route{
-		gors.NewRoute(http.MethodGet, "/api/StringReader/Get", _StringReader_GetStringRender_Handler(srv, options)),
-		gors.NewRoute(http.MethodOptions, "/api/StringReader/Options", _StringReader_OptionsStringReader_Handler(srv, options)),
 	}
 }

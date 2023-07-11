@@ -9,6 +9,13 @@ import (
 	http "net/http"
 )
 
+func BytesReaderRoutes(srv BytesReader, opts ...gors.Option) []gors.Route {
+	options := gors.New(opts...)
+	return []gors.Route{
+		gors.NewRoute(http.MethodGet, "/api/BytesReader/Get", _BytesReader_GetBytesReader_Handler(srv, options)),
+		gors.NewRoute(http.MethodPatch, "/api/BytesReader/Patch", _BytesReader_PatchBytesReader_Handler(srv, options)),
+	}
+}
 func _BytesReader_GetBytesReader_Handler(srv BytesReader, options *gors.Options) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var rpcMethodName = "/demo.BytesReader/GetBytesReader"
@@ -52,17 +59,5 @@ func _BytesReader_PatchBytesReader_Handler(srv BytesReader, options *gors.Option
 			return
 		}
 		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "video/mpeg4", gors.ReaderRender, options.ResponseWrapper)
-	}
-}
-
-// @title BytesReader
-// @description BytesReader
-// @BasePath /api/BytesReader
-// @schemes http https
-func BytesReaderRoutes(srv BytesReader, opts ...gors.Option) []gors.Route {
-	options := gors.New(opts...)
-	return []gors.Route{
-		gors.NewRoute(http.MethodGet, "/api/BytesReader/Get", _BytesReader_GetBytesReader_Handler(srv, options)),
-		gors.NewRoute(http.MethodPatch, "/api/BytesReader/Patch", _BytesReader_PatchBytesReader_Handler(srv, options)),
 	}
 }

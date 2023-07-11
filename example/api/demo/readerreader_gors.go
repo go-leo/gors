@@ -9,6 +9,13 @@ import (
 	http "net/http"
 )
 
+func ReaderReaderRoutes(srv ReaderReader, opts ...gors.Option) []gors.Route {
+	options := gors.New(opts...)
+	return []gors.Route{
+		gors.NewRoute(http.MethodGet, "/api/ReaderReader/Get", _ReaderReader_GetReaderReader_Handler(srv, options)),
+		gors.NewRoute(http.MethodHead, "/api/ReaderReader/head", _ReaderReader_HeadReaderReader_Handler(srv, options)),
+	}
+}
 func _ReaderReader_GetReaderReader_Handler(srv ReaderReader, options *gors.Options) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var rpcMethodName = "/demo.ReaderReader/GetReaderReader"
@@ -52,17 +59,5 @@ func _ReaderReader_HeadReaderReader_Handler(srv ReaderReader, options *gors.Opti
 			return
 		}
 		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "video/mp4", gors.ReaderRender, options.ResponseWrapper)
-	}
-}
-
-// @title ReaderReader
-// @description ReaderReader
-// @BasePath /api/ReaderReader
-// @schemes http https
-func ReaderReaderRoutes(srv ReaderReader, opts ...gors.Option) []gors.Route {
-	options := gors.New(opts...)
-	return []gors.Route{
-		gors.NewRoute(http.MethodGet, "/api/ReaderReader/Get", _ReaderReader_GetReaderReader_Handler(srv, options)),
-		gors.NewRoute(http.MethodHead, "/api/ReaderReader/head", _ReaderReader_HeadReaderReader_Handler(srv, options)),
 	}
 }

@@ -8,6 +8,13 @@ import (
 	http "net/http"
 )
 
+func BytesStringRoutes(srv BytesString, opts ...gors.Option) []gors.Route {
+	options := gors.New(opts...)
+	return []gors.Route{
+		gors.NewRoute(http.MethodGet, "/api/BytesString/Get", _BytesString_GetBytesString_Handler(srv, options)),
+		gors.NewRoute(http.MethodPut, "/api/BytesString/Put", _BytesString_PutBytesString_Handler(srv, options)),
+	}
+}
 func _BytesString_GetBytesString_Handler(srv BytesString, options *gors.Options) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var rpcMethodName = "/demo.BytesString/GetBytesString"
@@ -51,17 +58,5 @@ func _BytesString_PutBytesString_Handler(srv BytesString, options *gors.Options)
 			return
 		}
 		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.RedirectRender, options.ResponseWrapper)
-	}
-}
-
-// @title BytesString
-// @description BytesString
-// @BasePath /api/BytesString
-// @schemes http https
-func BytesStringRoutes(srv BytesString, opts ...gors.Option) []gors.Route {
-	options := gors.New(opts...)
-	return []gors.Route{
-		gors.NewRoute(http.MethodGet, "/api/BytesString/Get", _BytesString_GetBytesString_Handler(srv, options)),
-		gors.NewRoute(http.MethodPut, "/api/BytesString/Put", _BytesString_PutBytesString_Handler(srv, options)),
 	}
 }

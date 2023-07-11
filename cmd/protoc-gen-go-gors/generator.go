@@ -44,18 +44,18 @@ func generateFileContent(gen *protogen.Plugin, file *protogen.File, g *protogen.
 		return
 	}
 	for _, service := range file.Services {
-		if err := genClientWrapper(gen, file, g, service); err != nil {
-			gen.Error(fmt.Errorf("error: %w", err))
-			return
-		}
-
-		if err := genServerWrapper(gen, file, g, service); err != nil {
-			gen.Error(fmt.Errorf("error: %w", err))
-			return
-		}
-
 		serviceInfo, err := getServiceInfo(gen, file, g, service)
 		if err != nil {
+			gen.Error(fmt.Errorf("error: %w", err))
+			return
+		}
+
+		if err := genClientRoutesFunction(gen, file, g, service, serviceInfo); err != nil {
+			gen.Error(fmt.Errorf("error: %w", err))
+			return
+		}
+
+		if err := genServerRoutesFunction(gen, file, g, service, serviceInfo); err != nil {
 			gen.Error(fmt.Errorf("error: %w", err))
 			return
 		}
@@ -65,17 +65,12 @@ func generateFileContent(gen *protogen.Plugin, file *protogen.File, g *protogen.
 			return
 		}
 
-		if err := genRoutesFunction(gen, file, g, service, serviceInfo); err != nil {
+		if err := genClientWrapper(gen, file, g, service); err != nil {
 			gen.Error(fmt.Errorf("error: %w", err))
 			return
 		}
 
-		if err := genClientRoutesFunction(gen, file, g, service); err != nil {
-			gen.Error(fmt.Errorf("error: %w", err))
-			return
-		}
-
-		if err := genServerRoutesFunction(gen, file, g, service); err != nil {
+		if err := genServerWrapper(gen, file, g, service); err != nil {
 			gen.Error(fmt.Errorf("error: %w", err))
 			return
 		}
@@ -224,19 +219,12 @@ func genRoutesHandler(gen *protogen.Plugin, file *protogen.File, g *protogen.Gen
 	return nil
 }
 
-func genRoutesFunction(gen *protogen.Plugin, file *protogen.File, g *protogen.GeneratedFile, service *protogen.Service, serviceInfo *parser.ServiceInfo) error {
-	serverName := serverName(service)
-	routersFunctionName := routesFunctionName(service)
-
-	g.P("// @title ", serviceInfo.Name)
-	g.P("// @description ", serviceInfo.Description)
-	g.P("// @basePath ", serviceInfo.BasePath)
-	g.P("// @schemes http https")
-
-	g.P("func ", routersFunctionName, "(wrapper ", serverName, ", options *", gorsPackage.Ident("Options"), ") []", gorsPackage.Ident("Route"), " {")
-	g.P("if len(options.Tag) == 0 {")
-	g.P("options.Tag = ", strconv.Quote("json"))
-	g.P("}")
+func genClientRoutesFunction(gen *protogen.Plugin, file *protogen.File, g *protogen.GeneratedFile, service *protogen.Service, serviceInfo *parser.ServiceInfo) error {
+	clientName := clientName(service)
+	funcName := clientRoutesFunctionName(service)
+	g.P("func ", funcName, "(cli ", clientName, ", opts ...", gorsPackage.Ident("Option"), ") []", gorsPackage.Ident("Route"), " {")
+	g.P("options := ", gorsPackage.Ident("New"), "(opts...)")
+	g.P("wrapper := &", clientWrapperName(service), "{cli: cli, options: options}")
 	g.P("return []", gorsPackage.Ident("Route"), "{")
 	for _, router := range serviceInfo.Routers {
 		p := path.Join(serviceInfo.BasePath, router.Path)
@@ -248,25 +236,18 @@ func genRoutesFunction(gen *protogen.Plugin, file *protogen.File, g *protogen.Ge
 	return nil
 }
 
-func genClientRoutesFunction(gen *protogen.Plugin, file *protogen.File, g *protogen.GeneratedFile, service *protogen.Service) error {
-	clientName := clientName(service)
-	funcName := clientRoutesFunctionName(service)
-	g.P("func ", funcName, "(cli ", clientName, ", opts ...", gorsPackage.Ident("Option"), ") []", gorsPackage.Ident("Route"), " {")
-	g.P("options := ", gorsPackage.Ident("New"), "(opts...)")
-	g.P("wrapper := &", clientWrapperName(service), "{cli: cli, options: options}")
-	g.P("return ", routesFunctionName(service), "(wrapper, options)")
-	g.P("}")
-	g.P()
-	return nil
-}
-
-func genServerRoutesFunction(gen *protogen.Plugin, file *protogen.File, g *protogen.GeneratedFile, service *protogen.Service) error {
+func genServerRoutesFunction(gen *protogen.Plugin, file *protogen.File, g *protogen.GeneratedFile, service *protogen.Service, serviceInfo *parser.ServiceInfo) error {
 	serverName := serverName(service)
 	funcName := serverRoutesFunctionName(service)
 	g.P("func ", funcName, "(srv ", serverName, ", opts ...", gorsPackage.Ident("Option"), ") []", gorsPackage.Ident("Route"), " {")
 	g.P("options := ", gorsPackage.Ident("New"), "(opts...)")
 	g.P("wrapper := &", serverWrapperName(service), "{srv: srv, options: options}")
-	g.P("return ", routesFunctionName(service), "(wrapper, options)")
+	g.P("return []", gorsPackage.Ident("Route"), "{")
+	for _, router := range serviceInfo.Routers {
+		p := path.Join(serviceInfo.BasePath, router.Path)
+		g.P(gorsPackage.Ident("NewRoute"), "(", httpPackage.Ident(router.HttpMethod.HttpMethod()), ",", strconv.Quote(p), ",", router.HandlerName, "(wrapper, options),", "),")
+	}
+	g.P("}")
 	g.P("}")
 	g.P()
 	return nil

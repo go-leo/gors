@@ -8,6 +8,13 @@ import (
 	http "net/http"
 )
 
+func BytesBytesRoutes(srv BytesBytes, opts ...gors.Option) []gors.Route {
+	options := gors.New(opts...)
+	return []gors.Route{
+		gors.NewRoute(http.MethodGet, "/api/BytesBytes/Get", _BytesBytes_GetBytesBytes_Handler(srv, options)),
+		gors.NewRoute(http.MethodPost, "/api/BytesBytes/Post", _BytesBytes_PostBytesBytes_Handler(srv, options)),
+	}
+}
 func _BytesBytes_GetBytesBytes_Handler(srv BytesBytes, options *gors.Options) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var rpcMethodName = "/demo.BytesBytes/GetBytesBytes"
@@ -51,17 +58,5 @@ func _BytesBytes_PostBytesBytes_Handler(srv BytesBytes, options *gors.Options) f
 			return
 		}
 		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "text/go", gors.BytesRender, options.ResponseWrapper)
-	}
-}
-
-// @title BytesBytes
-// @description BytesBytes this is bytes binding and bytes render demo this is a interface
-// @BasePath /api/BytesBytes
-// @schemes http https
-func BytesBytesRoutes(srv BytesBytes, opts ...gors.Option) []gors.Route {
-	options := gors.New(opts...)
-	return []gors.Route{
-		gors.NewRoute(http.MethodGet, "/api/BytesBytes/Get", _BytesBytes_GetBytesBytes_Handler(srv, options)),
-		gors.NewRoute(http.MethodPost, "/api/BytesBytes/Post", _BytesBytes_PostBytesBytes_Handler(srv, options)),
 	}
 }

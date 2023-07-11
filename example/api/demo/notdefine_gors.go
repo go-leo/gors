@@ -9,6 +9,15 @@ import (
 	http "net/http"
 )
 
+func NotDefineRoutes(srv NotDefine, opts ...gors.Option) []gors.Route {
+	options := gors.New(opts...)
+	return []gors.Route{
+		gors.NewRoute(http.MethodGet, "/demo.notdefine/string", _NotDefine_String_Handler(srv, options)),
+		gors.NewRoute(http.MethodGet, "/demo.notdefine/bytes", _NotDefine_Bytes_Handler(srv, options)),
+		gors.NewRoute(http.MethodGet, "/demo.notdefine/reader", _NotDefine_Reader_Handler(srv, options)),
+		gors.NewRoute(http.MethodGet, "/demo.notdefine/notdefine", _NotDefine_NotDefine_Handler(srv, options)),
+	}
+}
 func _NotDefine_String_Handler(srv NotDefine, options *gors.Options) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var rpcMethodName = "/demo.NotDefine/String"
@@ -88,8 +97,6 @@ func _NotDefine_NotDefine_Handler(srv NotDefine, options *gors.Options) func(c *
 		req = new(NotDefineReq)
 		if err = gors.RequestBind(
 			ctx, req, options.Tag,
-			gors.UriBinding,
-			gors.HeaderBinding,
 			gors.QueryBinding,
 		); err != nil {
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
@@ -101,19 +108,5 @@ func _NotDefine_NotDefine_Handler(srv NotDefine, options *gors.Options) func(c *
 			return
 		}
 		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json", gors.JSONRender, options.ResponseWrapper)
-	}
-}
-
-// @title NotDefine
-// @description
-// @BasePath
-// @schemes http https
-func NotDefineRoutes(srv NotDefine, opts ...gors.Option) []gors.Route {
-	options := gors.New(opts...)
-	return []gors.Route{
-		gors.NewRoute(http.MethodGet, "/demo.notdefine/string", _NotDefine_String_Handler(srv, options)),
-		gors.NewRoute(http.MethodGet, "/demo.notdefine/bytes", _NotDefine_Bytes_Handler(srv, options)),
-		gors.NewRoute(http.MethodGet, "/demo.notdefine/reader", _NotDefine_Reader_Handler(srv, options)),
-		gors.NewRoute(http.MethodGet, "/demo.notdefine/notdefine", _NotDefine_NotDefine_Handler(srv, options)),
 	}
 }

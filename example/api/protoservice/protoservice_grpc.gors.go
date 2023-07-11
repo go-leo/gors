@@ -11,32 +11,20 @@ import (
 	http "net/http"
 )
 
-type _ProtoServiceClientWrapper struct {
-	UnimplementedProtoServiceServer
-	cli     ProtoServiceClient
-	options *gors.Options
+func ProtoServiceClientRoutes(cli ProtoServiceClient, opts ...gors.Option) []gors.Route {
+	options := gors.New(opts...)
+	wrapper := &_ProtoServiceClientWrapper{cli: cli, options: options}
+	return []gors.Route{
+		gors.NewRoute(http.MethodPost, "/v1/Method", _ProtoService_Method_GORS_Handler(wrapper, options)),
+	}
 }
 
-func (wrapper *_ProtoServiceClientWrapper) Method(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
-	var headerMD, trailerMD metadata.MD
-	resp, err := wrapper.cli.Method(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
-	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher)
-	return resp, err
-}
-
-type _ProtoServiceServerWrapper struct {
-	UnimplementedProtoServiceServer
-	srv     ProtoServiceServer
-	options *gors.Options
-}
-
-func (wrapper *_ProtoServiceServerWrapper) Method(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
-	rpcMethodName := "/protoservice.ProtoService/Method"
-	stream := gors.NewServerTransportStream(rpcMethodName)
-	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
-	resp, err := wrapper.srv.Method(ctx, request)
-	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher)
-	return resp, err
+func ProtoServiceServerRoutes(srv ProtoServiceServer, opts ...gors.Option) []gors.Route {
+	options := gors.New(opts...)
+	wrapper := &_ProtoServiceServerWrapper{srv: srv, options: options}
+	return []gors.Route{
+		gors.NewRoute(http.MethodPost, "/v1/Method", _ProtoService_Method_GORS_Handler(wrapper, options)),
+	}
 }
 
 func _ProtoService_Method_GORS_Handler(wrapper ProtoServiceServer, options *gors.Options) func(c *gin.Context) {
@@ -67,27 +55,30 @@ func _ProtoService_Method_GORS_Handler(wrapper ProtoServiceServer, options *gors
 	}
 }
 
-// @title ProtoService
-// @description
-// @basePath /v1
-// @schemes http https
-func _ProtoServiceRoutes(wrapper ProtoServiceServer, options *gors.Options) []gors.Route {
-	if len(options.Tag) == 0 {
-		options.Tag = "json"
-	}
-	return []gors.Route{
-		gors.NewRoute(http.MethodPost, "/v1/Method", _ProtoService_Method_GORS_Handler(wrapper, options)),
-	}
+type _ProtoServiceClientWrapper struct {
+	UnimplementedProtoServiceServer
+	cli     ProtoServiceClient
+	options *gors.Options
 }
 
-func ProtoServiceClientRoutes(cli ProtoServiceClient, opts ...gors.Option) []gors.Route {
-	options := gors.New(opts...)
-	wrapper := &_ProtoServiceClientWrapper{cli: cli, options: options}
-	return _ProtoServiceRoutes(wrapper, options)
+func (wrapper *_ProtoServiceClientWrapper) Method(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
+	var headerMD, trailerMD metadata.MD
+	resp, err := wrapper.cli.Method(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
+	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher)
+	return resp, err
 }
 
-func ProtoServiceServerRoutes(srv ProtoServiceServer, opts ...gors.Option) []gors.Route {
-	options := gors.New(opts...)
-	wrapper := &_ProtoServiceServerWrapper{srv: srv, options: options}
-	return _ProtoServiceRoutes(wrapper, options)
+type _ProtoServiceServerWrapper struct {
+	UnimplementedProtoServiceServer
+	srv     ProtoServiceServer
+	options *gors.Options
+}
+
+func (wrapper *_ProtoServiceServerWrapper) Method(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
+	rpcMethodName := "/protoservice.ProtoService/Method"
+	stream := gors.NewServerTransportStream(rpcMethodName)
+	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
+	resp, err := wrapper.srv.Method(ctx, request)
+	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher)
+	return resp, err
 }

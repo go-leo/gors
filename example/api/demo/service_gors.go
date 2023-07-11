@@ -8,6 +8,12 @@ import (
 	http "net/http"
 )
 
+func ServiceRoutes(srv Service, opts ...gors.Option) []gors.Route {
+	options := gors.New(opts...)
+	return []gors.Route{
+		gors.NewRoute(http.MethodGet, "/api/v1/method/:id", _Service_Method_Handler(srv, options)),
+	}
+}
 func _Service_Method_Handler(srv Service, options *gors.Options) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var rpcMethodName = "/demo.Service/Method"
@@ -29,16 +35,5 @@ func _Service_Method_Handler(srv Service, options *gors.Options) func(c *gin.Con
 			return
 		}
 		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json", gors.JSONRender, options.ResponseWrapper)
-	}
-}
-
-// @title Service
-// @description Service
-// @BasePath /api/v1
-// @schemes http https
-func ServiceRoutes(srv Service, opts ...gors.Option) []gors.Route {
-	options := gors.New(opts...)
-	return []gors.Route{
-		gors.NewRoute(http.MethodGet, "/api/v1/method/:id", _Service_Method_Handler(srv, options)),
 	}
 }

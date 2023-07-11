@@ -132,6 +132,7 @@ func main() {
 			}
 			defaultBindingName(routerInfo, param2)
 			defaultRenderName(routerInfo, result1)
+			routerInfo.HandlerName = handlerName(routerInfo, g.serviceInfo)
 			g.serviceInfo.Routers = append(g.serviceInfo.Routers, routerInfo)
 		}
 	}

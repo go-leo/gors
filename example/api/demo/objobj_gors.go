@@ -9,6 +9,24 @@ import (
 	http "net/http"
 )
 
+func ObjObjRoutes(srv ObjObj, opts ...gors.Option) []gors.Route {
+	options := gors.New(opts...)
+	return []gors.Route{
+		gors.NewRoute(http.MethodGet, "/api/ObjObj/UriBindingIndentedJSONRender/:id", _ObjObj_UriBindingIndentedJSONRender_Handler(srv, options)),
+		gors.NewRoute(http.MethodGet, "/api/ObjObj/QueryBindingSecureJSONRender/:id", _ObjObj_QueryBindingSecureJSONRender_Handler(srv, options)),
+		gors.NewRoute(http.MethodGet, "/api/ObjObj/HeaderBindingJsonpJSONRender/:id", _ObjObj_HeaderBindingJsonpJSONRender_Handler(srv, options)),
+		gors.NewRoute(http.MethodPost, "/api/ObjObj/JSONBindingJSONRender/:id", _ObjObj_JSONBindingJSONRender_Handler(srv, options)),
+		gors.NewRoute(http.MethodPatch, "/api/ObjObj/XMLBindingXMLRender/:id", _ObjObj_XMLBindingXMLRender_Handler(srv, options)),
+		gors.NewRoute(http.MethodPost, "/api/ObjObj/FormBindingJSONRender/:id", _ObjObj_FormBindingJSONRender_Handler(srv, options)),
+		gors.NewRoute(http.MethodPost, "/api/ObjObj/FormPostBindingPureJSONRender/:id", _ObjObj_FormPostBindingPureJSONRender_Handler(srv, options)),
+		gors.NewRoute(http.MethodPost, "/api/ObjObj/FormMultipartBindingAsciiJSONRender/:id", _ObjObj_FormMultipartBindingAsciiJSONRender_Handler(srv, options)),
+		gors.NewRoute(http.MethodPut, "/api/ObjObj/ProtoBufBindingProtoBufRender", _ObjObj_ProtoBufBindingProtoBufRender_Handler(srv, options)),
+		gors.NewRoute(http.MethodDelete, "/api/ObjObj/MsgPackBindingMsgPackRender", _ObjObj_MsgPackBindingMsgPackRender_Handler(srv, options)),
+		gors.NewRoute(http.MethodDelete, "/api/ObjObj/YAMLBindingYAMLRender/:id", _ObjObj_YAMLBindingYAMLRender_Handler(srv, options)),
+		gors.NewRoute(http.MethodPut, "/api/ObjObj/TOMLBindingTOMLRender/:id", _ObjObj_TOMLBindingTOMLRender_Handler(srv, options)),
+		gors.NewRoute(http.MethodPut, "/api/ObjObj/ProtoJSONBindingProtoJSONRender", _ObjObj_ProtoJSONBindingProtoJSONRender_Handler(srv, options)),
+	}
+}
 func _ObjObj_UriBindingIndentedJSONRender_Handler(srv ObjObj, options *gors.Options) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var rpcMethodName = "/demo.ObjObj/UriBindingIndentedJSONRender"
@@ -341,28 +359,5 @@ func _ObjObj_ProtoJSONBindingProtoJSONRender_Handler(srv ObjObj, options *gors.O
 			return
 		}
 		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json", gors.ProtoJSONRender, options.ResponseWrapper)
-	}
-}
-
-// @title ObjObj
-// @description ObjObj
-// @BasePath /api/ObjObj
-// @schemes http https
-func ObjObjRoutes(srv ObjObj, opts ...gors.Option) []gors.Route {
-	options := gors.New(opts...)
-	return []gors.Route{
-		gors.NewRoute(http.MethodGet, "/api/ObjObj/UriBindingIndentedJSONRender/:id", _ObjObj_UriBindingIndentedJSONRender_Handler(srv, options)),
-		gors.NewRoute(http.MethodGet, "/api/ObjObj/QueryBindingSecureJSONRender/:id", _ObjObj_QueryBindingSecureJSONRender_Handler(srv, options)),
-		gors.NewRoute(http.MethodGet, "/api/ObjObj/HeaderBindingJsonpJSONRender/:id", _ObjObj_HeaderBindingJsonpJSONRender_Handler(srv, options)),
-		gors.NewRoute(http.MethodPost, "/api/ObjObj/JSONBindingJSONRender/:id", _ObjObj_JSONBindingJSONRender_Handler(srv, options)),
-		gors.NewRoute(http.MethodPatch, "/api/ObjObj/XMLBindingXMLRender/:id", _ObjObj_XMLBindingXMLRender_Handler(srv, options)),
-		gors.NewRoute(http.MethodPost, "/api/ObjObj/FormBindingJSONRender/:id", _ObjObj_FormBindingJSONRender_Handler(srv, options)),
-		gors.NewRoute(http.MethodPost, "/api/ObjObj/FormPostBindingPureJSONRender/:id", _ObjObj_FormPostBindingPureJSONRender_Handler(srv, options)),
-		gors.NewRoute(http.MethodPost, "/api/ObjObj/FormMultipartBindingAsciiJSONRender/:id", _ObjObj_FormMultipartBindingAsciiJSONRender_Handler(srv, options)),
-		gors.NewRoute(http.MethodPut, "/api/ObjObj/ProtoBufBindingProtoBufRender", _ObjObj_ProtoBufBindingProtoBufRender_Handler(srv, options)),
-		gors.NewRoute(http.MethodDelete, "/api/ObjObj/MsgPackBindingMsgPackRender", _ObjObj_MsgPackBindingMsgPackRender_Handler(srv, options)),
-		gors.NewRoute(http.MethodDelete, "/api/ObjObj/YAMLBindingYAMLRender/:id", _ObjObj_YAMLBindingYAMLRender_Handler(srv, options)),
-		gors.NewRoute(http.MethodPut, "/api/ObjObj/TOMLBindingTOMLRender/:id", _ObjObj_TOMLBindingTOMLRender_Handler(srv, options)),
-		gors.NewRoute(http.MethodPut, "/api/ObjObj/ProtoJSONBindingProtoJSONRender", _ObjObj_ProtoJSONBindingProtoJSONRender_Handler(srv, options)),
 	}
 }
