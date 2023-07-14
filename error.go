@@ -8,7 +8,13 @@ import (
 
 var msgRegExp = regexp.MustCompile("^gors.Error, Code: (\\d+), Message: (.+)$")
 
-// Error 指定http状态码和错误信
+// Status 代表业务状态
+type Status struct {
+	Code    int    `json:"code,omitempty" yaml:"code,omitempty" xml:"code,omitempty" toml:"code,omitempty" codec:"code,omitempty" mapstructure:"code,omitempty"`
+	Message string `json:"message,omitempty" yaml:"message,omitempty" xml:"message,omitempty" toml:"message,omitempty" codec:"message,omitempty" mapstructure:"message,omitempty"`
+}
+
+// Error 代表http状态码和业务状态
 type Error struct {
 	// StatusCode http status code
 	StatusCode int
@@ -23,7 +29,7 @@ func (e Error) Error() string {
 }
 
 func (e Error) Status() *Status {
-	return &Status{Code: int32(e.Code), Message: e.Message}
+	return &Status{Code: e.Code, Message: e.Message}
 }
 
 func ErrorFromMessage(msg string) (Error, bool) {
@@ -43,8 +49,3 @@ func ErrorFromMessage(msg string) (Error, bool) {
 func errorValue() Error { return Error{} }
 
 func errorPointer() *Error { return &Error{} }
-
-type Status struct {
-	Code    int32  `json:"code,omitempty" yaml:"code,omitempty" xml:"code,omitempty" toml:"code,omitempty" codec:"code,omitempty" mapstructure:"code,omitempty"`
-	Message string `json:"message,omitempty" yaml:"message,omitempty" xml:"message,omitempty" toml:"message,omitempty" codec:"message,omitempty" mapstructure:"message,omitempty"`
-}

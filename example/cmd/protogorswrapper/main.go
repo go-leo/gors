@@ -23,7 +23,7 @@ func main() {
 				switch t := resp.(type) {
 				case *gors.Status:
 					return &protodemo.CommonReply{
-						Code: t.Code,
+						Code: int32(t.Code),
 						Msg:  t.Message,
 					}
 				default:
