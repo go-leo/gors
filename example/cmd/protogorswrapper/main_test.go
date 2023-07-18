@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"github.com/go-leo/gors/example/api/protodemo"
 	"github.com/go-leo/gox/netx/httpx"
 	"github.com/go-leo/gox/netx/httpx/outgoing"
 	"github.com/stretchr/testify/assert"

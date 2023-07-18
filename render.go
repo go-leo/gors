@@ -19,12 +19,14 @@ import (
 func ErrorRender(
 	ctx context.Context,
 	err error,
-	handler func(ctx context.Context, err error),
+	handler func(ctx context.Context, err error) error,
 	wrapper func(resp any) any,
 ) {
 	if handler != nil {
-		handler(ctx, err)
-		return
+		err = handler(ctx, err)
+		if err == nil {
+			return
+		}
 	}
 	if e := errorValue(); errors.As(err, &e) {
 		ResponseRender(ctx, e.StatusCode, e.Status(), "", PureJSONRender, wrapper)

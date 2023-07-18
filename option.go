@@ -8,7 +8,7 @@ import (
 type Options struct {
 	Tag                   string
 	ResponseWrapper       func(resp any) any
-	ErrorHandler          func(ctx context.Context, err error)
+	ErrorHandler          func(ctx context.Context, err error) error
 	IncomingHeaderMatcher func(key string) (string, bool)
 	OutgoingHeaderMatcher func(key string) (string, bool)
 	MetadataAnnotators    []func(ctx context.Context) metadata.MD
@@ -36,7 +36,7 @@ func ResponseWrapper(w func(resp any) any) Option {
 	}
 }
 
-func ErrorHandler(h func(ctx context.Context, err error)) Option {
+func ErrorHandler(h func(ctx context.Context, err error) error) Option {
 	return func(o *Options) {
 		o.ErrorHandler = h
 	}
