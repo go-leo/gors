@@ -323,6 +323,7 @@ func (g *generate) printRoutesMethod() {
 	}
 	g.P(g.functionBuf, "}")
 	g.P(g.functionBuf, "}")
+	g.P(g.functionBuf, "")
 }
 
 func (g *generate) printHandlerMethods() {
