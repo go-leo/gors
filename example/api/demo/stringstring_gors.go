@@ -9,12 +9,13 @@ import (
 )
 
 func StringStringRoutes(srv StringString, opts ...gors.Option) []gors.Route {
-	options := gors.New(opts...)
+	options := gors.NewOptions(opts...)
 	return []gors.Route{
 		gors.NewRoute(http.MethodGet, "/api/StringString/Get", _StringString_GetStringString_Handler(srv, options)),
 		gors.NewRoute(http.MethodPatch, "/api/StringString/Patch", _StringString_PatchStringString_Handler(srv, options)),
 	}
 }
+
 func _StringString_GetStringString_Handler(srv StringString, options *gors.Options) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var rpcMethodName = "/demo.StringString/GetStringString"

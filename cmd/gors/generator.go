@@ -316,7 +316,7 @@ func (g *generate) printFunction() {
 func (g *generate) printRoutesMethod() {
 	functionName := g.serviceInfo.Name + "Routes"
 	g.P(g.functionBuf, "func ", functionName, "(srv ", g.serviceInfo.Name, ", opts ...", gorsPackage.Ident("Option"), ") []", gorsPackage.Ident("Route"), " {")
-	g.P(g.functionBuf, "options := ", gorsPackage.Ident("New"), "(opts...)")
+	g.P(g.functionBuf, "options := ", gorsPackage.Ident("NewOptions"), "(opts...)")
 	g.P(g.functionBuf, "return []", gorsPackage.Ident("Route"), "{")
 	for _, routerInfo := range g.serviceInfo.Routers {
 		g.printRouterInfo(routerInfo)

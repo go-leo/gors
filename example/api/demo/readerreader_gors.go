@@ -10,12 +10,13 @@ import (
 )
 
 func ReaderReaderRoutes(srv ReaderReader, opts ...gors.Option) []gors.Route {
-	options := gors.New(opts...)
+	options := gors.NewOptions(opts...)
 	return []gors.Route{
 		gors.NewRoute(http.MethodGet, "/api/ReaderReader/Get", _ReaderReader_GetReaderReader_Handler(srv, options)),
 		gors.NewRoute(http.MethodHead, "/api/ReaderReader/head", _ReaderReader_HeadReaderReader_Handler(srv, options)),
 	}
 }
+
 func _ReaderReader_GetReaderReader_Handler(srv ReaderReader, options *gors.Options) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var rpcMethodName = "/demo.ReaderReader/GetReaderReader"

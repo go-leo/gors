@@ -9,11 +9,12 @@ import (
 )
 
 func ServiceRoutes(srv Service, opts ...gors.Option) []gors.Route {
-	options := gors.New(opts...)
+	options := gors.NewOptions(opts...)
 	return []gors.Route{
 		gors.NewRoute(http.MethodGet, "/api/v1/method/:id", _Service_Method_Handler(srv, options)),
 	}
 }
+
 func _Service_Method_Handler(srv Service, options *gors.Options) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var rpcMethodName = "/demo.Service/Method"

@@ -16,7 +16,7 @@ type Options struct {
 
 type Option func(o *Options)
 
-func New(opts ...Option) *Options {
+func NewOptions(opts ...Option) *Options {
 	o := &Options{}
 	for _, opt := range opts {
 		opt(o)
