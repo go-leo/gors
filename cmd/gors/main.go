@@ -20,7 +20,7 @@ import (
 	"strings"
 )
 
-const version = "v1.4.4"
+const version = "v1.4.5"
 
 var (
 	serviceName = flag.String("service", "", "service interface Name; must be set")
