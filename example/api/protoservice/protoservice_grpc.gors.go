@@ -12,7 +12,10 @@ import (
 )
 
 func ProtoServiceClientRoutes(cli ProtoServiceClient, opts ...gors.Option) []gors.Route {
-	options := gors.New(opts...)
+	options := gors.NewOptions(opts...)
+	if len(options.Tag) == 0 {
+		options.Tag = "json"
+	}
 	wrapper := &_ProtoServiceClientWrapper{cli: cli, options: options}
 	return []gors.Route{
 		gors.NewRoute(http.MethodPost, "/v1/Method", _ProtoService_Method_GORS_Handler(wrapper, options)),
@@ -20,7 +23,10 @@ func ProtoServiceClientRoutes(cli ProtoServiceClient, opts ...gors.Option) []gor
 }
 
 func ProtoServiceServerRoutes(srv ProtoServiceServer, opts ...gors.Option) []gors.Route {
-	options := gors.New(opts...)
+	options := gors.NewOptions(opts...)
+	if len(options.Tag) == 0 {
+		options.Tag = "json"
+	}
 	wrapper := &_ProtoServiceServerWrapper{srv: srv, options: options}
 	return []gors.Route{
 		gors.NewRoute(http.MethodPost, "/v1/Method", _ProtoService_Method_GORS_Handler(wrapper, options)),

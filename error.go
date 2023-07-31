@@ -18,7 +18,7 @@ var (
 	UnknownMessage    = "An internal server error occurred"
 )
 
-var msgRegExp = regexp.MustCompile(`^gors.Error, Code: (\d+), Message: (.+)$`)
+var msgRegExp = regexp.MustCompile("^gors.Error, StatusCode: (\\d+), Code: (\\d+), Message: (.+)$")
 
 // Status 代表业务状态信息.
 type Status struct {
@@ -39,7 +39,7 @@ type Error struct {
 }
 
 func (e Error) Error() string {
-	return fmt.Sprintf("gors.Error, Code: %d, Message: %s", e.Code, e.Message)
+	return fmt.Sprintf("gors.Error, StatusCode: %d, Code: %d, Message: %s", e.StatusCode, e.Code, e.Message)
 }
 
 func (e Error) Status() *Status {
@@ -127,10 +127,10 @@ func ErrorFromMessage(msg string) (Error, bool) {
 	if len(subStrings) != 1 {
 		return Error{}, false
 	}
-	if len(subStrings[0]) != 3 {
+	if len(subStrings[0]) != 4 {
 		return Error{}, false
 	}
-	return Error{Code: convx.ToInt(subStrings[0][1]), Message: subStrings[0][2]}, true
+	return Error{StatusCode: convx.ToInt(subStrings[0][1]), Code: convx.ToInt(subStrings[0][2]), Message: subStrings[0][3]}, true
 }
 
 func errValue() Error {

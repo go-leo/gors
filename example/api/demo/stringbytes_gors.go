@@ -9,12 +9,13 @@ import (
 )
 
 func StringBytesRoutes(srv StringBytes, opts ...gors.Option) []gors.Route {
-	options := gors.New(opts...)
+	options := gors.NewOptions(opts...)
 	return []gors.Route{
 		gors.NewRoute(http.MethodGet, "/api/StringBytes/Get", _StringBytes_GetStringBytes_Handler(srv, options)),
 		gors.NewRoute(http.MethodOptions, "/api/StringBytes/Options", _StringBytes_OptionsStringBytes_Handler(srv, options)),
 	}
 }
+
 func _StringBytes_GetStringBytes_Handler(srv StringBytes, options *gors.Options) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var rpcMethodName = "/demo.StringBytes/GetStringBytes"

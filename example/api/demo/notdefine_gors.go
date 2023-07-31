@@ -10,7 +10,7 @@ import (
 )
 
 func NotDefineRoutes(srv NotDefine, opts ...gors.Option) []gors.Route {
-	options := gors.New(opts...)
+	options := gors.NewOptions(opts...)
 	return []gors.Route{
 		gors.NewRoute(http.MethodGet, "/demo.notdefine/string", _NotDefine_String_Handler(srv, options)),
 		gors.NewRoute(http.MethodGet, "/demo.notdefine/bytes", _NotDefine_Bytes_Handler(srv, options)),
@@ -18,6 +18,7 @@ func NotDefineRoutes(srv NotDefine, opts ...gors.Option) []gors.Route {
 		gors.NewRoute(http.MethodGet, "/demo.notdefine/notdefine", _NotDefine_NotDefine_Handler(srv, options)),
 	}
 }
+
 func _NotDefine_String_Handler(srv NotDefine, options *gors.Options) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var rpcMethodName = "/demo.NotDefine/String"

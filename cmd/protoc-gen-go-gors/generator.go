@@ -223,7 +223,10 @@ func genClientRoutesFunction(gen *protogen.Plugin, file *protogen.File, g *proto
 	clientName := clientName(service)
 	funcName := clientRoutesFunctionName(service)
 	g.P("func ", funcName, "(cli ", clientName, ", opts ...", gorsPackage.Ident("Option"), ") []", gorsPackage.Ident("Route"), " {")
-	g.P("options := ", gorsPackage.Ident("New"), "(opts...)")
+	g.P("options := ", gorsPackage.Ident("NewOptions"), "(opts...)")
+	g.P("if len(options.Tag) == 0 {")
+	g.P("options.Tag = ", strconv.Quote("json"))
+	g.P("}")
 	g.P("wrapper := &", clientWrapperName(service), "{cli: cli, options: options}")
 	g.P("return []", gorsPackage.Ident("Route"), "{")
 	for _, router := range serviceInfo.Routers {
@@ -240,7 +243,10 @@ func genServerRoutesFunction(gen *protogen.Plugin, file *protogen.File, g *proto
 	serverName := serverName(service)
 	funcName := serverRoutesFunctionName(service)
 	g.P("func ", funcName, "(srv ", serverName, ", opts ...", gorsPackage.Ident("Option"), ") []", gorsPackage.Ident("Route"), " {")
-	g.P("options := ", gorsPackage.Ident("New"), "(opts...)")
+	g.P("options := ", gorsPackage.Ident("NewOptions"), "(opts...)")
+	g.P("if len(options.Tag) == 0 {")
+	g.P("options.Tag = ", strconv.Quote("json"))
+	g.P("}")
 	g.P("wrapper := &", serverWrapperName(service), "{srv: srv, options: options}")
 	g.P("return []", gorsPackage.Ident("Route"), "{")
 	for _, router := range serviceInfo.Routers {

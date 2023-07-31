@@ -12,7 +12,10 @@ import (
 )
 
 func ProtoDemoClientRoutes(cli ProtoDemoClient, opts ...gors.Option) []gors.Route {
-	options := gors.New(opts...)
+	options := gors.NewOptions(opts...)
+	if len(options.Tag) == 0 {
+		options.Tag = "json"
+	}
 	wrapper := &_ProtoDemoClientWrapper{cli: cli, options: options}
 	return []gors.Route{
 		gors.NewRoute(http.MethodDelete, "/v1/UriBinding/JSONRender/:name", _ProtoDemo_DELETEUriBindingJSONRender_GORS_Handler(wrapper, options)),
@@ -31,7 +34,10 @@ func ProtoDemoClientRoutes(cli ProtoDemoClient, opts ...gors.Option) []gors.Rout
 }
 
 func ProtoDemoServerRoutes(srv ProtoDemoServer, opts ...gors.Option) []gors.Route {
-	options := gors.New(opts...)
+	options := gors.NewOptions(opts...)
+	if len(options.Tag) == 0 {
+		options.Tag = "json"
+	}
 	wrapper := &_ProtoDemoServerWrapper{srv: srv, options: options}
 	return []gors.Route{
 		gors.NewRoute(http.MethodDelete, "/v1/UriBinding/JSONRender/:name", _ProtoDemo_DELETEUriBindingJSONRender_GORS_Handler(wrapper, options)),

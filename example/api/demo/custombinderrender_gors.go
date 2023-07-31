@@ -9,11 +9,12 @@ import (
 )
 
 func CustomBinderRenderRoutes(srv CustomBinderRender, opts ...gors.Option) []gors.Route {
-	options := gors.New(opts...)
+	options := gors.NewOptions(opts...)
 	return []gors.Route{
 		gors.NewRoute(http.MethodPost, "/api/CustomBinderRender/Custom", _CustomBinderRender_Custom_Handler(srv, options)),
 	}
 }
+
 func _CustomBinderRender_Custom_Handler(srv CustomBinderRender, options *gors.Options) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var rpcMethodName = "/demo.CustomBinderRender/Custom"

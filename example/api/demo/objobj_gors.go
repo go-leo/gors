@@ -10,7 +10,7 @@ import (
 )
 
 func ObjObjRoutes(srv ObjObj, opts ...gors.Option) []gors.Route {
-	options := gors.New(opts...)
+	options := gors.NewOptions(opts...)
 	return []gors.Route{
 		gors.NewRoute(http.MethodGet, "/api/ObjObj/UriBindingIndentedJSONRender/:id", _ObjObj_UriBindingIndentedJSONRender_Handler(srv, options)),
 		gors.NewRoute(http.MethodGet, "/api/ObjObj/QueryBindingSecureJSONRender/:id", _ObjObj_QueryBindingSecureJSONRender_Handler(srv, options)),
@@ -27,6 +27,7 @@ func ObjObjRoutes(srv ObjObj, opts ...gors.Option) []gors.Route {
 		gors.NewRoute(http.MethodPut, "/api/ObjObj/ProtoJSONBindingProtoJSONRender", _ObjObj_ProtoJSONBindingProtoJSONRender_Handler(srv, options)),
 	}
 }
+
 func _ObjObj_UriBindingIndentedJSONRender_Handler(srv ObjObj, options *gors.Options) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var rpcMethodName = "/demo.ObjObj/UriBindingIndentedJSONRender"
