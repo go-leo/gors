@@ -2,18 +2,18 @@ package gors
 
 import (
 	"context"
-	"errors"
+	// "errors"
 	"fmt"
+	"io"
+	"net/http"
+	"strings"
+
 	"github.com/gin-gonic/gin/render"
 	internalrender "github.com/go-leo/gors/internal/pkg/render"
 	"github.com/go-leo/gox/iox"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/grpclog"
 	"google.golang.org/grpc/metadata"
-	grpcstatus "google.golang.org/grpc/status"
-	"io"
-	"net/http"
-	"strings"
 )
 
 func ErrorRender(
@@ -28,24 +28,8 @@ func ErrorRender(
 			return
 		}
 	}
-	if e := errorValue(); errors.As(err, &e) {
-		ResponseRender(ctx, e.StatusCode, e.Status(), "", PureJSONRender, wrapper)
-		return
-	}
-	if ePtr := errorPointer(); errors.As(err, &ePtr) {
-		ResponseRender(ctx, ePtr.StatusCode, ePtr.Status(), "", PureJSONRender, wrapper)
-		return
-	}
-	status, ok := grpcstatus.FromError(err)
-	if ok {
-		if e, ok := ErrorFromMessage(status.Message()); ok {
-			ResponseRender(ctx, e.StatusCode, e.Status(), "", PureJSONRender, wrapper)
-			return
-		}
-		ResponseRender(ctx, httpStatusFromCode(status.Code()), status.Proto(), "", ProtoJSONRender, wrapper)
-		return
-	}
-	ResponseRender(ctx, http.StatusInternalServerError, err.Error(), "", TextRender, wrapper)
+	gorserr := FromError(err)
+	ResponseRender(ctx, gorserr.StatusCode, gorserr.Status(), "", JSONRender, wrapper)
 }
 
 func ResponseRender(
@@ -240,6 +224,7 @@ func httpStatusFromCode(code codes.Code) int {
 		return http.StatusInternalServerError
 	}
 }
+
 func AddGRPCMetadata(
 	ctx context.Context,
 	headerMD, trailerMD metadata.MD,
