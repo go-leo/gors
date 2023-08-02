@@ -30,6 +30,10 @@ type Status struct {
 type ErrorAPI interface {
 	Error() string
 	WithCause(err error) Error
+	Status() *Status
+	Unwrap() error
+	Is(err error) bool
+	GRPCStatus() *gstatus.Status
 }
 
 // Error 包含业务状态的错误.
