@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/gin-gonic/gin v1.8.1
-	github.com/go-leo/gox v0.0.0-20230616023204-abcd5dbca361
+	github.com/go-leo/gox v0.0.0-20230802065416-79820f31f2d2
 	github.com/go-openapi/spec v0.20.9
 	github.com/pkg/errors v0.9.1
 	github.com/stretchr/testify v1.8.1
@@ -39,7 +39,7 @@ require (
 	golang.org/x/mod v0.8.0 // indirect
 	golang.org/x/net v0.9.0 // indirect
 	golang.org/x/sys v0.7.0 // indirect
-	golang.org/x/text v0.9.0 // indirect
+	golang.org/x/text v0.11.0 // indirect
 	google.golang.org/genproto v0.0.0-20230410155749-daa745c078e1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect

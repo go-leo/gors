@@ -3,6 +3,7 @@ package gors
 import (
 	"errors"
 	"fmt"
+	"github.com/go-leo/gox/errorx"
 	"io"
 	"regexp"
 
@@ -26,6 +27,11 @@ type Status struct {
 	Message string `json:"message,omitempty" yaml:"message,omitempty" xml:"message,omitempty" toml:"message,omitempty" codec:"message,omitempty" mapstructure:"message,omitempty"`
 }
 
+type ErrorAPI interface {
+	Error() string
+	WithCause(err error) Error
+}
+
 // Error 包含业务状态的错误.
 type Error struct {
 	// StatusCode http status code
@@ -38,9 +44,31 @@ type Error struct {
 	Cause error
 }
 
-// Froze convert Error to error
-func (e Error) Froze() error {
-	return e
+// Froze convert Error to ErrorAPI
+func (e Error) Froze() ErrorAPI {
+	return Error{
+		StatusCode: e.StatusCode,
+		Code:       e.Code,
+		Message:    e.Message,
+		Cause:      e.Cause,
+	}
+}
+
+func (e Error) WithCause(err error) Error {
+	if e.Cause == nil {
+		return Error{
+			StatusCode: e.StatusCode,
+			Code:       e.Code,
+			Message:    e.Message,
+			Cause:      err,
+		}
+	}
+	return Error{
+		StatusCode: e.StatusCode,
+		Code:       e.Code,
+		Message:    e.Message,
+		Cause:      errorx.Join(e.Cause, err),
+	}
 }
 
 func (e Error) Error() string {

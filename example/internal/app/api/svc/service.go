@@ -18,14 +18,12 @@ type Service struct{}
 func (svc *Service) Method(ctx context.Context, req *demo.MethodReq) (*demo.MethodResp, error) {
 	fmt.Println(req.ID)
 	if req.ID == 0 {
-		e := errors.ErrUnknown
-		e.Cause = stderr.New("cause error")
+		e := errors.ErrUnknown.WithCause(stderr.New("cause error"))
 		fmt.Printf("%+v\n", e)
 		return nil, e
 	}
 	if req.ID == 1 {
-		e := errors.ErrUnknown
-		e.Cause = pkgerr.WithStack(stderr.New("cause error"))
+		e := errors.ErrUnknown.WithCause(pkgerr.WithStack(stderr.New("cause error")))
 		fmt.Printf("%+v\n", e)
 		return nil, e
 	}
