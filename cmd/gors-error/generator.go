@@ -35,7 +35,7 @@ Err{{.Name}} = gors.Error{
 	StatusCode: {{.HTTPCode}},
 	Code: {{.Name}},
 	Message: "{{.Desc}}",
-}.Froze()
+}
 
 {{- end }}
 )
