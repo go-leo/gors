@@ -29,9 +29,9 @@ type Status struct {
 
 type ErrorAPI interface {
 	Error() string
-	WithCause(err error) Error
-	Status() *Status
+	Wrap(err error) Error
 	Unwrap() error
+	Status() *Status
 	Is(err error) bool
 	GRPCStatus() *gstatus.Status
 }
@@ -58,7 +58,7 @@ func (e Error) Froze() ErrorAPI {
 	}
 }
 
-func (e Error) WithCause(err error) Error {
+func (e Error) Wrap(err error) Error {
 	if e.Cause == nil {
 		return Error{
 			StatusCode: e.StatusCode,

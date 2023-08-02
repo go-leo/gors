@@ -18,12 +18,12 @@ type Service struct{}
 func (svc *Service) Method(ctx context.Context, req *demo.MethodReq) (*demo.MethodResp, error) {
 	fmt.Println(req.ID)
 	if req.ID == 0 {
-		e := errors.ErrUnknown.WithCause(stderr.New("cause error"))
+		e := errors.ErrUnknown.Wrap(stderr.New("cause error"))
 		fmt.Printf("%+v\n", e)
 		return nil, e
 	}
 	if req.ID == 1 {
-		e := errors.ErrUnknown.WithCause(pkgerr.WithStack(stderr.New("cause error")))
+		e := errors.ErrUnknown.Wrap(pkgerr.WithStack(stderr.New("cause error")))
 		fmt.Printf("%+v\n", e)
 		return nil, e
 	}
@@ -43,7 +43,7 @@ func (svc *Service) Method(ctx context.Context, req *demo.MethodReq) (*demo.Meth
 
 // func testCauseErr() error {
 // 	dberr := stderr.New("db error")
-// 	return errors.NewErrUserNotFound().WithCause(dberr)
+// 	return errors.NewErrUserNotFound().Wrap(dberr)
 // }
 
 func testStackErr() error { // 还是要实现
@@ -54,5 +54,5 @@ func testStackErr() error { // 还是要实现
 // func testStackErrWithCode() error { // 还是要实现
 // 	dberr := stderr.New("db error")
 // 	dberr = pkgerr.WithStack(dberr)
-// 	return errors.NewErrUserNotFound("not found uid:%d", 1).WithCause(dberr)
+// 	return errors.NewErrUserNotFound("not found uid:%d", 1).Wrap(dberr)
 // }
