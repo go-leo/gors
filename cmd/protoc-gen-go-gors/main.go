@@ -3,11 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/go-leo/gors/cmd/internal"
 	"google.golang.org/protobuf/compiler/protogen"
 	"google.golang.org/protobuf/types/pluginpb"
 )
-
-const version = "v1.4.5"
 
 var pathToLower *bool
 var requireUnimplemented *bool
@@ -16,7 +15,7 @@ func main() {
 	showVersion := flag.Bool("version", false, "print the version and exit")
 	flag.Parse()
 	if *showVersion {
-		fmt.Printf("protoc-gen-go-gors %v\n", version)
+		fmt.Printf("protoc-gen-go-gors %v\n", internal.Version)
 		return
 	}
 

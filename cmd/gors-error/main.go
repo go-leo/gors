@@ -5,6 +5,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/go-leo/gors/cmd/internal"
 	"io/ioutil"
 	"log"
 	"os"
@@ -35,6 +36,13 @@ func main() {
 	log.SetPrefix("gors-error: ")
 	flag.Usage = Usage
 	flag.Parse()
+
+	showVersion := flag.Bool("version", false, "print the version and exit")
+	if *showVersion {
+		fmt.Printf("gors-error %v\n", internal.Version)
+		return
+	}
+
 	if len(*typeNames) == 0 {
 		flag.Usage()
 		os.Exit(2)

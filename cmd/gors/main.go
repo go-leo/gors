@@ -5,6 +5,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"github.com/go-leo/gors/cmd/internal"
 	"github.com/go-leo/gors/internal/pkg/parser"
 	"github.com/go-leo/gox/slicex"
 	"github.com/go-leo/gox/stringx"
@@ -19,8 +20,6 @@ import (
 	"strconv"
 	"strings"
 )
-
-const version = "v1.4.5"
 
 var (
 	serviceName = flag.String("service", "", "service interface Name; must be set")
@@ -45,7 +44,7 @@ func main() {
 	flag.Usage = Usage
 	flag.Parse()
 	if *showVersion {
-		fmt.Printf("gors %v\n", version)
+		fmt.Printf("gors %v\n", internal.Version)
 		return
 	}
 
