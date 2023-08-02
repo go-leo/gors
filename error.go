@@ -38,6 +38,11 @@ type Error struct {
 	Cause error
 }
 
+// Froze convert Error to error
+func (e Error) Froze() error {
+	return e
+}
+
 func (e Error) Error() string {
 	return fmt.Sprintf("gors.Error, StatusCode: %d, Code: %d, Message: %s", e.StatusCode, e.Code, e.Message)
 }
