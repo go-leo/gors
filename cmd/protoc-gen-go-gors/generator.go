@@ -95,7 +95,7 @@ func genClientWrapper(gen *protogen.Plugin, file *protogen.File, g *protogen.Gen
 			g.P("func (wrapper *", wrapperName, ") ", method.GoName, "(ctx ", contextPackage.Ident("Context"), ", request *", method.Input.GoIdent, ") (*", method.Output.GoIdent, ", error) {")
 			g.P("var headerMD, trailerMD ", metadataPackage.Ident("MD"))
 			g.P("resp, err := wrapper.cli.", method.GoName, "(ctx, request, ", grpcPackage.Ident("Header"), "(&headerMD), ", grpcPackage.Ident("Trailer"), "(&trailerMD))")
-			g.P(gorsPackage.Ident("AddGRPCMetadata"), "(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher)")
+			g.P(gorsPackage.Ident("AddGRPCMetadata"), "(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher())")
 			g.P("return resp, err")
 			g.P("}")
 			g.P()
@@ -126,7 +126,7 @@ func genServerWrapper(gen *protogen.Plugin, file *protogen.File, g *protogen.Gen
 			g.P("stream := ", gorsPackage.Ident("NewServerTransportStream"), "(rpcMethodName)")
 			g.P("ctx = ", grpcPackage.Ident("NewContextWithServerTransportStream"), "(ctx, stream)")
 			g.P("resp, err := wrapper.srv.", method.GoName, "(ctx, request)")
-			g.P(gorsPackage.Ident("AddGRPCMetadata"), "(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher)")
+			g.P(gorsPackage.Ident("AddGRPCMetadata"), "(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher())")
 			g.P("return resp, err")
 			g.P("}")
 			g.P()
@@ -195,15 +195,15 @@ func genRoutesHandler(gen *protogen.Plugin, file *protogen.File, g *protogen.Gen
 			return err
 		}
 
-		g.P("if ctx, err = ", gorsPackage.Ident("NewGRPCContext"), "(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {")
-		g.P(gorsPackage.Ident("ErrorRender"), "(ctx, err, options.ErrorHandler, options.ResponseWrapper)")
+		g.P("if ctx, err = ", gorsPackage.Ident("NewGRPCContext"), "(ctx, options.IncomingHeaderMatcher(), options.MetadataAnnotators()); err != nil {")
+		g.P(gorsPackage.Ident("ErrorRender"), "(ctx, err, options.ErrorHandler(), options.ResponseWrapper())")
 		g.P("return")
 		g.P("}")
 
 		g.P("resp, err = wrapper.", router.MethodName, "(ctx, req)")
 
 		g.P("if err != nil {")
-		g.P(gorsPackage.Ident("ErrorRender"), "(ctx, err, options.ErrorHandler, options.ResponseWrapper)")
+		g.P(gorsPackage.Ident("ErrorRender"), "(ctx, err, options.ErrorHandler(), options.ResponseWrapper())")
 		g.P("return")
 		g.P("}")
 
@@ -224,8 +224,8 @@ func genClientRoutesFunction(gen *protogen.Plugin, file *protogen.File, g *proto
 	funcName := clientRoutesFunctionName(service)
 	g.P("func ", funcName, "(cli ", clientName, ", opts ...", gorsPackage.Ident("Option"), ") []", gorsPackage.Ident("Route"), " {")
 	g.P("options := ", gorsPackage.Ident("NewOptions"), "(opts...)")
-	g.P("if len(options.Tag) == 0 {")
-	g.P("options.Tag = ", strconv.Quote("json"))
+	g.P("if len(options.Tag()) == 0 && !options.DisableDefaultTag(){")
+	g.P("options.DefaultTag(", strconv.Quote("json"), ")")
 	g.P("}")
 	g.P("wrapper := &", clientWrapperName(service), "{cli: cli, options: options}")
 	g.P("return []", gorsPackage.Ident("Route"), "{")
@@ -244,8 +244,8 @@ func genServerRoutesFunction(gen *protogen.Plugin, file *protogen.File, g *proto
 	funcName := serverRoutesFunctionName(service)
 	g.P("func ", funcName, "(srv ", serverName, ", opts ...", gorsPackage.Ident("Option"), ") []", gorsPackage.Ident("Route"), " {")
 	g.P("options := ", gorsPackage.Ident("NewOptions"), "(opts...)")
-	g.P("if len(options.Tag) == 0 {")
-	g.P("options.Tag = ", strconv.Quote("json"))
+	g.P("if len(options.Tag()) == 0 && !options.DisableDefaultTag(){")
+	g.P("options.DefaultTag(", strconv.Quote("json"), ")")
 	g.P("}")
 	g.P("wrapper := &", serverWrapperName(service), "{srv: srv, options: options}")
 	g.P("return []", gorsPackage.Ident("Route"), "{")
@@ -262,12 +262,12 @@ func genServerRoutesFunction(gen *protogen.Plugin, file *protogen.File, g *proto
 func printRequestBinding(gen *protogen.Plugin, g *protogen.GeneratedFile, router *parser.RouterInfo) error {
 
 	g.P("if err = ", gorsPackage.Ident("RequestBind"), "(")
-	g.P("ctx, req, options.Tag,")
+	g.P("ctx, req, options.Tag(),")
 	for _, binding := range router.Bindings {
 		g.P(gorsPackage.Ident(strings.TrimPrefix(binding, "@")), ",")
 	}
 	g.P("); err != nil {")
-	g.P(gorsPackage.Ident("ErrorRender"), "(ctx, err, options.ErrorHandler, options.ResponseWrapper)")
+	g.P(gorsPackage.Ident("ErrorRender"), "(ctx, err, options.ErrorHandler(), options.ResponseWrapper())")
 	g.P("return")
 	g.P("}")
 	return nil
@@ -286,7 +286,7 @@ func printResponseRender(gen *protogen.Plugin, g *protogen.GeneratedFile, router
 	g.P(gorsPackage.Ident("ResponseRender"),
 		"(ctx, ", gorsPackage.Ident("StatusCode"), "(ctx), resp,",
 		strconv.Quote(router.RenderContentType), ",", gorsPackage.Ident(strings.TrimPrefix(router.Render, "@")),
-		", options.ResponseWrapper)")
+		", options.ResponseWrapper())")
 
 	return nil
 }

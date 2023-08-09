@@ -24,17 +24,17 @@ func _Service_Method_Handler(srv Service, options *gors.Options) func(c *gin.Con
 		var err error
 		req = new(MethodReq)
 		if err = gors.RequestBind(
-			ctx, req, options.Tag,
+			ctx, req, options.Tag(),
 			gors.UriBinding,
 		); err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
 			return
 		}
 		resp, err = srv.Method(ctx, req)
 		if err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json", gors.JSONRender, options.ResponseWrapper)
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json", gors.JSONRender, options.ResponseWrapper())
 	}
 }

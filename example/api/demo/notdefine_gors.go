@@ -27,18 +27,18 @@ func _NotDefine_String_Handler(srv NotDefine, options *gors.Options) func(c *gin
 		var resp string
 		var err error
 		if err = gors.RequestBind(
-			ctx, &req, options.Tag,
+			ctx, &req, options.Tag(),
 			gors.StringBinding,
 		); err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
 			return
 		}
 		resp, err = srv.String(ctx, req)
 		if err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.StringRender, options.ResponseWrapper)
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.StringRender, options.ResponseWrapper())
 	}
 }
 
@@ -50,18 +50,18 @@ func _NotDefine_Bytes_Handler(srv NotDefine, options *gors.Options) func(c *gin.
 		var resp []byte
 		var err error
 		if err = gors.RequestBind(
-			ctx, &req, options.Tag,
+			ctx, &req, options.Tag(),
 			gors.BytesBinding,
 		); err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
 			return
 		}
 		resp, err = srv.Bytes(ctx, req)
 		if err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.BytesRender, options.ResponseWrapper)
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.BytesRender, options.ResponseWrapper())
 	}
 }
 
@@ -73,18 +73,18 @@ func _NotDefine_Reader_Handler(srv NotDefine, options *gors.Options) func(c *gin
 		var resp io.Reader
 		var err error
 		if err = gors.RequestBind(
-			ctx, &req, options.Tag,
+			ctx, &req, options.Tag(),
 			gors.ReaderBinding,
 		); err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
 			return
 		}
 		resp, err = srv.Reader(ctx, req)
 		if err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.ReaderRender, options.ResponseWrapper)
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.ReaderRender, options.ResponseWrapper())
 	}
 }
 
@@ -97,17 +97,17 @@ func _NotDefine_NotDefine_Handler(srv NotDefine, options *gors.Options) func(c *
 		var err error
 		req = new(NotDefineReq)
 		if err = gors.RequestBind(
-			ctx, req, options.Tag,
+			ctx, req, options.Tag(),
 			gors.QueryBinding,
 		); err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
 			return
 		}
 		resp, err = srv.NotDefine(ctx, req)
 		if err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json", gors.JSONRender, options.ResponseWrapper)
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json", gors.JSONRender, options.ResponseWrapper())
 	}
 }

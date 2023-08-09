@@ -24,18 +24,18 @@ func _BytesString_GetBytesString_Handler(srv BytesString, options *gors.Options)
 		var resp string
 		var err error
 		if err = gors.RequestBind(
-			ctx, &req, options.Tag,
+			ctx, &req, options.Tag(),
 			gors.BytesBinding,
 		); err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
 			return
 		}
 		resp, err = srv.GetBytesString(ctx, req)
 		if err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "text/html", gors.HTMLRender, options.ResponseWrapper)
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "text/html", gors.HTMLRender, options.ResponseWrapper())
 	}
 }
 
@@ -47,17 +47,17 @@ func _BytesString_PutBytesString_Handler(srv BytesString, options *gors.Options)
 		var resp string
 		var err error
 		if err = gors.RequestBind(
-			ctx, &req, options.Tag,
+			ctx, &req, options.Tag(),
 			gors.BytesBinding,
 		); err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
 			return
 		}
 		resp, err = srv.PutBytesString(ctx, req)
 		if err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.RedirectRender, options.ResponseWrapper)
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.RedirectRender, options.ResponseWrapper())
 	}
 }

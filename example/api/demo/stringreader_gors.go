@@ -25,18 +25,18 @@ func _StringReader_GetStringRender_Handler(srv StringReader, options *gors.Optio
 		var resp io.Reader
 		var err error
 		if err = gors.RequestBind(
-			ctx, &req, options.Tag,
+			ctx, &req, options.Tag(),
 			gors.StringBinding,
 		); err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
 			return
 		}
 		resp, err = srv.GetStringRender(ctx, req)
 		if err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "video/mpeg4", gors.ReaderRender, options.ResponseWrapper)
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "video/mpeg4", gors.ReaderRender, options.ResponseWrapper())
 	}
 }
 
@@ -48,17 +48,17 @@ func _StringReader_OptionsStringReader_Handler(srv StringReader, options *gors.O
 		var resp io.Reader
 		var err error
 		if err = gors.RequestBind(
-			ctx, &req, options.Tag,
+			ctx, &req, options.Tag(),
 			gors.StringBinding,
 		); err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
 			return
 		}
 		resp, err = srv.OptionsStringReader(ctx, req)
 		if err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "video/mpeg4", gors.ReaderRender, options.ResponseWrapper)
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "video/mpeg4", gors.ReaderRender, options.ResponseWrapper())
 	}
 }

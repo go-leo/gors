@@ -24,17 +24,17 @@ func _CustomBinderRender_Custom_Handler(srv CustomBinderRender, options *gors.Op
 		var err error
 		req = new(CustomReq)
 		if err = gors.RequestBind(
-			ctx, req, options.Tag,
+			ctx, req, options.Tag(),
 			gors.CustomBinding,
 		); err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
 			return
 		}
 		resp, err = srv.Custom(ctx, req)
 		if err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/custom", gors.CustomRender, options.ResponseWrapper)
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/custom", gors.CustomRender, options.ResponseWrapper())
 	}
 }

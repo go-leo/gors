@@ -25,18 +25,18 @@ func _ReaderReader_GetReaderReader_Handler(srv ReaderReader, options *gors.Optio
 		var resp io.Reader
 		var err error
 		if err = gors.RequestBind(
-			ctx, &req, options.Tag,
+			ctx, &req, options.Tag(),
 			gors.ReaderBinding,
 		); err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
 			return
 		}
 		resp, err = srv.GetReaderReader(ctx, req)
 		if err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.ReaderRender, options.ResponseWrapper)
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.ReaderRender, options.ResponseWrapper())
 	}
 }
 
@@ -48,17 +48,17 @@ func _ReaderReader_HeadReaderReader_Handler(srv ReaderReader, options *gors.Opti
 		var resp io.Reader
 		var err error
 		if err = gors.RequestBind(
-			ctx, &req, options.Tag,
+			ctx, &req, options.Tag(),
 			gors.ReaderBinding,
 		); err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
 			return
 		}
 		resp, err = srv.HeadReaderReader(ctx, req)
 		if err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "video/mp4", gors.ReaderRender, options.ResponseWrapper)
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "video/mp4", gors.ReaderRender, options.ResponseWrapper())
 	}
 }

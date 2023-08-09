@@ -22,14 +22,20 @@ func ErrorRender(
 	handler func(ctx context.Context, err error) error,
 	wrapper func(resp any) any,
 ) {
+	if err == nil {
+		panic("err is nil")
+	}
 	if handler != nil {
-		err = handler(ctx, err)
-		if err == nil {
+		newErr := handler(ctx, err)
+		if newErr == nil {
+			_ = FromContext(ctx).Error(err)
 			return
 		}
+		err = newErr
 	}
-	gorserr := FromError(err)
-	ResponseRender(ctx, gorserr.StatusCode, gorserr.Status(), "", JSONRender, wrapper)
+	gorsErr := FromError(err)
+	_ = FromContext(ctx).Error(gorsErr)
+	ResponseRender(ctx, gorsErr.StatusCode, gorsErr.Status(), "", JSONRender, wrapper)
 }
 
 func ResponseRender(
