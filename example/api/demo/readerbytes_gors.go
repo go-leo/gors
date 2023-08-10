@@ -25,18 +25,18 @@ func _ReaderBytes_GetReaderBytes_Handler(srv ReaderBytes, options *gors.Options)
 		var resp []byte
 		var err error
 		if err = gors.RequestBind(
-			ctx, &req, options.Tag(),
+			ctx, &req, options.Tag,
 			gors.ReaderBinding,
 		); err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
 		resp, err = srv.GetReaderBytes(ctx, req)
 		if err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.BytesRender, options.ResponseWrapper())
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.BytesRender, options.ResponseWrapper)
 	}
 }
 
@@ -48,17 +48,17 @@ func _ReaderBytes_PostReaderBytes_Handler(srv ReaderBytes, options *gors.Options
 		var resp []byte
 		var err error
 		if err = gors.RequestBind(
-			ctx, &req, options.Tag(),
+			ctx, &req, options.Tag,
 			gors.ReaderBinding,
 		); err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
 		resp, err = srv.PostReaderBytes(ctx, req)
 		if err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "text/go", gors.BytesRender, options.ResponseWrapper())
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "text/go", gors.BytesRender, options.ResponseWrapper)
 	}
 }

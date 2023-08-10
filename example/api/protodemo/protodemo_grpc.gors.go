@@ -13,8 +13,8 @@ import (
 
 func ProtoDemoClientRoutes(cli ProtoDemoClient, opts ...gors.Option) []gors.Route {
 	options := gors.NewOptions(opts...)
-	if len(options.Tag()) == 0 && !options.DisableDefaultTag() {
-		options.DefaultTag("json")
+	if len(options.Tag) == 0 {
+		options.Tag = "json"
 	}
 	wrapper := &_ProtoDemoClientWrapper{cli: cli, options: options}
 	return []gors.Route{
@@ -35,8 +35,8 @@ func ProtoDemoClientRoutes(cli ProtoDemoClient, opts ...gors.Option) []gors.Rout
 
 func ProtoDemoServerRoutes(srv ProtoDemoServer, opts ...gors.Option) []gors.Route {
 	options := gors.NewOptions(opts...)
-	if len(options.Tag()) == 0 && !options.DisableDefaultTag() {
-		options.DefaultTag("json")
+	if len(options.Tag) == 0 {
+		options.Tag = "json"
 	}
 	wrapper := &_ProtoDemoServerWrapper{srv: srv, options: options}
 	return []gors.Route{
@@ -64,22 +64,22 @@ func _ProtoDemo_DELETEUriBindingJSONRender_GORS_Handler(wrapper ProtoDemoServer,
 		var err error
 		req = new(HelloRequest)
 		if err = gors.RequestBind(
-			ctx, req, options.Tag(),
+			ctx, req, options.Tag,
 			gors.UriBinding,
 		); err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher(), options.MetadataAnnotators()); err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
+		if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
 		resp, err = wrapper.DELETEUriBindingJSONRender(ctx, req)
 		if err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json", gors.JSONRender, options.ResponseWrapper())
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json", gors.JSONRender, options.ResponseWrapper)
 	}
 }
 
@@ -92,22 +92,22 @@ func _ProtoDemo_GETUriBindingIndentedJSONRender_GORS_Handler(wrapper ProtoDemoSe
 		var err error
 		req = new(HelloRequest)
 		if err = gors.RequestBind(
-			ctx, req, options.Tag(),
+			ctx, req, options.Tag,
 			gors.UriBinding,
 		); err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher(), options.MetadataAnnotators()); err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
+		if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
 		resp, err = wrapper.GETUriBindingIndentedJSONRender(ctx, req)
 		if err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json", gors.IndentedJSONRender, options.ResponseWrapper())
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json", gors.IndentedJSONRender, options.ResponseWrapper)
 	}
 }
 
@@ -120,23 +120,23 @@ func _ProtoDemo_GETUriQueryBindingSecureJSONRender_GORS_Handler(wrapper ProtoDem
 		var err error
 		req = new(HelloRequest)
 		if err = gors.RequestBind(
-			ctx, req, options.Tag(),
+			ctx, req, options.Tag,
 			gors.UriBinding,
 			gors.QueryBinding,
 		); err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher(), options.MetadataAnnotators()); err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
+		if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
 		resp, err = wrapper.GETUriQueryBindingSecureJSONRender(ctx, req)
 		if err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json", gors.SecureJSONRender, options.ResponseWrapper())
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json", gors.SecureJSONRender, options.ResponseWrapper)
 	}
 }
 
@@ -149,23 +149,23 @@ func _ProtoDemo_PATCHHeaderProtoFormBindingPureJSONRender_GORS_Handler(wrapper P
 		var err error
 		req = new(HelloRequest)
 		if err = gors.RequestBind(
-			ctx, req, options.Tag(),
+			ctx, req, options.Tag,
 			gors.HeaderBinding,
 			gors.FormBinding,
 		); err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher(), options.MetadataAnnotators()); err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
+		if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
 		resp, err = wrapper.PATCHHeaderProtoFormBindingPureJSONRender(ctx, req)
 		if err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json", gors.PureJSONRender, options.ResponseWrapper())
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json", gors.PureJSONRender, options.ResponseWrapper)
 	}
 }
 
@@ -178,23 +178,23 @@ func _ProtoDemo_PUTHeaderJSONBindingAsciiJSONRender_GORS_Handler(wrapper ProtoDe
 		var err error
 		req = new(HelloRequest)
 		if err = gors.RequestBind(
-			ctx, req, options.Tag(),
+			ctx, req, options.Tag,
 			gors.HeaderBinding,
 			gors.JSONBinding,
 		); err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher(), options.MetadataAnnotators()); err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
+		if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
 		resp, err = wrapper.PUTHeaderJSONBindingAsciiJSONRender(ctx, req)
 		if err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json", gors.AsciiJSONRender, options.ResponseWrapper())
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json", gors.AsciiJSONRender, options.ResponseWrapper)
 	}
 }
 
@@ -207,22 +207,22 @@ func _ProtoDemo_POSTProtoBufBindingProtoBufRender_GORS_Handler(wrapper ProtoDemo
 		var err error
 		req = new(HelloRequest)
 		if err = gors.RequestBind(
-			ctx, req, options.Tag(),
+			ctx, req, options.Tag,
 			gors.ProtoBufBinding,
 		); err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher(), options.MetadataAnnotators()); err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
+		if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
 		resp, err = wrapper.POSTProtoBufBindingProtoBufRender(ctx, req)
 		if err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/x-protobuf", gors.ProtoBufRender, options.ResponseWrapper())
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/x-protobuf", gors.ProtoBufRender, options.ResponseWrapper)
 	}
 }
 
@@ -235,22 +235,22 @@ func _ProtoDemo_POSTProtoJSONBindingProtoJSONRender_GORS_Handler(wrapper ProtoDe
 		var err error
 		req = new(HelloRequest)
 		if err = gors.RequestBind(
-			ctx, req, options.Tag(),
+			ctx, req, options.Tag,
 			gors.ProtoJSONBinding,
 		); err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher(), options.MetadataAnnotators()); err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
+		if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
 		resp, err = wrapper.POSTProtoJSONBindingProtoJSONRender(ctx, req)
 		if err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json", gors.ProtoJSONRender, options.ResponseWrapper())
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json", gors.ProtoJSONRender, options.ResponseWrapper)
 	}
 }
 
@@ -263,22 +263,22 @@ func _ProtoDemo_POSTCustomBindingCustomRender_GORS_Handler(wrapper ProtoDemoServ
 		var err error
 		req = new(HelloRequest)
 		if err = gors.RequestBind(
-			ctx, req, options.Tag(),
+			ctx, req, options.Tag,
 			gors.CustomBinding,
 		); err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher(), options.MetadataAnnotators()); err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
+		if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
 		resp, err = wrapper.POSTCustomBindingCustomRender(ctx, req)
 		if err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.CustomRender, options.ResponseWrapper())
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.CustomRender, options.ResponseWrapper)
 	}
 }
 
@@ -291,22 +291,22 @@ func _ProtoDemo_NotDefine_GORS_Handler(wrapper ProtoDemoServer, options *gors.Op
 		var err error
 		req = new(HelloRequest)
 		if err = gors.RequestBind(
-			ctx, req, options.Tag(),
+			ctx, req, options.Tag,
 			gors.ProtoJSONBinding,
 		); err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher(), options.MetadataAnnotators()); err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
+		if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
 		resp, err = wrapper.NotDefine(ctx, req)
 		if err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json", gors.ProtoJSONRender, options.ResponseWrapper())
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json", gors.ProtoJSONRender, options.ResponseWrapper)
 	}
 }
 
@@ -319,22 +319,22 @@ func _ProtoDemo_POSTSetHeaderTrailer_GORS_Handler(wrapper ProtoDemoServer, optio
 		var err error
 		req = new(HelloRequest)
 		if err = gors.RequestBind(
-			ctx, req, options.Tag(),
+			ctx, req, options.Tag,
 			gors.ProtoJSONBinding,
 		); err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher(), options.MetadataAnnotators()); err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
+		if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
 		resp, err = wrapper.POSTSetHeaderTrailer(ctx, req)
 		if err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json", gors.ProtoJSONRender, options.ResponseWrapper())
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json", gors.ProtoJSONRender, options.ResponseWrapper)
 	}
 }
 
@@ -347,22 +347,22 @@ func _ProtoDemo_POSTError_GORS_Handler(wrapper ProtoDemoServer, options *gors.Op
 		var err error
 		req = new(HelloRequest)
 		if err = gors.RequestBind(
-			ctx, req, options.Tag(),
+			ctx, req, options.Tag,
 			gors.ProtoJSONBinding,
 		); err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher(), options.MetadataAnnotators()); err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
+		if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
 		resp, err = wrapper.POSTError(ctx, req)
 		if err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json", gors.ProtoJSONRender, options.ResponseWrapper())
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json", gors.ProtoJSONRender, options.ResponseWrapper)
 	}
 }
 
@@ -375,22 +375,22 @@ func _ProtoDemo_POSTGRPCStatus_GORS_Handler(wrapper ProtoDemoServer, options *go
 		var err error
 		req = new(HelloRequest)
 		if err = gors.RequestBind(
-			ctx, req, options.Tag(),
+			ctx, req, options.Tag,
 			gors.ProtoJSONBinding,
 		); err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher(), options.MetadataAnnotators()); err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
+		if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
 		resp, err = wrapper.POSTGRPCStatus(ctx, req)
 		if err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json", gors.ProtoJSONRender, options.ResponseWrapper())
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json", gors.ProtoJSONRender, options.ResponseWrapper)
 	}
 }
 
@@ -403,84 +403,84 @@ type _ProtoDemoClientWrapper struct {
 func (wrapper *_ProtoDemoClientWrapper) DELETEUriBindingJSONRender(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
 	var headerMD, trailerMD metadata.MD
 	resp, err := wrapper.cli.DELETEUriBindingJSONRender(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
-	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher())
+	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher)
 	return resp, err
 }
 
 func (wrapper *_ProtoDemoClientWrapper) GETUriBindingIndentedJSONRender(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
 	var headerMD, trailerMD metadata.MD
 	resp, err := wrapper.cli.GETUriBindingIndentedJSONRender(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
-	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher())
+	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher)
 	return resp, err
 }
 
 func (wrapper *_ProtoDemoClientWrapper) GETUriQueryBindingSecureJSONRender(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
 	var headerMD, trailerMD metadata.MD
 	resp, err := wrapper.cli.GETUriQueryBindingSecureJSONRender(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
-	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher())
+	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher)
 	return resp, err
 }
 
 func (wrapper *_ProtoDemoClientWrapper) PATCHHeaderProtoFormBindingPureJSONRender(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
 	var headerMD, trailerMD metadata.MD
 	resp, err := wrapper.cli.PATCHHeaderProtoFormBindingPureJSONRender(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
-	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher())
+	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher)
 	return resp, err
 }
 
 func (wrapper *_ProtoDemoClientWrapper) PUTHeaderJSONBindingAsciiJSONRender(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
 	var headerMD, trailerMD metadata.MD
 	resp, err := wrapper.cli.PUTHeaderJSONBindingAsciiJSONRender(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
-	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher())
+	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher)
 	return resp, err
 }
 
 func (wrapper *_ProtoDemoClientWrapper) POSTProtoBufBindingProtoBufRender(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
 	var headerMD, trailerMD metadata.MD
 	resp, err := wrapper.cli.POSTProtoBufBindingProtoBufRender(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
-	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher())
+	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher)
 	return resp, err
 }
 
 func (wrapper *_ProtoDemoClientWrapper) POSTProtoJSONBindingProtoJSONRender(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
 	var headerMD, trailerMD metadata.MD
 	resp, err := wrapper.cli.POSTProtoJSONBindingProtoJSONRender(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
-	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher())
+	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher)
 	return resp, err
 }
 
 func (wrapper *_ProtoDemoClientWrapper) POSTCustomBindingCustomRender(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
 	var headerMD, trailerMD metadata.MD
 	resp, err := wrapper.cli.POSTCustomBindingCustomRender(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
-	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher())
+	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher)
 	return resp, err
 }
 
 func (wrapper *_ProtoDemoClientWrapper) NotDefine(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
 	var headerMD, trailerMD metadata.MD
 	resp, err := wrapper.cli.NotDefine(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
-	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher())
+	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher)
 	return resp, err
 }
 
 func (wrapper *_ProtoDemoClientWrapper) POSTSetHeaderTrailer(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
 	var headerMD, trailerMD metadata.MD
 	resp, err := wrapper.cli.POSTSetHeaderTrailer(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
-	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher())
+	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher)
 	return resp, err
 }
 
 func (wrapper *_ProtoDemoClientWrapper) POSTError(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
 	var headerMD, trailerMD metadata.MD
 	resp, err := wrapper.cli.POSTError(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
-	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher())
+	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher)
 	return resp, err
 }
 
 func (wrapper *_ProtoDemoClientWrapper) POSTGRPCStatus(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
 	var headerMD, trailerMD metadata.MD
 	resp, err := wrapper.cli.POSTGRPCStatus(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
-	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher())
+	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher)
 	return resp, err
 }
 
@@ -495,7 +495,7 @@ func (wrapper *_ProtoDemoServerWrapper) DELETEUriBindingJSONRender(ctx context.C
 	stream := gors.NewServerTransportStream(rpcMethodName)
 	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
 	resp, err := wrapper.srv.DELETEUriBindingJSONRender(ctx, request)
-	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher())
+	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher)
 	return resp, err
 }
 
@@ -504,7 +504,7 @@ func (wrapper *_ProtoDemoServerWrapper) GETUriBindingIndentedJSONRender(ctx cont
 	stream := gors.NewServerTransportStream(rpcMethodName)
 	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
 	resp, err := wrapper.srv.GETUriBindingIndentedJSONRender(ctx, request)
-	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher())
+	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher)
 	return resp, err
 }
 
@@ -513,7 +513,7 @@ func (wrapper *_ProtoDemoServerWrapper) GETUriQueryBindingSecureJSONRender(ctx c
 	stream := gors.NewServerTransportStream(rpcMethodName)
 	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
 	resp, err := wrapper.srv.GETUriQueryBindingSecureJSONRender(ctx, request)
-	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher())
+	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher)
 	return resp, err
 }
 
@@ -522,7 +522,7 @@ func (wrapper *_ProtoDemoServerWrapper) PATCHHeaderProtoFormBindingPureJSONRende
 	stream := gors.NewServerTransportStream(rpcMethodName)
 	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
 	resp, err := wrapper.srv.PATCHHeaderProtoFormBindingPureJSONRender(ctx, request)
-	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher())
+	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher)
 	return resp, err
 }
 
@@ -531,7 +531,7 @@ func (wrapper *_ProtoDemoServerWrapper) PUTHeaderJSONBindingAsciiJSONRender(ctx 
 	stream := gors.NewServerTransportStream(rpcMethodName)
 	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
 	resp, err := wrapper.srv.PUTHeaderJSONBindingAsciiJSONRender(ctx, request)
-	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher())
+	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher)
 	return resp, err
 }
 
@@ -540,7 +540,7 @@ func (wrapper *_ProtoDemoServerWrapper) POSTProtoBufBindingProtoBufRender(ctx co
 	stream := gors.NewServerTransportStream(rpcMethodName)
 	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
 	resp, err := wrapper.srv.POSTProtoBufBindingProtoBufRender(ctx, request)
-	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher())
+	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher)
 	return resp, err
 }
 
@@ -549,7 +549,7 @@ func (wrapper *_ProtoDemoServerWrapper) POSTProtoJSONBindingProtoJSONRender(ctx 
 	stream := gors.NewServerTransportStream(rpcMethodName)
 	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
 	resp, err := wrapper.srv.POSTProtoJSONBindingProtoJSONRender(ctx, request)
-	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher())
+	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher)
 	return resp, err
 }
 
@@ -558,7 +558,7 @@ func (wrapper *_ProtoDemoServerWrapper) POSTCustomBindingCustomRender(ctx contex
 	stream := gors.NewServerTransportStream(rpcMethodName)
 	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
 	resp, err := wrapper.srv.POSTCustomBindingCustomRender(ctx, request)
-	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher())
+	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher)
 	return resp, err
 }
 
@@ -567,7 +567,7 @@ func (wrapper *_ProtoDemoServerWrapper) NotDefine(ctx context.Context, request *
 	stream := gors.NewServerTransportStream(rpcMethodName)
 	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
 	resp, err := wrapper.srv.NotDefine(ctx, request)
-	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher())
+	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher)
 	return resp, err
 }
 
@@ -576,7 +576,7 @@ func (wrapper *_ProtoDemoServerWrapper) POSTSetHeaderTrailer(ctx context.Context
 	stream := gors.NewServerTransportStream(rpcMethodName)
 	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
 	resp, err := wrapper.srv.POSTSetHeaderTrailer(ctx, request)
-	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher())
+	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher)
 	return resp, err
 }
 
@@ -585,7 +585,7 @@ func (wrapper *_ProtoDemoServerWrapper) POSTError(ctx context.Context, request *
 	stream := gors.NewServerTransportStream(rpcMethodName)
 	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
 	resp, err := wrapper.srv.POSTError(ctx, request)
-	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher())
+	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher)
 	return resp, err
 }
 
@@ -594,6 +594,6 @@ func (wrapper *_ProtoDemoServerWrapper) POSTGRPCStatus(ctx context.Context, requ
 	stream := gors.NewServerTransportStream(rpcMethodName)
 	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
 	resp, err := wrapper.srv.POSTGRPCStatus(ctx, request)
-	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher())
+	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher)
 	return resp, err
 }

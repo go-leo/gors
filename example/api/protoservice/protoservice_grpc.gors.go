@@ -13,8 +13,8 @@ import (
 
 func ProtoServiceClientRoutes(cli ProtoServiceClient, opts ...gors.Option) []gors.Route {
 	options := gors.NewOptions(opts...)
-	if len(options.Tag()) == 0 && !options.DisableDefaultTag() {
-		options.DefaultTag("json")
+	if len(options.Tag) == 0 {
+		options.Tag = "json"
 	}
 	wrapper := &_ProtoServiceClientWrapper{cli: cli, options: options}
 	return []gors.Route{
@@ -24,8 +24,8 @@ func ProtoServiceClientRoutes(cli ProtoServiceClient, opts ...gors.Option) []gor
 
 func ProtoServiceServerRoutes(srv ProtoServiceServer, opts ...gors.Option) []gors.Route {
 	options := gors.NewOptions(opts...)
-	if len(options.Tag()) == 0 && !options.DisableDefaultTag() {
-		options.DefaultTag("json")
+	if len(options.Tag) == 0 {
+		options.Tag = "json"
 	}
 	wrapper := &_ProtoServiceServerWrapper{srv: srv, options: options}
 	return []gors.Route{
@@ -42,22 +42,22 @@ func _ProtoService_Method_GORS_Handler(wrapper ProtoServiceServer, options *gors
 		var err error
 		req = new(HelloRequest)
 		if err = gors.RequestBind(
-			ctx, req, options.Tag(),
+			ctx, req, options.Tag,
 			gors.ProtoJSONBinding,
 		); err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher(), options.MetadataAnnotators()); err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
+		if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
 		resp, err = wrapper.Method(ctx, req)
 		if err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json", gors.ProtoJSONRender, options.ResponseWrapper())
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json", gors.ProtoJSONRender, options.ResponseWrapper)
 	}
 }
 
@@ -70,7 +70,7 @@ type _ProtoServiceClientWrapper struct {
 func (wrapper *_ProtoServiceClientWrapper) Method(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
 	var headerMD, trailerMD metadata.MD
 	resp, err := wrapper.cli.Method(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
-	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher())
+	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher)
 	return resp, err
 }
 
@@ -85,6 +85,6 @@ func (wrapper *_ProtoServiceServerWrapper) Method(ctx context.Context, request *
 	stream := gors.NewServerTransportStream(rpcMethodName)
 	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
 	resp, err := wrapper.srv.Method(ctx, request)
-	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher())
+	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher)
 	return resp, err
 }

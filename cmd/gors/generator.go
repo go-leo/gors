@@ -400,10 +400,10 @@ func (g *generate) printPtrReq(info *parser.RouterInfo, binding string) {
 		log.Fatalf("error: binding must be %s", binding)
 	}
 	g.P(g.functionBuf, "if err = ", gorsPackage.Ident("RequestBind"), "(")
-	g.P(g.functionBuf, "ctx, &req, options.Tag(),")
+	g.P(g.functionBuf, "ctx, &req, options.Tag,")
 	g.P(g.functionBuf, gorsPackage.Ident(strings.Trim(info.Bindings[0], "@")), ",")
 	g.P(g.functionBuf, "); err != nil {")
-	g.P(g.functionBuf, gorsPackage.Ident("ErrorRender"), "(ctx, err, options.ErrorHandler(), options.ResponseWrapper())")
+	g.P(g.functionBuf, gorsPackage.Ident("ErrorRender"), "(ctx, err, options.ErrorHandler, options.ResponseWrapper)")
 	g.P(g.functionBuf, "return")
 	g.P(g.functionBuf, "}")
 }
@@ -413,19 +413,19 @@ func (g *generate) printObjectReq(info *parser.RouterInfo) {
 	objArgs := Param2.ObjectArgs
 	g.P(g.functionBuf, "req = new(", objArgs.GoImportPath.Ident(objArgs.Name), ")")
 	g.P(g.functionBuf, "if err = ", gorsPackage.Ident("RequestBind"), "(")
-	g.P(g.functionBuf, "ctx, req, options.Tag(),")
+	g.P(g.functionBuf, "ctx, req, options.Tag,")
 	for _, binding := range info.Bindings {
 		g.P(g.functionBuf, gorsPackage.Ident(strings.Trim(binding, "@")), ",")
 	}
 	g.P(g.functionBuf, "); err != nil {")
-	g.P(g.functionBuf, gorsPackage.Ident("ErrorRender"), "(ctx, err, options.ErrorHandler(), options.ResponseWrapper())")
+	g.P(g.functionBuf, gorsPackage.Ident("ErrorRender"), "(ctx, err, options.ErrorHandler, options.ResponseWrapper)")
 	g.P(g.functionBuf, "return")
 	g.P(g.functionBuf, "}")
 }
 
 func (g *generate) printResponseRender(info *parser.RouterInfo) {
 	g.P(g.functionBuf, "if err != nil {")
-	g.P(g.functionBuf, gorsPackage.Ident("ErrorRender"), "(ctx, err, options.ErrorHandler(), options.ResponseWrapper())")
+	g.P(g.functionBuf, gorsPackage.Ident("ErrorRender"), "(ctx, err, options.ErrorHandler, options.ResponseWrapper)")
 	g.P(g.functionBuf, "return")
 	g.P(g.functionBuf, "}")
 
@@ -476,7 +476,7 @@ func (g *generate) printResponseRender(info *parser.RouterInfo) {
 	g.P(g.functionBuf, gorsPackage.Ident("ResponseRender"),
 		"(ctx, ", gorsPackage.Ident("StatusCode"), "(ctx), resp,",
 		strconv.Quote(info.RenderContentType), ",", gorsPackage.Ident(strings.TrimPrefix(info.Render, "@")),
-		", options.ResponseWrapper())")
+		", options.ResponseWrapper)")
 }
 
 func (g *generate) printImports() {

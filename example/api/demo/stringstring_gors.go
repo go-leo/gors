@@ -24,18 +24,18 @@ func _StringString_GetStringString_Handler(srv StringString, options *gors.Optio
 		var resp string
 		var err error
 		if err = gors.RequestBind(
-			ctx, &req, options.Tag(),
+			ctx, &req, options.Tag,
 			gors.StringBinding,
 		); err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
 		resp, err = srv.GetStringString(ctx, req)
 		if err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "text/go", gors.StringRender, options.ResponseWrapper())
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "text/go", gors.StringRender, options.ResponseWrapper)
 	}
 }
 
@@ -47,17 +47,17 @@ func _StringString_PatchStringString_Handler(srv StringString, options *gors.Opt
 		var resp string
 		var err error
 		if err = gors.RequestBind(
-			ctx, &req, options.Tag(),
+			ctx, &req, options.Tag,
 			gors.StringBinding,
 		); err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
 		resp, err = srv.PatchStringString(ctx, req)
 		if err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler(), options.ResponseWrapper())
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/go", gors.StringRender, options.ResponseWrapper())
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/go", gors.StringRender, options.ResponseWrapper)
 	}
 }
