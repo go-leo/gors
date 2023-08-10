@@ -7,6 +7,7 @@ import (
 
 type Options struct {
 	Tag                   string
+	DisableDefaultTag     bool
 	ResponseWrapper       func(resp any) any
 	ErrorHandler          func(ctx context.Context, err error) error
 	IncomingHeaderMatcher func(key string) (string, bool)
@@ -27,6 +28,12 @@ func NewOptions(opts ...Option) *Options {
 func Tag(tag string) Option {
 	return func(o *Options) {
 		o.Tag = tag
+	}
+}
+
+func DisableDefaultTag() Option {
+	return func(o *Options) {
+		o.DisableDefaultTag = true
 	}
 }
 
