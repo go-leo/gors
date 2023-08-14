@@ -3,16 +3,18 @@ package gors
 import (
 	"context"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 type Options struct {
-	Tag                   string
-	DisableDefaultTag     bool
-	ResponseWrapper       func(resp any) any
-	ErrorHandler          func(ctx context.Context, err error) error
-	IncomingHeaderMatcher func(key string) (string, bool)
-	OutgoingHeaderMatcher func(key string) (string, bool)
-	MetadataAnnotators    []func(ctx context.Context) metadata.MD
+	Tag                     string
+	DisableDefaultTag       bool
+	ResponseWrapper         func(resp any) any
+	ErrorHandler            func(ctx context.Context, err error) error
+	IncomingHeaderMatcher   func(key string) (string, bool)
+	OutgoingHeaderMatcher   func(key string) (string, bool)
+	MetadataAnnotators      []func(ctx context.Context) metadata.MD
+	ProtoJSONMarshalOptions protojson.MarshalOptions
 }
 
 type Option func(o *Options)
@@ -64,5 +66,11 @@ func OutgoingHeaderMatcher(m func(key string) (string, bool)) Option {
 func MetadataAnnotator(a ...func(ctx context.Context) metadata.MD) Option {
 	return func(o *Options) {
 		o.MetadataAnnotators = append(o.MetadataAnnotators, a...)
+	}
+}
+
+func ProtoJSONMarshalOptions(mo protojson.MarshalOptions) Option {
+	return func(o *Options) {
+		o.ProtoJSONMarshalOptions = mo
 	}
 }

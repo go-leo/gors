@@ -13,7 +13,7 @@ import (
 
 func ProtoDemoClientRoutes(cli ProtoDemoClient, opts ...gors.Option) []gors.Route {
 	options := gors.NewOptions(opts...)
-	if len(options.Tag) == 0 {
+	if len(options.Tag) == 0 && !options.DisableDefaultTag {
 		options.Tag = "json"
 	}
 	wrapper := &_ProtoDemoClientWrapper{cli: cli, options: options}
@@ -35,7 +35,7 @@ func ProtoDemoClientRoutes(cli ProtoDemoClient, opts ...gors.Option) []gors.Rout
 
 func ProtoDemoServerRoutes(srv ProtoDemoServer, opts ...gors.Option) []gors.Route {
 	options := gors.NewOptions(opts...)
-	if len(options.Tag) == 0 {
+	if len(options.Tag) == 0 && !options.DisableDefaultTag {
 		options.Tag = "json"
 	}
 	wrapper := &_ProtoDemoServerWrapper{srv: srv, options: options}
@@ -250,7 +250,7 @@ func _ProtoDemo_POSTProtoJSONBindingProtoJSONRender_GORS_Handler(wrapper ProtoDe
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json", gors.ProtoJSONRender, options.ResponseWrapper)
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json", gors.ProtoJSONRender(options.ProtoJSONMarshalOptions), options.ResponseWrapper)
 	}
 }
 
@@ -306,7 +306,7 @@ func _ProtoDemo_NotDefine_GORS_Handler(wrapper ProtoDemoServer, options *gors.Op
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json", gors.ProtoJSONRender, options.ResponseWrapper)
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json", gors.ProtoJSONRender(options.ProtoJSONMarshalOptions), options.ResponseWrapper)
 	}
 }
 
@@ -334,7 +334,7 @@ func _ProtoDemo_POSTSetHeaderTrailer_GORS_Handler(wrapper ProtoDemoServer, optio
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json", gors.ProtoJSONRender, options.ResponseWrapper)
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json", gors.ProtoJSONRender(options.ProtoJSONMarshalOptions), options.ResponseWrapper)
 	}
 }
 
@@ -362,7 +362,7 @@ func _ProtoDemo_POSTError_GORS_Handler(wrapper ProtoDemoServer, options *gors.Op
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json", gors.ProtoJSONRender, options.ResponseWrapper)
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json", gors.ProtoJSONRender(options.ProtoJSONMarshalOptions), options.ResponseWrapper)
 	}
 }
 
@@ -390,7 +390,7 @@ func _ProtoDemo_POSTGRPCStatus_GORS_Handler(wrapper ProtoDemoServer, options *go
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json", gors.ProtoJSONRender, options.ResponseWrapper)
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json", gors.ProtoJSONRender(options.ProtoJSONMarshalOptions), options.ResponseWrapper)
 	}
 }
 

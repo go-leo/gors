@@ -473,9 +473,16 @@ func (g *generate) printResponseRender(info *parser.RouterInfo) {
 		log.Fatalf("error: func %s 1th result is invalid, must be io.Reader or []byte or string or *struct{}", info.FullMethodName)
 	}
 
+	renderName := strings.TrimPrefix(info.Render, "@")
+	renderArg := ""
+	if info.Render == parser.ProtoJSONRender {
+		renderArg = "(options.ProtoJSONMarshalOptions)"
+	}
+
 	g.P(g.functionBuf, gorsPackage.Ident("ResponseRender"),
 		"(ctx, ", gorsPackage.Ident("StatusCode"), "(ctx), resp,",
-		strconv.Quote(info.RenderContentType), ",", gorsPackage.Ident(strings.TrimPrefix(info.Render, "@")),
+		strconv.Quote(info.RenderContentType), ",",
+		gorsPackage.Ident(renderName), renderArg,
 		", options.ResponseWrapper)")
 }
 

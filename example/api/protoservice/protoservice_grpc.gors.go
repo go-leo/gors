@@ -13,7 +13,7 @@ import (
 
 func ProtoServiceClientRoutes(cli ProtoServiceClient, opts ...gors.Option) []gors.Route {
 	options := gors.NewOptions(opts...)
-	if len(options.Tag) == 0 {
+	if len(options.Tag) == 0 && !options.DisableDefaultTag {
 		options.Tag = "json"
 	}
 	wrapper := &_ProtoServiceClientWrapper{cli: cli, options: options}
@@ -24,7 +24,7 @@ func ProtoServiceClientRoutes(cli ProtoServiceClient, opts ...gors.Option) []gor
 
 func ProtoServiceServerRoutes(srv ProtoServiceServer, opts ...gors.Option) []gors.Route {
 	options := gors.NewOptions(opts...)
-	if len(options.Tag) == 0 {
+	if len(options.Tag) == 0 && !options.DisableDefaultTag {
 		options.Tag = "json"
 	}
 	wrapper := &_ProtoServiceServerWrapper{srv: srv, options: options}
@@ -57,7 +57,7 @@ func _ProtoService_Method_GORS_Handler(wrapper ProtoServiceServer, options *gors
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json", gors.ProtoJSONRender, options.ResponseWrapper)
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json", gors.ProtoJSONRender(options.ProtoJSONMarshalOptions), options.ResponseWrapper)
 	}
 }
 

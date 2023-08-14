@@ -283,9 +283,15 @@ func printResponseRender(gen *protogen.Plugin, g *protogen.GeneratedFile, router
 	if !slices.Contains(renders, router.Render) {
 		return fmt.Errorf("%s, %s is not supported", router.FullMethodName, router.Render)
 	}
+
+	renderName := strings.TrimPrefix(router.Render, "@")
+	renderArg := ""
+	if router.Render == parser.ProtoJSONRender {
+		renderArg = "(options.ProtoJSONMarshalOptions)"
+	}
 	g.P(gorsPackage.Ident("ResponseRender"),
 		"(ctx, ", gorsPackage.Ident("StatusCode"), "(ctx), resp,",
-		strconv.Quote(router.RenderContentType), ",", gorsPackage.Ident(strings.TrimPrefix(router.Render, "@")),
+		strconv.Quote(router.RenderContentType), ",", gorsPackage.Ident(renderName), renderArg,
 		", options.ResponseWrapper)")
 
 	return nil

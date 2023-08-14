@@ -13,7 +13,8 @@ var _ render.Render = ProtoJSON{}
 var jsonContentType = []string{"application/json; charset=utf-8"}
 
 type ProtoJSON struct {
-	Data any
+	Data           any
+	MarshalOptions protojson.MarshalOptions
 }
 
 func (r ProtoJSON) Render(w http.ResponseWriter) (err error) {
@@ -22,7 +23,7 @@ func (r ProtoJSON) Render(w http.ResponseWriter) (err error) {
 	if !ok {
 		return fmt.Errorf("failed to convert data, %v", r.Data)
 	}
-	jsonBytes, err := protojson.Marshal(m)
+	jsonBytes, err := r.MarshalOptions.Marshal(m)
 	if err != nil {
 		return err
 	}

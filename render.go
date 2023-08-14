@@ -2,17 +2,16 @@ package gors
 
 import (
 	"context"
+	"google.golang.org/protobuf/encoding/protojson"
+
 	// "errors"
 	"fmt"
 	"io"
-	"net/http"
 	"strings"
 
 	"github.com/gin-gonic/gin/render"
 	internalrender "github.com/go-leo/gors/internal/pkg/render"
 	"github.com/go-leo/gox/iox"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/grpclog"
 	"google.golang.org/grpc/metadata"
 )
 
@@ -148,8 +147,10 @@ func AsciiJSONRender(ctx context.Context, code int, resp any, _ string) {
 	FromContext(ctx).AsciiJSON(code, resp)
 }
 
-func ProtoJSONRender(ctx context.Context, code int, resp any, _ string) {
-	FromContext(ctx).Render(code, internalrender.ProtoJSON{Data: resp})
+func ProtoJSONRender(mo protojson.MarshalOptions) func(ctx context.Context, code int, resp any, _ string) {
+	return func(ctx context.Context, code int, resp any, _ string) {
+		FromContext(ctx).Render(code, internalrender.ProtoJSON{Data: resp, MarshalOptions: mo})
+	}
 }
 
 func XMLRender(ctx context.Context, code int, resp any, _ string) {
@@ -178,51 +179,6 @@ func CustomRender(ctx context.Context, code int, resp any, _ string) {
 		return
 	}
 	customRender.Render(ctx)
-}
-
-// httpStatusFromCode converts a gRPC error code into the corresponding HTTP response status.
-// See: https://github.com/googleapis/googleapis/blob/master/google/rpc/code.proto
-func httpStatusFromCode(code codes.Code) int {
-	switch code {
-	case codes.OK:
-		return http.StatusOK
-	case codes.Canceled:
-		return 499
-	case codes.Unknown:
-		return http.StatusInternalServerError
-	case codes.InvalidArgument:
-		return http.StatusBadRequest
-	case codes.DeadlineExceeded:
-		return http.StatusGatewayTimeout
-	case codes.NotFound:
-		return http.StatusNotFound
-	case codes.AlreadyExists:
-		return http.StatusConflict
-	case codes.PermissionDenied:
-		return http.StatusForbidden
-	case codes.Unauthenticated:
-		return http.StatusUnauthorized
-	case codes.ResourceExhausted:
-		return http.StatusTooManyRequests
-	case codes.FailedPrecondition:
-		// Note, this deliberately doesn't translate to the similarly named '412 Precondition Failed' HTTP response status.
-		return http.StatusBadRequest
-	case codes.Aborted:
-		return http.StatusConflict
-	case codes.OutOfRange:
-		return http.StatusBadRequest
-	case codes.Unimplemented:
-		return http.StatusNotImplemented
-	case codes.Internal:
-		return http.StatusInternalServerError
-	case codes.Unavailable:
-		return http.StatusServiceUnavailable
-	case codes.DataLoss:
-		return http.StatusInternalServerError
-	default:
-		grpclog.Infof("Unknown gRPC error code: %v", code)
-		return http.StatusInternalServerError
-	}
 }
 
 func AddGRPCMetadata(
@@ -254,3 +210,5 @@ func AddGRPCMetadata(
 func defaultOutgoingHeaderMatcher(key string) (string, bool) {
 	return fmt.Sprintf("%s%s", MetadataHeaderPrefix, key), true
 }
+
+var DefaultMarshalOptions = protojson.MarshalOptions{}
