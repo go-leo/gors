@@ -131,11 +131,14 @@ func FromError(err error) Error {
 	if err == nil {
 		return Error{}
 	}
-	if v := errValue(); errors.As(err, &v) {
-		return v
+	if e := errValue(); errors.As(err, &e) {
+		return e
 	}
-	if v := new(Error); errors.As(err, &v) {
-		return *v
+	if e := new(Error); errors.As(err, &e) {
+		return *e
+	}
+	if e, ok := ErrorFromMessage(err.Error()); ok {
+		return e
 	}
 	ge, ok := gstatus.FromError(err)
 	if !ok {
