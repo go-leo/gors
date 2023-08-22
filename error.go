@@ -5,13 +5,12 @@ import (
 	"fmt"
 	"github.com/go-leo/gors/internal/pkg/cause"
 	"github.com/go-leo/gors/internal/pkg/status"
+	"github.com/go-leo/gox/convx"
 	"github.com/go-leo/gox/errorx"
 	"google.golang.org/grpc/codes"
+	gstatus "google.golang.org/grpc/status"
 	"io"
 	"regexp"
-
-	"github.com/go-leo/gox/convx"
-	gstatus "google.golang.org/grpc/status"
 )
 
 // 全局默认错误码，可以自定义覆盖
@@ -97,7 +96,10 @@ func (e Error) Is(err error) bool {
 // GRPCStatus returns the Status represented by gors.Error.
 func (e Error) GRPCStatus() *gstatus.Status {
 	// 如果StatusCode=200，转成 grpc的code是ok，WithDetails就会报错，导致s是nil
-	gs, _ := gstatus.New(codes.Internal, e.Message).WithDetails(&cause.Error{Msg: e.Cause.Error()})
+	gs := gstatus.New(codes.Internal, e.Error())
+	if e.Cause != nil {
+		gs, _ = gs.WithDetails(&cause.Error{Msg: e.Cause.Error()})
+	}
 	return gs
 }
 
