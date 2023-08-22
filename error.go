@@ -161,6 +161,7 @@ func FromError(err error) Error {
 		return ret
 	}
 	if ret, ok := ErrorFromMessage(err.Error()); ok {
+		ret.Cause = errors.Unwrap(err)
 		return ret
 	}
 	return Error{
