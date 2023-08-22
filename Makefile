@@ -17,3 +17,16 @@ protoc_gen:
 		--go-gors_opt=module=github.com/go-leo/gors \
 		example/api/*/*.proto
 	@echo "--- protoc generate end ---"
+
+protoc_pkg_gen:
+	@echo "--- protoc generate start ---"
+	@protoc \
+		--proto_path=. \
+		--go_out=. \
+		--go_opt=module=github.com/go-leo/gors \
+		--go-grpc_out=. \
+		--go-grpc_opt=module=github.com/go-leo/gors \
+		--go-gors_out=. \
+		--go-gors_opt=module=github.com/go-leo/gors \
+		internal/pkg/*/*.proto
+	@echo "--- protoc generate end ---"

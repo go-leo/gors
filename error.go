@@ -3,12 +3,13 @@ package gors
 import (
 	"errors"
 	"fmt"
+	"github.com/go-leo/gors/internal/pkg/cause"
+	"github.com/go-leo/gors/internal/pkg/status"
 	"github.com/go-leo/gox/errorx"
 	"google.golang.org/grpc/codes"
 	"io"
 	"regexp"
 
-	"github.com/go-leo/gors/internal/pkg/status"
 	"github.com/go-leo/gox/convx"
 	gstatus "google.golang.org/grpc/status"
 )
@@ -96,13 +97,8 @@ func (e Error) Is(err error) bool {
 // GRPCStatus returns the Status represented by gors.Error.
 func (e Error) GRPCStatus() *gstatus.Status {
 	// 如果StatusCode=200，转成 grpc的code是ok，WithDetails就会报错，导致s是nil
-	grpcCode := status.ToGRPCCode(e.StatusCode)
-	s := gstatus.New(grpcCode, e.Message)
-	if grpcCode == codes.OK {
-		return s
-	}
-	s, _ = s.WithDetails(&status.Status{Code: int32(e.Code)})
-	return s
+	gs, _ := gstatus.New(codes.Internal, e.Message).WithDetails(&cause.Error{Msg: e.Cause.Error()})
+	return gs
 }
 
 // Format nolint: errcheck // WriteString could no check in pkg.
@@ -138,26 +134,31 @@ func FromError(err error) Error {
 	if err == nil {
 		return Error{}
 	}
-	if e := errValue(); errors.As(err, &e) {
-		return e
+	if ret := errValue(); errors.As(err, &ret) {
+		return ret
 	}
-	if e := new(Error); errors.As(err, &e) {
-		return *e
-	}
-	if e, ok := ErrorFromMessage(err.Error()); ok {
-		return e
+	if ret := new(Error); errors.As(err, &ret) {
+		return *ret
 	}
 	if ge, ok := gstatus.FromError(err); ok {
-		if e, ok := ErrorFromMessage(ge.Message()); ok {
-			return e
+		ret := Error{
+			StatusCode: status.FromGRPCCode(ge.Code()),
+			Code:       UnknownCode,
+			Message:    ge.Message(),
+			Cause:      nil,
 		}
-		ret := Error{StatusCode: status.FromGRPCCode(ge.Code()), Code: UnknownCode, Message: ge.Message()}
+		if e, ok := ErrorFromMessage(ge.Message()); ok {
+			ret = e
+		}
 		for _, detail := range ge.Details() {
-			switch d := detail.(type) {
-			case *status.Status:
-				ret.Code = int(d.Code)
+			if d, ok := detail.(*cause.Error); ok {
+				ret.Cause = errors.New(d.Msg)
+				break
 			}
 		}
+		return ret
+	}
+	if ret, ok := ErrorFromMessage(err.Error()); ok {
 		return ret
 	}
 	return Error{
