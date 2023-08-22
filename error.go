@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/go-leo/gox/errorx"
+	"google.golang.org/grpc/codes"
 	"io"
 	"regexp"
 
@@ -94,7 +95,13 @@ func (e Error) Is(err error) bool {
 
 // GRPCStatus returns the Status represented by gors.Error.
 func (e Error) GRPCStatus() *gstatus.Status {
-	s, _ := gstatus.New(status.ToGRPCCode(int(e.StatusCode)), e.Message).WithDetails(&status.Status{Code: int32(e.Code)})
+	// 如果StatusCode=200，转成 grpc的code是ok，WithDetails就会报错，导致s是nil
+	grpcCode := status.ToGRPCCode(e.StatusCode)
+	s := gstatus.New(grpcCode, e.Message)
+	if grpcCode == codes.OK {
+		return s
+	}
+	s, _ = s.WithDetails(&status.Status{Code: int32(e.Code)})
 	return s
 }
 
@@ -140,23 +147,25 @@ func FromError(err error) Error {
 	if e, ok := ErrorFromMessage(err.Error()); ok {
 		return e
 	}
-	ge, ok := gstatus.FromError(err)
-	if !ok {
-		return Error{
-			StatusCode: UnknownStatusCode,
-			Code:       UnknownCode,
-			Message:    UnknownMessage,
-			Cause:      err,
+	if ge, ok := gstatus.FromError(err); ok {
+		if e, ok := ErrorFromMessage(ge.Message()); ok {
+			return e
 		}
-	}
-	ret := Error{StatusCode: status.FromGRPCCode(ge.Code()), Code: UnknownCode, Message: ge.Message()}
-	for _, detail := range ge.Details() {
-		switch d := detail.(type) {
-		case *status.Status:
-			ret.Code = int(d.Code)
+		ret := Error{StatusCode: status.FromGRPCCode(ge.Code()), Code: UnknownCode, Message: ge.Message()}
+		for _, detail := range ge.Details() {
+			switch d := detail.(type) {
+			case *status.Status:
+				ret.Code = int(d.Code)
+			}
 		}
+		return ret
 	}
-	return ret
+	return Error{
+		StatusCode: UnknownStatusCode,
+		Code:       UnknownCode,
+		Message:    UnknownMessage,
+		Cause:      err,
+	}
 }
 
 func ErrorFromMessage(msg string) (Error, bool) {
