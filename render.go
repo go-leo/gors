@@ -21,6 +21,7 @@ func ErrorRender(
 	handler func(ctx context.Context, err error) error,
 	wrapper func(resp any) any,
 ) {
+	_ = FromContext(ctx).Error(err)
 	if handler != nil {
 		err = handler(ctx, err)
 		if err == nil {

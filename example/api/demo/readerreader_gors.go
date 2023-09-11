@@ -14,6 +14,7 @@ func ReaderReaderRoutes(srv ReaderReader, opts ...gors.Option) []gors.Route {
 	return []gors.Route{
 		gors.NewRoute(http.MethodGet, "/api/ReaderReader/Get", _ReaderReader_GetReaderReader_Handler(srv, options)),
 		gors.NewRoute(http.MethodHead, "/api/ReaderReader/head", _ReaderReader_HeadReaderReader_Handler(srv, options)),
+		gors.NewRoute(http.MethodGet, "/api/ReaderReader/get/json", _ReaderReader_GetJSONReader_Handler(srv, options)),
 	}
 }
 
@@ -55,6 +56,30 @@ func _ReaderReader_HeadReaderReader_Handler(srv ReaderReader, options *gors.Opti
 			return
 		}
 		resp, err = srv.HeadReaderReader(ctx, req)
+		if err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "video/mp4", gors.ReaderRender, options.ResponseWrapper)
+	}
+}
+
+func _ReaderReader_GetJSONReader_Handler(srv ReaderReader, options *gors.Options) func(c *gin.Context) {
+	return func(c *gin.Context) {
+		var rpcMethodName = "/demo.ReaderReader/GetJSONReader"
+		var ctx = gors.NewContext(c, rpcMethodName)
+		var req *gors.Empty
+		var resp io.Reader
+		var err error
+		req = new(gors.Empty)
+		if err = gors.RequestBind(
+			ctx, req, options.Tag,
+			gors.JSONBinding,
+		); err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
+		resp, err = srv.GetJSONReader(ctx, req)
 		if err != nil {
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return

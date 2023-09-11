@@ -2,6 +2,7 @@ package demo
 
 import (
 	"context"
+	"github.com/go-leo/gors"
 	"io"
 )
 
@@ -16,4 +17,7 @@ type ReaderReader interface {
 	// HeadReaderReader
 	// @GORS @HEAD @Path(/head) @ReaderBinding(video/mp3) @ReaderRender(video/mp4)
 	HeadReaderReader(context.Context, io.Reader) (io.Reader, error)
+	// GetJSONReader
+	// @GORS @Get @Path(/get/json) @JSONBinding @ReaderRender(video/mp4)
+	GetJSONReader(context.Context, *gors.Empty) (io.Reader, error)
 }

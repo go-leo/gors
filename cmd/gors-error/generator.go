@@ -151,7 +151,8 @@ func (g *Generator) generateDocs(typeName string) {
 	}
 
 	if len(values) == 0 {
-		log.Fatalf("no values defined for type %s", typeName)
+		log.Printf("no values defined for type %s\n", typeName)
+		return
 	}
 
 	tmpl, _ := template.New("doc").Parse(errCodeDocPrefix)
