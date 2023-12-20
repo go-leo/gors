@@ -52,20 +52,28 @@ func TestErrorIs(t *testing.T) {
 
 // 测试Error解析
 func TestFromError(t *testing.T) {
-	var err error = Error{
+	type test struct {
+		Err error
+	}
+	err := Error{
 		StatusCode: http.StatusBadRequest,
 		Code:       10002,
 		Message:    "test",
 	}
+	tests := []test{
+		{Err: err},
+		{Err: &err},
+	}
 
-	// 解析*Error到*Error
-	e := FromError(err)
-	assert.Equal(t, err, e)
+	for _, tst := range tests {
+		goreErr := FromError(tst.Err)
+		assert.Equal(t, err, goreErr)
 
-	// 解析*status.Status到*Error
-	grpcerr := e.GRPCStatus()
-	e2 := FromError(grpcerr.Err())
-	assert.Equal(t, err, e2)
+		// 解析*status.Status到*Error
+		grpcStatus := goreErr.GRPCStatus()
+		grpcStatusErr := FromError(grpcStatus.Err())
+		assert.Equal(t, err, grpcStatusErr)
+	}
 }
 
 // 测试兼容性 标准库 errors.Is、As、Unwarp

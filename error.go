@@ -10,14 +10,19 @@ import (
 	"google.golang.org/grpc/codes"
 	gstatus "google.golang.org/grpc/status"
 	"io"
+	"net/http"
 	"regexp"
 )
 
 // 全局默认错误码，可以自定义覆盖
 var (
-	UnknownStatusCode = 500
-	UnknownCode       = 100001
-	UnknownMessage    = "An internal server error occurred"
+	SuccessfulStatusCode = http.StatusOK
+	SuccessfulCode       = 0
+	SuccessfulMessage    = "ok"
+
+	FailedStatusCode = http.StatusInternalServerError
+	FailedCode       = 100001
+	FailedMessage    = "an internal server error occurred"
 )
 
 var msgRegExp = regexp.MustCompile("^gors.Error, StatusCode: (\\d+), Code: (\\d+), Message: (.+)$")
@@ -95,7 +100,7 @@ func (e Error) Is(err error) bool {
 
 // GRPCStatus returns the Status represented by gors.Error.
 func (e Error) GRPCStatus() *gstatus.Status {
-	// 如果StatusCode=200，转成 grpc的code是ok，WithDetails就会报错，导致s是nil
+	// 如果StatusCode=200，转成 grpcCode是ok，WithDetails就会报错，导致s是nil
 	gs := gstatus.New(codes.Internal, e.Error())
 	if e.Cause != nil {
 		gs, _ = gs.WithDetails(&cause.Error{Msg: e.Cause.Error()})
@@ -108,16 +113,16 @@ func (e Error) Format(s fmt.State, verb rune) {
 	switch verb {
 	case 'v':
 		if s.Flag('+') {
-			fmt.Fprintf(s, "%s\n", e.Error())
+			_, _ = fmt.Fprintf(s, "%s\n", e.Error())
 			if e.Cause != nil {
-				fmt.Fprintf(s, "%+v", e.Cause)
+				_, _ = fmt.Fprintf(s, "%+v", e.Cause)
 			}
 			return
 		}
 		if s.Flag('-') {
-			fmt.Fprintf(s, "%s\n", e.Error())
+			_, _ = fmt.Fprintf(s, "%s\n", e.Error())
 			if e.Cause != nil {
-				fmt.Fprintf(s, "%-v", e.Cause)
+				_, _ = fmt.Fprintf(s, "%-v", e.Cause)
 			}
 			return
 		}
@@ -126,7 +131,7 @@ func (e Error) Format(s fmt.State, verb rune) {
 	case 's':
 		_, _ = io.WriteString(s, e.Error())
 	case 'q':
-		fmt.Fprintf(s, "%q", e.Error())
+		_, _ = fmt.Fprintf(s, "%q", e.Error())
 	}
 }
 
@@ -134,23 +139,27 @@ func (e Error) Format(s fmt.State, verb rune) {
 // 解析 Error 或者 status.Status 为 Error, 其他类型的error返回 UnknownError.
 func FromError(err error) Error {
 	if err == nil {
-		return Error{}
+		return Error{
+			StatusCode: SuccessfulStatusCode,
+			Code:       SuccessfulCode,
+			Message:    SuccessfulMessage,
+			Cause:      nil,
+		}
 	}
-	if ret := errValue(); errors.As(err, &ret) {
-		return ret
-	}
-	if ret := new(Error); errors.As(err, &ret) {
-		return *ret
+	if ePtr := new(Error); errors.As(err, ePtr) || errors.As(err, &ePtr) {
+		return *ePtr
 	}
 	if ge, ok := gstatus.FromError(err); ok {
 		ret := Error{
 			StatusCode: status.FromGRPCCode(ge.Code()),
-			Code:       UnknownCode,
+			Code:       FailedCode,
 			Message:    ge.Message(),
 			Cause:      nil,
 		}
 		if e, ok := ErrorFromMessage(ge.Message()); ok {
-			ret = e
+			ret.StatusCode = e.StatusCode
+			ret.Code = e.Code
+			ret.Message = e.Message
 		}
 		for _, detail := range ge.Details() {
 			if d, ok := detail.(*cause.Error); ok {
@@ -160,14 +169,14 @@ func FromError(err error) Error {
 		}
 		return ret
 	}
-	if ret, ok := ErrorFromMessage(err.Error()); ok {
-		ret.Cause = errors.Unwrap(err)
-		return ret
+	if e, ok := ErrorFromMessage(err.Error()); ok {
+		e.Cause = errors.Unwrap(err)
+		return e
 	}
 	return Error{
-		StatusCode: UnknownStatusCode,
-		Code:       UnknownCode,
-		Message:    UnknownMessage,
+		StatusCode: FailedStatusCode,
+		Code:       FailedCode,
+		Message:    FailedMessage,
 		Cause:      err,
 	}
 }
@@ -184,8 +193,4 @@ func ErrorFromMessage(msg string) (Error, bool) {
 		return Error{}, false
 	}
 	return Error{StatusCode: convx.ToInt(subStrings[0][1]), Code: convx.ToInt(subStrings[0][2]), Message: subStrings[0][3]}, true
-}
-
-func errValue() Error {
-	return Error{}
 }
