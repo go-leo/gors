@@ -14,11 +14,11 @@ import (
 func RequestBind(ctx context.Context, req any, tag string, bindings ...func(ctx context.Context, req any, tag string) error) error {
 	for _, fn := range bindings {
 		if err := fn(ctx, req, tag); err != nil {
-			return Error{StatusCode: http.StatusBadRequest, Message: err.Error()}
+			return fmt.Errorf("failed to bind request, %w", err)
 		}
 	}
 	if err := Validate(req); err != nil {
-		return Error{StatusCode: http.StatusBadRequest, Message: err.Error()}
+		return fmt.Errorf("failed to validate request, %w", err)
 	}
 	return nil
 }
