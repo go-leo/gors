@@ -145,10 +145,11 @@ func getServiceInfo(gen *protogen.Plugin, file *protogen.File, g *protogen.Gener
 	for _, method := range service.Methods {
 		if !method.Desc.IsStreamingServer() && !method.Desc.IsStreamingClient() {
 			// Unary RPC method
-			router := parser.NewRouter(
-				method.GoName,
-				splitComment(method.Comments.Leading.String()),
-			)
+			router, err := parser.ParseRouter(splitComment(method.Comments.Leading.String()))
+			if err != nil {
+				return nil, err
+			}
+			router.SetMethodName(method.GoName)
 			router.SetFullMethodName(fullMethodName(service, method))
 
 			if stringx.IsBlank(router.HttpMethod) {

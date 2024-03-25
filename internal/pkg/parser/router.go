@@ -3,6 +3,7 @@ package parser
 import (
 	"bytes"
 	"fmt"
+	"github.com/go-leo/gox/slicex"
 	"github.com/go-leo/gox/stringx"
 	"go/ast"
 	"google.golang.org/protobuf/compiler/protogen"
@@ -89,14 +90,84 @@ func (info *RouterInfo) SetResult1(result *Result) {
 	info.Result1 = result
 }
 
+func (info *RouterInfo) SetMethodName(name string) {
+	info.MethodName = name
+}
+
+func (routerInfo *RouterInfo) DefaultHttpMethod() {
+	if stringx.IsBlank(routerInfo.HttpMethod) {
+		routerInfo.HttpMethod = GET
+	}
+}
+
+func (routerInfo *RouterInfo) DefaultHttpPath(pathToLower bool) {
+	if stringx.IsBlank(routerInfo.Path) {
+		routerInfo.Path = routerInfo.FullMethodName
+		if pathToLower {
+			routerInfo.Path = strings.ToLower(routerInfo.Path)
+		}
+	}
+}
+
+func (routerInfo *RouterInfo) DefaultBindingName() {
+	Param2 := routerInfo.Param2
+	if Param2.Reader {
+		if slicex.IsEmpty(routerInfo.Bindings) {
+			routerInfo.Bindings = []string{ReaderBinding}
+		}
+	} else if Param2.Bytes {
+		if slicex.IsEmpty(routerInfo.Bindings) {
+			routerInfo.Bindings = []string{BytesBinding}
+		}
+	} else if Param2.String {
+		if slicex.IsEmpty(routerInfo.Bindings) {
+			routerInfo.Bindings = []string{StringBinding}
+		}
+	} else if objectArgs := Param2.ObjectArgs; objectArgs != nil {
+		if slicex.IsEmpty(routerInfo.Bindings) {
+			routerInfo.Bindings = []string{QueryBinding}
+			routerInfo.BindingContentType = ""
+		}
+	} else {
+		log.Fatalf("error: func %s 2th param is invalid, must be []byte or string or *struct{}", routerInfo.FullMethodName)
+	}
+}
+
+func (routerInfo *RouterInfo) DefaultRenderName() {
+	Result1 := routerInfo.Result1
+	switch {
+	case Result1.Bytes:
+		if stringx.IsBlank(routerInfo.Render) {
+			routerInfo.Render = BytesRender
+		}
+	case Result1.String:
+		if stringx.IsBlank(routerInfo.Render) {
+			routerInfo.Render = StringRender
+		}
+	case Result1.Reader:
+		if stringx.IsBlank(routerInfo.Render) {
+			routerInfo.Render = ReaderRender
+		}
+	case Result1.ObjectArgs != nil:
+		if stringx.IsBlank(routerInfo.Render) {
+			routerInfo.Render = JSONRender
+			routerInfo.RenderContentType = JSONContentType
+		}
+	default:
+		log.Fatalf("error: func %s 1th result is invalid, must be io.Reader or []byte or string or *struct{}", routerInfo.FullMethodName)
+	}
+}
+
 var (
 	strColon = []byte(":")
 	strStar  = []byte("*")
 	strSlash = []byte("/")
 )
 
-func NewRouter(methodName string, comments []string) *RouterInfo {
-	r := &RouterInfo{MethodName: methodName}
+var ErrMultipleHttpMethod = fmt.Errorf("there are multiple methods")
+
+func ParseRouter(comments []string) (*RouterInfo, error) {
+	r := &RouterInfo{}
 	desc := &bytes.Buffer{}
 	for _, comment := range comments {
 		text := strings.TrimSpace(strings.TrimPrefix(strings.TrimSpace(comment), "//"))
@@ -118,54 +189,54 @@ func NewRouter(methodName string, comments []string) *RouterInfo {
 			case strings.HasPrefix(strings.ToUpper(s), strings.ToUpper(Path)):
 				v, ok := ExtractValue(s, Path)
 				if !ok {
-					log.Fatalf("error: rpcmethod %s, %s path invalid", methodName, s)
+					return nil, fmt.Errorf("%s path invalid", s)
 				}
 				r.Path = path.Join(r.Path, v)
 
 				// method start
 			case GET.EqualsIgnoreCase(s):
 				if stringx.IsNotBlank(r.HttpMethod) {
-					log.Fatalf("error: rpcmethod %s, there are multiple methods", methodName)
+					return nil, ErrMultipleHttpMethod
 				}
 				r.HttpMethod = GET
 			case POST.EqualsIgnoreCase(s):
 				if stringx.IsNotBlank(r.HttpMethod) {
-					log.Fatalf("error: rpcmethod %s, there are multiple methods", methodName)
+					return nil, ErrMultipleHttpMethod
 				}
 				r.HttpMethod = POST
 			case PUT.EqualsIgnoreCase(s):
 				if stringx.IsNotBlank(r.HttpMethod) {
-					log.Fatalf("error: rpcmethod %s, there are multiple methods", methodName)
+					return nil, ErrMultipleHttpMethod
 				}
 				r.HttpMethod = PUT
 			case DELETE.EqualsIgnoreCase(s):
 				if stringx.IsNotBlank(r.HttpMethod) {
-					log.Fatalf("error: rpcmethod %s, there are multiple methods", methodName)
+					return nil, ErrMultipleHttpMethod
 				}
 				r.HttpMethod = DELETE
 			case PATCH.EqualsIgnoreCase(s):
 				if stringx.IsNotBlank(r.HttpMethod) {
-					log.Fatalf("error: rpcmethod %s, there are multiple methods", methodName)
+					return nil, ErrMultipleHttpMethod
 				}
 				r.HttpMethod = PATCH
 			case HEAD.EqualsIgnoreCase(s):
 				if stringx.IsNotBlank(r.HttpMethod) {
-					log.Fatalf("error: rpcmethod %s, there are multiple methods", methodName)
+					return nil, ErrMultipleHttpMethod
 				}
 				r.HttpMethod = HEAD
 			case CONNECT.EqualsIgnoreCase(s):
 				if stringx.IsNotBlank(r.HttpMethod) {
-					log.Fatalf("error: rpcmethod %s, there are multiple methods", methodName)
+					return nil, ErrMultipleHttpMethod
 				}
 				r.HttpMethod = CONNECT
 			case OPTIONS.EqualsIgnoreCase(s):
 				if stringx.IsNotBlank(r.HttpMethod) {
-					log.Fatalf("error: rpcmethod %s, there are multiple methods", methodName)
+					return nil, ErrMultipleHttpMethod
 				}
 				r.HttpMethod = OPTIONS
 			case TRACE.EqualsIgnoreCase(s):
 				if stringx.IsNotBlank(r.HttpMethod) {
-					log.Fatalf("error: rpcmethod %s, there are multiple methods", methodName)
+					return nil, ErrMultipleHttpMethod
 				}
 				r.HttpMethod = TRACE
 				// method end
@@ -294,5 +365,5 @@ func NewRouter(methodName string, comments []string) *RouterInfo {
 		}
 	}
 	r.Description = desc.String()
-	return r
+	return r, nil
 }

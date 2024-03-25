@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"errors"
 	"fmt"
 	"github.com/go-leo/gox/slicex"
 	"go/ast"
@@ -82,15 +83,69 @@ func Inspect(pkg *packages.Package, serviceName string) (*ast.File, *ast.GenDecl
 	return serviceFile, serviceDecl, serviceSpec, serviceType, serviceMethods
 }
 
-func ExtractRouterInfo(method *ast.Field, methodName *ast.Ident) *RouterInfo {
+func ParseRouterInfos(serviceMethods []*ast.Field, imports map[string]*GoImport, pkgName, serviceName string, pathToLower bool) ([]*RouterInfo, error) {
+	var Routers []*RouterInfo
+	for _, method := range serviceMethods {
+		if slicex.IsEmpty(method.Names) {
+			continue
+		}
+		methodName := method.Names[0].String()
+		routerInfo, err := ParseRouterInfo(method, imports)
+		if err != nil {
+			return nil, fmt.Errorf("rpcmethod: %s, %w", methodName, err)
+		}
+		routerInfo.SetMethodName(methodName)
+		routerInfo.SetHandlerName(serviceName)
+		routerInfo.SetFullMethodName(FullMethodName(pkgName, serviceName, routerInfo.MethodName))
+		routerInfo.DefaultHttpMethod()
+		routerInfo.DefaultHttpPath(pathToLower)
+		routerInfo.DefaultBindingName()
+		routerInfo.DefaultRenderName()
+		Routers = append(Routers, routerInfo)
+	}
+	return Routers, nil
+}
+
+var ErrFuncType = errors.New("failed convert to *ast.FuncType")
+
+func ParseRouterInfo(method *ast.Field, imports map[string]*GoImport) (*RouterInfo, error) {
+	rpcType, ok := method.Type.(*ast.FuncType)
+	if !ok {
+		return nil, ErrFuncType
+	}
+	// params
+	param2, err := CheckParams(rpcType, imports)
+	if err != nil {
+		return nil, err
+	}
+	// results
+	result1, err := CheckResults(rpcType, imports)
+	if err != nil {
+		return nil, err
+	}
+	routerInfo, err := ExtractRouterInfo(method)
+	if err != nil {
+		return nil, err
+	}
+	routerInfo.SetFuncType(rpcType)
+	routerInfo.SetParam2(param2)
+	routerInfo.SetResult1(result1)
+	return routerInfo, nil
+}
+
+func FullMethodName(pkgName string, serviceName string, methodName string) string {
+	return fmt.Sprintf("/%s.%s/%s", pkgName, serviceName, methodName)
+}
+
+func ExtractRouterInfo(method *ast.Field) (*RouterInfo, error) {
 	if method.Doc == nil {
-		return NewRouter(methodName.String(), nil)
+		return ParseRouter(nil)
 	}
 	comments := slicex.Map[[]*ast.Comment, []string](
 		method.Doc.List,
 		func(i int, e1 *ast.Comment) string { return e1.Text },
 	)
-	return NewRouter(methodName.String(), comments)
+	return ParseRouter(comments)
 }
 
 func ExtractGoImports(serviceFile *ast.File) map[string]*GoImport {
@@ -192,62 +247,64 @@ type Result struct {
 	Reader     bool
 }
 
-func CheckParams(rpcType *ast.FuncType, methodName *ast.Ident, imports map[string]*GoImport) (*Param, error) {
-	if rpcType.Params == nil {
-		return nil, fmt.Errorf("error: func %s params is empty", methodName)
-	}
-	if len(rpcType.Params.List) != 2 {
-		return nil, fmt.Errorf("error: func %s params count is not equal 2", methodName)
+var ErrParamsInvalid = fmt.Errorf("error: params invalid")
+
+func CheckParams(rpcType *ast.FuncType, imports map[string]*GoImport) (*Param, error) {
+	if rpcType.Params == nil || len(rpcType.Params.List) != 2 {
+		return nil, ErrParamsInvalid
 	}
 	// param1
-	if err := CheckParam1MustBeContext(rpcType, methodName); err != nil {
+	if err := CheckParam1MustBeContext(rpcType); err != nil {
 		return nil, err
 	}
 	// param2
-	param2, err := CheckAndGetParam2(rpcType, methodName, imports)
+	param2, err := CheckAndGetParam2(rpcType, imports)
 	if err != nil {
 		return nil, err
 	}
 	return param2, nil
 }
 
-func CheckParam1MustBeContext(rpcType *ast.FuncType, methodName *ast.Ident) error {
+var Err1thParam = errors.New("error: 1th param is not context.Context")
+
+func CheckParam1MustBeContext(rpcType *ast.FuncType) error {
 	param1 := rpcType.Params.List[0]
 	param0SelectorExpr, ok := param1.Type.(*ast.SelectorExpr)
 	if !ok {
-		return fmt.Errorf("error: func %s 1th param is not context.Context", methodName)
+		return Err1thParam
 	}
 	if param0SelectorExpr.Sel.Name != "Context" {
-		return fmt.Errorf("error: func %s 1th param is not context.Context", methodName)
+		return Err1thParam
 	}
 	param0SelectorExprX, ok := param0SelectorExpr.X.(*ast.Ident)
 	if !ok {
-		return fmt.Errorf("error: func %s 1th param is not context.Context", methodName)
+		return Err1thParam
 	}
 	if param0SelectorExprX.Name != "context" {
-		return fmt.Errorf("error: func %s 1th param is not context.Context", methodName)
+		return Err1thParam
 	}
 	return nil
 }
 
-func CheckAndGetParam2(rpcType *ast.FuncType, methodName *ast.Ident, imports map[string]*GoImport) (*Param, error) {
+var ErrParamType = errors.New("error: param is invalid, must be []byte or string or io.Reader or *struct{}")
+
+func CheckAndGetParam2(rpcType *ast.FuncType, imports map[string]*GoImport) (*Param, error) {
 	param2 := rpcType.Params.List[1]
-	errorTemplate := "error: func %s 2th param is invalid, must be []byte or string or io.Reader or *struct{}"
 	switch p2 := param2.Type.(type) {
 	case *ast.ArrayType:
 		// []byte type
 		ident, ok := p2.Elt.(*ast.Ident)
 		if !ok {
-			return nil, fmt.Errorf(errorTemplate, methodName.String())
+			return nil, ErrParamType
 		}
 		if ident.Name != "byte" {
-			return nil, fmt.Errorf(errorTemplate, methodName)
+			return nil, ErrParamType
 		}
 		return &Param{Bytes: true}, nil
 	case *ast.Ident:
 		// string type
 		if p2.Name != "string" {
-			return nil, fmt.Errorf(errorTemplate, methodName)
+			return nil, ErrParamType
 		}
 		return &Param{String: true}, nil
 	case *ast.StarExpr:
@@ -259,91 +316,93 @@ func CheckAndGetParam2(rpcType *ast.FuncType, methodName *ast.Ident, imports map
 		case *ast.SelectorExpr:
 			ident, ok := x.X.(*ast.Ident)
 			if !ok {
-				return nil, fmt.Errorf(errorTemplate, methodName)
+				return nil, ErrParamType
 			}
 			for importPath, goImport := range imports {
 				if goImport.PackageName == ident.Name {
 					return &Param{ObjectArgs: &ObjectArgs{Name: x.Sel.Name, GoImportPath: GoImportPath(importPath), StarExpr: p2}}, nil
 				}
 			}
-			return nil, fmt.Errorf(errorTemplate, methodName)
+			return nil, ErrParamType
 		default:
-			return nil, fmt.Errorf(errorTemplate, methodName)
+			return nil, ErrParamType
 		}
 	case *ast.SelectorExpr:
 		// io.Reader type
 		if p2.Sel == nil {
-			return nil, fmt.Errorf(errorTemplate, methodName)
+			return nil, ErrParamType
 		}
 		if p2.Sel.Name != "Reader" {
-			return nil, fmt.Errorf(errorTemplate, methodName)
+			return nil, ErrParamType
 		}
 		ident, ok := p2.X.(*ast.Ident)
 		if !ok {
-			return nil, fmt.Errorf(errorTemplate, methodName)
+			return nil, ErrParamType
 		}
 		ioImport, ok := imports["io"]
 		if !ok {
-			return nil, fmt.Errorf(errorTemplate, methodName)
+			return nil, ErrParamType
 		}
 		if ioImport.PackageName != ident.Name {
-			return nil, fmt.Errorf(errorTemplate, methodName)
+			return nil, ErrParamType
 		}
 		return &Param{Reader: true}, nil
 	default:
-		return nil, fmt.Errorf(errorTemplate, methodName)
+		return nil, ErrParamType
 	}
 }
 
-func CheckResults(rpcType *ast.FuncType, methodName *ast.Ident, imports map[string]*GoImport) (*Result, error) {
-	if rpcType.Results == nil {
-		return nil, fmt.Errorf("error: func %s results is empty", methodName)
-	}
-	if len(rpcType.Results.List) != 2 {
-		return nil, fmt.Errorf("error: func %s results count is not equal 2", methodName)
+var ErrResultsInvalid = fmt.Errorf("error: results invalid")
+
+func CheckResults(rpcType *ast.FuncType, imports map[string]*GoImport) (*Result, error) {
+	if rpcType.Results == nil || len(rpcType.Results.List) != 2 {
+		return nil, ErrResultsInvalid
 	}
 	// result2
-	if err := CheckResult2MustBeError(rpcType, methodName); err != nil {
+	if err := CheckResult2MustBeError(rpcType); err != nil {
 		return nil, err
 	}
 	// result1
-	result1, err := CheckAndGetResult1(rpcType, methodName, imports)
+	result1, err := CheckAndGetResult1(rpcType, imports)
 	if err != nil {
 		return nil, err
 	}
 	return result1, nil
 }
 
-func CheckResult2MustBeError(rpcType *ast.FuncType, methodName *ast.Ident) error {
+var Err2thResult = errors.New("error: 2th result is not error")
+
+func CheckResult2MustBeError(rpcType *ast.FuncType) error {
 	result2 := rpcType.Results.List[1]
 	result2Ident, ok := result2.Type.(*ast.Ident)
 	if !ok {
-		return fmt.Errorf("error: func %s 2th result is not error", methodName)
+		return Err2thResult
 	}
 	if result2Ident.Name != "error" {
-		return fmt.Errorf("error: func %s 2th result is not error", methodName)
+		return Err2thResult
 	}
 	return nil
 }
 
-func CheckAndGetResult1(rpcType *ast.FuncType, methodName *ast.Ident, imports map[string]*GoImport) (*Result, error) {
+var ErrResultType = errors.New("error: 1th result is invalid, must be []byte or string or io.Reader or *struct{}")
+
+func CheckAndGetResult1(rpcType *ast.FuncType, imports map[string]*GoImport) (*Result, error) {
 	result1 := rpcType.Results.List[0]
-	errorTemplate := "error: func %s 1th result is invalid, must be []byte or string or io.Reader or *struct{}"
 	switch r1 := result1.Type.(type) {
 	case *ast.ArrayType:
 		// []byte type
 		ident, ok := r1.Elt.(*ast.Ident)
 		if !ok {
-			return nil, fmt.Errorf(errorTemplate, methodName)
+			return nil, ErrResultType
 		}
 		if ident.Name != "byte" {
-			return nil, fmt.Errorf(errorTemplate, methodName)
+			return nil, ErrResultType
 		}
 		return &Result{Bytes: true}, nil
 	case *ast.Ident:
 		// string type
 		if r1.Name != "string" {
-			return nil, fmt.Errorf(errorTemplate, methodName)
+			return nil, ErrResultType
 		}
 		return &Result{String: true}, nil
 	case *ast.StarExpr:
@@ -355,38 +414,38 @@ func CheckAndGetResult1(rpcType *ast.FuncType, methodName *ast.Ident, imports ma
 		case *ast.SelectorExpr:
 			ident, ok := x.X.(*ast.Ident)
 			if !ok {
-				return nil, fmt.Errorf(errorTemplate, methodName)
+				return nil, ErrResultType
 			}
 			for importPath, goImport := range imports {
 				if goImport.PackageName == ident.Name {
 					return &Result{ObjectArgs: &ObjectArgs{Name: x.Sel.Name, GoImportPath: GoImportPath(importPath), StarExpr: r1}}, nil
 				}
 			}
-			return nil, fmt.Errorf(errorTemplate, methodName)
+			return nil, ErrResultType
 		default:
-			return nil, fmt.Errorf(errorTemplate, methodName)
+			return nil, ErrResultType
 		}
 	case *ast.SelectorExpr:
 		// io.Reader type
 		if r1.Sel == nil {
-			return nil, fmt.Errorf(errorTemplate, methodName)
+			return nil, ErrResultType
 		}
 		if r1.Sel.Name != "Reader" {
-			return nil, fmt.Errorf(errorTemplate, methodName)
+			return nil, ErrResultType
 		}
 		ident, ok := r1.X.(*ast.Ident)
 		if !ok {
-			return nil, fmt.Errorf(errorTemplate, methodName)
+			return nil, ErrResultType
 		}
 		ioImport, ok := imports["io"]
 		if !ok {
-			return nil, fmt.Errorf(errorTemplate, methodName)
+			return nil, ErrResultType
 		}
 		if ioImport.PackageName != ident.Name {
-			return nil, fmt.Errorf(errorTemplate, methodName)
+			return nil, ErrResultType
 		}
 		return &Result{Reader: true}, nil
 	default:
-		return nil, fmt.Errorf(errorTemplate, methodName)
+		return nil, ErrResultType
 	}
 }

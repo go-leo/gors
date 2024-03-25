@@ -7,9 +7,6 @@ import (
 	"fmt"
 	"github.com/go-leo/gors/cmd/internal"
 	"github.com/go-leo/gors/internal/pkg/parser"
-	"github.com/go-leo/gox/slicex"
-	"github.com/go-leo/gox/stringx"
-	"go/ast"
 	"go/format"
 	"log"
 	"os"
@@ -73,42 +70,13 @@ func main() {
 	// find basePath
 	serviceInfo := parser.ParseServiceInfo(serviceDecl)
 	serviceInfo.SetServiceName(*serviceName)
-
 	imports := parser.ExtractGoImports(serviceFile)
-
 	// generate router by method comment
-	for _, method := range serviceMethods {
-		if slicex.IsEmpty(method.Names) {
-			continue
-		}
-		methodName := method.Names[0]
-		rpcType, ok := method.Type.(*ast.FuncType)
-		if !ok {
-			log.Fatalf("error: func %s not convert to *ast.FuncType", methodName)
-		}
-		// params
-		param2, err := parser.CheckParams(rpcType, methodName, imports)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		// results
-		result1, err := parser.CheckResults(rpcType, methodName, imports)
-		if err != nil {
-			log.Fatal(err)
-		}
-		routerInfo := parser.ExtractRouterInfo(method, methodName)
-		routerInfo.SetHandlerName(*serviceName)
-		routerInfo.SetFullMethodName(FullMethodName(pkgName, serviceInfo, methodName))
-		routerInfo.SetFuncType(rpcType)
-		routerInfo.SetParam2(param2)
-		routerInfo.SetResult1(result1)
-		DefaultHttpMethod(routerInfo)
-		DefaultHttpPath(routerInfo)
-		DefaultBindingName(routerInfo, param2)
-		DefaultRenderName(routerInfo, result1)
-		serviceInfo.Routers = append(serviceInfo.Routers, routerInfo)
+	routers, err := parser.ParseRouterInfos(serviceMethods, imports, pkgName, *serviceName, *pathToLower)
+	if err != nil {
+		log.Fatal(err)
 	}
+	serviceInfo.Routers = routers
 
 	g := &generate{
 		buf:              &bytes.Buffer{},
@@ -144,78 +112,6 @@ func main() {
 		log.Fatalf("writing output: %s", err)
 	}
 	log.Printf("%s.%s wrote %s", pkgPath, *serviceName, outputPath)
-}
-
-func DefaultHttpMethod(routerInfo *parser.RouterInfo) {
-	if stringx.IsBlank(routerInfo.HttpMethod) {
-		routerInfo.HttpMethod = parser.GET
-	}
-}
-
-func DefaultHttpPath(routerInfo *parser.RouterInfo) {
-	if stringx.IsBlank(routerInfo.Path) {
-		routerInfo.Path = routerInfo.FullMethodName
-		if *pathToLower {
-			routerInfo.Path = strings.ToLower(routerInfo.Path)
-		}
-	}
-}
-
-func DefaultBindingName(info *parser.RouterInfo, Param2 *parser.Param) {
-	if Param2.Reader {
-		if slicex.IsEmpty(info.Bindings) {
-			info.Bindings = []string{
-				parser.ReaderBinding,
-			}
-		}
-	} else if Param2.Bytes {
-		if slicex.IsEmpty(info.Bindings) {
-			info.Bindings = []string{
-				parser.BytesBinding,
-			}
-		}
-	} else if Param2.String {
-		if slicex.IsEmpty(info.Bindings) {
-			info.Bindings = []string{
-				parser.StringBinding,
-			}
-		}
-	} else if objectArgs := Param2.ObjectArgs; objectArgs != nil {
-		if slicex.IsEmpty(info.Bindings) {
-			info.Bindings = []string{parser.QueryBinding}
-			info.BindingContentType = ""
-		}
-	} else {
-		log.Fatalf("error: func %s 2th param is invalid, must be []byte or string or *struct{}", info.FullMethodName)
-	}
-}
-
-func DefaultRenderName(info *parser.RouterInfo, Result1 *parser.Result) {
-	switch {
-	case Result1.Bytes:
-		if stringx.IsBlank(info.Render) {
-			info.Render = parser.BytesRender
-		}
-	case Result1.String:
-		if stringx.IsBlank(info.Render) {
-			info.Render = parser.StringRender
-		}
-	case Result1.Reader:
-		if stringx.IsBlank(info.Render) {
-			info.Render = parser.ReaderRender
-		}
-	case Result1.ObjectArgs != nil:
-		if stringx.IsBlank(info.Render) {
-			info.Render = parser.JSONRender
-			info.RenderContentType = parser.JSONContentType
-		}
-	default:
-		log.Fatalf("error: func %s 1th result is invalid, must be io.Reader or []byte or string or *struct{}", info.FullMethodName)
-	}
-}
-
-func FullMethodName(pkgName string, serviceInfo *parser.ServiceInfo, methodName *ast.Ident) string {
-	return fmt.Sprintf("/%s.%s/%s", pkgName, serviceInfo.Name, methodName.String())
 }
 
 func detectOutputDir(paths []string) (string, error) {
