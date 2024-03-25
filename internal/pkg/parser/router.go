@@ -24,12 +24,13 @@ type RouterInfo struct {
 	HandlerName        string
 	ProtoMethod        *protogen.Method
 	FuncType           *ast.FuncType
+	Param2             *Param
+	Result1            *Result
 }
 
-func (i RouterInfo) PathParams() []string {
-	//count := countParams(i.Path)
+func (info *RouterInfo) PathParams() []string {
 	var params []string
-	segs := strings.Split(i.Path, "/")
+	segs := strings.Split(info.Path, "/")
 	for _, seg := range segs {
 		seg = strings.TrimSpace(seg)
 		if stringx.IsBlank(seg) {
@@ -48,28 +49,44 @@ func (i RouterInfo) PathParams() []string {
 	return params
 }
 
-func (i RouterInfo) QueryParams() []string {
+func (info *RouterInfo) QueryParams() []string {
 	var params []string
-
 	return params
 }
 
-func (i RouterInfo) HeaderParams() []string {
+func (info *RouterInfo) HeaderParams() []string {
 	var params []string
-	//paramIdent := i.FuncType.Params.List[1]
 	return params
 }
 
-func (i RouterInfo) FormParams() []string {
+func (info *RouterInfo) FormParams() []string {
 	var params []string
-
 	return params
 }
 
-func (i RouterInfo) FileParams() []string {
+func (info *RouterInfo) FileParams() []string {
 	var params []string
-
 	return params
+}
+
+func (info *RouterInfo) SetHandlerName(serviceInfo *ServiceInfo) {
+	info.HandlerName = fmt.Sprintf("_%s_%s_Handler", serviceInfo.Name, info.MethodName)
+}
+
+func (info *RouterInfo) SetFullMethodName(rpcMethodName string) {
+	info.FullMethodName = rpcMethodName
+}
+
+func (info *RouterInfo) SetFuncType(rpcType *ast.FuncType) {
+	info.FuncType = rpcType
+}
+
+func (info *RouterInfo) SetParam2(param *Param) {
+	info.Param2 = param
+}
+
+func (info *RouterInfo) SetResult1(result *Result) {
+	info.Result1 = result
 }
 
 var (
@@ -78,11 +95,8 @@ var (
 	strSlash = []byte("/")
 )
 
-func NewRouter(methodName string, rpcMethodName string, comments []string) *RouterInfo {
-	r := &RouterInfo{
-		MethodName:     methodName,
-		FullMethodName: rpcMethodName,
-	}
+func NewRouter(methodName string, comments []string) *RouterInfo {
+	r := &RouterInfo{MethodName: methodName}
 	desc := &bytes.Buffer{}
 	for _, comment := range comments {
 		text := strings.TrimSpace(strings.TrimPrefix(strings.TrimSpace(comment), "//"))

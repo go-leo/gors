@@ -70,65 +70,42 @@ func main() {
 	if serviceFile == nil || serviceDecl == nil || serviceSpec == nil || serviceType == nil {
 		log.Fatal("error: not found service")
 	}
+	// find basePath
+	serviceInfo := parser.InitServiceInfo(*serviceName, serviceDecl)
 	imports := parser.ExtractGoImports(serviceFile)
 
-	var serviceInfo *parser.ServiceInfo
-	Param2s := make(map[*parser.RouterInfo]*parser.Param)
-	Result1s := make(map[*parser.RouterInfo]*parser.Result)
-	if serviceDecl != nil && serviceSpec != nil && serviceType != nil && len(serviceMethods) > 0 {
-		// find basePath
-		serviceInfo = parser.InitServiceInfo(*serviceName, serviceDecl)
-		// generate router by method comment
-		for _, method := range serviceMethods {
-			if slicex.IsEmpty(method.Names) {
-				continue
-			}
-			methodName := method.Names[0]
-			rpcType, ok := method.Type.(*ast.FuncType)
-			if !ok {
-				log.Fatalf("error: func %s not convert to *ast.FuncType", methodName)
-			}
-			// params
-			param2, err := parser.CheckParams(rpcType, methodName, imports)
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			// results
-			result1, err := parser.CheckResults(rpcType, methodName, imports)
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			fmName := FullMethodName(pkgName, serviceInfo, methodName)
-			var routerInfo *parser.RouterInfo
-			if method.Doc == nil {
-				routerInfo = parser.NewRouter(methodName.String(), fmName, nil)
-			} else {
-				comments := slicex.Map[[]*ast.Comment, []string](
-					method.Doc.List,
-					func(i int, e1 *ast.Comment) string { return e1.Text },
-				)
-				routerInfo = parser.NewRouter(methodName.String(), fmName, comments)
-			}
-			Param2s[routerInfo] = param2
-			Result1s[routerInfo] = result1
-			routerInfo.FuncType = rpcType
-
-			if stringx.IsBlank(routerInfo.HttpMethod) {
-				routerInfo.HttpMethod = parser.GET
-			}
-			if stringx.IsBlank(routerInfo.Path) {
-				routerInfo.Path = routerInfo.FullMethodName
-				if *pathToLower {
-					routerInfo.Path = strings.ToLower(routerInfo.Path)
-				}
-			}
-			defaultBindingName(routerInfo, param2)
-			defaultRenderName(routerInfo, result1)
-			routerInfo.HandlerName = handlerName(routerInfo, serviceInfo)
-			serviceInfo.Routers = append(serviceInfo.Routers, routerInfo)
+	// generate router by method comment
+	for _, method := range serviceMethods {
+		if slicex.IsEmpty(method.Names) {
+			continue
 		}
+		methodName := method.Names[0]
+		rpcType, ok := method.Type.(*ast.FuncType)
+		if !ok {
+			log.Fatalf("error: func %s not convert to *ast.FuncType", methodName)
+		}
+		// params
+		param2, err := parser.CheckParams(rpcType, methodName, imports)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		// results
+		result1, err := parser.CheckResults(rpcType, methodName, imports)
+		if err != nil {
+			log.Fatal(err)
+		}
+		routerInfo := parser.ExtractRouterInfo(method, methodName)
+		routerInfo.SetHandlerName(serviceInfo)
+		routerInfo.SetFullMethodName(FullMethodName(pkgName, serviceInfo, methodName))
+		routerInfo.SetFuncType(rpcType)
+		routerInfo.SetParam2(param2)
+		routerInfo.SetResult1(result1)
+		DefaultHttpMethod(routerInfo)
+		DefaultHttpPath(routerInfo)
+		DefaultBindingName(routerInfo, param2)
+		DefaultRenderName(routerInfo, result1)
+		serviceInfo.Routers = append(serviceInfo.Routers, routerInfo)
 	}
 
 	g := &generate{
@@ -141,8 +118,6 @@ func main() {
 		imports:          imports,
 		usedPackageNames: make(map[string]bool),
 		serviceInfo:      serviceInfo,
-		Param2s:          Param2s,
-		Result1s:         Result1s,
 	}
 
 	content := g.content()
@@ -169,24 +144,22 @@ func main() {
 	log.Printf("%s.%s wrote %s", pkgPath, *serviceName, outputPath)
 }
 
-func FullMethodName(pkgName string, serviceInfo *parser.ServiceInfo, methodName *ast.Ident) string {
-	return fmt.Sprintf("/%s.%s/%s", pkgName, serviceInfo.Name, methodName.String())
+func DefaultHttpMethod(routerInfo *parser.RouterInfo) {
+	if stringx.IsBlank(routerInfo.HttpMethod) {
+		routerInfo.HttpMethod = parser.GET
+	}
 }
 
-func detectOutputDir(paths []string) (string, error) {
-	if len(paths) == 0 {
-		return "", errors.New("no files to derive output directory from")
-	}
-	dir := filepath.Dir(paths[0])
-	for _, p := range paths[1:] {
-		if dir2 := filepath.Dir(p); dir2 != dir {
-			return "", fmt.Errorf("found conflicting directories %q and %q", dir, dir2)
+func DefaultHttpPath(routerInfo *parser.RouterInfo) {
+	if stringx.IsBlank(routerInfo.Path) {
+		routerInfo.Path = routerInfo.FullMethodName
+		if *pathToLower {
+			routerInfo.Path = strings.ToLower(routerInfo.Path)
 		}
 	}
-	return dir, nil
 }
 
-func defaultBindingName(info *parser.RouterInfo, Param2 *parser.Param) {
+func DefaultBindingName(info *parser.RouterInfo, Param2 *parser.Param) {
 	if Param2.Reader {
 		if slicex.IsEmpty(info.Bindings) {
 			info.Bindings = []string{
@@ -215,7 +188,7 @@ func defaultBindingName(info *parser.RouterInfo, Param2 *parser.Param) {
 	}
 }
 
-func defaultRenderName(info *parser.RouterInfo, Result1 *parser.Result) {
+func DefaultRenderName(info *parser.RouterInfo, Result1 *parser.Result) {
 	switch {
 	case Result1.Bytes:
 		if stringx.IsBlank(info.Render) {
@@ -237,4 +210,21 @@ func defaultRenderName(info *parser.RouterInfo, Result1 *parser.Result) {
 	default:
 		log.Fatalf("error: func %s 1th result is invalid, must be io.Reader or []byte or string or *struct{}", info.FullMethodName)
 	}
+}
+
+func FullMethodName(pkgName string, serviceInfo *parser.ServiceInfo, methodName *ast.Ident) string {
+	return fmt.Sprintf("/%s.%s/%s", pkgName, serviceInfo.Name, methodName.String())
+}
+
+func detectOutputDir(paths []string) (string, error) {
+	if len(paths) == 0 {
+		return "", errors.New("no files to derive output directory from")
+	}
+	dir := filepath.Dir(paths[0])
+	for _, p := range paths[1:] {
+		if dir2 := filepath.Dir(p); dir2 != dir {
+			return "", fmt.Errorf("found conflicting directories %q and %q", dir, dir2)
+		}
+	}
+	return dir, nil
 }

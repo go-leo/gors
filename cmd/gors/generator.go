@@ -30,8 +30,6 @@ type generate struct {
 	imports          map[string]*parser.GoImport
 	usedPackageNames map[string]bool
 	serviceInfo      *parser.ServiceInfo
-	Param2s          map[*parser.RouterInfo]*parser.Param
-	Result1s         map[*parser.RouterInfo]*parser.Result
 }
 
 func (g *generate) content() []byte {
@@ -97,8 +95,8 @@ func (g *generate) printHandler(info *parser.RouterInfo) {
 	g.P(g.functionBuf, "var rpcMethodName = ", strconv.Quote(info.FullMethodName))
 	g.P(g.functionBuf, "var ctx = ", gorsPackage.Ident("NewContext"), "(c, rpcMethodName)")
 
-	Param2 := g.Param2s[info]
-	Result1 := g.Result1s[info]
+	Param2 := info.Param2
+	Result1 := info.Result1
 
 	if Param2.Bytes {
 		g.P(g.functionBuf, "var req []byte")
@@ -156,7 +154,7 @@ func (g *generate) printPtrReq(info *parser.RouterInfo, binding string) {
 }
 
 func (g *generate) printObjectReq(info *parser.RouterInfo) {
-	Param2 := g.Param2s[info]
+	Param2 := info.Param2
 	objArgs := Param2.ObjectArgs
 	g.P(g.functionBuf, "req = new(", objArgs.GoImportPath.Ident(objArgs.Name), ")")
 	g.P(g.functionBuf, "if err = ", gorsPackage.Ident("RequestBind"), "(")
@@ -176,7 +174,7 @@ func (g *generate) printResponseRender(info *parser.RouterInfo) {
 	g.P(g.functionBuf, "return")
 	g.P(g.functionBuf, "}")
 
-	Result1 := g.Result1s[info]
+	Result1 := info.Result1
 	switch {
 	case Result1.Bytes:
 		if stringx.IsBlank(info.Render) {
@@ -266,8 +264,4 @@ func (g *generate) P(w io.Writer, v ...any) {
 		}
 	}
 	_, _ = fmt.Fprintln(w)
-}
-
-func handlerName(info *parser.RouterInfo, serviceInfo *parser.ServiceInfo) string {
-	return fmt.Sprintf("_%s_%s_Handler", serviceInfo.Name, info.MethodName)
 }

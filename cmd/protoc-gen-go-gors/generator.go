@@ -146,9 +146,10 @@ func getServiceInfo(gen *protogen.Plugin, file *protogen.File, g *protogen.Gener
 			// Unary RPC method
 			router := parser.NewRouter(
 				method.GoName,
-				fullMethodName(service, method),
 				splitComment(method.Comments.Leading.String()),
 			)
+			router.SetFullMethodName(fullMethodName(service, method))
+
 			if stringx.IsBlank(router.HttpMethod) {
 				router.HttpMethod = parser.POST
 			}

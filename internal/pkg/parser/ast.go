@@ -2,6 +2,7 @@ package parser
 
 import (
 	"fmt"
+	"github.com/go-leo/gox/slicex"
 	"go/ast"
 	"go/token"
 	"golang.org/x/tools/go/packages"
@@ -79,6 +80,17 @@ func Inspect(pkg *packages.Package, serviceName string) (*ast.File, *ast.GenDecl
 		})
 	}
 	return serviceFile, serviceDecl, serviceSpec, serviceType, serviceMethods
+}
+
+func ExtractRouterInfo(method *ast.Field, methodName *ast.Ident) *RouterInfo {
+	if method.Doc == nil {
+		return NewRouter(methodName.String(), nil)
+	}
+	comments := slicex.Map[[]*ast.Comment, []string](
+		method.Doc.List,
+		func(i int, e1 *ast.Comment) string { return e1.Text },
+	)
+	return NewRouter(methodName.String(), comments)
 }
 
 func ExtractGoImports(serviceFile *ast.File) map[string]*GoImport {
