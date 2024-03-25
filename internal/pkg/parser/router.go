@@ -69,8 +69,8 @@ func (info *RouterInfo) FileParams() []string {
 	return params
 }
 
-func (info *RouterInfo) SetHandlerName(serviceInfo *ServiceInfo) {
-	info.HandlerName = fmt.Sprintf("_%s_%s_Handler", serviceInfo.Name, info.MethodName)
+func (info *RouterInfo) SetHandlerName(serviceName string) {
+	info.HandlerName = fmt.Sprintf("_%s_%s_Handler", serviceName, info.MethodName)
 }
 
 func (info *RouterInfo) SetFullMethodName(rpcMethodName string) {

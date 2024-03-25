@@ -164,8 +164,12 @@ func (info *ServiceInfo) Swagger() *spec.Swagger {
 	}
 }
 
-func NewService(name string, comments []string) *ServiceInfo {
-	info := &ServiceInfo{Name: name}
+func (info *ServiceInfo) SetServiceName(s string) {
+	info.Name = s
+}
+
+func NewService(comments []string) *ServiceInfo {
+	info := &ServiceInfo{}
 	desc := &bytes.Buffer{}
 	for _, comment := range comments {
 		text := strings.TrimSpace(strings.TrimPrefix(strings.TrimSpace(comment), "//"))

@@ -71,7 +71,9 @@ func main() {
 		log.Fatal("error: not found service")
 	}
 	// find basePath
-	serviceInfo := parser.InitServiceInfo(*serviceName, serviceDecl)
+	serviceInfo := parser.ParseServiceInfo(serviceDecl)
+	serviceInfo.SetServiceName(*serviceName)
+
 	imports := parser.ExtractGoImports(serviceFile)
 
 	// generate router by method comment
@@ -96,7 +98,7 @@ func main() {
 			log.Fatal(err)
 		}
 		routerInfo := parser.ExtractRouterInfo(method, methodName)
-		routerInfo.SetHandlerName(serviceInfo)
+		routerInfo.SetHandlerName(*serviceName)
 		routerInfo.SetFullMethodName(FullMethodName(pkgName, serviceInfo, methodName))
 		routerInfo.SetFuncType(rpcType)
 		routerInfo.SetParam2(param2)

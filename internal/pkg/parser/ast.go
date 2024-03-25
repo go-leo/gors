@@ -113,15 +113,15 @@ func ExtractGoImports(serviceFile *ast.File) map[string]*GoImport {
 	return goImports
 }
 
-func InitServiceInfo(name string, serviceDecl *ast.GenDecl) *ServiceInfo {
+func ParseServiceInfo(serviceDecl *ast.GenDecl) *ServiceInfo {
 	if serviceDecl == nil || serviceDecl.Doc == nil {
-		return &ServiceInfo{Name: name}
+		return &ServiceInfo{}
 	}
 	var comments []string
 	for _, comment := range serviceDecl.Doc.List {
 		comments = append(comments, comment.Text)
 	}
-	return NewService(name, comments)
+	return NewService(comments)
 }
 
 type GoIdent struct {
