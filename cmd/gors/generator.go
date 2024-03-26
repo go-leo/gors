@@ -123,11 +123,11 @@ func (g *generate) printHandler(info *parser.RouterInfo) {
 	g.P(g.functionBuf, "var err error")
 
 	if Param2.Reader {
-		g.printPtrReq(info, parser.ReaderBinding)
+		g.printPtrReq(info, string(parser.ReaderBinding))
 	} else if Param2.Bytes {
-		g.printPtrReq(info, parser.BytesBinding)
+		g.printPtrReq(info, string(parser.BytesBinding))
 	} else if Param2.String {
-		g.printPtrReq(info, parser.StringBinding)
+		g.printPtrReq(info, string(parser.StringBinding))
 	} else if Param2.ObjectArgs != nil {
 		g.printObjectReq(info)
 	} else {
@@ -146,7 +146,7 @@ func (g *generate) printPtrReq(info *parser.RouterInfo, binding string) {
 	}
 	g.P(g.functionBuf, "if err = ", gorsPackage.Ident("RequestBind"), "(")
 	g.P(g.functionBuf, "ctx, &req, options.Tag,")
-	g.P(g.functionBuf, gorsPackage.Ident(strings.Trim(info.Bindings[0], "@")), ",")
+	g.P(g.functionBuf, gorsPackage.Ident(strings.Trim(string(info.Bindings[0]), "@")), ",")
 	g.P(g.functionBuf, "); err != nil {")
 	g.P(g.functionBuf, gorsPackage.Ident("ErrorRender"), "(ctx, err, options.ErrorHandler, options.ResponseWrapper)")
 	g.P(g.functionBuf, "return")
@@ -160,7 +160,7 @@ func (g *generate) printObjectReq(info *parser.RouterInfo) {
 	g.P(g.functionBuf, "if err = ", gorsPackage.Ident("RequestBind"), "(")
 	g.P(g.functionBuf, "ctx, req, options.Tag,")
 	for _, binding := range info.Bindings {
-		g.P(g.functionBuf, gorsPackage.Ident(strings.Trim(binding, "@")), ",")
+		g.P(g.functionBuf, gorsPackage.Ident(strings.Trim(string(binding), "@")), ",")
 	}
 	g.P(g.functionBuf, "); err != nil {")
 	g.P(g.functionBuf, gorsPackage.Ident("ErrorRender"), "(ctx, err, options.ErrorHandler, options.ResponseWrapper)")

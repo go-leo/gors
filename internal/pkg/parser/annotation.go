@@ -9,6 +9,8 @@ import (
 
 type Method string
 
+type Binding string
+
 const (
 	GORS = "@GORS"
 
@@ -24,23 +26,23 @@ const (
 	OPTIONS Method = "@OPTIONS"
 	TRACE   Method = "@TRACE"
 
-	ReaderBinding        = "@ReaderBinding"
-	BytesBinding         = "@BytesBinding"
-	StringBinding        = "@StringBinding"
-	UriBinding           = "@UriBinding"
-	QueryBinding         = "@QueryBinding"
-	HeaderBinding        = "@HeaderBinding"
-	JSONBinding          = "@JSONBinding"
-	XMLBinding           = "@XMLBinding"
-	FormBinding          = "@FormBinding"
-	FormPostBinding      = "@FormPostBinding"
-	FormMultipartBinding = "@FormMultipartBinding"
-	ProtoBufBinding      = "@ProtoBufBinding"
-	MsgPackBinding       = "@MsgPackBinding"
-	YAMLBinding          = "@YAMLBinding"
-	TOMLBinding          = "@TOMLBinding"
-	CustomBinding        = "@CustomBinding"
-	ProtoJSONBinding     = "@ProtoJSONBinding"
+	ReaderBinding        Binding = "@ReaderBinding"
+	BytesBinding         Binding = "@BytesBinding"
+	StringBinding        Binding = "@StringBinding"
+	UriBinding           Binding = "@UriBinding"
+	QueryBinding         Binding = "@QueryBinding"
+	HeaderBinding        Binding = "@HeaderBinding"
+	JSONBinding          Binding = "@JSONBinding"
+	XMLBinding           Binding = "@XMLBinding"
+	FormBinding          Binding = "@FormBinding"
+	FormPostBinding      Binding = "@FormPostBinding"
+	FormMultipartBinding Binding = "@FormMultipartBinding"
+	ProtoBufBinding      Binding = "@ProtoBufBinding"
+	MsgPackBinding       Binding = "@MsgPackBinding"
+	YAMLBinding          Binding = "@YAMLBinding"
+	TOMLBinding          Binding = "@TOMLBinding"
+	ProtoJSONBinding     Binding = "@ProtoJSONBinding"
+	CustomBinding        Binding = "@CustomBinding"
 
 	ReaderRender   = "@ReaderRender"
 	BytesRender    = "@BytesRender"

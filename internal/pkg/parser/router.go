@@ -19,7 +19,7 @@ type RouterInfo struct {
 	MethodName         string
 	FullMethodName     string
 	BindingContentType string
-	Bindings           []string
+	Bindings           []Binding
 	RenderContentType  string
 	Render             string
 	HandlerName        string
@@ -29,9 +29,9 @@ type RouterInfo struct {
 	Result1            *Result
 }
 
-func (info *RouterInfo) PathParams() []string {
+func (routerInfo *RouterInfo) PathParams() []string {
 	var params []string
-	segs := strings.Split(info.Path, "/")
+	segs := strings.Split(routerInfo.Path, "/")
 	for _, seg := range segs {
 		seg = strings.TrimSpace(seg)
 		if stringx.IsBlank(seg) {
@@ -50,48 +50,48 @@ func (info *RouterInfo) PathParams() []string {
 	return params
 }
 
-func (info *RouterInfo) QueryParams() []string {
+func (routerInfo *RouterInfo) QueryParams() []string {
 	var params []string
 	return params
 }
 
-func (info *RouterInfo) HeaderParams() []string {
+func (routerInfo *RouterInfo) HeaderParams() []string {
 	var params []string
 	return params
 }
 
-func (info *RouterInfo) FormParams() []string {
+func (routerInfo *RouterInfo) FormParams() []string {
 	var params []string
 	return params
 }
 
-func (info *RouterInfo) FileParams() []string {
+func (routerInfo *RouterInfo) FileParams() []string {
 	var params []string
 	return params
 }
 
-func (info *RouterInfo) SetHandlerName(serviceName string) {
-	info.HandlerName = fmt.Sprintf("_%s_%s_Handler", serviceName, info.MethodName)
+func (routerInfo *RouterInfo) SetHandlerName(serviceName string) {
+	routerInfo.HandlerName = fmt.Sprintf("_%s_%s_Handler", serviceName, routerInfo.MethodName)
 }
 
-func (info *RouterInfo) SetFullMethodName(rpcMethodName string) {
-	info.FullMethodName = rpcMethodName
+func (routerInfo *RouterInfo) SetFullMethodName(rpcMethodName string) {
+	routerInfo.FullMethodName = rpcMethodName
 }
 
-func (info *RouterInfo) SetFuncType(rpcType *ast.FuncType) {
-	info.FuncType = rpcType
+func (routerInfo *RouterInfo) SetFuncType(rpcType *ast.FuncType) {
+	routerInfo.FuncType = rpcType
 }
 
-func (info *RouterInfo) SetParam2(param *Param) {
-	info.Param2 = param
+func (routerInfo *RouterInfo) SetParam2(param *Param) {
+	routerInfo.Param2 = param
 }
 
-func (info *RouterInfo) SetResult1(result *Result) {
-	info.Result1 = result
+func (routerInfo *RouterInfo) SetResult1(result *Result) {
+	routerInfo.Result1 = result
 }
 
-func (info *RouterInfo) SetMethodName(name string) {
-	info.MethodName = name
+func (routerInfo *RouterInfo) SetMethodName(name string) {
+	routerInfo.MethodName = name
 }
 
 func (routerInfo *RouterInfo) DefaultHttpMethod() {
@@ -113,19 +113,19 @@ func (routerInfo *RouterInfo) DefaultBindingName() {
 	Param2 := routerInfo.Param2
 	if Param2.Reader {
 		if slicex.IsEmpty(routerInfo.Bindings) {
-			routerInfo.Bindings = []string{ReaderBinding}
+			routerInfo.Bindings = []Binding{ReaderBinding}
 		}
 	} else if Param2.Bytes {
 		if slicex.IsEmpty(routerInfo.Bindings) {
-			routerInfo.Bindings = []string{BytesBinding}
+			routerInfo.Bindings = []Binding{BytesBinding}
 		}
 	} else if Param2.String {
 		if slicex.IsEmpty(routerInfo.Bindings) {
-			routerInfo.Bindings = []string{StringBinding}
+			routerInfo.Bindings = []Binding{StringBinding}
 		}
 	} else if objectArgs := Param2.ObjectArgs; objectArgs != nil {
 		if slicex.IsEmpty(routerInfo.Bindings) {
-			routerInfo.Bindings = []string{QueryBinding}
+			routerInfo.Bindings = []Binding{QueryBinding}
 			routerInfo.BindingContentType = ""
 		}
 	} else {
@@ -177,193 +177,207 @@ func ParseRouter(comments []string) (*RouterInfo, error) {
 			_, _ = fmt.Fprint(desc, text, " ")
 			continue
 		}
-		for _, s := range seg {
-			s = strings.TrimSpace(s)
-			switch {
-			case strings.HasPrefix(s, GORS):
-				continue
-			case "" == s:
-				continue
-
-				// path
-			case strings.HasPrefix(strings.ToUpper(s), strings.ToUpper(Path)):
-				v, ok := ExtractValue(s, Path)
-				if !ok {
-					return nil, fmt.Errorf("%s path invalid", s)
-				}
-				r.Path = path.Join(r.Path, v)
-
-				// method start
-			case GET.EqualsIgnoreCase(s):
-				if stringx.IsNotBlank(r.HttpMethod) {
-					return nil, ErrMultipleHttpMethod
-				}
-				r.HttpMethod = GET
-			case POST.EqualsIgnoreCase(s):
-				if stringx.IsNotBlank(r.HttpMethod) {
-					return nil, ErrMultipleHttpMethod
-				}
-				r.HttpMethod = POST
-			case PUT.EqualsIgnoreCase(s):
-				if stringx.IsNotBlank(r.HttpMethod) {
-					return nil, ErrMultipleHttpMethod
-				}
-				r.HttpMethod = PUT
-			case DELETE.EqualsIgnoreCase(s):
-				if stringx.IsNotBlank(r.HttpMethod) {
-					return nil, ErrMultipleHttpMethod
-				}
-				r.HttpMethod = DELETE
-			case PATCH.EqualsIgnoreCase(s):
-				if stringx.IsNotBlank(r.HttpMethod) {
-					return nil, ErrMultipleHttpMethod
-				}
-				r.HttpMethod = PATCH
-			case HEAD.EqualsIgnoreCase(s):
-				if stringx.IsNotBlank(r.HttpMethod) {
-					return nil, ErrMultipleHttpMethod
-				}
-				r.HttpMethod = HEAD
-			case CONNECT.EqualsIgnoreCase(s):
-				if stringx.IsNotBlank(r.HttpMethod) {
-					return nil, ErrMultipleHttpMethod
-				}
-				r.HttpMethod = CONNECT
-			case OPTIONS.EqualsIgnoreCase(s):
-				if stringx.IsNotBlank(r.HttpMethod) {
-					return nil, ErrMultipleHttpMethod
-				}
-				r.HttpMethod = OPTIONS
-			case TRACE.EqualsIgnoreCase(s):
-				if stringx.IsNotBlank(r.HttpMethod) {
-					return nil, ErrMultipleHttpMethod
-				}
-				r.HttpMethod = TRACE
-				// method end
-
-				// binding start
-			case strings.HasPrefix(strings.ToUpper(s), strings.ToUpper(ReaderBinding)):
-				v, _ := ExtractValue(s, ReaderBinding)
-				r.BindingContentType = v
-				r.Bindings = append(r.Bindings, ReaderBinding)
-			case strings.HasPrefix(strings.ToUpper(s), strings.ToUpper(BytesBinding)):
-				v, _ := ExtractValue(s, BytesBinding)
-				r.BindingContentType = v
-				r.Bindings = append(r.Bindings, BytesBinding)
-			case strings.HasPrefix(strings.ToUpper(s), strings.ToUpper(StringBinding)):
-				v, _ := ExtractValue(s, StringBinding)
-				r.BindingContentType = v
-				r.Bindings = append(r.Bindings, StringBinding)
-			case strings.ToUpper(s) == strings.ToUpper(UriBinding):
-				r.Bindings = append(r.Bindings, UriBinding)
-			case strings.ToUpper(s) == strings.ToUpper(QueryBinding):
-				r.Bindings = append(r.Bindings, QueryBinding)
-			case strings.ToUpper(s) == strings.ToUpper(HeaderBinding):
-				r.Bindings = append(r.Bindings, HeaderBinding)
-			case strings.ToUpper(s) == strings.ToUpper(JSONBinding):
-				r.Bindings = append(r.Bindings, JSONBinding)
-				r.BindingContentType = JSONContentType
-			case strings.ToUpper(s) == strings.ToUpper(ProtoJSONBinding):
-				r.Bindings = append(r.Bindings, ProtoJSONBinding)
-				r.BindingContentType = JSONContentType
-			case strings.ToUpper(s) == strings.ToUpper(XMLBinding):
-				r.Bindings = append(r.Bindings, XMLBinding)
-				r.BindingContentType = XMLContentType
-			case strings.ToUpper(s) == strings.ToUpper(FormBinding):
-				r.Bindings = append(r.Bindings, FormBinding)
-				r.BindingContentType = FormContentType
-			case strings.ToUpper(s) == strings.ToUpper(FormPostBinding):
-				r.Bindings = append(r.Bindings, FormPostBinding)
-				r.BindingContentType = FormContentType
-			case strings.ToUpper(s) == strings.ToUpper(FormMultipartBinding):
-				r.Bindings = append(r.Bindings, FormMultipartBinding)
-				r.BindingContentType = FormMultipartContentType
-			case strings.ToUpper(s) == strings.ToUpper(ProtoBufBinding):
-				r.Bindings = append(r.Bindings, ProtoBufBinding)
-				r.BindingContentType = ProtoBufContentType
-			case strings.ToUpper(s) == strings.ToUpper(MsgPackBinding):
-				r.Bindings = append(r.Bindings, MsgPackBinding)
-				r.BindingContentType = MsgPackContentType
-			case strings.ToUpper(s) == strings.ToUpper(YAMLBinding):
-				r.Bindings = append(r.Bindings, YAMLBinding)
-				r.BindingContentType = YAMLContentType
-			case strings.ToUpper(s) == strings.ToUpper(TOMLBinding):
-				r.Bindings = append(r.Bindings, TOMLBinding)
-				r.BindingContentType = TOMLContentType
-			case strings.HasPrefix(strings.ToUpper(s), strings.ToUpper(CustomBinding)):
-				v, _ := ExtractValue(s, CustomBinding)
-				r.BindingContentType = v
-				r.Bindings = append(r.Bindings, CustomBinding)
-				// binding end
-
-				// render start
-			case strings.HasPrefix(strings.ToUpper(s), strings.ToUpper(ReaderRender)):
-				v, _ := ExtractValue(s, ReaderRender)
-				r.RenderContentType = v
-				r.Render = ReaderRender
-			case strings.HasPrefix(strings.ToUpper(s), strings.ToUpper(BytesRender)):
-				v, _ := ExtractValue(s, BytesRender)
-				r.RenderContentType = v
-				r.Render = BytesRender
-			case strings.HasPrefix(strings.ToUpper(s), strings.ToUpper(StringRender)):
-				v, _ := ExtractValue(s, StringRender)
-				r.RenderContentType = v
-				r.Render = StringRender
-			case strings.ToUpper(s) == strings.ToUpper(TextRender):
-				r.Render = TextRender
-				r.RenderContentType = PlainContentType
-			case strings.ToUpper(s) == strings.ToUpper(HTMLRender):
-				r.Render = HTMLRender
-				r.RenderContentType = HTMLContentType
-			case strings.ToUpper(s) == strings.ToUpper(RedirectRender):
-				r.Render = RedirectRender
-			case strings.ToUpper(s) == strings.ToUpper(JSONRender):
-				r.Render = JSONRender
-				r.RenderContentType = JSONContentType
-			case strings.ToUpper(s) == strings.ToUpper(IndentedJSONRender):
-				r.Render = IndentedJSONRender
-				r.RenderContentType = JSONContentType
-			case strings.ToUpper(s) == strings.ToUpper(SecureJSONRender):
-				r.Render = SecureJSONRender
-				r.RenderContentType = JSONContentType
-			case strings.ToUpper(s) == strings.ToUpper(JSONPJSONRender):
-				r.Render = JSONPJSONRender
-				r.RenderContentType = JSONPContentType
-			case strings.ToUpper(s) == strings.ToUpper(PureJSONRender):
-				r.Render = PureJSONRender
-				r.RenderContentType = JSONContentType
-			case strings.ToUpper(s) == strings.ToUpper(AsciiJSONRender):
-				r.Render = AsciiJSONRender
-				r.RenderContentType = JSONContentType
-			case strings.ToUpper(s) == strings.ToUpper(ProtoJSONRender):
-				r.Render = ProtoJSONRender
-				r.RenderContentType = JSONContentType
-			case strings.ToUpper(s) == strings.ToUpper(XMLRender):
-				r.Render = XMLRender
-				r.RenderContentType = XMLContentType
-			case strings.ToUpper(s) == strings.ToUpper(YAMLRender):
-				r.Render = YAMLRender
-				r.RenderContentType = YAMLContentType
-			case strings.ToUpper(s) == strings.ToUpper(ProtoBufRender):
-				r.Render = ProtoBufRender
-				r.RenderContentType = ProtoBufContentType
-			case strings.ToUpper(s) == strings.ToUpper(MsgPackRender):
-				r.Render = MsgPackRender
-				r.RenderContentType = MsgPackContentType
-			case strings.ToUpper(s) == strings.ToUpper(TOMLRender):
-				r.Render = TOMLRender
-				r.RenderContentType = TOMLContentType
-			case strings.HasPrefix(strings.ToUpper(s), strings.ToUpper(CustomRender)):
-				v, _ := ExtractValue(s, CustomRender)
-				r.RenderContentType = v
-				r.Render = CustomRender
-				// render end
-
-			default:
-				log.Printf("warning: format error: unsupport: %s", s)
-			}
+		if err := parseRouterComment(r, seg); err != nil {
+			return nil, err
 		}
 	}
 	r.Description = desc.String()
 	return r, nil
+}
+
+func parseRouterComment(r *RouterInfo, seg []string) error {
+	for _, s := range seg {
+		s = strings.TrimSpace(s)
+		if s == "" {
+			continue
+		}
+		if startSegment(s) {
+			continue
+		}
+
+		// path
+		pathSeg, ok, err := pathSegment(s)
+		if err != nil {
+			return err
+		}
+		if ok {
+			r.Path = path.Join(r.Path, pathSeg)
+			continue
+		}
+
+		methodSeg, ok := httpMethodSegment(s)
+		if ok {
+			if stringx.IsNotBlank(r.HttpMethod) {
+				return ErrMultipleHttpMethod
+			}
+			r.HttpMethod = methodSeg
+			continue
+		}
+
+		bindingSeg, contentType, ok := bindingSegment(s)
+		if ok {
+			r.Bindings = append(r.Bindings, bindingSeg)
+			r.BindingContentType = contentType
+			continue
+		}
+
+		switch {
+		// render start
+		case strings.HasPrefix(strings.ToUpper(s), strings.ToUpper(ReaderRender)):
+			v, _ := ExtractValue(s, ReaderRender)
+			r.RenderContentType = v
+			r.Render = ReaderRender
+		case strings.HasPrefix(strings.ToUpper(s), strings.ToUpper(BytesRender)):
+			v, _ := ExtractValue(s, BytesRender)
+			r.RenderContentType = v
+			r.Render = BytesRender
+		case strings.HasPrefix(strings.ToUpper(s), strings.ToUpper(StringRender)):
+			v, _ := ExtractValue(s, StringRender)
+			r.RenderContentType = v
+			r.Render = StringRender
+		case strings.ToUpper(s) == strings.ToUpper(TextRender):
+			r.Render = TextRender
+			r.RenderContentType = PlainContentType
+		case strings.ToUpper(s) == strings.ToUpper(HTMLRender):
+			r.Render = HTMLRender
+			r.RenderContentType = HTMLContentType
+		case strings.ToUpper(s) == strings.ToUpper(RedirectRender):
+			r.Render = RedirectRender
+		case strings.ToUpper(s) == strings.ToUpper(JSONRender):
+			r.Render = JSONRender
+			r.RenderContentType = JSONContentType
+		case strings.ToUpper(s) == strings.ToUpper(IndentedJSONRender):
+			r.Render = IndentedJSONRender
+			r.RenderContentType = JSONContentType
+		case strings.ToUpper(s) == strings.ToUpper(SecureJSONRender):
+			r.Render = SecureJSONRender
+			r.RenderContentType = JSONContentType
+		case strings.ToUpper(s) == strings.ToUpper(JSONPJSONRender):
+			r.Render = JSONPJSONRender
+			r.RenderContentType = JSONPContentType
+		case strings.ToUpper(s) == strings.ToUpper(PureJSONRender):
+			r.Render = PureJSONRender
+			r.RenderContentType = JSONContentType
+		case strings.ToUpper(s) == strings.ToUpper(AsciiJSONRender):
+			r.Render = AsciiJSONRender
+			r.RenderContentType = JSONContentType
+		case strings.ToUpper(s) == strings.ToUpper(ProtoJSONRender):
+			r.Render = ProtoJSONRender
+			r.RenderContentType = JSONContentType
+		case strings.ToUpper(s) == strings.ToUpper(XMLRender):
+			r.Render = XMLRender
+			r.RenderContentType = XMLContentType
+		case strings.ToUpper(s) == strings.ToUpper(YAMLRender):
+			r.Render = YAMLRender
+			r.RenderContentType = YAMLContentType
+		case strings.ToUpper(s) == strings.ToUpper(ProtoBufRender):
+			r.Render = ProtoBufRender
+			r.RenderContentType = ProtoBufContentType
+		case strings.ToUpper(s) == strings.ToUpper(MsgPackRender):
+			r.Render = MsgPackRender
+			r.RenderContentType = MsgPackContentType
+		case strings.ToUpper(s) == strings.ToUpper(TOMLRender):
+			r.Render = TOMLRender
+			r.RenderContentType = TOMLContentType
+		case strings.HasPrefix(strings.ToUpper(s), strings.ToUpper(CustomRender)):
+			v, _ := ExtractValue(s, CustomRender)
+			r.RenderContentType = v
+			r.Render = CustomRender
+			// render end
+		default:
+			log.Printf("warning: format error: unsupport: %s", s)
+		}
+	}
+	return nil
+}
+
+func startSegment(s string) bool {
+	switch {
+	case strings.HasPrefix(s, GORS):
+		return true
+	}
+	return false
+}
+
+func pathSegment(s string) (string, bool, error) {
+	switch {
+	case strings.HasPrefix(strings.ToUpper(s), strings.ToUpper(Path)):
+		v, ok := ExtractValue(s, Path)
+		if !ok {
+			return "", false, fmt.Errorf("%s path invalid", s)
+		}
+		return v, true, nil
+	}
+	return "", false, nil
+}
+
+func httpMethodSegment(s string) (Method, bool) {
+	// method start
+	switch {
+	case GET.EqualsIgnoreCase(s):
+		return GET, true
+	case POST.EqualsIgnoreCase(s):
+		return POST, true
+	case PUT.EqualsIgnoreCase(s):
+		return PUT, true
+	case DELETE.EqualsIgnoreCase(s):
+		return DELETE, true
+	case PATCH.EqualsIgnoreCase(s):
+		return PATCH, true
+	case HEAD.EqualsIgnoreCase(s):
+		return HEAD, true
+	case CONNECT.EqualsIgnoreCase(s):
+		return CONNECT, true
+	case OPTIONS.EqualsIgnoreCase(s):
+		return OPTIONS, true
+	case TRACE.EqualsIgnoreCase(s):
+		return TRACE, true
+	default:
+		return "", false
+	}
+}
+
+func bindingSegment(s string) (Binding, string, bool) {
+	switch {
+	case strings.HasPrefix(strings.ToUpper(s), strings.ToUpper(string(ReaderBinding))):
+		v, _ := ExtractValue(s, string(ReaderBinding))
+		return ReaderBinding, v, true
+	case strings.HasPrefix(strings.ToUpper(s), strings.ToUpper(string(BytesBinding))):
+		v, _ := ExtractValue(s, string(BytesBinding))
+		return BytesBinding, v, true
+	case strings.HasPrefix(strings.ToUpper(s), strings.ToUpper(string(StringBinding))):
+		v, _ := ExtractValue(s, string(StringBinding))
+		return StringBinding, v, true
+	case strings.ToUpper(s) == strings.ToUpper(string(UriBinding)):
+		return UriBinding, "", true
+	case strings.ToUpper(s) == strings.ToUpper(string(QueryBinding)):
+		return QueryBinding, "", true
+	case strings.ToUpper(s) == strings.ToUpper(string(HeaderBinding)):
+		return HeaderBinding, "", true
+	case strings.ToUpper(s) == strings.ToUpper(string(JSONBinding)):
+		return JSONBinding, JSONContentType, true
+	case strings.ToUpper(s) == strings.ToUpper(string(ProtoJSONBinding)):
+		return ProtoJSONBinding, JSONContentType, true
+	case strings.ToUpper(s) == strings.ToUpper(string(XMLBinding)):
+		return XMLBinding, XMLContentType, true
+	case strings.ToUpper(s) == strings.ToUpper(string(FormBinding)):
+		return FormBinding, FormContentType, true
+	case strings.ToUpper(s) == strings.ToUpper(string(FormPostBinding)):
+		return FormPostBinding, FormContentType, true
+	case strings.ToUpper(s) == strings.ToUpper(string(FormMultipartBinding)):
+		return FormMultipartBinding, FormMultipartContentType, true
+	case strings.ToUpper(s) == strings.ToUpper(string(ProtoBufBinding)):
+		return ProtoBufBinding, ProtoBufContentType, true
+	case strings.ToUpper(s) == strings.ToUpper(string(MsgPackBinding)):
+		return MsgPackBinding, MsgPackContentType, true
+	case strings.ToUpper(s) == strings.ToUpper(string(YAMLBinding)):
+		return YAMLBinding, YAMLContentType, true
+	case strings.ToUpper(s) == strings.ToUpper(string(TOMLBinding)):
+		return TOMLBinding, TOMLContentType, true
+	case strings.HasPrefix(strings.ToUpper(s), strings.ToUpper(string(CustomBinding))):
+		v, _ := ExtractValue(s, string(CustomBinding))
+		return CustomBinding, v, true
+	default:
+		return "", "", false
+	}
 }

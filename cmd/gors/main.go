@@ -67,16 +67,16 @@ func main() {
 	if serviceFile == nil || serviceDecl == nil || serviceSpec == nil || serviceType == nil {
 		log.Fatal("error: not found service")
 	}
-	// find basePath
+
 	serviceInfo := parser.ParseServiceInfo(serviceDecl)
 	serviceInfo.SetServiceName(*serviceName)
 	imports := parser.ExtractGoImports(serviceFile)
-	// generate router by method comment
 	routers, err := parser.ParseRouterInfos(serviceMethods, imports, pkgName, *serviceName, *pathToLower)
 	if err != nil {
 		log.Fatal(err)
 	}
-	serviceInfo.Routers = routers
+	serviceInfo.SetRouters(routers)
+	serviceInfo.Swagger()
 
 	g := &generate{
 		buf:              &bytes.Buffer{},

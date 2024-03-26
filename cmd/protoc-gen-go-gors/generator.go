@@ -162,7 +162,7 @@ func getServiceInfo(gen *protogen.Plugin, file *protogen.File, g *protogen.Gener
 				}
 			}
 			if slicex.IsEmpty(router.Bindings) {
-				router.Bindings = []string{parser.ProtoJSONBinding}
+				router.Bindings = []parser.Binding{parser.ProtoJSONBinding}
 				router.BindingContentType = parser.JSONContentType
 			}
 			if stringx.IsBlank(router.Render) {
@@ -267,7 +267,7 @@ func printRequestBinding(gen *protogen.Plugin, g *protogen.GeneratedFile, router
 	g.P("if err = ", gorsPackage.Ident("RequestBind"), "(")
 	g.P("ctx, req, options.Tag,")
 	for _, binding := range router.Bindings {
-		g.P(gorsPackage.Ident(strings.TrimPrefix(binding, "@")), ",")
+		g.P(gorsPackage.Ident(strings.TrimPrefix(string(binding), "@")), ",")
 	}
 	g.P("); err != nil {")
 	g.P(gorsPackage.Ident("ErrorRender"), "(ctx, err, options.ErrorHandler, options.ResponseWrapper)")

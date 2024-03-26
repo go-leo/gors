@@ -168,6 +168,10 @@ func (info *ServiceInfo) SetServiceName(s string) {
 	info.Name = s
 }
 
+func (info *ServiceInfo) SetRouters(routers []*RouterInfo) {
+	info.Routers = routers
+}
+
 func NewService(comments []string) *ServiceInfo {
 	info := &ServiceInfo{}
 	desc := &bytes.Buffer{}
