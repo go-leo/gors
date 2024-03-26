@@ -6,11 +6,6 @@ import (
 )
 
 // The list of annotation.
-
-type Method string
-
-type Binding string
-
 const (
 	GORS = "@GORS"
 
@@ -44,27 +39,28 @@ const (
 	ProtoJSONBinding     Binding = "@ProtoJSONBinding"
 	CustomBinding        Binding = "@CustomBinding"
 
-	ReaderRender   = "@ReaderRender"
-	BytesRender    = "@BytesRender"
-	StringRender   = "@StringRender"
-	TextRender     = "@TextRender"
-	HTMLRender     = "@HTMLRender"
-	RedirectRender = "@RedirectRender"
-
-	JSONRender         = "@JSONRender"
-	IndentedJSONRender = "@IndentedJSONRender"
-	SecureJSONRender   = "@SecureJSONRender"
-	JSONPJSONRender    = "@JSONPJSONRender"
-	PureJSONRender     = "@PureJSONRender"
-	AsciiJSONRender    = "@AsciiJSONRender"
-	XMLRender          = "@XMLRender"
-	YAMLRender         = "@YAMLRender"
-	ProtoBufRender     = "@ProtoBufRender"
-	MsgPackRender      = "@MsgPackRender"
-	TOMLRender         = "@TOMLRender"
-	CustomRender       = "@CustomRender"
-	ProtoJSONRender    = "@ProtoJSONRender"
+	ReaderRender       Render = "@ReaderRender"
+	BytesRender        Render = "@BytesRender"
+	StringRender       Render = "@StringRender"
+	TextRender         Render = "@TextRender"
+	HTMLRender         Render = "@HTMLRender"
+	RedirectRender     Render = "@RedirectRender"
+	JSONRender         Render = "@JSONRender"
+	IndentedJSONRender Render = "@IndentedJSONRender"
+	SecureJSONRender   Render = "@SecureJSONRender"
+	JSONPJSONRender    Render = "@JSONPJSONRender"
+	PureJSONRender     Render = "@PureJSONRender"
+	AsciiJSONRender    Render = "@AsciiJSONRender"
+	ProtoJSONRender    Render = "@ProtoJSONRender"
+	XMLRender          Render = "@XMLRender"
+	YAMLRender         Render = "@YAMLRender"
+	ProtoBufRender     Render = "@ProtoBufRender"
+	MsgPackRender      Render = "@MsgPackRender"
+	TOMLRender         Render = "@TOMLRender"
+	CustomRender       Render = "@CustomRender"
 )
+
+type Method string
 
 func (m Method) String() string {
 	return string(m)
@@ -106,4 +102,16 @@ func ExtractValue(s string, annotation string) (string, bool) {
 	}
 	matchArr := reg.FindStringSubmatch(s)
 	return matchArr[len(matchArr)-1], true
+}
+
+type Binding string
+
+func (b Binding) String() string {
+	return string(b)
+}
+
+type Render string
+
+func (r Render) String() string {
+	return string(r)
 }

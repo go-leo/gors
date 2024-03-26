@@ -277,7 +277,7 @@ func printRequestBinding(gen *protogen.Plugin, g *protogen.GeneratedFile, router
 }
 
 func printResponseRender(gen *protogen.Plugin, g *protogen.GeneratedFile, router *parser.RouterInfo) error {
-	renders := []string{
+	renders := []parser.Render{
 		parser.JSONRender, parser.IndentedJSONRender, parser.SecureJSONRender,
 		parser.PureJSONRender, parser.AsciiJSONRender, parser.ProtoJSONRender,
 		parser.ProtoBufRender, parser.CustomRender, parser.XMLRender,
@@ -287,7 +287,7 @@ func printResponseRender(gen *protogen.Plugin, g *protogen.GeneratedFile, router
 		return fmt.Errorf("%s, %s is not supported", router.FullMethodName, router.Render)
 	}
 
-	renderName := strings.TrimPrefix(router.Render, "@")
+	renderName := strings.TrimPrefix(router.Render.String(), "@")
 	renderArg := ""
 	if router.Render == parser.ProtoJSONRender {
 		renderArg = "(options.ProtoJSONMarshalOptions)"

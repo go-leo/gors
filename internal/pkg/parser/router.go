@@ -13,20 +13,23 @@ import (
 )
 
 type RouterInfo struct {
-	HttpMethod         Method
-	Description        string
-	Path               string
-	MethodName         string
-	FullMethodName     string
+	HttpMethod     Method
+	Description    string
+	Path           string
+	MethodName     string
+	FullMethodName string
+
 	BindingContentType string
 	Bindings           []Binding
-	RenderContentType  string
-	Render             string
-	HandlerName        string
-	ProtoMethod        *protogen.Method
-	FuncType           *ast.FuncType
-	Param2             *Param
-	Result1            *Result
+
+	RenderContentType string
+	Render            Render
+
+	HandlerName string
+	ProtoMethod *protogen.Method
+	FuncType    *ast.FuncType
+	Param2      *Param
+	Result1     *Result
 }
 
 func (routerInfo *RouterInfo) PathParams() []string {
@@ -185,18 +188,17 @@ func ParseRouter(comments []string) (*RouterInfo, error) {
 	return r, nil
 }
 
-func parseRouterComment(r *RouterInfo, seg []string) error {
-	for _, s := range seg {
-		s = strings.TrimSpace(s)
-		if s == "" {
+func parseRouterComment(r *RouterInfo, comment []string) error {
+	for _, segment := range comment {
+		segment = strings.TrimSpace(segment)
+		if segment == "" {
 			continue
 		}
-		if startSegment(s) {
+		if startSegment(segment) {
 			continue
 		}
 
-		// path
-		pathSeg, ok, err := pathSegment(s)
+		pathSeg, ok, err := pathSegment(segment)
 		if err != nil {
 			return err
 		}
@@ -205,7 +207,7 @@ func parseRouterComment(r *RouterInfo, seg []string) error {
 			continue
 		}
 
-		methodSeg, ok := httpMethodSegment(s)
+		methodSeg, ok := httpMethodSegment(segment)
 		if ok {
 			if stringx.IsNotBlank(r.HttpMethod) {
 				return ErrMultipleHttpMethod
@@ -214,78 +216,18 @@ func parseRouterComment(r *RouterInfo, seg []string) error {
 			continue
 		}
 
-		bindingSeg, contentType, ok := bindingSegment(s)
+		bindingSeg, contentType, ok := bindingSegment(segment)
 		if ok {
 			r.Bindings = append(r.Bindings, bindingSeg)
 			r.BindingContentType = contentType
 			continue
 		}
 
-		switch {
-		// render start
-		case strings.HasPrefix(strings.ToUpper(s), strings.ToUpper(ReaderRender)):
-			v, _ := ExtractValue(s, ReaderRender)
-			r.RenderContentType = v
-			r.Render = ReaderRender
-		case strings.HasPrefix(strings.ToUpper(s), strings.ToUpper(BytesRender)):
-			v, _ := ExtractValue(s, BytesRender)
-			r.RenderContentType = v
-			r.Render = BytesRender
-		case strings.HasPrefix(strings.ToUpper(s), strings.ToUpper(StringRender)):
-			v, _ := ExtractValue(s, StringRender)
-			r.RenderContentType = v
-			r.Render = StringRender
-		case strings.ToUpper(s) == strings.ToUpper(TextRender):
-			r.Render = TextRender
-			r.RenderContentType = PlainContentType
-		case strings.ToUpper(s) == strings.ToUpper(HTMLRender):
-			r.Render = HTMLRender
-			r.RenderContentType = HTMLContentType
-		case strings.ToUpper(s) == strings.ToUpper(RedirectRender):
-			r.Render = RedirectRender
-		case strings.ToUpper(s) == strings.ToUpper(JSONRender):
-			r.Render = JSONRender
-			r.RenderContentType = JSONContentType
-		case strings.ToUpper(s) == strings.ToUpper(IndentedJSONRender):
-			r.Render = IndentedJSONRender
-			r.RenderContentType = JSONContentType
-		case strings.ToUpper(s) == strings.ToUpper(SecureJSONRender):
-			r.Render = SecureJSONRender
-			r.RenderContentType = JSONContentType
-		case strings.ToUpper(s) == strings.ToUpper(JSONPJSONRender):
-			r.Render = JSONPJSONRender
-			r.RenderContentType = JSONPContentType
-		case strings.ToUpper(s) == strings.ToUpper(PureJSONRender):
-			r.Render = PureJSONRender
-			r.RenderContentType = JSONContentType
-		case strings.ToUpper(s) == strings.ToUpper(AsciiJSONRender):
-			r.Render = AsciiJSONRender
-			r.RenderContentType = JSONContentType
-		case strings.ToUpper(s) == strings.ToUpper(ProtoJSONRender):
-			r.Render = ProtoJSONRender
-			r.RenderContentType = JSONContentType
-		case strings.ToUpper(s) == strings.ToUpper(XMLRender):
-			r.Render = XMLRender
-			r.RenderContentType = XMLContentType
-		case strings.ToUpper(s) == strings.ToUpper(YAMLRender):
-			r.Render = YAMLRender
-			r.RenderContentType = YAMLContentType
-		case strings.ToUpper(s) == strings.ToUpper(ProtoBufRender):
-			r.Render = ProtoBufRender
-			r.RenderContentType = ProtoBufContentType
-		case strings.ToUpper(s) == strings.ToUpper(MsgPackRender):
-			r.Render = MsgPackRender
-			r.RenderContentType = MsgPackContentType
-		case strings.ToUpper(s) == strings.ToUpper(TOMLRender):
-			r.Render = TOMLRender
-			r.RenderContentType = TOMLContentType
-		case strings.HasPrefix(strings.ToUpper(s), strings.ToUpper(CustomRender)):
-			v, _ := ExtractValue(s, CustomRender)
-			r.RenderContentType = v
-			r.Render = CustomRender
-			// render end
-		default:
-			log.Printf("warning: format error: unsupport: %s", s)
+		renderSeg, contentType, ok := renderSegment(segment)
+		if ok {
+			r.Render = renderSeg
+			r.RenderContentType = contentType
+			continue
 		}
 	}
 	return nil
@@ -377,6 +319,55 @@ func bindingSegment(s string) (Binding, string, bool) {
 	case strings.HasPrefix(strings.ToUpper(s), strings.ToUpper(string(CustomBinding))):
 		v, _ := ExtractValue(s, string(CustomBinding))
 		return CustomBinding, v, true
+	default:
+		return "", "", false
+	}
+}
+
+func renderSegment(s string) (Render, string, bool) {
+	switch {
+	case strings.HasPrefix(strings.ToUpper(s), strings.ToUpper(ReaderRender.String())):
+		v, _ := ExtractValue(s, ReaderRender.String())
+		return ReaderRender, v, true
+	case strings.HasPrefix(strings.ToUpper(s), strings.ToUpper(BytesRender.String())):
+		v, _ := ExtractValue(s, BytesRender.String())
+		return BytesRender, v, true
+	case strings.HasPrefix(strings.ToUpper(s), strings.ToUpper(StringRender.String())):
+		v, _ := ExtractValue(s, StringRender.String())
+		return StringRender, v, true
+	case strings.ToUpper(s) == strings.ToUpper(TextRender.String()):
+		return TextRender, PlainContentType, true
+	case strings.ToUpper(s) == strings.ToUpper(HTMLRender.String()):
+		return HTMLRender, HTMLContentType, true
+	case strings.ToUpper(s) == strings.ToUpper(RedirectRender.String()):
+		return RedirectRender, "", true
+	case strings.ToUpper(s) == strings.ToUpper(JSONRender.String()):
+		return JSONRender, JSONContentType, true
+	case strings.ToUpper(s) == strings.ToUpper(IndentedJSONRender.String()):
+		return IndentedJSONRender, JSONContentType, true
+	case strings.ToUpper(s) == strings.ToUpper(SecureJSONRender.String()):
+		return SecureJSONRender, JSONContentType, true
+	case strings.ToUpper(s) == strings.ToUpper(JSONPJSONRender.String()):
+		return JSONPJSONRender, JSONPContentType, true
+	case strings.ToUpper(s) == strings.ToUpper(PureJSONRender.String()):
+		return PureJSONRender, JSONContentType, true
+	case strings.ToUpper(s) == strings.ToUpper(AsciiJSONRender.String()):
+		return AsciiJSONRender, JSONContentType, true
+	case strings.ToUpper(s) == strings.ToUpper(ProtoJSONRender.String()):
+		return ProtoJSONRender, JSONContentType, true
+	case strings.ToUpper(s) == strings.ToUpper(XMLRender.String()):
+		return XMLRender, XMLContentType, true
+	case strings.ToUpper(s) == strings.ToUpper(YAMLRender.String()):
+		return YAMLRender, YAMLContentType, true
+	case strings.ToUpper(s) == strings.ToUpper(ProtoBufRender.String()):
+		return ProtoBufRender, ProtoBufContentType, true
+	case strings.ToUpper(s) == strings.ToUpper(MsgPackRender.String()):
+		return MsgPackRender, MsgPackContentType, true
+	case strings.ToUpper(s) == strings.ToUpper(TOMLRender.String()):
+		return TOMLRender, TOMLContentType, true
+	case strings.HasPrefix(strings.ToUpper(s), strings.ToUpper(CustomRender.String())):
+		v, _ := ExtractValue(s, CustomRender.String())
+		return CustomRender, v, true
 	default:
 		return "", "", false
 	}

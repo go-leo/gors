@@ -188,7 +188,7 @@ func (g *generate) printResponseRender(info *parser.RouterInfo) {
 		if stringx.IsBlank(info.Render) {
 			info.Render = parser.StringRender
 		}
-		renders := []string{parser.StringRender, parser.TextRender, parser.HTMLRender, parser.RedirectRender}
+		renders := []parser.Render{parser.StringRender, parser.TextRender, parser.HTMLRender, parser.RedirectRender}
 		if !slices.Contains(renders, info.Render) {
 			log.Fatalf("error: func %s string result must be set %v", info.FullMethodName, renders)
 		}
@@ -205,7 +205,7 @@ func (g *generate) printResponseRender(info *parser.RouterInfo) {
 			info.Render = parser.JSONRender
 			info.RenderContentType = parser.JSONContentType
 		}
-		renders := []string{
+		renders := []parser.Render{
 			parser.JSONRender, parser.IndentedJSONRender, parser.SecureJSONRender, parser.JSONPJSONRender,
 			parser.PureJSONRender, parser.AsciiJSONRender, parser.ProtoJSONRender, parser.XMLRender,
 			parser.YAMLRender, parser.ProtoBufRender, parser.MsgPackRender, parser.TOMLRender,
@@ -218,7 +218,7 @@ func (g *generate) printResponseRender(info *parser.RouterInfo) {
 		log.Fatalf("error: func %s 1th result is invalid, must be io.Reader or []byte or string or *struct{}", info.FullMethodName)
 	}
 
-	renderName := strings.TrimPrefix(info.Render, "@")
+	renderName := strings.TrimPrefix(info.Render.String(), "@")
 	renderArg := ""
 	if info.Render == parser.ProtoJSONRender {
 		renderArg = "(options.ProtoJSONMarshalOptions)"
