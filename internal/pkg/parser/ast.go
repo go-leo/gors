@@ -26,7 +26,8 @@ func LoadPkg(args []string) (*packages.Package, error) {
 			packages.NeedTypes |
 			packages.NeedSyntax |
 			packages.NeedTypesInfo |
-			packages.NeedTypesSizes,
+			packages.NeedTypesSizes |
+			packages.NeedModule,
 	}
 	pkgs, err := packages.Load(cfg, args...)
 	if err != nil {
@@ -83,9 +84,9 @@ func Inspect(pkg *packages.Package, serviceName string) (*ast.File, *ast.GenDecl
 	return serviceFile, serviceDecl, serviceSpec, serviceType, serviceMethods
 }
 
-func ParseRouterInfos(serviceMethods []*ast.Field, imports map[string]*GoImport, pkgName, serviceName string, pathToLower bool) ([]*RouterInfo, error) {
+func ParseRouterInfos(rpcMethods []*ast.Field, imports map[string]*GoImport, serviceInfo *ServiceInfo, pathToLower bool) ([]*RouterInfo, error) {
 	var Routers []*RouterInfo
-	for _, method := range serviceMethods {
+	for _, method := range rpcMethods {
 		if slicex.IsEmpty(method.Names) {
 			continue
 		}
@@ -95,8 +96,8 @@ func ParseRouterInfos(serviceMethods []*ast.Field, imports map[string]*GoImport,
 			return nil, fmt.Errorf("rpcmethod: %s, %w", methodName, err)
 		}
 		routerInfo.SetMethodName(methodName)
-		routerInfo.SetHandlerName(serviceName)
-		routerInfo.SetFullMethodName(FullMethodName(pkgName, serviceName, routerInfo.MethodName))
+		routerInfo.SetFullMethodName(FullMethodName(serviceInfo.FullName, routerInfo.MethodName))
+		routerInfo.SetHandlerName(serviceInfo.Name)
 		routerInfo.DefaultHttpMethod()
 		routerInfo.DefaultHttpPath(pathToLower)
 		routerInfo.DefaultBindingName()
@@ -133,8 +134,8 @@ func ParseRouterInfo(method *ast.Field, imports map[string]*GoImport) (*RouterIn
 	return routerInfo, nil
 }
 
-func FullMethodName(pkgName string, serviceName string, methodName string) string {
-	return fmt.Sprintf("/%s.%s/%s", pkgName, serviceName, methodName)
+func FullMethodName(serviceFullName string, methodName string) string {
+	return fmt.Sprintf("/%s/%s", serviceFullName, methodName)
 }
 
 func ExtractRouterInfo(method *ast.Field) (*RouterInfo, error) {
@@ -168,9 +169,9 @@ func ExtractGoImports(serviceFile *ast.File) map[string]*GoImport {
 	return goImports
 }
 
-func ParseServiceInfo(serviceDecl *ast.GenDecl) *ServiceInfo {
+func ParseServiceInfo(serviceDecl *ast.GenDecl) (*ServiceInfo, error) {
 	if serviceDecl == nil || serviceDecl.Doc == nil {
-		return &ServiceInfo{}
+		return &ServiceInfo{}, nil
 	}
 	var comments []string
 	for _, comment := range serviceDecl.Doc.List {
@@ -339,14 +340,12 @@ func CheckAndGetParam2(rpcType *ast.FuncType, imports map[string]*GoImport) (*Pa
 		if !ok {
 			return nil, ErrParamType
 		}
-		ioImport, ok := imports["io"]
-		if !ok {
-			return nil, ErrParamType
+		for _, goImport := range imports {
+			if goImport.PackageName == ident.Name {
+				return &Param{Reader: true}, nil
+			}
 		}
-		if ioImport.PackageName != ident.Name {
-			return nil, ErrParamType
-		}
-		return &Param{Reader: true}, nil
+		return nil, ErrParamType
 	default:
 		return nil, ErrParamType
 	}
@@ -437,14 +436,12 @@ func CheckAndGetResult1(rpcType *ast.FuncType, imports map[string]*GoImport) (*R
 		if !ok {
 			return nil, ErrResultType
 		}
-		ioImport, ok := imports["io"]
-		if !ok {
-			return nil, ErrResultType
+		for _, goImport := range imports {
+			if goImport.PackageName == ident.Name {
+				return &Result{Reader: true}, nil
+			}
 		}
-		if ioImport.PackageName != ident.Name {
-			return nil, ErrResultType
-		}
-		return &Result{Reader: true}, nil
+		return nil, ErrResultType
 	default:
 		return nil, ErrResultType
 	}

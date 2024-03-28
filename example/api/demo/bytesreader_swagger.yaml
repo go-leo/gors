@@ -1,0 +1,47 @@
+basePath: /api/BytesReader
+consumes:
+    - ""
+    - image/jpeg
+externalDocs: {}
+id: BytesReader
+info:
+    description: 'BytesReader '
+    title: BytesReader
+paths:
+    /Get:
+        get:
+            consumes:
+                - ""
+            description: 'GetBytesReader '
+            externalDocs: {}
+            operationId: /demo.BytesReader/GetBytesReader
+            parameters:
+                - in: body
+                  required: true
+            produces:
+                - video/mpeg4
+            responses: {}
+            security: []
+            summary: GetBytesReader
+    /Patch:
+        patch:
+            consumes:
+                - image/jpeg
+            description: 'PatchBytesReader '
+            externalDocs: {}
+            operationId: /demo.BytesReader/PatchBytesReader
+            parameters:
+                - in: body
+                  required: true
+            produces:
+                - video/mpeg4
+            responses: {}
+            security: []
+            summary: PatchBytesReader
+produces:
+    - video/mpeg4
+    - video/mpeg4
+schemes:
+    - http
+    - https
+swagger: "2.0"

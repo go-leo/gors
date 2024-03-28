@@ -1,0 +1,47 @@
+basePath: /api/StringBytes
+consumes:
+    - ""
+    - ""
+externalDocs: {}
+id: StringBytes
+info:
+    description: 'StringBytes '
+    title: StringBytes
+paths:
+    /Get:
+        get:
+            consumes:
+                - ""
+            description: 'GetStringBytes '
+            externalDocs: {}
+            operationId: /demo.StringBytes/GetStringBytes
+            parameters:
+                - in: body
+                  required: true
+            produces:
+                - ""
+            responses: {}
+            security: []
+            summary: GetStringBytes
+    /Options:
+        options:
+            consumes:
+                - ""
+            description: 'OptionsStringBytes '
+            externalDocs: {}
+            operationId: /demo.StringBytes/OptionsStringBytes
+            parameters:
+                - in: body
+                  required: true
+            produces:
+                - ""
+            responses: {}
+            security: []
+            summary: OptionsStringBytes
+produces:
+    - ""
+    - ""
+schemes:
+    - http
+    - https
+swagger: "2.0"

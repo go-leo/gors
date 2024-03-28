@@ -139,8 +139,12 @@ func genServerWrapper(gen *protogen.Plugin, file *protogen.File, g *protogen.Gen
 }
 
 func getServiceInfo(gen *protogen.Plugin, file *protogen.File, g *protogen.GeneratedFile, service *protogen.Service) (*parser.ServiceInfo, error) {
-	serviceInfo := parser.NewService(splitComment(service.Comments.Leading.String()))
+	serviceInfo, err := parser.NewService(splitComment(service.Comments.Leading.String()))
+	if err != nil {
+		return nil, err
+	}
 	serviceInfo.SetServiceName(service.GoName)
+	serviceInfo.SetFullName(string(service.Desc.FullName()))
 	var routers []*parser.RouterInfo
 	for _, method := range service.Methods {
 		if !method.Desc.IsStreamingServer() && !method.Desc.IsStreamingClient() {

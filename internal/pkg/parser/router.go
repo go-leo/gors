@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"github.com/go-leo/gox/slicex"
 	"github.com/go-leo/gox/stringx"
+	"github.com/go-openapi/spec"
+	"github.com/pkg/errors"
 	"go/ast"
 	"google.golang.org/protobuf/compiler/protogen"
 	"log"
@@ -32,9 +34,9 @@ type RouterInfo struct {
 	Result1     *Result
 }
 
-func (routerInfo *RouterInfo) PathParams() []string {
+func (router *RouterInfo) PathParams() []string {
 	var params []string
-	segs := strings.Split(routerInfo.Path, "/")
+	segs := strings.Split(router.Path, "/")
 	for _, seg := range segs {
 		seg = strings.TrimSpace(seg)
 		if stringx.IsBlank(seg) {
@@ -53,119 +55,269 @@ func (routerInfo *RouterInfo) PathParams() []string {
 	return params
 }
 
-func (routerInfo *RouterInfo) QueryParams() []string {
+func (router *RouterInfo) QueryParams() []string {
 	var params []string
 	return params
 }
 
-func (routerInfo *RouterInfo) HeaderParams() []string {
+func (router *RouterInfo) HeaderParams() []string {
 	var params []string
 	return params
 }
 
-func (routerInfo *RouterInfo) FormParams() []string {
+func (router *RouterInfo) FormParams() []string {
 	var params []string
 	return params
 }
 
-func (routerInfo *RouterInfo) FileParams() []string {
+func (router *RouterInfo) FileParams() []string {
 	var params []string
 	return params
 }
 
-func (routerInfo *RouterInfo) SetHandlerName(serviceName string) {
-	routerInfo.HandlerName = fmt.Sprintf("_%s_%s_Handler", serviceName, routerInfo.MethodName)
+func (router *RouterInfo) SetHandlerName(serviceName string) {
+	router.HandlerName = fmt.Sprintf("_%s_%s_Handler", serviceName, router.MethodName)
 }
 
-func (routerInfo *RouterInfo) SetFullMethodName(rpcMethodName string) {
-	routerInfo.FullMethodName = rpcMethodName
+func (router *RouterInfo) SetFullMethodName(rpcMethodName string) {
+	router.FullMethodName = rpcMethodName
 }
 
-func (routerInfo *RouterInfo) SetFuncType(rpcType *ast.FuncType) {
-	routerInfo.FuncType = rpcType
+func (router *RouterInfo) SetFuncType(rpcType *ast.FuncType) {
+	router.FuncType = rpcType
 }
 
-func (routerInfo *RouterInfo) SetParam2(param *Param) {
-	routerInfo.Param2 = param
+func (router *RouterInfo) SetParam2(param *Param) {
+	router.Param2 = param
 }
 
-func (routerInfo *RouterInfo) SetResult1(result *Result) {
-	routerInfo.Result1 = result
+func (router *RouterInfo) SetResult1(result *Result) {
+	router.Result1 = result
 }
 
-func (routerInfo *RouterInfo) SetMethodName(name string) {
-	routerInfo.MethodName = name
+func (router *RouterInfo) SetMethodName(name string) {
+	router.MethodName = name
 }
 
-func (routerInfo *RouterInfo) DefaultHttpMethod() {
-	if stringx.IsBlank(routerInfo.HttpMethod) {
-		routerInfo.HttpMethod = GET
+func (router *RouterInfo) DefaultHttpMethod() {
+	if stringx.IsBlank(router.HttpMethod) {
+		router.HttpMethod = GET
 	}
 }
 
-func (routerInfo *RouterInfo) DefaultHttpPath(pathToLower bool) {
-	if stringx.IsBlank(routerInfo.Path) {
-		routerInfo.Path = routerInfo.FullMethodName
+func (router *RouterInfo) DefaultHttpPath(pathToLower bool) {
+	if stringx.IsBlank(router.Path) {
+		router.Path = router.FullMethodName
 		if pathToLower {
-			routerInfo.Path = strings.ToLower(routerInfo.Path)
+			router.Path = strings.ToLower(router.Path)
 		}
 	}
 }
 
-func (routerInfo *RouterInfo) DefaultBindingName() {
-	Param2 := routerInfo.Param2
+func (router *RouterInfo) DefaultBindingName() {
+	Param2 := router.Param2
 	if Param2.Reader {
-		if slicex.IsEmpty(routerInfo.Bindings) {
-			routerInfo.Bindings = []Binding{ReaderBinding}
+		if slicex.IsEmpty(router.Bindings) {
+			router.Bindings = []Binding{ReaderBinding}
 		}
 	} else if Param2.Bytes {
-		if slicex.IsEmpty(routerInfo.Bindings) {
-			routerInfo.Bindings = []Binding{BytesBinding}
+		if slicex.IsEmpty(router.Bindings) {
+			router.Bindings = []Binding{BytesBinding}
 		}
 	} else if Param2.String {
-		if slicex.IsEmpty(routerInfo.Bindings) {
-			routerInfo.Bindings = []Binding{StringBinding}
+		if slicex.IsEmpty(router.Bindings) {
+			router.Bindings = []Binding{StringBinding}
 		}
 	} else if objectArgs := Param2.ObjectArgs; objectArgs != nil {
-		if slicex.IsEmpty(routerInfo.Bindings) {
-			routerInfo.Bindings = []Binding{QueryBinding}
-			routerInfo.BindingContentType = ""
+		if slicex.IsEmpty(router.Bindings) {
+			router.Bindings = []Binding{QueryBinding}
+			router.BindingContentType = ""
 		}
 	} else {
-		log.Fatalf("error: func %s 2th param is invalid, must be []byte or string or *struct{}", routerInfo.FullMethodName)
+		log.Fatalf("error: func %s 2th param is invalid, must be []byte or string or *struct{}", router.FullMethodName)
 	}
 }
 
-func (routerInfo *RouterInfo) DefaultRenderName() {
-	Result1 := routerInfo.Result1
+func (router *RouterInfo) DefaultRenderName() {
+	Result1 := router.Result1
 	switch {
 	case Result1.Bytes:
-		if stringx.IsBlank(routerInfo.Render) {
-			routerInfo.Render = BytesRender
+		if stringx.IsBlank(router.Render) {
+			router.Render = BytesRender
 		}
 	case Result1.String:
-		if stringx.IsBlank(routerInfo.Render) {
-			routerInfo.Render = StringRender
+		if stringx.IsBlank(router.Render) {
+			router.Render = StringRender
 		}
 	case Result1.Reader:
-		if stringx.IsBlank(routerInfo.Render) {
-			routerInfo.Render = ReaderRender
+		if stringx.IsBlank(router.Render) {
+			router.Render = ReaderRender
 		}
 	case Result1.ObjectArgs != nil:
-		if stringx.IsBlank(routerInfo.Render) {
-			routerInfo.Render = JSONRender
-			routerInfo.RenderContentType = JSONContentType
+		if stringx.IsBlank(router.Render) {
+			router.Render = JSONRender
+			router.RenderContentType = JSONContentType
 		}
 	default:
-		log.Fatalf("error: func %s 1th result is invalid, must be io.Reader or []byte or string or *struct{}", routerInfo.FullMethodName)
+		log.Fatalf("error: func %s 1th result is invalid, must be io.Reader or []byte or string or *struct{}", router.FullMethodName)
 	}
 }
 
-var (
-	strColon = []byte(":")
-	strStar  = []byte("*")
-	strSlash = []byte("/")
-)
+func (router *RouterInfo) OperationDoc(method Method) (*spec.Operation, error) {
+	if method != router.HttpMethod {
+		return nil, nil
+	}
+	parametersDoc, err := router.ParametersDoc()
+	if err != nil {
+		return nil, err
+	}
+	return &spec.Operation{
+		VendorExtensible: spec.VendorExtensible{},
+		OperationProps: spec.OperationProps{
+			Description:  router.Description,
+			Consumes:     []string{router.BindingContentType},
+			Produces:     []string{router.RenderContentType},
+			Schemes:      []string{},
+			Tags:         []string{},
+			Summary:      router.MethodName,
+			ExternalDocs: &spec.ExternalDocumentation{Description: "", URL: ""},
+			ID:           router.FullMethodName,
+			Deprecated:   false,
+			Security:     []map[string][]string{},
+			Parameters:   parametersDoc,
+			Responses: &spec.Responses{
+				VendorExtensible: spec.VendorExtensible{},
+				ResponsesProps: spec.ResponsesProps{
+					Default:             nil,
+					StatusCodeResponses: map[int]spec.Response{},
+				},
+			},
+		},
+	}, nil
+}
+
+func (router *RouterInfo) ParametersDoc() ([]spec.Parameter, error) {
+	var parameters []spec.Parameter
+	for _, binding := range router.Bindings {
+		switch binding {
+		case ReaderBinding:
+			parameters = append(parameters, router.rawBodyParameters())
+		case BytesBinding:
+			parameters = append(parameters, router.rawBodyParameters())
+		case StringBinding:
+			parameters = append(parameters, router.rawBodyParameters())
+		case UriBinding:
+			uriParameters, err := router.uriParameters()
+			if err != nil {
+				return nil, err
+			}
+			parameters = append(parameters, uriParameters...)
+		case QueryBinding:
+
+		case HeaderBinding:
+
+		case JSONBinding:
+		case XMLBinding:
+		case FormBinding:
+		case FormPostBinding:
+		case FormMultipartBinding:
+		case ProtoBufBinding:
+		case MsgPackBinding:
+		case YAMLBinding:
+		case TOMLBinding:
+		case ProtoJSONBinding:
+		case CustomBinding:
+		}
+	}
+	return parameters, nil
+}
+
+func (router *RouterInfo) rawBodyParameters() spec.Parameter {
+	return spec.Parameter{
+		ParamProps: spec.ParamProps{
+			In:       "body",
+			Required: true,
+		},
+	}
+}
+
+func (router *RouterInfo) uriParameters() ([]spec.Parameter, error) {
+	wildcards, err := FindWildcards(router.Path)
+	if err != nil {
+		return nil, err
+	}
+	var r []spec.Parameter
+	for _, wildcard := range wildcards {
+		name := wildcard[1:]
+		r = append(r, spec.Parameter{
+			ParamProps: spec.ParamProps{
+				Name:     name,
+				In:       "path",
+				Required: true,
+			},
+		})
+	}
+	return r, nil
+}
+
+func FindWildcards(path string) ([]string, error) {
+	fullPath := path
+	var wildcards []string
+	for {
+		// Find prefix until first wildcard
+		wildcard, i, valid := FindWildcard(path)
+		if i < 0 { // No wildcard found
+			break
+		}
+		// The wildcard name must only contain one ':' or '*' character
+		if !valid {
+			return nil, errors.New("only one wildcard per path segment is allowed, has: '" + wildcard + "' in path '" + fullPath + "'")
+		}
+		// check if the wildcard has a name
+		if len(wildcard) < 2 {
+			return nil, errors.New("wildcards must be named with a non-empty name in path '" + fullPath + "'")
+		}
+		if wildcard[0] == ':' { // param
+			if i > 0 {
+				path = path[i:]
+			}
+			wildcards = append(wildcards, wildcard)
+			// if the path doesn't end with the wildcard, then there
+			// will be another subpath starting with '/'
+			if len(wildcard) < len(path) {
+				path = path[len(wildcard):]
+				continue
+			}
+			break
+		}
+	}
+	return wildcards, nil
+}
+
+// FindWildcard Search for a wildcard segment and check the name for invalid characters.
+// Returns -1 as index, if no wildcard was found.
+func FindWildcard(path string) (wildcard string, i int, valid bool) {
+	// Find start
+	for start, c := range []byte(path) {
+		// A wildcard starts with ':' (param) or '*' (catch-all)
+		if c != ':' && c != '*' {
+			continue
+		}
+
+		// Find end and check for invalid characters
+		valid = true
+		for end, c := range []byte(path[start+1:]) {
+			switch c {
+			case '/':
+				return path[start : start+1+end], start, valid
+			case ':', '*':
+				valid = false
+			}
+		}
+		return path[start:], start, valid
+	}
+	return "", -1, false
+}
 
 var ErrMultipleHttpMethod = fmt.Errorf("there are multiple methods")
 
@@ -246,7 +398,7 @@ func pathSegment(s string) (string, bool, error) {
 	case strings.HasPrefix(strings.ToUpper(s), strings.ToUpper(Path)):
 		v, ok := ExtractValue(s, Path)
 		if !ok {
-			return "", false, fmt.Errorf("%s path invalid", s)
+			return "", false, ErrPathInvalid
 		}
 		return v, true, nil
 	}

@@ -1,0 +1,235 @@
+basePath: /api/ObjObj
+consumes:
+    - ""
+    - ""
+    - ""
+    - application/json
+    - application/xml
+    - application/x-www-form-urlencoded
+    - application/x-www-form-urlencoded
+    - multipart/form-data
+    - application/x-protobuf
+    - application/x-msgpack
+    - application/x-yaml
+    - application/toml
+    - application/json
+externalDocs: {}
+id: ObjObj
+info:
+    description: 'ObjObj '
+    title: ObjObj
+paths:
+    /FormBindingJSONRender/:id:
+        post:
+            consumes:
+                - application/x-www-form-urlencoded
+            description: 'FormBindingJSONRender '
+            externalDocs: {}
+            operationId: /demo.ObjObj/FormBindingJSONRender
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+            produces:
+                - application/json
+            responses: {}
+            security: []
+            summary: FormBindingJSONRender
+    /FormMultipartBindingAsciiJSONRender/:id:
+        post:
+            consumes:
+                - multipart/form-data
+            description: 'FormMultipartBindingAsciiJSONRender '
+            externalDocs: {}
+            operationId: /demo.ObjObj/FormMultipartBindingAsciiJSONRender
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+            produces:
+                - application/json
+            responses: {}
+            security: []
+            summary: FormMultipartBindingAsciiJSONRender
+    /FormPostBindingPureJSONRender/:id:
+        post:
+            consumes:
+                - application/x-www-form-urlencoded
+            description: 'FormPostBindingPureJSONRender '
+            externalDocs: {}
+            operationId: /demo.ObjObj/FormPostBindingPureJSONRender
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+            produces:
+                - application/json
+            responses: {}
+            security: []
+            summary: FormPostBindingPureJSONRender
+    /HeaderBindingJsonpJSONRender/:id:
+        get:
+            consumes:
+                - ""
+            description: 'HeaderBindingJsonpJSONRender '
+            externalDocs: {}
+            operationId: /demo.ObjObj/HeaderBindingJsonpJSONRender
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+            produces:
+                - application/javascript
+            responses: {}
+            security: []
+            summary: HeaderBindingJsonpJSONRender
+    /JSONBindingJSONRender/:id:
+        post:
+            consumes:
+                - application/json
+            description: 'JSONBindingJSONRender '
+            externalDocs: {}
+            operationId: /demo.ObjObj/JSONBindingJSONRender
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+            produces:
+                - application/json
+            responses: {}
+            security: []
+            summary: JSONBindingJSONRender
+    /MsgPackBindingMsgPackRender:
+        delete:
+            consumes:
+                - application/x-msgpack
+            description: 'MsgPackBindingMsgPackRender '
+            externalDocs: {}
+            operationId: /demo.ObjObj/MsgPackBindingMsgPackRender
+            produces:
+                - application/x-msgpack
+            responses: {}
+            security: []
+            summary: MsgPackBindingMsgPackRender
+    /ProtoBufBindingProtoBufRender:
+        put:
+            consumes:
+                - application/x-protobuf
+            description: 'ProtoBufBindingProtoBufRender '
+            externalDocs: {}
+            operationId: /demo.ObjObj/ProtoBufBindingProtoBufRender
+            produces:
+                - application/x-protobuf
+            responses: {}
+            security: []
+            summary: ProtoBufBindingProtoBufRender
+    /ProtoJSONBindingProtoJSONRender:
+        put:
+            consumes:
+                - application/json
+            description: 'ProtoJSONBindingProtoJSONRender '
+            externalDocs: {}
+            operationId: /demo.ObjObj/ProtoJSONBindingProtoJSONRender
+            produces:
+                - application/json
+            responses: {}
+            security: []
+            summary: ProtoJSONBindingProtoJSONRender
+    /QueryBindingSecureJSONRender/:id:
+        get:
+            consumes:
+                - ""
+            description: 'QueryBindingSecureJSONRender '
+            externalDocs: {}
+            operationId: /demo.ObjObj/QueryBindingSecureJSONRender
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+            produces:
+                - application/json
+            responses: {}
+            security: []
+            summary: QueryBindingSecureJSONRender
+    /TOMLBindingTOMLRender/:id:
+        put:
+            consumes:
+                - application/toml
+            description: 'TOMLBindingTOMLRender '
+            externalDocs: {}
+            operationId: /demo.ObjObj/TOMLBindingTOMLRender
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+            produces:
+                - application/toml
+            responses: {}
+            security: []
+            summary: TOMLBindingTOMLRender
+    /UriBindingIndentedJSONRender/:id:
+        get:
+            consumes:
+                - ""
+            description: 'UriBindingIndentedJSONRender '
+            externalDocs: {}
+            operationId: /demo.ObjObj/UriBindingIndentedJSONRender
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+            produces:
+                - application/json
+            responses: {}
+            security: []
+            summary: UriBindingIndentedJSONRender
+    /XMLBindingXMLRender/:id:
+        patch:
+            consumes:
+                - application/xml
+            description: 'XMLBindingXMLRender '
+            externalDocs: {}
+            operationId: /demo.ObjObj/XMLBindingXMLRender
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+            produces:
+                - application/xml
+            responses: {}
+            security: []
+            summary: XMLBindingXMLRender
+    /YAMLBindingYAMLRender/:id:
+        delete:
+            consumes:
+                - application/x-yaml
+            description: 'YAMLBindingYAMLRender '
+            externalDocs: {}
+            operationId: /demo.ObjObj/YAMLBindingYAMLRender
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+            produces:
+                - application/x-yaml
+            responses: {}
+            security: []
+            summary: YAMLBindingYAMLRender
+produces:
+    - application/json
+    - application/json
+    - application/javascript
+    - application/json
+    - application/xml
+    - application/json
+    - application/json
+    - application/json
+    - application/x-protobuf
+    - application/x-msgpack
+    - application/x-yaml
+    - application/toml
+    - application/json
+schemes:
+    - http
+    - https
+swagger: "2.0"

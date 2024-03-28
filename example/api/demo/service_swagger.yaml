@@ -1,0 +1,27 @@
+basePath: /api/v1
+consumes:
+    - ""
+externalDocs: {}
+id: Service
+info:
+    description: 'Service '
+    title: Service
+paths:
+    /method/:id:
+        get:
+            consumes:
+                - ""
+            description: 'Method '
+            externalDocs: {}
+            operationId: /demo.Service/Method
+            produces:
+                - application/json
+            responses: {}
+            security: []
+            summary: Method
+produces:
+    - application/json
+schemes:
+    - http
+    - https
+swagger: "2.0"

@@ -1,0 +1,27 @@
+basePath: /api/CustomBinderRender
+consumes:
+    - application/custom
+externalDocs: {}
+id: CustomBinderRender
+info:
+    description: 'CustomBinderRender '
+    title: CustomBinderRender
+paths:
+    /Custom:
+        post:
+            consumes:
+                - application/custom
+            description: 'Custom '
+            externalDocs: {}
+            operationId: /demo.CustomBinderRender/Custom
+            produces:
+                - application/custom
+            responses: {}
+            security: []
+            summary: Custom
+produces:
+    - application/custom
+schemes:
+    - http
+    - https
+swagger: "2.0"

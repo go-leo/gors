@@ -1,0 +1,47 @@
+basePath: /api/StringReader
+consumes:
+    - ""
+    - ""
+externalDocs: {}
+id: StringReader
+info:
+    description: 'StringReader '
+    title: StringReader
+paths:
+    /Get:
+        get:
+            consumes:
+                - ""
+            description: 'GetStringRender '
+            externalDocs: {}
+            operationId: /demo.StringReader/GetStringRender
+            parameters:
+                - in: body
+                  required: true
+            produces:
+                - video/mpeg4
+            responses: {}
+            security: []
+            summary: GetStringRender
+    /Options:
+        options:
+            consumes:
+                - ""
+            description: 'OptionsStringReader '
+            externalDocs: {}
+            operationId: /demo.StringReader/OptionsStringReader
+            parameters:
+                - in: body
+                  required: true
+            produces:
+                - video/mpeg4
+            responses: {}
+            security: []
+            summary: OptionsStringReader
+produces:
+    - video/mpeg4
+    - video/mpeg4
+schemes:
+    - http
+    - https
+swagger: "2.0"

@@ -1,0 +1,47 @@
+basePath: /api/ReaderBytes
+consumes:
+    - video/mp3
+    - ""
+externalDocs: {}
+id: ReaderBytes
+info:
+    description: 'ReaderBytes '
+    title: ReaderBytes
+paths:
+    /Get:
+        get:
+            consumes:
+                - video/mp3
+            description: 'GetReaderBytes '
+            externalDocs: {}
+            operationId: /demo.ReaderBytes/GetReaderBytes
+            parameters:
+                - in: body
+                  required: true
+            produces:
+                - ""
+            responses: {}
+            security: []
+            summary: GetReaderBytes
+    /Post:
+        post:
+            consumes:
+                - ""
+            description: 'PostReaderBytes '
+            externalDocs: {}
+            operationId: /demo.ReaderBytes/PostReaderBytes
+            parameters:
+                - in: body
+                  required: true
+            produces:
+                - text/go
+            responses: {}
+            security: []
+            summary: PostReaderBytes
+produces:
+    - ""
+    - text/go
+schemes:
+    - http
+    - https
+swagger: "2.0"

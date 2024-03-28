@@ -1,0 +1,47 @@
+basePath: /api/ReaderString
+consumes:
+    - ""
+    - ""
+externalDocs: {}
+id: ReaderString
+info:
+    description: 'ReaderString '
+    title: ReaderString
+paths:
+    /Get:
+        get:
+            consumes:
+                - ""
+            description: 'GetReaderString '
+            externalDocs: {}
+            operationId: /demo.ReaderString/GetReaderString
+            parameters:
+                - in: body
+                  required: true
+            produces:
+                - text/plain
+            responses: {}
+            security: []
+            summary: GetReaderString
+    /Post:
+        post:
+            consumes:
+                - ""
+            description: 'PostReaderString '
+            externalDocs: {}
+            operationId: /demo.ReaderString/PostReaderString
+            parameters:
+                - in: body
+                  required: true
+            produces:
+                - text/go
+            responses: {}
+            security: []
+            summary: PostReaderString
+produces:
+    - text/plain
+    - text/go
+schemes:
+    - http
+    - https
+swagger: "2.0"

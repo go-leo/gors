@@ -8,6 +8,7 @@ import (
 	"github.com/go-leo/gors/cmd/internal"
 	"github.com/go-leo/gors/internal/pkg/parser"
 	"go/format"
+	"gopkg.in/yaml.v3"
 	"log"
 	"os"
 	"path/filepath"
@@ -63,20 +64,40 @@ func main() {
 	pkgPath := pkg.PkgPath
 
 	// Inspect package
-	serviceFile, serviceDecl, serviceSpec, serviceType, serviceMethods := parser.Inspect(pkg, *serviceName)
+	serviceFile, serviceDecl, serviceSpec, serviceType, rpcMethods := parser.Inspect(pkg, *serviceName)
 	if serviceFile == nil || serviceDecl == nil || serviceSpec == nil || serviceType == nil {
 		log.Fatal("error: not found service")
 	}
 
-	serviceInfo := parser.ParseServiceInfo(serviceDecl)
+	serviceInfo, err := parser.ParseServiceInfo(serviceDecl)
+	if err != nil {
+		log.Fatal(err)
+	}
 	serviceInfo.SetServiceName(*serviceName)
+	serviceInfo.SetPackageName(pkgName)
 	imports := parser.ExtractGoImports(serviceFile)
-	routers, err := parser.ParseRouterInfos(serviceMethods, imports, pkgName, *serviceName, *pathToLower)
+	routers, err := parser.ParseRouterInfos(rpcMethods, imports, serviceInfo, *pathToLower)
 	if err != nil {
 		log.Fatal(err)
 	}
 	serviceInfo.SetRouters(routers)
-	serviceInfo.Swagger()
+
+	swagger, err := serviceInfo.Swagger()
+	if err != nil {
+		log.Fatal(err)
+	}
+	swaggerJson, err := swagger.MarshalJSON()
+	if err != nil {
+		log.Fatal(err)
+	}
+	var swaggerObj interface{}
+	if err := yaml.Unmarshal(swaggerJson, &swaggerObj); err != nil {
+		log.Fatal(err)
+	}
+	swaggerYaml, err := yaml.Marshal(swaggerObj)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	g := &generate{
 		buf:              &bytes.Buffer{},
@@ -111,6 +132,12 @@ func main() {
 	if err := os.WriteFile(outputPath, src, 0644); err != nil {
 		log.Fatalf("writing output: %s", err)
 	}
+
+	outputPath = filepath.Join(outDir, fmt.Sprintf("%s_swagger.yaml", strings.ToLower(*serviceName)))
+	if err := os.WriteFile(outputPath, swaggerYaml, 0644); err != nil {
+		log.Fatalf("writing output: %s", err)
+	}
+
 	log.Printf("%s.%s wrote %s", pkgPath, *serviceName, outputPath)
 }
 
