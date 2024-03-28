@@ -12,6 +12,7 @@ import (
 func ObjObjRoutes(srv ObjObj, opts ...gors.Option) []gors.Route {
 	options := gors.NewOptions(opts...)
 	return []gors.Route{
+		gors.NewRoute(http.MethodGet, "/api/ObjObj/all/:id/user/:user", _ObjObj_AllRequest_Handler(srv, options)),
 		gors.NewRoute(http.MethodGet, "/api/ObjObj/UriBindingIndentedJSONRender/:id", _ObjObj_UriBindingIndentedJSONRender_Handler(srv, options)),
 		gors.NewRoute(http.MethodGet, "/api/ObjObj/QueryBindingSecureJSONRender/:id", _ObjObj_QueryBindingSecureJSONRender_Handler(srv, options)),
 		gors.NewRoute(http.MethodGet, "/api/ObjObj/HeaderBindingJsonpJSONRender/:id", _ObjObj_HeaderBindingJsonpJSONRender_Handler(srv, options)),
@@ -25,6 +26,30 @@ func ObjObjRoutes(srv ObjObj, opts ...gors.Option) []gors.Route {
 		gors.NewRoute(http.MethodDelete, "/api/ObjObj/YAMLBindingYAMLRender/:id", _ObjObj_YAMLBindingYAMLRender_Handler(srv, options)),
 		gors.NewRoute(http.MethodPut, "/api/ObjObj/TOMLBindingTOMLRender/:id", _ObjObj_TOMLBindingTOMLRender_Handler(srv, options)),
 		gors.NewRoute(http.MethodPut, "/api/ObjObj/ProtoJSONBindingProtoJSONRender", _ObjObj_ProtoJSONBindingProtoJSONRender_Handler(srv, options)),
+	}
+}
+
+func _ObjObj_AllRequest_Handler(srv ObjObj, options *gors.Options) func(c *gin.Context) {
+	return func(c *gin.Context) {
+		var rpcMethodName = "/demo.ObjObj/AllRequest"
+		var ctx = gors.NewContext(c, rpcMethodName)
+		var req *AllRequestReq
+		var resp *AllRequestResp
+		var err error
+		req = new(AllRequestReq)
+		if err = gors.RequestBind(
+			ctx, req, options.Tag,
+			gors.UriBinding,
+		); err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
+		resp, err = srv.AllRequest(ctx, req)
+		if err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json", gors.IndentedJSONRender, options.ResponseWrapper)
 	}
 }
 

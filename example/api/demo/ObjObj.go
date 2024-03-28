@@ -13,6 +13,11 @@ import (
 // ObjObj
 // @GORS @Path(/api/ObjObj)
 type ObjObj interface {
+
+	// AllRequest is http api
+	// @GORS @GET @Path(/all/:id/user/:user) @UriBinding @IndentedJSONRender
+	AllRequest(context.Context, *AllRequestReq) (*AllRequestResp, error)
+
 	// UriBindingIndentedJSONRender
 	// @GORS @GET @Path(/UriBindingIndentedJSONRender/:id) @UriBinding @IndentedJSONRender
 	UriBindingIndentedJSONRender(context.Context, *UriBindingReq) (*IndentedJSONRenderResp, error)
@@ -63,6 +68,46 @@ type ObjObj interface {
 	// ProtoJSONBindingProtoJSONRender
 	// @GORS @PUT @Path(/ProtoJSONBindingProtoJSONRender) @ProtoJSONBinding @ProtoJSONRender
 	ProtoJSONBindingProtoJSONRender(context.Context, *pb.ProtoBufReq) (*pb.ProtoBufResp, error)
+}
+
+type AllRequestReq struct {
+	// I comment 1
+	// comment 2
+	I int // comment 3
+	// comment 2
+	I8  int8 // comment 3
+	I16 int16
+	I32 int32
+	I64 int64
+
+	U   uint
+	U8  uint8
+	U16 uint16
+	U32 uint32
+	U64 uint64
+
+	F32 float32
+	F64 float64
+
+	B  bool
+	S  string
+	Bs []byte
+	A  [10]int
+
+	T time.Time
+
+	UriBindingReq    UriBindingReq
+	UriBindingReqPtr *UriBindingReq
+	ProtoBufReq      pb.ProtoBufReq
+	ProtoBufReqPtr   *pb.ProtoBufReq
+
+	UriBindingReqs    []UriBindingReq
+	UriBindingReqPtrs []*UriBindingReq
+	ProtoBufReqs      []pb.ProtoBufReq
+	ProtoBufReqPtrs   []*pb.ProtoBufReq
+}
+
+type AllRequestResp struct {
 }
 
 type UriBindingReq struct {

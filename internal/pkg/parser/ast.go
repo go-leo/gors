@@ -36,7 +36,11 @@ func LoadPkg(args []string) (*packages.Package, error) {
 	if len(pkgs) != 1 {
 		return nil, fmt.Errorf("error: %d packages found", len(pkgs))
 	}
-	return pkgs[0], nil
+	pkg := pkgs[0]
+	if len(pkg.Errors) > 0 {
+		return nil, pkg.Errors[0]
+	}
+	return pkg, nil
 }
 
 func Inspect(pkg *packages.Package, serviceName string) (*ast.File, *ast.GenDecl, *ast.TypeSpec, *ast.InterfaceType, []*ast.Field) {

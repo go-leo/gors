@@ -197,39 +197,151 @@ func (router *RouterInfo) OperationDoc(method Method) (*spec.Operation, error) {
 }
 
 func (router *RouterInfo) ParametersDoc() ([]spec.Parameter, error) {
-	var parameters []spec.Parameter
-	for _, binding := range router.Bindings {
-		switch binding {
-		case ReaderBinding:
-			parameters = append(parameters, router.rawBodyParameters())
-		case BytesBinding:
-			parameters = append(parameters, router.rawBodyParameters())
-		case StringBinding:
-			parameters = append(parameters, router.rawBodyParameters())
-		case UriBinding:
-			uriParameters, err := router.uriParameters()
-			if err != nil {
-				return nil, err
+	switch {
+	case router.Param2.Bytes:
+		fallthrough
+	case router.Param2.String:
+		fallthrough
+	case router.Param2.Reader:
+		return []spec.Parameter{router.rawBodyParameters()}, nil
+	case router.Param2.ObjectArgs != nil:
+		p2 := router.Param2.ObjectArgs.StarExpr
+		switch x := p2.X.(type) {
+		case *ast.Ident:
+			if router.MethodName == "AllRequest" {
+				fmt.Println(router)
 			}
-			parameters = append(parameters, uriParameters...)
-		case QueryBinding:
+			typeSpec, ok := x.Obj.Decl.(*ast.TypeSpec)
+			if !ok {
+				return nil, errors.New("failed x.Obj.Decl to *ast.TypeSpec")
+			}
+			structType, ok := typeSpec.Type.(*ast.StructType)
+			if !ok {
+				return nil, errors.New("failed typeSpec.Type to *ast.StructType")
+			}
+			var parameters []spec.Parameter
+			for _, field := range structType.Fields.List {
+				name := field.Names[0].Name
+				var desc []string
+				if field.Doc != nil {
+					for _, comment := range field.Doc.List {
+						desc = append(desc, strings.TrimSpace(strings.Trim(strings.TrimSpace(comment.Text), "//")))
+					}
+				}
+				if field.Comment != nil {
+					for _, comment := range field.Comment.List {
+						desc = append(desc, strings.TrimSpace(strings.Trim(strings.TrimSpace(comment.Text), "//")))
+					}
+				}
 
-		case HeaderBinding:
+				switch typIdent := field.Type.(type) {
+				case *ast.Ident:
+					typ := typIdent.Name
+					var in string
+					if field.Tag != nil {
+						tagValue := field.Tag.Value
+						seg := strings.Split(strings.Trim(tagValue, "`"), ":")
+						switch seg[0] {
+						case "uri":
+							in = "path"
+						case "header":
+							in = "header"
+						case "form":
+							if router.HttpMethod.EqualsIgnoreCase(GET.String()) {
+								in = "query"
+							} else {
+								in = "formData"
+							}
+						default:
+							in = "body"
+						}
+						name = strings.Split(strings.Trim(seg[1], `"`), ",")[0]
+					}
 
-		case JSONBinding:
-		case XMLBinding:
-		case FormBinding:
-		case FormPostBinding:
-		case FormMultipartBinding:
-		case ProtoBufBinding:
-		case MsgPackBinding:
-		case YAMLBinding:
-		case TOMLBinding:
-		case ProtoJSONBinding:
-		case CustomBinding:
+					parameter := spec.Parameter{
+						Refable:           spec.Refable{},
+						CommonValidations: spec.CommonValidations{},
+						SimpleSchema: spec.SimpleSchema{
+							Type: typ,
+						},
+						VendorExtensible: spec.VendorExtensible{},
+						ParamProps: spec.ParamProps{
+							Description:     "",
+							Name:            name,
+							In:              in,
+							Required:        true,
+							Schema:          nil,
+							AllowEmptyValue: false,
+						},
+					}
+					parameters = append(parameters, parameter)
+				default:
+					return parameters, nil
+					return nil, fmt.Errorf("unkown type %T", field.Type)
+				}
+			}
+			_ = x
+			return parameters, nil
+		case *ast.SelectorExpr:
+			var parameters []spec.Parameter
+			_ = x
+			return parameters, nil
+		default:
+			return nil, ErrParamType
 		}
 	}
+	var parameters []spec.Parameter
+	//for _, binding := range router.Bindings {
+	//	switch binding {
+	//	case ReaderBinding:
+	//		parameters = append(parameters, router.rawBodyParameters())
+	//	case BytesBinding:
+	//		parameters = append(parameters, router.rawBodyParameters())
+	//	case StringBinding:
+	//		parameters = append(parameters, router.rawBodyParameters())
+	//	case UriBinding:
+	//		uriParameters, err := router.uriParameters()
+	//		if err != nil {
+	//			return nil, err
+	//		}
+	//		parameters = append(parameters, uriParameters...)
+	//	case QueryBinding:
+	//	case HeaderBinding:
+	//	case JSONBinding:
+	//	case XMLBinding:
+	//	case FormBinding:
+	//	case FormPostBinding:
+	//	case FormMultipartBinding:
+	//	case ProtoBufBinding:
+	//	case MsgPackBinding:
+	//	case YAMLBinding:
+	//	case TOMLBinding:
+	//	case ProtoJSONBinding:
+	//	case CustomBinding:
+	//	}
+	//}
 	return parameters, nil
+}
+
+func bbb() {
+	//cfg := &packages.Config{
+	//	Mode: packages.NeedName |
+	//		packages.NeedFiles |
+	//		packages.NeedCompiledGoFiles |
+	//		packages.NeedImports |
+	//		packages.NeedDeps |
+	//		packages.NeedExportFile |
+	//		packages.NeedTypes |
+	//		packages.NeedSyntax |
+	//		packages.NeedTypesInfo |
+	//		packages.NeedTypesSizes |
+	//		packages.NeedModule,
+	//}
+	//pkgs, err := packages.Load(cfg, goImport.PackageName)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//fmt.Println(pkgs)
 }
 
 func (router *RouterInfo) rawBodyParameters() spec.Parameter {

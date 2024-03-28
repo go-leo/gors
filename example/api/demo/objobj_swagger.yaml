@@ -3,6 +3,7 @@ consumes:
     - ""
     - ""
     - ""
+    - ""
     - application/json
     - application/xml
     - application/x-www-form-urlencoded
@@ -26,10 +27,6 @@ paths:
             description: 'FormBindingJSONRender '
             externalDocs: {}
             operationId: /demo.ObjObj/FormBindingJSONRender
-            parameters:
-                - in: path
-                  name: id
-                  required: true
             produces:
                 - application/json
             responses: {}
@@ -42,10 +39,6 @@ paths:
             description: 'FormMultipartBindingAsciiJSONRender '
             externalDocs: {}
             operationId: /demo.ObjObj/FormMultipartBindingAsciiJSONRender
-            parameters:
-                - in: path
-                  name: id
-                  required: true
             produces:
                 - application/json
             responses: {}
@@ -62,6 +55,19 @@ paths:
                 - in: path
                   name: id
                   required: true
+                  type: int64
+                - in: formData
+                  name: name
+                  required: true
+                  type: string
+                - in: header
+                  name: Authorization
+                  required: true
+                  type: string
+                - in: formData
+                  name: address
+                  required: true
+                  type: string
             produces:
                 - application/json
             responses: {}
@@ -78,6 +84,15 @@ paths:
                 - in: path
                   name: id
                   required: true
+                  type: int64
+                - in: query
+                  name: name
+                  required: true
+                  type: string
+                - in: header
+                  name: Authorization
+                  required: true
+                  type: string
             produces:
                 - application/javascript
             responses: {}
@@ -94,6 +109,19 @@ paths:
                 - in: path
                   name: id
                   required: true
+                  type: int64
+                - in: formData
+                  name: name
+                  required: true
+                  type: string
+                - in: header
+                  name: Authorization
+                  required: true
+                  type: string
+                - in: body
+                  name: address
+                  required: true
+                  type: string
             produces:
                 - application/json
             responses: {}
@@ -106,6 +134,22 @@ paths:
             description: 'MsgPackBindingMsgPackRender '
             externalDocs: {}
             operationId: /demo.ObjObj/MsgPackBindingMsgPackRender
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+                  type: int64
+                - in: formData
+                  name: name
+                  required: true
+                  type: string
+                - in: header
+                  name: Authorization
+                  required: true
+                  type: string
+                - name: Address
+                  required: true
+                  type: string
             produces:
                 - application/x-msgpack
             responses: {}
@@ -146,6 +190,11 @@ paths:
                 - in: path
                   name: id
                   required: true
+                  type: int64
+                - in: query
+                  name: name
+                  required: true
+                  type: string
             produces:
                 - application/json
             responses: {}
@@ -162,6 +211,19 @@ paths:
                 - in: path
                   name: id
                   required: true
+                  type: int64
+                - in: formData
+                  name: name
+                  required: true
+                  type: string
+                - in: header
+                  name: Authorization
+                  required: true
+                  type: string
+                - in: body
+                  name: address
+                  required: true
+                  type: string
             produces:
                 - application/toml
             responses: {}
@@ -178,6 +240,7 @@ paths:
                 - in: path
                   name: id
                   required: true
+                  type: int64
             produces:
                 - application/json
             responses: {}
@@ -194,6 +257,19 @@ paths:
                 - in: path
                   name: id
                   required: true
+                  type: int64
+                - in: formData
+                  name: name
+                  required: true
+                  type: string
+                - in: header
+                  name: Authorization
+                  required: true
+                  type: string
+                - in: body
+                  name: address
+                  required: true
+                  type: string
             produces:
                 - application/xml
             responses: {}
@@ -210,12 +286,38 @@ paths:
                 - in: path
                   name: id
                   required: true
+                  type: int64
+                - in: formData
+                  name: name
+                  required: true
+                  type: string
+                - in: header
+                  name: Authorization
+                  required: true
+                  type: string
+                - in: body
+                  name: address
+                  required: true
+                  type: string
             produces:
                 - application/x-yaml
             responses: {}
             security: []
             summary: YAMLBindingYAMLRender
+    /all/:id/user/:user:
+        get:
+            consumes:
+                - ""
+            description: 'AllRequest is http api '
+            externalDocs: {}
+            operationId: /demo.ObjObj/AllRequest
+            produces:
+                - application/json
+            responses: {}
+            security: []
+            summary: AllRequest
 produces:
+    - application/json
     - application/json
     - application/json
     - application/javascript
