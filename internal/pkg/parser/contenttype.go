@@ -2,6 +2,7 @@ package parser
 
 // Content-Type
 const (
+	BinaryContentType        = "application/octet-stream"
 	PlainContentType         = "text/plain"
 	HTMLContentType          = "text/html"
 	JSONContentType          = "application/json"

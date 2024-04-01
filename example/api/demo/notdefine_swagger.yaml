@@ -16,7 +16,9 @@ paths:
             operationId: /demo.NotDefine/Bytes
             parameters:
                 - in: body
-                  required: true
+                  name: body
+                  schema:
+                    type: string
             produces:
                 - ""
             responses: {}
@@ -28,6 +30,11 @@ paths:
                 - ""
             externalDocs: {}
             operationId: /demo.NotDefine/NotDefine
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+                  type: integer
             produces:
                 - application/json
             responses: {}
@@ -41,7 +48,9 @@ paths:
             operationId: /demo.NotDefine/Reader
             parameters:
                 - in: body
-                  required: true
+                  name: body
+                  schema:
+                    type: string
             produces:
                 - ""
             responses: {}
@@ -55,7 +64,9 @@ paths:
             operationId: /demo.NotDefine/String
             parameters:
                 - in: body
-                  required: true
+                  name: body
+                  schema:
+                    type: string
             produces:
                 - ""
             responses: {}

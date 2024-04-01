@@ -17,7 +17,9 @@ paths:
             operationId: /demo.BytesBytes/GetBytesBytes
             parameters:
                 - in: body
-                  required: true
+                  name: body
+                  schema:
+                    type: string
             produces:
                 - ttt.sss
             responses: {}
@@ -32,7 +34,9 @@ paths:
             operationId: /demo.BytesBytes/PostBytesBytes
             parameters:
                 - in: body
-                  required: true
+                  name: body
+                  schema:
+                    type: string
             produces:
                 - text/go
             responses: {}

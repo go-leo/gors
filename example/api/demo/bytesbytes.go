@@ -12,6 +12,6 @@ type BytesBytes interface {
 	// @GORS @GET @Path(/Get) @BytesRender(ttt.sss)
 	GetBytesBytes(context.Context, []byte) ([]byte, error)
 	// PostBytesBytes post http method,  receive bytes request and send bytes response
-	// @GORS @POST @Path(/Post) @BytesBinding(image/jpeg) @BytesRender(text/go)
+	// @GORS @POST @Path(/Post) @BytesBinding @BytesRender(text/go)
 	PostBytesBytes(context.Context, []byte) ([]byte, error)
 }

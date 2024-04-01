@@ -14,6 +14,11 @@ paths:
             description: 'Custom '
             externalDocs: {}
             operationId: /demo.CustomBinderRender/Custom
+            parameters:
+                - in: body
+                  name: V
+                  required: true
+                  type: string
             produces:
                 - application/custom
             responses: {}

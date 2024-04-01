@@ -17,7 +17,9 @@ paths:
             operationId: /demo.StringBytes/GetStringBytes
             parameters:
                 - in: body
-                  required: true
+                  name: body
+                  schema:
+                    type: string
             produces:
                 - ""
             responses: {}
@@ -32,7 +34,9 @@ paths:
             operationId: /demo.StringBytes/OptionsStringBytes
             parameters:
                 - in: body
-                  required: true
+                  name: body
+                  schema:
+                    type: string
             produces:
                 - ""
             responses: {}

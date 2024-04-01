@@ -2,6 +2,7 @@ package demo
 
 import (
 	"context"
+	"database/sql"
 	"mime/multipart"
 	"time"
 
@@ -15,7 +16,7 @@ import (
 type ObjObj interface {
 
 	// AllRequest is http api
-	// @GORS @GET @Path(/all/:id/user/:user) @UriBinding @IndentedJSONRender
+	// @GORS @GET @Path(/all/:id/user/:user) @UriBinding @UriBinding @QueryBinding @HeaderBinding @JSONBinding @JSONRender
 	AllRequest(context.Context, *AllRequestReq) (*AllRequestResp, error)
 
 	// UriBindingIndentedJSONRender
@@ -70,13 +71,23 @@ type ObjObj interface {
 	ProtoJSONBindingProtoJSONRender(context.Context, *pb.ProtoBufReq) (*pb.ProtoBufResp, error)
 }
 
+type Page struct {
+	Num  int `json:"num"`
+	Size int `json:"size"`
+}
+
+type TimeRage struct {
+	Start time.Time `json:"start"`
+	End   time.Time `json:"end"`
+}
+
 type AllRequestReq struct {
 	// I comment 1
 	// comment 2
-	I int // comment 3
+	I int `uri:"i"` // comment 3
 	// comment 2
-	I8  int8 // comment 3
-	I16 int16
+	I8  int8  `form:"i8"` // comment 3
+	I16 int16 `header:"i16"`
 	I32 int32
 	I64 int64
 
@@ -91,7 +102,7 @@ type AllRequestReq struct {
 
 	B  bool
 	S  string
-	Bs []byte
+	Bs []byte `json:"bs"`
 	A  [10]int
 
 	T time.Time
@@ -105,6 +116,16 @@ type AllRequestReq struct {
 	UriBindingReqPtrs []*UriBindingReq
 	ProtoBufReqs      []pb.ProtoBufReq
 	ProtoBufReqPtrs   []*pb.ProtoBufReq
+	Page
+	*TimeRage
+	sql.NullByte
+	*sql.NullInt32
+	int
+	bool
+	*int64
+	*string
+
+	Avatar *multipart.FileHeader `form:"avatar"`
 }
 
 type AllRequestResp struct {

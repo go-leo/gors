@@ -1,0 +1,3434 @@
+{
+  "info": {
+    "title": "星云-DMP后台",
+    "description": "",
+    "version": "1.0.0"
+  },
+  "tags": [
+    {
+      "name": "选书工具"
+    },
+    {
+      "name": "选书工具/选书任务"
+    },
+    {
+      "name": "选书工具/测试要求"
+    },
+    {
+      "name": "选书工具/书单"
+    },
+    {
+      "name": "选书工具/书籍"
+    },
+    {
+      "name": "选书工具/书籍申请"
+    }
+  ],
+  "paths": {
+    "/v4/test/book/task/add/select/get": {
+      "get": {
+        "summary": "筛选器",
+        "x-apifox-folder": "选书工具/选书任务",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "tags": [
+          "选书工具/选书任务"
+        ],
+        "parameters": [
+          {
+            "name": "dmp-backend",
+            "in": "cookie",
+            "description": "",
+            "type": "string",
+            "x-example": "61ecb9fc0dc0dc243021dc70edcc5eb7"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "integer"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "media_name": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "label": {
+                            "type": "string"
+                          },
+                          "value": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "label",
+                          "value"
+                        ],
+                        "x-apifox-orders": [
+                          "label",
+                          "value"
+                        ],
+                        "x-apifox-ignore-properties": []
+                      }
+                    }
+                  },
+                  "required": [
+                    "media_name"
+                  ],
+                  "x-apifox-orders": [
+                    "media_name"
+                  ],
+                  "x-apifox-ignore-properties": []
+                }
+              },
+              "required": [
+                "code",
+                "message",
+                "data"
+              ],
+              "x-apifox-orders": [
+                "code",
+                "message",
+                "data"
+              ],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        },
+        "x-run-in-apifox": "https://apifox.com/web/project/345157/apis/api-3495839-run",
+        "security": [],
+        "produces": [
+          "application/json"
+        ]
+      }
+    },
+    "/v4/test/book/task/add": {
+      "post": {
+        "summary": "添加任务",
+        "x-apifox-folder": "选书工具/选书任务",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "tags": [
+          "选书工具/选书任务"
+        ],
+        "parameters": [
+          {
+            "name": "dmp-backend",
+            "in": "cookie",
+            "description": "",
+            "type": "string",
+            "x-example": "61ecb9fc0dc0dc243021dc70edcc5eb7"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "media_name": {
+                  "type": "string",
+                  "title": "媒体"
+                },
+                "description": {
+                  "type": "string",
+                  "title": "要求"
+                }
+              },
+              "required": [
+                "media_name",
+                "description"
+              ],
+              "x-apifox-orders": [
+                "media_name",
+                "description"
+              ],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "integer"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {},
+                  "x-apifox-orders": [],
+                  "x-apifox-ignore-properties": []
+                }
+              },
+              "required": [
+                "code",
+                "message",
+                "data"
+              ],
+              "x-apifox-orders": [
+                "code",
+                "message",
+                "data"
+              ],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        },
+        "x-run-in-apifox": "https://apifox.com/web/project/345157/apis/api-3495840-run",
+        "security": [],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ]
+      }
+    },
+    "/v4/test/book/require/add/select/get": {
+      "get": {
+        "summary": "筛选器",
+        "x-apifox-folder": "选书工具/测试要求",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "tags": [
+          "选书工具/测试要求"
+        ],
+        "parameters": [
+          {
+            "name": "dmp-backend",
+            "in": "cookie",
+            "description": "",
+            "type": "string",
+            "x-example": "61ecb9fc0dc0dc243021dc70edcc5eb7"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "schema": {
+              "type": "object",
+              "properties": {},
+              "x-apifox-ignore-properties": [],
+              "x-apifox-orders": []
+            }
+          }
+        },
+        "x-run-in-apifox": "https://apifox.com/web/project/345157/apis/api-3495841-run",
+        "security": [],
+        "produces": [
+          "application/json"
+        ]
+      }
+    },
+    "/v4/test/book/require/add": {
+      "post": {
+        "summary": "添加测试要求",
+        "x-apifox-folder": "选书工具/测试要求",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "tags": [
+          "选书工具/测试要求"
+        ],
+        "parameters": [
+          {
+            "name": "dmp-backend",
+            "in": "cookie",
+            "description": "",
+            "type": "string",
+            "x-example": "61ecb9fc0dc0dc243021dc70edcc5eb7"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "book_id": {
+                  "type": "integer"
+                },
+                "media_name": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "book_id",
+                "media_name",
+                "description"
+              ],
+              "x-apifox-orders": [
+                "book_id",
+                "media_name",
+                "description"
+              ],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "integer"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {},
+                  "x-apifox-orders": [],
+                  "x-apifox-ignore-properties": []
+                }
+              },
+              "required": [
+                "code",
+                "message",
+                "data"
+              ],
+              "x-apifox-orders": [
+                "code",
+                "message",
+                "data"
+              ],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        },
+        "x-run-in-apifox": "https://apifox.com/web/project/345157/apis/api-3495842-run",
+        "security": [],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ]
+      }
+    },
+    "/v4/test/book/list/add": {
+      "post": {
+        "summary": "添加书单",
+        "x-apifox-folder": "选书工具/书单",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "tags": [
+          "选书工具/书单"
+        ],
+        "parameters": [
+          {
+            "name": "dmp-backend",
+            "in": "cookie",
+            "description": "",
+            "type": "string",
+            "x-example": "61ecb9fc0dc0dc243021dc70edcc5eb7"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "title": "书单名"
+                },
+                "kind": {
+                  "type": "integer",
+                  "title": "*书单类型："
+                },
+                "source_label": {
+                  "type": "string",
+                  "title": "*书单来源："
+                },
+                "media_name": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "应用媒体："
+                },
+                "system_policy": {
+                  "type": "string",
+                  "title": "*选择系统书单："
+                },
+                "introduction": {
+                  "type": "string",
+                  "title": "简介"
+                }
+              },
+              "required": [
+                "introduction",
+                "kind",
+                "media_name",
+                "source_label",
+                "system_policy",
+                "title"
+              ],
+              "x-apifox-orders": [
+                "title",
+                "kind",
+                "source_label",
+                "media_name",
+                "system_policy",
+                "introduction"
+              ],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "integer"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {},
+                  "x-apifox-orders": [],
+                  "x-apifox-ignore-properties": [],
+                  "x-nullable": true
+                }
+              },
+              "required": [
+                "code",
+                "message",
+                "data"
+              ],
+              "x-apifox-orders": [
+                "code",
+                "message",
+                "data"
+              ],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        },
+        "x-run-in-apifox": "https://apifox.com/web/project/345157/apis/api-3495843-run",
+        "security": [],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ]
+      }
+    },
+    "/v4/test/book/list/upsert/select/get": {
+      "get": {
+        "summary": "添加、编辑筛选器",
+        "x-apifox-folder": "选书工具/书单",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "tags": [
+          "选书工具/书单"
+        ],
+        "parameters": [
+          {
+            "name": "dmp-backend",
+            "in": "cookie",
+            "description": "",
+            "type": "string",
+            "x-example": "61ecb9fc0dc0dc243021dc70edcc5eb7"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "integer"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "list_kind": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "label": {
+                            "type": "string"
+                          },
+                          "value": {
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "label",
+                          "value"
+                        ],
+                        "x-apifox-orders": [
+                          "label",
+                          "value"
+                        ],
+                        "x-apifox-ignore-properties": []
+                      }
+                    },
+                    "source_label": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "label": {
+                            "type": "string"
+                          },
+                          "value": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "label",
+                          "value"
+                        ],
+                        "x-apifox-orders": [
+                          "label",
+                          "value"
+                        ],
+                        "x-apifox-ignore-properties": []
+                      }
+                    },
+                    "media_name": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "label": {
+                            "type": "string"
+                          },
+                          "value": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "label",
+                          "value"
+                        ],
+                        "x-apifox-orders": [
+                          "label",
+                          "value"
+                        ],
+                        "x-apifox-ignore-properties": []
+                      }
+                    },
+                    "system_policy": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "label": {
+                            "type": "string"
+                          },
+                          "value": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "label",
+                          "value"
+                        ],
+                        "x-apifox-orders": [
+                          "label",
+                          "value"
+                        ],
+                        "x-apifox-ignore-properties": []
+                      }
+                    }
+                  },
+                  "required": [
+                    "list_kind",
+                    "source_label",
+                    "media_name",
+                    "system_policy"
+                  ],
+                  "x-apifox-orders": [
+                    "list_kind",
+                    "source_label",
+                    "media_name",
+                    "system_policy"
+                  ],
+                  "x-apifox-ignore-properties": []
+                }
+              },
+              "required": [
+                "code",
+                "message",
+                "data"
+              ],
+              "x-apifox-orders": [
+                "code",
+                "message",
+                "data"
+              ],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        },
+        "x-run-in-apifox": "https://apifox.com/web/project/345157/apis/api-3495844-run",
+        "security": [],
+        "produces": [
+          "application/json"
+        ]
+      }
+    },
+    "/v4/test/book/list/update": {
+      "post": {
+        "summary": "编辑书单",
+        "x-apifox-folder": "选书工具/书单",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "tags": [
+          "选书工具/书单"
+        ],
+        "parameters": [
+          {
+            "name": "dmp-backend",
+            "in": "cookie",
+            "description": "",
+            "type": "string",
+            "x-example": "61ecb9fc0dc0dc243021dc70edcc5eb7"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "introduction": {
+                  "type": "string"
+                },
+                "media_name": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "title": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "introduction",
+                "media_name",
+                "title"
+              ],
+              "x-apifox-orders": [
+                "id",
+                "introduction",
+                "media_name",
+                "title"
+              ],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "integer"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {},
+                  "x-apifox-orders": [],
+                  "x-apifox-ignore-properties": []
+                }
+              },
+              "required": [
+                "code",
+                "message",
+                "data"
+              ],
+              "x-apifox-orders": [
+                "code",
+                "message",
+                "data"
+              ],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        },
+        "x-run-in-apifox": "https://apifox.com/web/project/345157/apis/api-3495845-run",
+        "security": [],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ]
+      }
+    },
+    "/v4/test/book/list/enable/update": {
+      "post": {
+        "summary": "修改是否生效",
+        "x-apifox-folder": "选书工具/书单",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "tags": [
+          "选书工具/书单"
+        ],
+        "parameters": [
+          {
+            "name": "dmp-backend",
+            "in": "cookie",
+            "description": "",
+            "type": "string",
+            "x-example": "61ecb9fc0dc0dc243021dc70edcc5eb7"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer"
+                },
+                "is_enable": {
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "id",
+                "is_enable"
+              ],
+              "x-apifox-orders": [
+                "id",
+                "is_enable"
+              ],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "integer"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {},
+                  "x-apifox-orders": [],
+                  "x-apifox-ignore-properties": []
+                }
+              },
+              "required": [
+                "code",
+                "message",
+                "data"
+              ],
+              "x-apifox-orders": [
+                "code",
+                "message",
+                "data"
+              ],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        },
+        "x-run-in-apifox": "https://apifox.com/web/project/345157/apis/api-3495846-run",
+        "security": [],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ]
+      }
+    },
+    "/v4/test/book/list/operate/history/get": {
+      "post": {
+        "summary": "获取操作记录",
+        "x-apifox-folder": "选书工具/书单",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "tags": [
+          "选书工具/书单"
+        ],
+        "parameters": [
+          {
+            "name": "dmp-backend",
+            "in": "cookie",
+            "description": "",
+            "type": "string",
+            "x-example": "61ecb9fc0dc0dc243021dc70edcc5eb7"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "list_id": {
+                  "type": "integer"
+                },
+                "page": {
+                  "type": "integer"
+                },
+                "pagesize": {
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "list_id",
+                "page",
+                "pagesize"
+              ],
+              "x-apifox-orders": [
+                "list_id",
+                "page",
+                "pagesize"
+              ],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "integer"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "page": {
+                      "type": "object",
+                      "properties": {
+                        "page": {
+                          "type": "integer"
+                        },
+                        "pagesize": {
+                          "type": "integer"
+                        },
+                        "count": {
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "page",
+                        "pagesize",
+                        "count"
+                      ],
+                      "x-apifox-orders": [
+                        "page",
+                        "pagesize",
+                        "count"
+                      ],
+                      "x-apifox-ignore-properties": []
+                    },
+                    "list": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "list_id": {
+                            "type": "integer"
+                          },
+                          "book_id": {
+                            "type": "integer"
+                          },
+                          "book_title": {
+                            "type": "string"
+                          },
+                          "kind": {
+                            "type": "integer"
+                          },
+                          "kind_name": {
+                            "type": "string"
+                          },
+                          "create_id": {
+                            "type": "integer"
+                          },
+                          "create_time": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "list_id",
+                          "book_id",
+                          "book_title",
+                          "kind_name",
+                          "create_time"
+                        ],
+                        "x-apifox-orders": [
+                          "id",
+                          "list_id",
+                          "book_id",
+                          "book_title",
+                          "kind",
+                          "kind_name",
+                          "create_id",
+                          "create_time"
+                        ],
+                        "x-apifox-ignore-properties": []
+                      },
+                      "x-nullable": true
+                    },
+                    "head": {
+                      "type": "object",
+                      "properties": {
+                        "book_id": {
+                          "type": "string"
+                        },
+                        "book_title": {
+                          "type": "string"
+                        },
+                        "kind_name": {
+                          "type": "string"
+                        },
+                        "create_time": {
+                          "type": "string"
+                        },
+                        "create_name": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "book_id",
+                        "book_title",
+                        "kind_name",
+                        "create_time",
+                        "create_name"
+                      ],
+                      "x-apifox-orders": [
+                        "book_id",
+                        "book_title",
+                        "kind_name",
+                        "create_time",
+                        "create_name"
+                      ],
+                      "x-apifox-ignore-properties": []
+                    },
+                    "field": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "required": [
+                    "page",
+                    "list",
+                    "head",
+                    "field"
+                  ],
+                  "x-apifox-orders": [
+                    "page",
+                    "list",
+                    "head",
+                    "field"
+                  ],
+                  "x-apifox-ignore-properties": [],
+                  "x-nullable": true
+                }
+              },
+              "required": [
+                "code",
+                "message",
+                "data"
+              ],
+              "x-apifox-orders": [
+                "code",
+                "message",
+                "data"
+              ],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        },
+        "x-run-in-apifox": "https://apifox.com/web/project/345157/apis/api-3495849-run",
+        "security": [],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ]
+      }
+    },
+    "/v4/test/book/list/select/get": {
+      "get": {
+        "summary": "书单列表筛选器",
+        "x-apifox-folder": "选书工具/书单",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "tags": [
+          "选书工具/书单"
+        ],
+        "parameters": [
+          {
+            "name": "dmp-backend",
+            "in": "cookie",
+            "description": "",
+            "type": "string",
+            "x-example": "61ecb9fc0dc0dc243021dc70edcc5eb7"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "integer"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "list_kind": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "label": {
+                            "type": "string"
+                          },
+                          "value": {
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "label",
+                          "value"
+                        ],
+                        "x-apifox-orders": [
+                          "label",
+                          "value"
+                        ],
+                        "x-apifox-ignore-properties": []
+                      }
+                    },
+                    "source_label": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "label": {
+                            "type": "string"
+                          },
+                          "value": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "label",
+                          "value"
+                        ],
+                        "x-apifox-orders": [
+                          "label",
+                          "value"
+                        ],
+                        "x-apifox-ignore-properties": []
+                      }
+                    },
+                    "media_name": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "label": {
+                            "type": "string"
+                          },
+                          "value": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "label",
+                          "value"
+                        ],
+                        "x-apifox-orders": [
+                          "label",
+                          "value"
+                        ],
+                        "x-apifox-ignore-properties": []
+                      }
+                    },
+                    "is_enable": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "label": {
+                            "type": "string"
+                          },
+                          "value": {
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "label",
+                          "value"
+                        ],
+                        "x-apifox-orders": [
+                          "label",
+                          "value"
+                        ],
+                        "x-apifox-ignore-properties": []
+                      }
+                    }
+                  },
+                  "required": [
+                    "list_kind",
+                    "source_label",
+                    "media_name",
+                    "is_enable"
+                  ],
+                  "x-apifox-orders": [
+                    "list_kind",
+                    "source_label",
+                    "media_name",
+                    "is_enable"
+                  ],
+                  "x-apifox-ignore-properties": []
+                }
+              },
+              "required": [
+                "code",
+                "message",
+                "data"
+              ],
+              "x-apifox-orders": [
+                "code",
+                "message",
+                "data"
+              ],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        },
+        "x-run-in-apifox": "https://apifox.com/web/project/345157/apis/api-3495850-run",
+        "security": [],
+        "produces": [
+          "application/json"
+        ]
+      }
+    },
+    "/v4/test/book/list/get": {
+      "post": {
+        "summary": "查询书单列表",
+        "x-apifox-folder": "选书工具/书单",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "tags": [
+          "选书工具/书单"
+        ],
+        "parameters": [
+          {
+            "name": "dmp-backend",
+            "in": "cookie",
+            "description": "",
+            "type": "string",
+            "x-example": "61ecb9fc0dc0dc243021dc70edcc5eb7"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "page": {
+                  "type": "integer"
+                },
+                "pagesize": {
+                  "type": "integer"
+                },
+                "title": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "书单"
+                },
+                "kind": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  }
+                },
+                "source_label": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "原标签"
+                },
+                "media_name": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "媒体"
+                },
+                "is_enable": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  },
+                  "title": "是否生效"
+                },
+                "create_id": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  },
+                  "title": "创建人"
+                }
+              },
+              "required": [
+                "page",
+                "pagesize",
+                "title",
+                "kind",
+                "source_label",
+                "media_name",
+                "is_enable",
+                "create_id"
+              ],
+              "x-apifox-orders": [
+                "page",
+                "pagesize",
+                "title",
+                "kind",
+                "source_label",
+                "media_name",
+                "is_enable",
+                "create_id"
+              ],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "integer"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "page": {
+                      "type": "object",
+                      "properties": {
+                        "page": {
+                          "type": "integer"
+                        },
+                        "pagesize": {
+                          "type": "integer"
+                        },
+                        "count": {
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "page",
+                        "pagesize",
+                        "count"
+                      ],
+                      "x-apifox-orders": [
+                        "page",
+                        "pagesize",
+                        "count"
+                      ],
+                      "x-apifox-ignore-properties": []
+                    },
+                    "list": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "title": {
+                            "type": "string"
+                          },
+                          "is_enable": {
+                            "type": "integer"
+                          },
+                          "create_id": {
+                            "type": "integer"
+                          },
+                          "create_name": {
+                            "type": "string"
+                          },
+                          "create_time": {
+                            "type": "string"
+                          },
+                          "run_day": {
+                            "type": "string"
+                          },
+                          "kind": {
+                            "type": "integer"
+                          },
+                          "kind_name": {
+                            "type": "string"
+                          },
+                          "source_label": {
+                            "type": "string"
+                          },
+                          "media_name": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            }
+                          },
+                          "book_num": {
+                            "type": "integer"
+                          },
+                          "promote_book_num": {
+                            "type": "integer"
+                          },
+                          "test_book_num": {
+                            "type": "integer"
+                          },
+                          "rice_book_num": {
+                            "type": "integer"
+                          },
+                          "good_book_num": {
+                            "type": "integer"
+                          },
+                          "bomb_book_num": {
+                            "type": "integer"
+                          },
+                          "introduction": {
+                            "type": "string"
+                          },
+                          "system_policy": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "title",
+                          "is_enable",
+                          "create_id",
+                          "create_name",
+                          "create_time",
+                          "run_day",
+                          "kind",
+                          "kind_name",
+                          "source_label",
+                          "media_name",
+                          "book_num",
+                          "promote_book_num",
+                          "test_book_num",
+                          "rice_book_num",
+                          "good_book_num",
+                          "bomb_book_num",
+                          "introduction",
+                          "system_policy"
+                        ],
+                        "x-apifox-orders": [
+                          "id",
+                          "title",
+                          "is_enable",
+                          "create_id",
+                          "create_name",
+                          "create_time",
+                          "run_day",
+                          "kind",
+                          "kind_name",
+                          "source_label",
+                          "media_name",
+                          "book_num",
+                          "promote_book_num",
+                          "test_book_num",
+                          "rice_book_num",
+                          "good_book_num",
+                          "bomb_book_num",
+                          "introduction",
+                          "system_policy"
+                        ],
+                        "x-apifox-ignore-properties": []
+                      }
+                    },
+                    "head": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "title": {
+                          "type": "string"
+                        },
+                        "is_enable": {
+                          "type": "string"
+                        },
+                        "create_name": {
+                          "type": "string"
+                        },
+                        "create_time": {
+                          "type": "string"
+                        },
+                        "run_day": {
+                          "type": "string"
+                        },
+                        "kind_name": {
+                          "type": "string"
+                        },
+                        "source_label": {
+                          "type": "string"
+                        },
+                        "media_name": {
+                          "type": "string"
+                        },
+                        "book_num": {
+                          "type": "string"
+                        },
+                        "promote_book_num": {
+                          "type": "string"
+                        },
+                        "test_book_num": {
+                          "type": "string"
+                        },
+                        "rice_book_num": {
+                          "type": "string"
+                        },
+                        "good_book_num": {
+                          "type": "string"
+                        },
+                        "bomb_book_num": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "title",
+                        "is_enable",
+                        "create_name",
+                        "create_time",
+                        "run_day",
+                        "kind_name",
+                        "source_label",
+                        "media_name",
+                        "book_num",
+                        "promote_book_num",
+                        "test_book_num",
+                        "rice_book_num",
+                        "good_book_num",
+                        "bomb_book_num"
+                      ],
+                      "x-apifox-orders": [
+                        "id",
+                        "title",
+                        "is_enable",
+                        "create_name",
+                        "create_time",
+                        "run_day",
+                        "kind_name",
+                        "source_label",
+                        "media_name",
+                        "book_num",
+                        "promote_book_num",
+                        "test_book_num",
+                        "rice_book_num",
+                        "good_book_num",
+                        "bomb_book_num"
+                      ],
+                      "x-apifox-ignore-properties": []
+                    },
+                    "field": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "required": [
+                    "page",
+                    "list",
+                    "head",
+                    "field"
+                  ],
+                  "x-apifox-orders": [
+                    "page",
+                    "list",
+                    "head",
+                    "field"
+                  ],
+                  "x-apifox-ignore-properties": []
+                }
+              },
+              "required": [
+                "code",
+                "message",
+                "data"
+              ],
+              "x-apifox-orders": [
+                "code",
+                "message",
+                "data"
+              ],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        },
+        "x-run-in-apifox": "https://apifox.com/web/project/345157/apis/api-3495852-run",
+        "security": [],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ]
+      }
+    },
+    "/v4/test/book/basic/list/select/get": {
+      "get": {
+        "summary": "书籍列表筛选器",
+        "x-apifox-folder": "选书工具/书籍",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "tags": [
+          "选书工具/书籍"
+        ],
+        "parameters": [
+          {
+            "name": "dmp-backend",
+            "in": "cookie",
+            "description": "",
+            "type": "string",
+            "x-example": "61ecb9fc0dc0dc243021dc70edcc5eb7"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "integer"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "is_over": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "label": {
+                            "type": "string"
+                          },
+                          "value": {
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "label",
+                          "value"
+                        ],
+                        "x-apifox-orders": [
+                          "label",
+                          "value"
+                        ],
+                        "x-apifox-ignore-properties": []
+                      }
+                    },
+                    "category_types": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "label": {
+                            "type": "string"
+                          },
+                          "value": {
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "label",
+                          "value"
+                        ],
+                        "x-apifox-orders": [
+                          "label",
+                          "value"
+                        ],
+                        "x-apifox-ignore-properties": []
+                      }
+                    },
+                    "words_num": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "label": {
+                            "type": "string"
+                          },
+                          "value": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "label",
+                          "value"
+                        ],
+                        "x-apifox-orders": [
+                          "label",
+                          "value"
+                        ],
+                        "x-apifox-ignore-properties": []
+                      }
+                    },
+                    "category": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "label": {
+                            "type": "string"
+                          },
+                          "value": {
+                            "type": "integer"
+                          },
+                          "children": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "label": {
+                                  "type": "string"
+                                },
+                                "value": {
+                                  "type": "integer"
+                                }
+                              },
+                              "required": [
+                                "label",
+                                "value"
+                              ],
+                              "x-apifox-orders": [
+                                "label",
+                                "value"
+                              ],
+                              "x-apifox-ignore-properties": []
+                            }
+                          }
+                        },
+                        "required": [
+                          "label",
+                          "value",
+                          "children"
+                        ],
+                        "x-apifox-orders": [
+                          "label",
+                          "value",
+                          "children"
+                        ],
+                        "x-apifox-ignore-properties": []
+                      }
+                    },
+                    "is_pay": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "label": {
+                            "type": "string"
+                          },
+                          "value": {
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "label",
+                          "value"
+                        ],
+                        "x-apifox-orders": [
+                          "label",
+                          "value"
+                        ],
+                        "x-apifox-ignore-properties": []
+                      }
+                    },
+                    "book_list": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "label": {
+                            "type": "string"
+                          },
+                          "value": {
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "label",
+                          "value"
+                        ],
+                        "x-apifox-orders": [
+                          "label",
+                          "value"
+                        ],
+                        "x-apifox-ignore-properties": []
+                      }
+                    },
+                    "media_black_white_list": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "label": {
+                            "type": "string"
+                          },
+                          "value": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "label",
+                          "value"
+                        ],
+                        "x-apifox-orders": [
+                          "label",
+                          "value"
+                        ],
+                        "x-apifox-ignore-properties": []
+                      }
+                    }
+                  },
+                  "required": [
+                    "is_over",
+                    "category_types",
+                    "words_num",
+                    "category",
+                    "is_pay",
+                    "book_list",
+                    "media_black_white_list"
+                  ],
+                  "x-apifox-orders": [
+                    "is_over",
+                    "category_types",
+                    "words_num",
+                    "category",
+                    "is_pay",
+                    "book_list",
+                    "media_black_white_list"
+                  ],
+                  "x-apifox-ignore-properties": []
+                }
+              },
+              "required": [
+                "code",
+                "message",
+                "data"
+              ],
+              "x-apifox-orders": [
+                "code",
+                "message",
+                "data"
+              ],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        },
+        "x-run-in-apifox": "https://apifox.com/web/project/345157/apis/api-3495861-run",
+        "security": [],
+        "produces": [
+          "application/json"
+        ]
+      }
+    },
+    "/v4/test/book/basic/add": {
+      "post": {
+        "summary": "单本添加",
+        "x-apifox-folder": "选书工具/书籍",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "tags": [
+          "选书工具/书籍"
+        ],
+        "parameters": [
+          {
+            "name": "dmp-backend",
+            "in": "cookie",
+            "description": "",
+            "type": "string",
+            "x-example": "61ecb9fc0dc0dc243021dc70edcc5eb7"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "book_id": {
+                  "type": "integer",
+                  "title": "书籍id"
+                },
+                "list_id": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  },
+                  "title": "书单id"
+                },
+                "reason": {
+                  "type": "string",
+                  "title": "理由"
+                }
+              },
+              "required": [
+                "book_id",
+                "list_id",
+                "reason"
+              ],
+              "x-apifox-orders": [
+                "book_id",
+                "list_id",
+                "reason"
+              ],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "integer"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {},
+                  "x-apifox-orders": [],
+                  "x-apifox-ignore-properties": [],
+                  "x-nullable": true
+                }
+              },
+              "required": [
+                "code",
+                "message",
+                "data"
+              ],
+              "x-apifox-orders": [
+                "code",
+                "message",
+                "data"
+              ],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        },
+        "x-run-in-apifox": "https://apifox.com/web/project/345157/apis/api-3495862-run",
+        "security": [],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ]
+      }
+    },
+    "/v4/test/book/basic/remove": {
+      "post": {
+        "summary": "移除书籍",
+        "x-apifox-folder": "选书工具/书籍",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "tags": [
+          "选书工具/书籍"
+        ],
+        "parameters": [
+          {
+            "name": "dmp-backend",
+            "in": "cookie",
+            "description": "",
+            "type": "string",
+            "x-example": "61ecb9fc0dc0dc243021dc70edcc5eb7"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "book_id": {
+                  "type": "integer",
+                  "title": "书籍id"
+                },
+                "list_id": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  },
+                  "title": "书单id"
+                }
+              },
+              "required": [
+                "book_id",
+                "list_id"
+              ],
+              "x-apifox-orders": [
+                "book_id",
+                "list_id"
+              ],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "integer"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {},
+                  "x-apifox-orders": [],
+                  "x-apifox-ignore-properties": [],
+                  "x-nullable": true
+                }
+              },
+              "required": [
+                "code",
+                "message",
+                "data"
+              ],
+              "x-apifox-orders": [
+                "code",
+                "message",
+                "data"
+              ],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        },
+        "x-run-in-apifox": "https://apifox.com/web/project/345157/apis/api-3495863-run",
+        "security": [],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ]
+      }
+    },
+    "/v4/test/book/basic/batch/add": {
+      "post": {
+        "summary": "批量添加",
+        "x-apifox-folder": "选书工具/书籍",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "tags": [
+          "选书工具/书籍"
+        ],
+        "parameters": [
+          {
+            "name": "dmp-backend",
+            "in": "cookie",
+            "description": "",
+            "type": "string",
+            "x-example": "61ecb9fc0dc0dc243021dc70edcc5eb7"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "file": {
+                  "type": "string"
+                },
+                "list_id": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  }
+                }
+              },
+              "required": [
+                "file",
+                "list_id"
+              ],
+              "x-apifox-orders": [
+                "file",
+                "list_id"
+              ],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "integer"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {},
+                  "x-apifox-orders": [],
+                  "x-apifox-ignore-properties": [],
+                  "x-nullable": true
+                }
+              },
+              "required": [
+                "code",
+                "message",
+                "data"
+              ],
+              "x-apifox-orders": [
+                "code",
+                "message",
+                "data"
+              ],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        },
+        "x-run-in-apifox": "https://apifox.com/web/project/345157/apis/api-3495864-run",
+        "security": [],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ]
+      }
+    },
+    "/v4/test/book/basic/list/menu/get": {
+      "get": {
+        "summary": "自定义字段",
+        "x-apifox-folder": "选书工具/书籍",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "tags": [
+          "选书工具/书籍"
+        ],
+        "parameters": [
+          {
+            "name": "dmp-backend",
+            "in": "cookie",
+            "description": "",
+            "type": "string",
+            "x-example": "61ecb9fc0dc0dc243021dc70edcc5eb7"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "integer"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "menus": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "label": {
+                            "type": "string"
+                          },
+                          "value": {
+                            "type": "string"
+                          },
+                          "targets": {
+                            "type": "null"
+                          },
+                          "children": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "label": {
+                                  "type": "string"
+                                },
+                                "value": {
+                                  "type": "string"
+                                },
+                                "targets": {
+                                  "type": "null"
+                                },
+                                "children": {
+                                  "type": "null"
+                                }
+                              },
+                              "required": [
+                                "label",
+                                "value",
+                                "targets",
+                                "children"
+                              ],
+                              "x-apifox-orders": [
+                                "label",
+                                "value",
+                                "targets",
+                                "children"
+                              ],
+                              "x-apifox-ignore-properties": []
+                            }
+                          }
+                        },
+                        "required": [
+                          "label",
+                          "value",
+                          "targets",
+                          "children"
+                        ],
+                        "x-apifox-orders": [
+                          "label",
+                          "value",
+                          "targets",
+                          "children"
+                        ],
+                        "x-apifox-ignore-properties": []
+                      }
+                    }
+                  },
+                  "required": [
+                    "menus"
+                  ],
+                  "x-apifox-orders": [
+                    "menus"
+                  ],
+                  "x-apifox-ignore-properties": []
+                }
+              },
+              "required": [
+                "code",
+                "message",
+                "data"
+              ],
+              "x-apifox-orders": [
+                "code",
+                "message",
+                "data"
+              ],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        },
+        "x-run-in-apifox": "https://apifox.com/web/project/345157/apis/api-3495865-run",
+        "security": [],
+        "produces": [
+          "application/json"
+        ]
+      }
+    },
+    "/v4/test/book/basic/list/get": {
+      "post": {
+        "summary": "书籍列表",
+        "x-apifox-folder": "选书工具/书籍",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "tags": [
+          "选书工具/书籍"
+        ],
+        "parameters": [
+          {
+            "name": "dmp-backend",
+            "in": "cookie",
+            "description": "",
+            "type": "string",
+            "x-example": "61ecb9fc0dc0dc243021dc70edcc5eb7"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "page": {
+                  "type": "integer"
+                },
+                "pagesize": {
+                  "type": "integer"
+                },
+                "book_id": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "书籍id 数组"
+                },
+                "book_title": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "书籍名 数组"
+                },
+                "is_over": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "是否完结 数组"
+                },
+                "category_type": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "频道 数组"
+                },
+                "words_num": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "字数 数组"
+                },
+                "category1": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "一级分类 数组"
+                },
+                "category2": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "二级分类 数组"
+                },
+                "is_pay": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "是否 数组"
+                },
+                "list_id": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "title": "书单id 数组"
+                },
+                "media_kind": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "fields": {
+                  "type": "string",
+                  "title": "自定义字段"
+                }
+              },
+              "required": [
+                "page",
+                "pagesize",
+                "book_id",
+                "book_title",
+                "is_over",
+                "category_type",
+                "words_num",
+                "category1",
+                "category2",
+                "is_pay",
+                "list_id",
+                "media_kind",
+                "fields"
+              ],
+              "x-apifox-orders": [
+                "page",
+                "pagesize",
+                "book_id",
+                "book_title",
+                "is_over",
+                "category_type",
+                "words_num",
+                "category1",
+                "category2",
+                "is_pay",
+                "list_id",
+                "media_kind",
+                "fields"
+              ],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "schema": {
+              "type": "object",
+              "properties": {},
+              "x-apifox-ignore-properties": [],
+              "x-apifox-orders": []
+            }
+          }
+        },
+        "x-run-in-apifox": "https://apifox.com/web/project/345157/apis/api-3495947-run",
+        "security": [],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ]
+      }
+    },
+    "/v4/test/book/approval/select/get": {
+      "get": {
+        "summary": "列表筛选器",
+        "x-apifox-folder": "选书工具/书籍申请",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "tags": [
+          "选书工具/书籍申请"
+        ],
+        "parameters": [
+          {
+            "name": "dmp-backend",
+            "in": "cookie",
+            "description": "",
+            "type": "string",
+            "x-example": "61ecb9fc0dc0dc243021dc70edcc5eb7"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "integer"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "media_name": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "label": {
+                            "type": "string"
+                          },
+                          "value": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "label",
+                          "value"
+                        ],
+                        "x-apifox-orders": [
+                          "label",
+                          "value"
+                        ],
+                        "x-apifox-ignore-properties": []
+                      }
+                    },
+                    "status": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "label": {
+                            "type": "string"
+                          },
+                          "value": {
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "label",
+                          "value"
+                        ],
+                        "x-apifox-orders": [
+                          "label",
+                          "value"
+                        ],
+                        "x-apifox-ignore-properties": []
+                      }
+                    }
+                  },
+                  "required": [
+                    "media_name",
+                    "status"
+                  ],
+                  "x-apifox-orders": [
+                    "media_name",
+                    "status"
+                  ],
+                  "x-apifox-ignore-properties": []
+                }
+              },
+              "required": [
+                "code",
+                "message",
+                "data"
+              ],
+              "x-apifox-orders": [
+                "code",
+                "message",
+                "data"
+              ],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "schema": {
+              "type": "object",
+              "properties": {},
+              "x-apifox-ignore-properties": [],
+              "x-apifox-orders": []
+            }
+          }
+        },
+        "x-run-in-apifox": "https://apifox.com/web/project/345157/apis/api-3495961-run",
+        "security": [],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ]
+      }
+    },
+    "/v4/test/book/approval/list/get": {
+      "post": {
+        "summary": "列表",
+        "x-apifox-folder": "选书工具/书籍申请",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "tags": [
+          "选书工具/书籍申请"
+        ],
+        "parameters": [
+          {
+            "name": "dmp-backend",
+            "in": "cookie",
+            "description": "",
+            "type": "string",
+            "x-example": "61ecb9fc0dc0dc243021dc70edcc5eb7"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "page": {
+                  "type": "integer"
+                },
+                "pagesize": {
+                  "type": "integer"
+                },
+                "media_name": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "status": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  }
+                },
+                "bool_title": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "book_id": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  }
+                }
+              },
+              "required": [
+                "page",
+                "pagesize",
+                "media_name",
+                "status",
+                "bool_title",
+                "book_id"
+              ],
+              "x-apifox-orders": [
+                "page",
+                "pagesize",
+                "media_name",
+                "status",
+                "bool_title",
+                "book_id"
+              ],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "integer"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "page": {
+                      "type": "object",
+                      "properties": {
+                        "page": {
+                          "type": "integer"
+                        },
+                        "pagesize": {
+                          "type": "integer"
+                        },
+                        "count": {
+                          "type": "integer"
+                        }
+                      },
+                      "required": [
+                        "page",
+                        "pagesize",
+                        "count"
+                      ],
+                      "x-apifox-orders": [
+                        "page",
+                        "pagesize",
+                        "count"
+                      ],
+                      "x-apifox-ignore-properties": []
+                    },
+                    "list": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer"
+                          },
+                          "book_id": {
+                            "type": "integer"
+                          },
+                          "book_title": {
+                            "type": "string"
+                          },
+                          "media_name": {
+                            "type": "string"
+                          },
+                          "status": {
+                            "type": "integer"
+                          },
+                          "status_name": {
+                            "type": "string"
+                          },
+                          "apply_reason": {
+                            "type": "string"
+                          },
+                          "pass_reason": {
+                            "type": "string"
+                          },
+                          "reject_reason": {
+                            "type": "string"
+                          },
+                          "approval_time": {
+                            "type": "string"
+                          },
+                          "cool_down": {
+                            "type": "integer"
+                          },
+                          "settlement_account_id": {
+                            "type": "integer"
+                          },
+                          "settlement_account_name": {
+                            "type": "string"
+                          },
+                          "approval_id": {
+                            "type": "integer"
+                          },
+                          "approval_name": {
+                            "type": "string"
+                          },
+                          "create_time": {
+                            "type": "string"
+                          },
+                          "update_time": {
+                            "type": "string"
+                          }
+                        },
+                        "x-apifox-orders": [
+                          "id",
+                          "book_id",
+                          "book_title",
+                          "media_name",
+                          "status",
+                          "status_name",
+                          "apply_reason",
+                          "pass_reason",
+                          "reject_reason",
+                          "approval_time",
+                          "cool_down",
+                          "settlement_account_id",
+                          "settlement_account_name",
+                          "approval_id",
+                          "approval_name",
+                          "create_time",
+                          "update_time"
+                        ],
+                        "x-apifox-ignore-properties": []
+                      }
+                    },
+                    "head": {
+                      "type": "object",
+                      "properties": {
+                        "book_id": {
+                          "type": "string"
+                        },
+                        "book_title": {
+                          "type": "string"
+                        },
+                        "media_name": {
+                          "type": "string"
+                        },
+                        "status": {
+                          "type": "string"
+                        },
+                        "status_name": {
+                          "type": "string"
+                        },
+                        "apply_reason": {
+                          "type": "string"
+                        },
+                        "pass_reason": {
+                          "type": "string"
+                        },
+                        "reject_reason": {
+                          "type": "string"
+                        },
+                        "approval_time": {
+                          "type": "string"
+                        },
+                        "cool_down": {
+                          "type": "string"
+                        },
+                        "settlement_account_id": {
+                          "type": "string"
+                        },
+                        "settlement_account_name": {
+                          "type": "string"
+                        },
+                        "approval_id": {
+                          "type": "string"
+                        },
+                        "approval_name": {
+                          "type": "string"
+                        },
+                        "create_time": {
+                          "type": "string"
+                        },
+                        "update_time": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "book_id",
+                        "book_title",
+                        "media_name",
+                        "status",
+                        "status_name",
+                        "apply_reason",
+                        "pass_reason",
+                        "reject_reason",
+                        "approval_time",
+                        "cool_down",
+                        "settlement_account_id",
+                        "settlement_account_name",
+                        "approval_id",
+                        "approval_name",
+                        "create_time",
+                        "update_time"
+                      ],
+                      "x-apifox-orders": [
+                        "book_id",
+                        "book_title",
+                        "media_name",
+                        "status",
+                        "status_name",
+                        "apply_reason",
+                        "pass_reason",
+                        "reject_reason",
+                        "approval_time",
+                        "cool_down",
+                        "settlement_account_id",
+                        "settlement_account_name",
+                        "approval_id",
+                        "approval_name",
+                        "create_time",
+                        "update_time"
+                      ],
+                      "x-apifox-ignore-properties": []
+                    },
+                    "field": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "required": [
+                    "page",
+                    "list",
+                    "head",
+                    "field"
+                  ],
+                  "x-apifox-orders": [
+                    "page",
+                    "list",
+                    "head",
+                    "field"
+                  ],
+                  "x-apifox-ignore-properties": []
+                }
+              },
+              "required": [
+                "code",
+                "message",
+                "data"
+              ],
+              "x-apifox-orders": [
+                "code",
+                "message",
+                "data"
+              ],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        },
+        "x-run-in-apifox": "https://apifox.com/web/project/345157/apis/api-3495962-run",
+        "security": [],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ]
+      }
+    },
+    "/v4/test/book/approval/pass/select/get": {
+      "get": {
+        "summary": "审核通过筛选器",
+        "x-apifox-folder": "选书工具/书籍申请",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "tags": [
+          "选书工具/书籍申请"
+        ],
+        "parameters": [
+          {
+            "name": "dmp-backend",
+            "in": "cookie",
+            "description": "",
+            "type": "string",
+            "x-example": "61ecb9fc0dc0dc243021dc70edcc5eb7"
+          },
+          {
+            "name": "media_name",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "type": "string",
+            "x-example": "媒体"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "integer"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "book_list": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "label": {
+                            "type": "string"
+                          },
+                          "value": {
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "label",
+                          "value"
+                        ],
+                        "x-apifox-orders": [
+                          "label",
+                          "value"
+                        ],
+                        "x-apifox-ignore-properties": []
+                      }
+                    }
+                  },
+                  "required": [
+                    "book_list"
+                  ],
+                  "x-apifox-orders": [
+                    "book_list"
+                  ],
+                  "x-apifox-ignore-properties": []
+                }
+              },
+              "required": [
+                "code",
+                "message",
+                "data"
+              ],
+              "x-apifox-orders": [
+                "code",
+                "message",
+                "data"
+              ],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        },
+        "x-run-in-apifox": "https://apifox.com/web/project/345157/apis/api-3495968-run",
+        "security": [],
+        "produces": [
+          "application/json"
+        ]
+      }
+    },
+    "/v4/test/book/approval/pass": {
+      "post": {
+        "summary": "申请通过",
+        "x-apifox-folder": "选书工具/书籍申请",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "tags": [
+          "选书工具/书籍申请"
+        ],
+        "parameters": [
+          {
+            "name": "dmp-backend",
+            "in": "cookie",
+            "description": "",
+            "type": "string",
+            "x-example": "61ecb9fc0dc0dc243021dc70edcc5eb7"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "title": "id"
+                },
+                "pass_reason": {
+                  "type": "string",
+                  "title": "通过理由"
+                },
+                "list_id": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  },
+                  "title": "书单"
+                }
+              },
+              "required": [
+                "id",
+                "pass_reason",
+                "list_id"
+              ],
+              "x-apifox-orders": [
+                "id",
+                "pass_reason",
+                "list_id"
+              ],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "integer"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {},
+                  "x-apifox-orders": [],
+                  "x-apifox-ignore-properties": []
+                }
+              },
+              "required": [
+                "code",
+                "message",
+                "data"
+              ],
+              "x-apifox-orders": [
+                "code",
+                "message",
+                "data"
+              ],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        },
+        "x-run-in-apifox": "https://apifox.com/web/project/345157/apis/api-3495969-run",
+        "security": [],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ]
+      }
+    },
+    "/v4/test/book/approval/reject": {
+      "get": {
+        "summary": "申请驳回",
+        "x-apifox-folder": "选书工具/书籍申请",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "tags": [
+          "选书工具/书籍申请"
+        ],
+        "parameters": [
+          {
+            "name": "dmp-backend",
+            "in": "cookie",
+            "description": "",
+            "type": "string",
+            "x-example": "61ecb9fc0dc0dc243021dc70edcc5eb7"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "title": "id"
+                },
+                "cool_down": {
+                  "type": "integer",
+                  "title": "冷却天湖"
+                },
+                "reject_reason": {
+                  "type": "string",
+                  "title": "驳回理由"
+                }
+              },
+              "required": [
+                "id",
+                "cool_down",
+                "reject_reason"
+              ],
+              "x-apifox-orders": [
+                "id",
+                "cool_down",
+                "reject_reason"
+              ],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "integer"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {},
+                  "x-apifox-orders": [],
+                  "x-apifox-ignore-properties": []
+                }
+              },
+              "required": [
+                "code",
+                "message",
+                "data"
+              ],
+              "x-apifox-orders": [
+                "code",
+                "message",
+                "data"
+              ],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        },
+        "x-run-in-apifox": "https://apifox.com/web/project/345157/apis/api-3495970-run",
+        "security": [],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ]
+      }
+    },
+    "/v4/test/book/basic/batch/add/template": {
+      "get": {
+        "summary": "书单模版",
+        "x-apifox-folder": "选书工具/书籍",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "tags": [
+          "选书工具/书籍"
+        ],
+        "parameters": [
+          {
+            "name": "dmp-backend",
+            "in": "cookie",
+            "description": "",
+            "type": "string",
+            "x-example": "61ecb9fc0dc0dc243021dc70edcc5eb7"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "schema": {
+              "type": "object",
+              "properties": {},
+              "x-apifox-ignore-properties": [],
+              "x-apifox-orders": []
+            }
+          }
+        },
+        "x-run-in-apifox": "https://apifox.com/web/project/345157/apis/api-3495976-run",
+        "security": [],
+        "produces": [
+          "application/json"
+        ]
+      }
+    },
+    "/v4/test/book/task/get": {
+      "get": {
+        "summary": "获取测试任务",
+        "x-apifox-folder": "选书工具/选书任务",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "tags": [
+          "选书工具/选书任务"
+        ],
+        "parameters": [
+          {
+            "name": "dmp-backend",
+            "in": "cookie",
+            "description": "",
+            "type": "string",
+            "x-example": "61ecb9fc0dc0dc243021dc70edcc5eb7"
+          },
+          {
+            "name": "media_name",
+            "in": "query",
+            "description": "媒体名",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {},
+              "x-apifox-ignore-properties": [],
+              "x-apifox-orders": []
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "integer"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "description": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "description"
+                  ],
+                  "x-apifox-orders": [
+                    "description"
+                  ],
+                  "x-apifox-ignore-properties": []
+                }
+              },
+              "required": [
+                "code",
+                "message",
+                "data"
+              ],
+              "x-apifox-orders": [
+                "code",
+                "message",
+                "data"
+              ],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        },
+        "x-run-in-apifox": "https://apifox.com/web/project/345157/apis/api-3496918-run",
+        "security": [],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ]
+      }
+    },
+    "/v4/test/book/basic/add/select/get": {
+      "get": {
+        "summary": "添加书本到书单筛选器",
+        "x-apifox-folder": "选书工具/书籍",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "tags": [
+          "选书工具/书籍"
+        ],
+        "parameters": [
+          {
+            "name": "dmp-backend",
+            "in": "cookie",
+            "description": "",
+            "type": "string",
+            "x-example": "61ecb9fc0dc0dc243021dc70edcc5eb7"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "integer"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "book_list": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "label": {
+                            "type": "string"
+                          },
+                          "value": {
+                            "type": "integer"
+                          }
+                        },
+                        "required": [
+                          "label",
+                          "value"
+                        ],
+                        "x-apifox-orders": [
+                          "label",
+                          "value"
+                        ],
+                        "x-apifox-ignore-properties": []
+                      }
+                    }
+                  },
+                  "required": [
+                    "book_list"
+                  ],
+                  "x-apifox-orders": [
+                    "book_list"
+                  ],
+                  "x-apifox-ignore-properties": []
+                }
+              },
+              "required": [
+                "code",
+                "message",
+                "data"
+              ],
+              "x-apifox-orders": [
+                "code",
+                "message",
+                "data"
+              ],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        },
+        "x-run-in-apifox": "https://apifox.com/web/project/345157/apis/api-3496921-run",
+        "security": [],
+        "produces": [
+          "application/json"
+        ]
+      }
+    },
+    "/v4/test/book/require/get": {
+      "get": {
+        "summary": "获取测试要求",
+        "x-apifox-folder": "选书工具/测试要求",
+        "x-apifox-status": "developing",
+        "deprecated": false,
+        "description": "",
+        "tags": [
+          "选书工具/测试要求"
+        ],
+        "parameters": [
+          {
+            "name": "dmp-backend",
+            "in": "cookie",
+            "description": "",
+            "type": "string",
+            "x-example": "61ecb9fc0dc0dc243021dc70edcc5eb7"
+          },
+          {
+            "name": "book_id",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "type": "string",
+            "x-example": "1747899"
+          },
+          {
+            "name": "media_name",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "type": "string",
+            "x-example": "baiduxxl"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "integer"
+                },
+                "message": {
+                  "type": "string"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "description": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "description"
+                  ],
+                  "x-apifox-orders": [
+                    "description"
+                  ],
+                  "x-apifox-ignore-properties": []
+                }
+              },
+              "required": [
+                "code",
+                "message",
+                "data"
+              ],
+              "x-apifox-orders": [
+                "code",
+                "message",
+                "data"
+              ],
+              "x-apifox-ignore-properties": []
+            }
+          }
+        },
+        "x-run-in-apifox": "https://apifox.com/web/project/345157/apis/api-3496945-run",
+        "security": [],
+        "produces": [
+          "application/json"
+        ]
+      }
+    }
+  },
+  "swagger": "2.0",
+  "definitions": {},
+  "securityDefinitions": {},
+  "x-components": {}
+}

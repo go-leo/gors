@@ -17,7 +17,9 @@ paths:
             operationId: /demo.BytesString/GetBytesString
             parameters:
                 - in: body
-                  required: true
+                  name: body
+                  schema:
+                    type: string
             produces:
                 - text/html
             responses: {}
@@ -32,7 +34,9 @@ paths:
             operationId: /demo.BytesString/PutBytesString
             parameters:
                 - in: body
-                  required: true
+                  name: body
+                  schema:
+                    type: string
             produces:
                 - ""
             responses: {}

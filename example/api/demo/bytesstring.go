@@ -8,7 +8,7 @@ import "context"
 // @GORS @Path(/api/BytesString)
 type BytesString interface {
 	// GetBytesString
-	// @GORS @GET @Path(/Get) @BytesBinding(application/html) @HTMLRender
+	// @GORS @GET @Path(/Get) @BytesBinding @HTMLRender
 	GetBytesString(context.Context, []byte) (string, error)
 	// PutBytesString
 	// @GORS @PUT @Path(/Put) @RedirectRender

@@ -11,7 +11,7 @@ import (
 // @GORS @Path(/api/ReaderBytes)
 type ReaderBytes interface {
 	// GetReaderBytes
-	// @GORS @GET @Path(/Get) @ReaderBinding(video/mp3) @BytesRender
+	// @GORS @GET @Path(/Get) @ReaderBinding @BytesRender
 	GetReaderBytes(context.Context, tmpio.Reader) ([]byte, error)
 	// PostReaderBytes
 	// @GORS @POST @Path(/Post) @BytesRender(text/go)

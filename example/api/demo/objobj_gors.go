@@ -40,6 +40,10 @@ func _ObjObj_AllRequest_Handler(srv ObjObj, options *gors.Options) func(c *gin.C
 		if err = gors.RequestBind(
 			ctx, req, options.Tag,
 			gors.UriBinding,
+			gors.UriBinding,
+			gors.QueryBinding,
+			gors.HeaderBinding,
+			gors.JSONBinding,
 		); err != nil {
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
@@ -49,7 +53,7 @@ func _ObjObj_AllRequest_Handler(srv ObjObj, options *gors.Options) func(c *gin.C
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json", gors.IndentedJSONRender, options.ResponseWrapper)
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/json", gors.JSONRender, options.ResponseWrapper)
 	}
 }
 

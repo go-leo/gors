@@ -18,7 +18,9 @@ paths:
             operationId: /demo.ReaderReader/GetReaderReader
             parameters:
                 - in: body
-                  required: true
+                  name: body
+                  schema:
+                    type: string
             produces:
                 - ""
             responses: {}
@@ -45,7 +47,9 @@ paths:
             operationId: /demo.ReaderReader/HeadReaderReader
             parameters:
                 - in: body
-                  required: true
+                  name: body
+                  schema:
+                    type: string
             produces:
                 - video/mp4
             responses: {}

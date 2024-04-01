@@ -17,7 +17,9 @@ paths:
             operationId: /demo.StringString/GetStringString
             parameters:
                 - in: body
-                  required: true
+                  name: body
+                  schema:
+                    type: string
             produces:
                 - text/go
             responses: {}
@@ -32,7 +34,9 @@ paths:
             operationId: /demo.StringString/PatchStringString
             parameters:
                 - in: body
-                  required: true
+                  name: body
+                  schema:
+                    type: string
             produces:
                 - application/go
             responses: {}

@@ -14,6 +14,6 @@ type BytesReader interface {
 	// @GORS @GET @Path(/Get) @ReaderRender(video/mpeg4)
 	GetBytesReader(context.Context, []byte) (tmpio.Reader, error)
 	// PatchBytesReader
-	// @GORS @PATCH @Path(/Patch) @BytesBinding(image/jpeg) @ReaderRender(video/mpeg4)
+	// @GORS @PATCH @Path(/Patch) @BytesBinding @ReaderRender(video/mpeg4)
 	PatchBytesReader(context.Context, []byte) (tmpio.Reader, error)
 }

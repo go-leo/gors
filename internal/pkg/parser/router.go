@@ -3,6 +3,7 @@ package parser
 import (
 	"bytes"
 	"fmt"
+	"github.com/go-leo/gox/operator"
 	"github.com/go-leo/gox/slicex"
 	"github.com/go-leo/gox/stringx"
 	"github.com/go-openapi/spec"
@@ -198,97 +199,14 @@ func (router *RouterInfo) OperationDoc(method Method) (*spec.Operation, error) {
 
 func (router *RouterInfo) ParametersDoc() ([]spec.Parameter, error) {
 	switch {
-	case router.Param2.Bytes:
-		fallthrough
 	case router.Param2.String:
-		fallthrough
+		return []spec.Parameter{router.rawBodyParameters(false)}, nil
+	case router.Param2.Bytes:
+		return []spec.Parameter{router.rawBodyParameters(true)}, nil
 	case router.Param2.Reader:
-		return []spec.Parameter{router.rawBodyParameters()}, nil
+		return []spec.Parameter{router.rawBodyParameters(true)}, nil
 	case router.Param2.ObjectArgs != nil:
-		p2 := router.Param2.ObjectArgs.StarExpr
-		switch x := p2.X.(type) {
-		case *ast.Ident:
-			if router.MethodName == "AllRequest" {
-				fmt.Println(router)
-			}
-			typeSpec, ok := x.Obj.Decl.(*ast.TypeSpec)
-			if !ok {
-				return nil, errors.New("failed x.Obj.Decl to *ast.TypeSpec")
-			}
-			structType, ok := typeSpec.Type.(*ast.StructType)
-			if !ok {
-				return nil, errors.New("failed typeSpec.Type to *ast.StructType")
-			}
-			var parameters []spec.Parameter
-			for _, field := range structType.Fields.List {
-				name := field.Names[0].Name
-				var desc []string
-				if field.Doc != nil {
-					for _, comment := range field.Doc.List {
-						desc = append(desc, strings.TrimSpace(strings.Trim(strings.TrimSpace(comment.Text), "//")))
-					}
-				}
-				if field.Comment != nil {
-					for _, comment := range field.Comment.List {
-						desc = append(desc, strings.TrimSpace(strings.Trim(strings.TrimSpace(comment.Text), "//")))
-					}
-				}
-
-				switch typIdent := field.Type.(type) {
-				case *ast.Ident:
-					typ := typIdent.Name
-					var in string
-					if field.Tag != nil {
-						tagValue := field.Tag.Value
-						seg := strings.Split(strings.Trim(tagValue, "`"), ":")
-						switch seg[0] {
-						case "uri":
-							in = "path"
-						case "header":
-							in = "header"
-						case "form":
-							if router.HttpMethod.EqualsIgnoreCase(GET.String()) {
-								in = "query"
-							} else {
-								in = "formData"
-							}
-						default:
-							in = "body"
-						}
-						name = strings.Split(strings.Trim(seg[1], `"`), ",")[0]
-					}
-
-					parameter := spec.Parameter{
-						Refable:           spec.Refable{},
-						CommonValidations: spec.CommonValidations{},
-						SimpleSchema: spec.SimpleSchema{
-							Type: typ,
-						},
-						VendorExtensible: spec.VendorExtensible{},
-						ParamProps: spec.ParamProps{
-							Description:     "",
-							Name:            name,
-							In:              in,
-							Required:        true,
-							Schema:          nil,
-							AllowEmptyValue: false,
-						},
-					}
-					parameters = append(parameters, parameter)
-				default:
-					return parameters, nil
-					return nil, fmt.Errorf("unkown type %T", field.Type)
-				}
-			}
-			_ = x
-			return parameters, nil
-		case *ast.SelectorExpr:
-			var parameters []spec.Parameter
-			_ = x
-			return parameters, nil
-		default:
-			return nil, ErrParamType
-		}
+		return router.objectParameters(router.Param2.ObjectArgs.StarExpr)
 	}
 	var parameters []spec.Parameter
 	//for _, binding := range router.Bindings {
@@ -298,6 +216,8 @@ func (router *RouterInfo) ParametersDoc() ([]spec.Parameter, error) {
 	//	case BytesBinding:
 	//		parameters = append(parameters, router.rawBodyParameters())
 	//	case StringBinding:
+	//		parameters = append(parameters, router.rawBodyParameters())
+	//	case CustomBinding:
 	//		parameters = append(parameters, router.rawBodyParameters())
 	//	case UriBinding:
 	//		uriParameters, err := router.uriParameters()
@@ -317,10 +237,65 @@ func (router *RouterInfo) ParametersDoc() ([]spec.Parameter, error) {
 	//	case YAMLBinding:
 	//	case TOMLBinding:
 	//	case ProtoJSONBinding:
-	//	case CustomBinding:
 	//	}
 	//}
 	return parameters, nil
+}
+
+func GoTypeToOpenAPIType(name string) string {
+	switch name {
+	case "int", "int8", "int16", "int32", "int64", "uint", "uint8", "uint16", "uint32", "uint64":
+		return "integer"
+	case "float32", "float64":
+		return "number"
+	case "bool":
+		return "boolean"
+	case "string":
+		return "string"
+	default:
+		return "object"
+	}
+}
+
+func ExtractInAndName(field *ast.Field, httpMethod Method) (string, string) {
+	var name string
+	if len(field.Names) > 0 {
+		name = field.Names[0].Name
+	}
+	if field.Tag == nil {
+		return "body", name
+	}
+	tagValue := field.Tag.Value
+	seg := strings.Split(strings.Trim(tagValue, "`"), ":")
+	name = strings.Split(strings.Trim(seg[1], `"`), ",")[0]
+	switch seg[0] {
+	case "uri":
+		return "path", name
+	case "header":
+		return "header", name
+	case "form":
+		if httpMethod.EqualsIgnoreCase(GET.String()) {
+			return "query", name
+		}
+		return "formData", name
+	default:
+		return "body", name
+	}
+}
+
+func ExtractDescription(field *ast.Field) string {
+	var desc []string
+	if field.Doc != nil {
+		for _, comment := range field.Doc.List {
+			desc = append(desc, strings.TrimSpace(strings.Trim(strings.TrimSpace(comment.Text), "//")))
+		}
+	}
+	if field.Comment != nil {
+		for _, comment := range field.Comment.List {
+			desc = append(desc, strings.TrimSpace(strings.Trim(strings.TrimSpace(comment.Text), "//")))
+		}
+	}
+	return strings.Join(desc, "\n")
 }
 
 func bbb() {
@@ -344,11 +319,27 @@ func bbb() {
 	//fmt.Println(pkgs)
 }
 
-func (router *RouterInfo) rawBodyParameters() spec.Parameter {
+type T struct {
+	Parameters []struct {
+		Name   string `json:"name"`
+		In     string `json:"in"`
+		Schema struct {
+			Type string `json:"type"`
+		} `json:"schema"`
+	} `json:"parameters"`
+}
+
+func (router *RouterInfo) rawBodyParameters(binary bool) spec.Parameter {
 	return spec.Parameter{
 		ParamProps: spec.ParamProps{
-			In:       "body",
-			Required: true,
+			Name: "body",
+			In:   "body",
+			Schema: &spec.Schema{
+				SchemaProps: spec.SchemaProps{
+					Type:   spec.StringOrArray{"string"},
+					Format: operator.Ternary(binary, "binary", ""),
+				},
+			},
 		},
 	}
 }
@@ -370,6 +361,133 @@ func (router *RouterInfo) uriParameters() ([]spec.Parameter, error) {
 		})
 	}
 	return r, nil
+}
+
+func (router *RouterInfo) objectParameters(startExpr *ast.StarExpr) ([]spec.Parameter, error) {
+	var parameters []spec.Parameter
+	switch x := startExpr.X.(type) {
+	case *ast.Ident:
+		if router.MethodName == "AllRequest" {
+			fmt.Println(router)
+		}
+		typeSpec, ok := x.Obj.Decl.(*ast.TypeSpec)
+		if !ok {
+			return nil, errors.New("failed x.Obj.Decl to *ast.TypeSpec")
+		}
+		structType, ok := typeSpec.Type.(*ast.StructType)
+		if !ok {
+			return nil, errors.New("failed typeSpec.Type to *ast.StructType")
+		}
+		var parameters []spec.Parameter
+		for _, field := range structType.Fields.List {
+			switch field.Type.(type) {
+			case *ast.Ident:
+				// 普通类型
+				fmt.Println("普通类型:", field)
+				typIdent := field.Type.(*ast.Ident)
+				var name string
+				if len(field.Names) > 0 {
+					name = field.Names[0].Name
+				} else {
+					fmt.Println(field)
+					continue
+				}
+				// The value MUST be one of "array" or "file".
+				typ := GoTypeToOpenAPIType(typIdent.Name)
+				in, name := ExtractInAndName(field, router.HttpMethod)
+				parameter := spec.Parameter{
+					Refable:           spec.Refable{},
+					CommonValidations: spec.CommonValidations{},
+					SimpleSchema: spec.SimpleSchema{
+						Type: typ,
+					},
+					VendorExtensible: spec.VendorExtensible{},
+					ParamProps: spec.ParamProps{
+						Description:     ExtractDescription(field),
+						Name:            name,
+						In:              in,
+						Required:        true,
+						Schema:          nil,
+						AllowEmptyValue: false,
+					},
+				}
+				parameters = append(parameters, parameter)
+			case *ast.ArrayType:
+				// 数组类型
+				fmt.Println("数组类型:", field)
+				parameters = append(parameters, router.arrayParameter(field))
+			case *ast.SelectorExpr:
+				// 引用类型
+				fmt.Println("引用类型:", field)
+
+			case *ast.StarExpr:
+				fmt.Println("指针类型:", field)
+
+			default:
+				fmt.Println("其他类型:", field)
+				//return parameters, nil
+				return nil, fmt.Errorf("unkown type %T", field.Type)
+			}
+		}
+		_ = x
+		return parameters, nil
+	case *ast.SelectorExpr:
+		var parameters []spec.Parameter
+		_ = x
+		return parameters, nil
+	default:
+		return nil, ErrParamType
+	}
+	return parameters, nil
+}
+
+func (router *RouterInfo) arrayParameter(field *ast.Field) spec.Parameter {
+	arrayType := field.Type.(*ast.ArrayType)
+	description := ExtractDescription(field)
+	in, name := ExtractInAndName(field, router.HttpMethod)
+	paramProps := spec.ParamProps{
+		Description: description,
+		Name:        name,
+		In:          in,
+		Required:    true,
+	}
+
+	switch arrayType.Elt.(type) {
+	case *ast.Ident:
+		ident := arrayType.Elt.(*ast.Ident)
+		switch ident.Name {
+		case "byte":
+			return spec.Parameter{
+				SimpleSchema: spec.SimpleSchema{Type: "string"},
+				ParamProps:   paramProps,
+			}
+		default:
+			apiType := GoTypeToOpenAPIType(ident.Name)
+			if apiType != "object" {
+				return spec.Parameter{
+					SimpleSchema: spec.SimpleSchema{Type: "array", Items: &spec.Items{SimpleSchema: spec.SimpleSchema{Type: apiType}}},
+					ParamProps:   paramProps,
+				}
+			}
+			return spec.Parameter{}
+		}
+	default:
+		fmt.Println(arrayType)
+	}
+	parameter := spec.Parameter{
+		SimpleSchema: spec.SimpleSchema{
+			Type:  "array",
+			Items: nil,
+		},
+		ParamProps: spec.ParamProps{
+			Description: description,
+			Name:        name,
+			In:          in,
+			Required:    true,
+		},
+	}
+
+	return parameter
 }
 
 func FindWildcards(path string) ([]string, error) {
@@ -431,8 +549,6 @@ func FindWildcard(path string) (wildcard string, i int, valid bool) {
 	return "", -1, false
 }
 
-var ErrMultipleHttpMethod = fmt.Errorf("there are multiple methods")
-
 func ParseRouter(comments []string) (*RouterInfo, error) {
 	r := &RouterInfo{}
 	desc := &bytes.Buffer{}
@@ -483,6 +599,9 @@ func parseRouterComment(r *RouterInfo, comment []string) error {
 		bindingSeg, contentType, ok := bindingSegment(segment)
 		if ok {
 			r.Bindings = append(r.Bindings, bindingSeg)
+			if stringx.IsNotBlank(r.BindingContentType) {
+				return ErrMultipleBodyBinding
+			}
 			r.BindingContentType = contentType
 			continue
 		}
@@ -546,14 +665,23 @@ func httpMethodSegment(s string) (Method, bool) {
 func bindingSegment(s string) (Binding, string, bool) {
 	switch {
 	case strings.HasPrefix(strings.ToUpper(s), strings.ToUpper(string(ReaderBinding))):
-		v, _ := ExtractValue(s, string(ReaderBinding))
-		return ReaderBinding, v, true
+		v, ok := ExtractValue(s, string(ReaderBinding))
+		if ok {
+			return ReaderBinding, v, true
+		}
+		return ReaderBinding, BinaryContentType, true
 	case strings.HasPrefix(strings.ToUpper(s), strings.ToUpper(string(BytesBinding))):
-		v, _ := ExtractValue(s, string(BytesBinding))
-		return BytesBinding, v, true
+		v, ok := ExtractValue(s, string(BytesBinding))
+		if ok {
+			return BytesBinding, v, true
+		}
+		return BytesBinding, BinaryContentType, true
 	case strings.HasPrefix(strings.ToUpper(s), strings.ToUpper(string(StringBinding))):
-		v, _ := ExtractValue(s, string(StringBinding))
-		return StringBinding, v, true
+		v, ok := ExtractValue(s, string(StringBinding))
+		if ok {
+			return StringBinding, v, true
+		}
+		return StringBinding, PlainContentType, true
 	case strings.ToUpper(s) == strings.ToUpper(string(UriBinding)):
 		return UriBinding, "", true
 	case strings.ToUpper(s) == strings.ToUpper(string(QueryBinding)):
@@ -591,14 +719,23 @@ func bindingSegment(s string) (Binding, string, bool) {
 func renderSegment(s string) (Render, string, bool) {
 	switch {
 	case strings.HasPrefix(strings.ToUpper(s), strings.ToUpper(ReaderRender.String())):
-		v, _ := ExtractValue(s, ReaderRender.String())
-		return ReaderRender, v, true
+		v, ok := ExtractValue(s, ReaderRender.String())
+		if ok {
+			return ReaderRender, v, true
+		}
+		return ReaderRender, BinaryContentType, true
 	case strings.HasPrefix(strings.ToUpper(s), strings.ToUpper(BytesRender.String())):
-		v, _ := ExtractValue(s, BytesRender.String())
-		return BytesRender, v, true
+		v, ok := ExtractValue(s, BytesRender.String())
+		if ok {
+			return BytesRender, v, true
+		}
+		return BytesRender, BinaryContentType, true
 	case strings.HasPrefix(strings.ToUpper(s), strings.ToUpper(StringRender.String())):
-		v, _ := ExtractValue(s, StringRender.String())
-		return StringRender, v, true
+		v, ok := ExtractValue(s, StringRender.String())
+		if ok {
+			return StringRender, v, true
+		}
+		return StringRender, PlainContentType, true
 	case strings.ToUpper(s) == strings.ToUpper(TextRender.String()):
 		return TextRender, PlainContentType, true
 	case strings.ToUpper(s) == strings.ToUpper(HTMLRender.String()):

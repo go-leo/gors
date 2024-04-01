@@ -17,7 +17,9 @@ paths:
             operationId: /demo.BytesReader/GetBytesReader
             parameters:
                 - in: body
-                  required: true
+                  name: body
+                  schema:
+                    type: string
             produces:
                 - video/mpeg4
             responses: {}
@@ -32,7 +34,9 @@ paths:
             operationId: /demo.BytesReader/PatchBytesReader
             parameters:
                 - in: body
-                  required: true
+                  name: body
+                  schema:
+                    type: string
             produces:
                 - video/mpeg4
             responses: {}

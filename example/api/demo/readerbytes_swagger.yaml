@@ -17,7 +17,9 @@ paths:
             operationId: /demo.ReaderBytes/GetReaderBytes
             parameters:
                 - in: body
-                  required: true
+                  name: body
+                  schema:
+                    type: string
             produces:
                 - ""
             responses: {}
@@ -32,7 +34,9 @@ paths:
             operationId: /demo.ReaderBytes/PostReaderBytes
             parameters:
                 - in: body
-                  required: true
+                  name: body
+                  schema:
+                    type: string
             produces:
                 - text/go
             responses: {}

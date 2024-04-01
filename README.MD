@@ -492,13 +492,13 @@ func main() {
 - 当第二个参数是结构体指针时候，可以设置。
 - 可以设置多种Binding策略。
 ### @ReaderBinding
-> 配合第二个参数是`io.Reader`类型使用，引用`request.Body`，可以设置`Content-Type`值，比如`@ReaderBinding(image/jpeg)`
+> 配合第二个参数是`io.Reader`类型使用，引用`request.Body`，可以设置`Content-Type`值，比如`@ReaderBinding(image/jpeg)`,不设默认值为`application/octet-stream`
 >* grpc定义形式不支持
 ### @BytesBinding
-> 配合第二个参数是`[]byte`类型使用，将`request.Body`以字节形式全部读出，可以设置`Content-Type`值，比如`@ReaderBinding(image/jpeg)`
+> 配合第二个参数是`[]byte`类型使用，将`request.Body`以字节形式全部读出，可以设置`Content-Type`值，比如`@ReaderBinding(image/jpeg)`,不设默认值为`application/octet-stream`
 >* grpc定义形式不支持
 ### @StringBinding
-> 配合第二个参数是`string`类型使用，将`request.Body`以字节形式全部读出,并转成字符串，可以设置`Content-Type`值，比如`@ReaderBinding(application/javascript)`
+> 配合第二个参数是`string`类型使用，将`request.Body`以字节形式全部读出,并转成字符串，可以设置`Content-Type`值，比如`@ReaderBinding(application/javascript)`,不设默认值为`text/plain`
 >* grpc定义形式不支持
 ### @UriBinding
 >将对应的Uri参数绑定到结构体指针中。
@@ -575,13 +575,13 @@ func main() {
 ### @BytesRender
 >字节数组渲染。
 >
->只有当方法的第一个返回参数类型为`[]byte`时才能使用，`@BytesRender`将数据以字节数组写入响应的Body中，可以自定义响应`Content-Type`，比如：`@BytesRender(image/png)`代表渲染一张图片。
+>只有当方法的第一个返回参数类型为`[]byte`时才能使用，`@BytesRender`将数据以字节数组写入响应的Body中，可以自定义响应`Content-Type`，比如：`@BytesRender(image/png)`代表渲染一张图片，不设默认值为`application/octet-stream`。
 >* grpc定义形式不支持
 
 ### @StringRender
 >字符串渲染。
 >
->只有当方法的第一个返回参数类型为`string`时才能使用，`@StringRender`将数据以文本的方式写入响应的Body中，可以自定义响应`Content-Type`，比如`@StringRender(image/xml)`代表渲染xml文件。
+>只有当方法的第一个返回参数类型为`string`时才能使用，`@StringRender`将数据以文本的方式写入响应的Body中，可以自定义响应`Content-Type`，比如`@StringRender(image/xml)`代表渲染xml文件,不设默认值为`text/plain`。
 >* grpc定义形式不支持
 
 ### @TextRender
@@ -603,7 +603,7 @@ func main() {
 >* grpc定义形式不支持
 
 ### @ReaderRender
->数据流渲染，只有当方法的第一个返回参数类型为`io.Reader`时才能使用，`@ReaderRender`将数据流写入响应的Body中，可以自定义响应`Content-Type`，比如：`@ReaderRender(video/mpeg4)`代表渲染一个视频文件。
+>数据流渲染，只有当方法的第一个返回参数类型为`io.Reader`时才能使用，`@ReaderRender`将数据流写入响应的Body中，可以自定义响应`Content-Type`，比如：`@ReaderRender(video/mpeg4)`代表渲染一个视频文件,不设默认值为`application/octet-stream`。
 >* grpc定义形式不支持
 
 ### @JSONRender
