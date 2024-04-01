@@ -26,8 +26,6 @@ type generate struct {
 	importsBuf       *bytes.Buffer
 	functionBuf      *bytes.Buffer
 	header           string
-	pkgName          string
-	imports          map[string]*parser.GoImport
 	usedPackageNames map[string]bool
 	serviceInfo      *parser.ServiceInfo
 }
@@ -50,7 +48,7 @@ func (g *generate) content() []byte {
 func (g *generate) printHeader() {
 	g.P(g.headerBuf, g.header)
 	g.P(g.headerBuf)
-	g.P(g.headerBuf, fmt.Sprintf("package %s", g.pkgName))
+	g.P(g.headerBuf, fmt.Sprintf("package %s", g.serviceInfo.PackageName))
 }
 
 func (g *generate) printFunction() {
@@ -233,7 +231,7 @@ func (g *generate) printResponseRender(info *parser.RouterInfo) {
 
 func (g *generate) printImports() {
 	g.P(g.importsBuf, "import (")
-	for _, imp := range g.imports {
+	for _, imp := range g.serviceInfo.Imports {
 		if !imp.Enable {
 			continue
 		}
@@ -257,7 +255,7 @@ func (g *generate) P(w io.Writer, v ...any) {
 		switch x := x.(type) {
 		case *parser.GoIdent:
 			x.GoImport.Enable = true
-			g.imports[x.GoImport.ImportPath] = x.GoImport
+			g.serviceInfo.Imports[x.GoImport.ImportPath] = x.GoImport
 			_, _ = fmt.Fprint(w, x.Qualify())
 		default:
 			_, _ = fmt.Fprint(w, x)

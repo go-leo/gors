@@ -36,7 +36,7 @@ func _ReaderBytes_GetReaderBytes_Handler(srv ReaderBytes, options *gors.Options)
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.BytesRender, options.ResponseWrapper)
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/octet-stream", gors.BytesRender, options.ResponseWrapper)
 	}
 }
 

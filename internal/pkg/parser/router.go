@@ -28,52 +28,14 @@ type RouterInfo struct {
 	RenderContentType string
 	Render            Render
 
-	HandlerName string
-	ProtoMethod *protogen.Method
-	FuncType    *ast.FuncType
-	Param2      *Param
-	Result1     *Result
-}
-
-func (router *RouterInfo) PathParams() []string {
-	var params []string
-	segs := strings.Split(router.Path, "/")
-	for _, seg := range segs {
-		seg = strings.TrimSpace(seg)
-		if stringx.IsBlank(seg) {
-			continue
-		}
-		if strings.HasPrefix(seg, ":") {
-			params = append(params, strings.TrimPrefix(seg, ":"))
-			continue
-		}
-		if strings.HasPrefix(seg, "*") {
-			params = append(params, strings.TrimPrefix(seg, "*"))
-			continue
-		}
-		continue
-	}
-	return params
-}
-
-func (router *RouterInfo) QueryParams() []string {
-	var params []string
-	return params
-}
-
-func (router *RouterInfo) HeaderParams() []string {
-	var params []string
-	return params
-}
-
-func (router *RouterInfo) FormParams() []string {
-	var params []string
-	return params
-}
-
-func (router *RouterInfo) FileParams() []string {
-	var params []string
-	return params
+	HandlerName  string
+	ProtoMethod  *protogen.Method
+	FuncType     *ast.FuncType
+	Param2       *Param
+	Result1      *Result
+	UriParams    []string
+	QueryParams  []string
+	HeaderParams []string
 }
 
 func (router *RouterInfo) SetHandlerName(serviceName string) {
@@ -602,13 +564,31 @@ func parseRouterComment(r *RouterInfo, comment []string) error {
 			continue
 		}
 
-		bindingSeg, contentType, ok := bindingSegment(segment)
+		bindingSeg, value, ok := bindingSegment(segment)
 		if ok {
 			r.Bindings = append(r.Bindings, bindingSeg)
 			if stringx.IsNotBlank(r.BindingContentType) {
 				return ErrMultipleBodyBinding
 			}
-			r.BindingContentType = contentType
+			if bindingSeg == UriBinding {
+				for _, p := range strings.Split(value, ",") {
+					r.UriParams = append(r.UriParams, strings.TrimSpace(p))
+				}
+				continue
+			}
+			if bindingSeg == QueryBinding {
+				for _, p := range strings.Split(value, ",") {
+					r.QueryParams = append(r.QueryParams, strings.TrimSpace(p))
+				}
+				continue
+			}
+			if bindingSeg == HeaderBinding {
+				for _, p := range strings.Split(value, ",") {
+					r.HeaderParams = append(r.HeaderParams, strings.TrimSpace(p))
+				}
+				continue
+			}
+			r.BindingContentType = value
 			continue
 		}
 
@@ -689,10 +669,22 @@ func bindingSegment(s string) (Binding, string, bool) {
 		}
 		return StringBinding, PlainContentType, true
 	case strings.ToUpper(s) == strings.ToUpper(string(UriBinding)):
+		v, ok := ExtractValue(s, string(UriBinding))
+		if ok {
+			return UriBinding, v, true
+		}
 		return UriBinding, "", true
 	case strings.ToUpper(s) == strings.ToUpper(string(QueryBinding)):
+		v, ok := ExtractValue(s, string(QueryBinding))
+		if ok {
+			return QueryBinding, v, true
+		}
 		return QueryBinding, "", true
 	case strings.ToUpper(s) == strings.ToUpper(string(HeaderBinding)):
+		v, ok := ExtractValue(s, string(HeaderBinding))
+		if ok {
+			return HeaderBinding, v, true
+		}
 		return HeaderBinding, "", true
 	case strings.ToUpper(s) == strings.ToUpper(string(JSONBinding)):
 		return JSONBinding, JSONContentType, true

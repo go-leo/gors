@@ -35,7 +35,7 @@ func _StringBytes_GetStringBytes_Handler(srv StringBytes, options *gors.Options)
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.BytesRender, options.ResponseWrapper)
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/octet-stream", gors.BytesRender, options.ResponseWrapper)
 	}
 }
 
@@ -58,6 +58,6 @@ func _StringBytes_OptionsStringBytes_Handler(srv StringBytes, options *gors.Opti
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.BytesRender, options.ResponseWrapper)
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "application/octet-stream", gors.BytesRender, options.ResponseWrapper)
 	}
 }

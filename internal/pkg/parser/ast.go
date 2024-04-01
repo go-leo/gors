@@ -88,14 +88,14 @@ func Inspect(pkg *packages.Package, serviceName string) (*ast.File, *ast.GenDecl
 	return serviceFile, serviceDecl, serviceSpec, serviceType, serviceMethods
 }
 
-func ParseRouterInfos(rpcMethods []*ast.Field, imports map[string]*GoImport, serviceInfo *ServiceInfo, pathToLower bool) ([]*RouterInfo, error) {
+func ParseRouterInfos(rpcMethods []*ast.Field, serviceInfo *ServiceInfo, pathToLower bool) ([]*RouterInfo, error) {
 	var Routers []*RouterInfo
 	for _, method := range rpcMethods {
 		if slicex.IsEmpty(method.Names) {
 			continue
 		}
 		methodName := method.Names[0].String()
-		routerInfo, err := ParseRouterInfo(method, imports)
+		routerInfo, err := ParseRouterInfo(method, serviceInfo.Imports)
 		if err != nil {
 			return nil, fmt.Errorf("rpcmethod: %s, %w", methodName, err)
 		}

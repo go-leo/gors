@@ -41,7 +41,11 @@ func (info *ServiceInfo) Swagger() (*spec.Swagger, error) {
 func (info *ServiceInfo) consumesDoc() []string {
 	var consumes []string
 	for _, router := range info.Routers {
-		consumes = append(consumes, router.BindingContentType)
+		contentType := router.BindingContentType
+		if contentType == "" {
+			continue
+		}
+		consumes = append(consumes, contentType)
 	}
 	return consumes
 }
@@ -49,7 +53,11 @@ func (info *ServiceInfo) consumesDoc() []string {
 func (info *ServiceInfo) producesDoc() []string {
 	var produces []string
 	for _, router := range info.Routers {
-		produces = append(produces, router.RenderContentType)
+		contentType := router.RenderContentType
+		if contentType == "" {
+			continue
+		}
+		produces = append(produces, contentType)
 	}
 	return produces
 }

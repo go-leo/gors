@@ -12,6 +12,11 @@ var _ demo.ObjObj = new(ObjObjService)
 type ObjObjService struct {
 }
 
+func (svc *ObjObjService) AllRequest(ctx context.Context, req *demo.AllRequestReq) (*demo.AllRequestResp, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
 func (svc *ObjObjService) UriBindingIndentedJSONRender(ctx context.Context, req *demo.UriBindingReq) (*demo.IndentedJSONRenderResp, error) {
 	return &demo.IndentedJSONRenderResp{
 		ID:         req.ID,
