@@ -415,15 +415,21 @@ func (router *RouterInfo) objectParameters(startExpr *ast.StarExpr) ([]spec.Para
 			case *ast.ArrayType:
 				// 数组类型
 				fmt.Println("数组类型:", field)
-				parameters = append(parameters, router.arrayParameter(field))
+				parameter, err := router.arrayParameter(field)
+				if err != nil {
+					return nil, err
+				}
+				parameters = append(parameters, parameter)
 			case *ast.SelectorExpr:
 				// 引用类型
 				fmt.Println("引用类型:", field)
 
 			case *ast.StarExpr:
+				// 指针类型
 				fmt.Println("指针类型:", field)
 
 			default:
+				// 其他类型
 				fmt.Println("其他类型:", field)
 				//return parameters, nil
 				return nil, fmt.Errorf("unkown type %T", field.Type)
@@ -441,7 +447,7 @@ func (router *RouterInfo) objectParameters(startExpr *ast.StarExpr) ([]spec.Para
 	return parameters, nil
 }
 
-func (router *RouterInfo) arrayParameter(field *ast.Field) spec.Parameter {
+func (router *RouterInfo) arrayParameter(field *ast.Field) (spec.Parameter, error) {
 	arrayType := field.Type.(*ast.ArrayType)
 	description := ExtractDescription(field)
 	in, name := ExtractInAndName(field, router.HttpMethod)
@@ -460,16 +466,16 @@ func (router *RouterInfo) arrayParameter(field *ast.Field) spec.Parameter {
 			return spec.Parameter{
 				SimpleSchema: spec.SimpleSchema{Type: "string"},
 				ParamProps:   paramProps,
-			}
+			}, nil
 		default:
 			apiType := GoTypeToOpenAPIType(ident.Name)
 			if apiType != "object" {
 				return spec.Parameter{
 					SimpleSchema: spec.SimpleSchema{Type: "array", Items: &spec.Items{SimpleSchema: spec.SimpleSchema{Type: apiType}}},
 					ParamProps:   paramProps,
-				}
+				}, nil
 			}
-			return spec.Parameter{}
+			return spec.Parameter{}, nil
 		}
 	default:
 		fmt.Println(arrayType)
@@ -487,7 +493,7 @@ func (router *RouterInfo) arrayParameter(field *ast.Field) spec.Parameter {
 		},
 	}
 
-	return parameter
+	return parameter, nil
 }
 
 func FindWildcards(path string) ([]string, error) {
