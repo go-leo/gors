@@ -37,10 +37,10 @@ func _ProtoService_Method_GORS_Handler(wrapper ProtoServiceServer, options *gors
 	return func(c *gin.Context) {
 		var rpcMethodName = "/protoservice.ProtoService/Method"
 		var ctx = gors.NewContext(c, rpcMethodName)
-		var req *HelloRequest
-		var resp *HelloReply
+		var req *HelloRequest1
+		var resp *HelloReply1
 		var err error
-		req = new(HelloRequest)
+		req = new(HelloRequest1)
 		if err = gors.RequestBind(
 			ctx, req, options.Tag,
 			gors.ProtoJSONBinding,
@@ -67,7 +67,7 @@ type _ProtoServiceClientWrapper struct {
 	options *gors.Options
 }
 
-func (wrapper *_ProtoServiceClientWrapper) Method(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
+func (wrapper *_ProtoServiceClientWrapper) Method(ctx context.Context, request *HelloRequest1) (*HelloReply1, error) {
 	var headerMD, trailerMD metadata.MD
 	resp, err := wrapper.cli.Method(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
 	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher)
@@ -80,7 +80,7 @@ type _ProtoServiceServerWrapper struct {
 	options *gors.Options
 }
 
-func (wrapper *_ProtoServiceServerWrapper) Method(ctx context.Context, request *HelloRequest) (*HelloReply, error) {
+func (wrapper *_ProtoServiceServerWrapper) Method(ctx context.Context, request *HelloRequest1) (*HelloReply1, error) {
 	rpcMethodName := "/protoservice.ProtoService/Method"
 	stream := gors.NewServerTransportStream(rpcMethodName)
 	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)

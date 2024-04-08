@@ -1,9 +1,6 @@
 basePath: /api/ObjObj
 consumes:
     - application/json
-    - ""
-    - ""
-    - ""
     - application/json
     - application/xml
     - application/x-www-form-urlencoded
@@ -420,9 +417,13 @@ paths:
                   name: A
                   required: true
                   type: array
+                - required: true
+                  type: object
                 - in: body
                   name: UriBindingReq
                   required: true
+                  type: object
+                - required: true
                   type: object
                 - {}
                 - in: body
@@ -437,6 +438,8 @@ paths:
                   name: ProtoBufReqPtrs
                   required: true
                   type: array
+                - required: true
+                  type: object
             produces:
                 - application/json
             responses: {}

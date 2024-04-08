@@ -102,6 +102,7 @@ func ParseRouterInfos(rpcMethods []*ast.Field, serviceInfo *ServiceInfo, pathToL
 		routerInfo.SetMethodName(methodName)
 		routerInfo.SetFullMethodName(FullMethodName(serviceInfo.FullName, routerInfo.MethodName))
 		routerInfo.SetHandlerName(serviceInfo.Name)
+		routerInfo.SetServiceInfo(serviceInfo)
 		routerInfo.DefaultHttpMethod()
 		routerInfo.DefaultHttpPath(pathToLower)
 		routerInfo.DefaultBindingName()

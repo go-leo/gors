@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"flag"
 	"fmt"
 	"github.com/go-leo/gors/cmd/internal"
@@ -52,33 +51,10 @@ func main() {
 		args = []string{"."}
 	}
 
-	// load package information
-	pkg, err := parser.LoadPkg(args)
+	serviceInfo, err := parser.ParseService(args, *serviceName, *pathToLower)
 	if err != nil {
 		log.Fatal(err)
 	}
-	pkgName := pkg.Name
-	goFiles := pkg.GoFiles
-	pkgPath := pkg.PkgPath
-
-	// Inspect package
-	serviceFile, serviceDecl, serviceSpec, serviceType, rpcMethods := parser.Inspect(pkg, *serviceName)
-	if serviceFile == nil || serviceDecl == nil || serviceSpec == nil || serviceType == nil {
-		log.Fatal("error: not found service")
-	}
-
-	serviceInfo, err := parser.ParseServiceInfo(serviceDecl)
-	if err != nil {
-		log.Fatal(err)
-	}
-	serviceInfo.SetServiceName(*serviceName)
-	serviceInfo.SetPackageName(pkgName)
-	imports := parser.ExtractGoImports(serviceFile)
-	routers, err := parser.ParseRouterInfos(rpcMethods, imports, serviceInfo, *pathToLower)
-	if err != nil {
-		log.Fatal(err)
-	}
-	serviceInfo.SetRouters(routers)
 
 	swagger, err := serviceInfo.Swagger()
 	if err != nil {
@@ -98,27 +74,10 @@ func main() {
 	}
 
 	// Write to file.
-	outDir, err := detectOutputDir(goFiles)
-	if err != nil {
-		log.Fatalf("error: detect output dir: %s", err)
-	}
-	outputPath := filepath.Join(outDir, fmt.Sprintf("%s_swagger.yaml", strings.ToLower(*serviceName)))
+	outputPath := filepath.Join(serviceInfo.OutDir, fmt.Sprintf("%s_swagger.yaml", strings.ToLower(*serviceName)))
 	if err := os.WriteFile(outputPath, swaggerYaml, 0644); err != nil {
 		log.Fatalf("writing output: %s", err)
 	}
 
-	log.Printf("%s.%s wrote %s", pkgPath, *serviceName, outputPath)
-}
-
-func detectOutputDir(paths []string) (string, error) {
-	if len(paths) == 0 {
-		return "", errors.New("no files to derive output directory from")
-	}
-	dir := filepath.Dir(paths[0])
-	for _, p := range paths[1:] {
-		if dir2 := filepath.Dir(p); dir2 != dir {
-			return "", fmt.Errorf("found conflicting directories %q and %q", dir, dir2)
-		}
-	}
-	return dir, nil
+	log.Printf("%s.%s wrote %s", serviceInfo.PackageName, *serviceName, outputPath)
 }

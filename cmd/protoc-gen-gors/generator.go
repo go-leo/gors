@@ -21,6 +21,7 @@ const (
 	ginPackage      = protogen.GoImportPath("github.com/gin-gonic/gin")
 	httpPackage     = protogen.GoImportPath("net/http")
 	gorsPackage     = protogen.GoImportPath("github.com/go-leo/gors")
+	bindingPackage  = protogen.GoImportPath("github.com/gin-gonic/gin/binding")
 	contextPackage  = protogen.GoImportPath("context")
 )
 

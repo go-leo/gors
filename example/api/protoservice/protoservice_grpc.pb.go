@@ -27,7 +27,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ProtoServiceClient interface {
 	// @GORS @POST @Path(/Method) @ProtoJSONBinding @ProtoJSONRender
-	Method(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error)
+	Method(ctx context.Context, in *HelloRequest1, opts ...grpc.CallOption) (*HelloReply1, error)
 }
 
 type protoServiceClient struct {
@@ -38,8 +38,8 @@ func NewProtoServiceClient(cc grpc.ClientConnInterface) ProtoServiceClient {
 	return &protoServiceClient{cc}
 }
 
-func (c *protoServiceClient) Method(ctx context.Context, in *HelloRequest, opts ...grpc.CallOption) (*HelloReply, error) {
-	out := new(HelloReply)
+func (c *protoServiceClient) Method(ctx context.Context, in *HelloRequest1, opts ...grpc.CallOption) (*HelloReply1, error) {
+	out := new(HelloReply1)
 	err := c.cc.Invoke(ctx, ProtoService_Method_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -52,7 +52,7 @@ func (c *protoServiceClient) Method(ctx context.Context, in *HelloRequest, opts 
 // for forward compatibility
 type ProtoServiceServer interface {
 	// @GORS @POST @Path(/Method) @ProtoJSONBinding @ProtoJSONRender
-	Method(context.Context, *HelloRequest) (*HelloReply, error)
+	Method(context.Context, *HelloRequest1) (*HelloReply1, error)
 	mustEmbedUnimplementedProtoServiceServer()
 }
 
@@ -60,7 +60,7 @@ type ProtoServiceServer interface {
 type UnimplementedProtoServiceServer struct {
 }
 
-func (UnimplementedProtoServiceServer) Method(context.Context, *HelloRequest) (*HelloReply, error) {
+func (UnimplementedProtoServiceServer) Method(context.Context, *HelloRequest1) (*HelloReply1, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Method not implemented")
 }
 func (UnimplementedProtoServiceServer) mustEmbedUnimplementedProtoServiceServer() {}
@@ -77,7 +77,7 @@ func RegisterProtoServiceServer(s grpc.ServiceRegistrar, srv ProtoServiceServer)
 }
 
 func _ProtoService_Method_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(HelloRequest)
+	in := new(HelloRequest1)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -89,7 +89,7 @@ func _ProtoService_Method_Handler(srv interface{}, ctx context.Context, dec func
 		FullMethod: ProtoService_Method_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProtoServiceServer).Method(ctx, req.(*HelloRequest))
+		return srv.(ProtoServiceServer).Method(ctx, req.(*HelloRequest1))
 	}
 	return interceptor(ctx, in, info, handler)
 }

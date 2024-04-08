@@ -9,6 +9,7 @@ import (
 	"github.com/go-openapi/spec"
 	"github.com/pkg/errors"
 	"go/ast"
+	"golang.org/x/tools/go/packages"
 	"google.golang.org/protobuf/compiler/protogen"
 	"log"
 	"path"
@@ -36,6 +37,7 @@ type RouterInfo struct {
 	UriParams    []string
 	QueryParams  []string
 	HeaderParams []string
+	ServiceInfo  *ServiceInfo
 }
 
 func (router *RouterInfo) SetHandlerName(serviceName string) {
@@ -169,39 +171,9 @@ func (router *RouterInfo) ParametersDoc() ([]spec.Parameter, error) {
 		return []spec.Parameter{router.rawBodyParameters(true)}, nil
 	case router.Param2.ObjectArgs != nil:
 		return router.objectParameters(router.Param2.ObjectArgs.StarExpr)
+	default:
+		return nil, errors.New("param error")
 	}
-	var parameters []spec.Parameter
-	//for _, binding := range router.Bindings {
-	//	switch binding {
-	//	case ReaderBinding:
-	//		parameters = append(parameters, router.rawBodyParameters())
-	//	case BytesBinding:
-	//		parameters = append(parameters, router.rawBodyParameters())
-	//	case StringBinding:
-	//		parameters = append(parameters, router.rawBodyParameters())
-	//	case CustomBinding:
-	//		parameters = append(parameters, router.rawBodyParameters())
-	//	case UriBinding:
-	//		uriParameters, err := router.uriParameters()
-	//		if err != nil {
-	//			return nil, err
-	//		}
-	//		parameters = append(parameters, uriParameters...)
-	//	case QueryBinding:
-	//	case HeaderBinding:
-	//	case JSONBinding:
-	//	case XMLBinding:
-	//	case FormBinding:
-	//	case FormPostBinding:
-	//	case FormMultipartBinding:
-	//	case ProtoBufBinding:
-	//	case MsgPackBinding:
-	//	case YAMLBinding:
-	//	case TOMLBinding:
-	//	case ProtoJSONBinding:
-	//	}
-	//}
-	return parameters, nil
 }
 
 func GoTypeToOpenAPIType(name string) string {
@@ -355,15 +327,12 @@ func (router *RouterInfo) objectParameters(startExpr *ast.StarExpr) ([]spec.Para
 					continue
 				}
 				// The value MUST be one of "array" or "file".
-				typ := GoTypeToOpenAPIType(typIdent.Name)
 				in, name := ExtractInAndName(field, router.HttpMethod)
 				parameter := spec.Parameter{
 					Refable:           spec.Refable{},
 					CommonValidations: spec.CommonValidations{},
-					SimpleSchema: spec.SimpleSchema{
-						Type: typ,
-					},
-					VendorExtensible: spec.VendorExtensible{},
+					SimpleSchema:      spec.SimpleSchema{Type: GoTypeToOpenAPIType(typIdent.Name)},
+					VendorExtensible:  spec.VendorExtensible{},
 					ParamProps: spec.ParamProps{
 						Description:     ExtractDescription(field),
 						Name:            name,
@@ -385,7 +354,11 @@ func (router *RouterInfo) objectParameters(startExpr *ast.StarExpr) ([]spec.Para
 			case *ast.SelectorExpr:
 				// 引用类型
 				fmt.Println("引用类型:", field)
-
+				parameter, err := router.selectorParameter(field)
+				if err != nil {
+					return nil, err
+				}
+				parameters = append(parameters, parameter)
 			case *ast.StarExpr:
 				// 指针类型
 				fmt.Println("指针类型:", field)
@@ -400,9 +373,7 @@ func (router *RouterInfo) objectParameters(startExpr *ast.StarExpr) ([]spec.Para
 		_ = x
 		return parameters, nil
 	case *ast.SelectorExpr:
-		var parameters []spec.Parameter
-		_ = x
-		return parameters, nil
+		return router.SelectorExprParameter(startExpr)
 	default:
 		return nil, ErrParamType
 	}
@@ -455,6 +426,105 @@ func (router *RouterInfo) arrayParameter(field *ast.Field) (spec.Parameter, erro
 		},
 	}
 
+	return parameter, nil
+}
+
+func (router *RouterInfo) SetServiceInfo(info *ServiceInfo) {
+	router.ServiceInfo = info
+}
+
+func (router *RouterInfo) SelectorExprParameter(expr *ast.StarExpr) ([]spec.Parameter, error) {
+	selectorExpr, ok := expr.X.(*ast.SelectorExpr)
+	if !ok {
+		return nil, errors.New("failed convert x to *ast.SelectorExpr")
+	}
+	ident, ok := selectorExpr.X.(*ast.Ident)
+	if !ok {
+		return nil, errors.New("failed convert x to *ast.Ident")
+	}
+	var importPath string
+	for _, v := range router.ServiceInfo.Imports {
+		if v.PackageName == ident.Name {
+			importPath = v.ImportPath
+			break
+		}
+	}
+	if importPath == "" {
+		return nil, errors.New("failed found import path")
+	}
+
+	cfg := &packages.Config{
+		Mode: packages.NeedName |
+			packages.NeedFiles |
+			packages.NeedCompiledGoFiles |
+			packages.NeedImports |
+			packages.NeedDeps |
+			packages.NeedExportFile |
+			packages.NeedTypes |
+			packages.NeedSyntax |
+			packages.NeedTypesInfo |
+			packages.NeedTypesSizes |
+			packages.NeedModule,
+	}
+	pkgs, err := packages.Load(cfg, importPath)
+	if err != nil {
+		return nil, err
+	}
+	if len(pkgs) != 1 {
+		return nil, fmt.Errorf("error: %d packages found", len(pkgs))
+	}
+	pkg := pkgs[0]
+	if len(pkg.Errors) > 0 {
+		return nil, pkg.Errors[0]
+	}
+	for _, file := range pkg.Syntax {
+		ast.Inspect(file, func(node ast.Node) bool {
+			if node == nil {
+				return true
+			}
+			switch node.(type) {
+			case *ast.File:
+				return true
+			case *ast.ImportSpec:
+				return true
+			case *ast.BasicLit:
+				return true
+			case *ast.Ident:
+
+				return true
+			case *ast.GenDecl:
+
+				return true
+			default:
+
+				return true
+			}
+			fmt.Println(node)
+			return true
+		})
+	}
+
+	var parameters []spec.Parameter
+
+	return parameters, nil
+}
+
+func (router *RouterInfo) selectorParameter(field *ast.Field) (spec.Parameter, error) {
+	expr := field.Type.(*ast.SelectorExpr)
+	fmt.Println(expr)
+	parameter := spec.Parameter{
+		SimpleSchema: spec.SimpleSchema{
+			Type: "object",
+		},
+		ParamProps: spec.ParamProps{
+			Description:     "",
+			Name:            "",
+			In:              "",
+			Required:        true,
+			Schema:          nil,
+			AllowEmptyValue: false,
+		},
+	}
 	return parameter, nil
 }
 

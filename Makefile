@@ -10,11 +10,15 @@ protoc_gen:
 	@protoc \
 		--proto_path=. \
 		--go_out=. \
-		--go_opt=module=github.com/go-leo/gors \
+		--go_opt=paths=source_relative \
 		--go-grpc_out=. \
-		--go-grpc_opt=module=github.com/go-leo/gors \
+		--go-grpc_opt=paths=source_relative \
 		--go-gors_out=. \
-		--go-gors_opt=module=github.com/go-leo/gors \
+		--go-gors_opt=paths=source_relative \
+		--jsonschema_out=. \
+		--jsonschema_opt=paths=source_relative \
+		--gorsopenapi_out=. \
+		--gorsopenapi_opt=paths=source_relative \
 		example/api/*/*.proto
 	@echo "--- protoc generate end ---"
 

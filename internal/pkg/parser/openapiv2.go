@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"github.com/go-openapi/jsonreference"
 	"github.com/go-openapi/spec"
 )
 
@@ -116,29 +115,12 @@ func (router *RouterInfo) PathDoc() (spec.PathItem, error) {
 		return spec.PathItem{}, err
 	}
 	return spec.PathItem{
-		Refable: spec.Refable{
-			Ref: spec.Ref{
-				Ref: jsonreference.Ref{},
-			},
-		},
-		VendorExtensible: spec.VendorExtensible{
-			Extensions: map[string]interface{}{},
-		},
 		PathItemProps: pathItemProps,
 	}, nil
 }
 
 func (router *RouterInfo) PathItemProps() (spec.PathItemProps, error) {
-	props := spec.PathItemProps{
-		Get:        nil,
-		Put:        nil,
-		Post:       nil,
-		Delete:     nil,
-		Options:    nil,
-		Head:       nil,
-		Patch:      nil,
-		Parameters: nil,
-	}
+	props := spec.PathItemProps{}
 	doc, err := router.OperationDoc(GET)
 	if err != nil {
 		return spec.PathItemProps{}, err

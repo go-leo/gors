@@ -1,0 +1,12 @@
+{
+  "title": "HelloReply1",
+  "$id": "HelloReply1.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "message": {
+      "title": "message",
+      "type": "string"
+    }
+  }
+}
