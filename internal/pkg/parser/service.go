@@ -1,14 +1,30 @@
 package parser
 
 import (
+	"bufio"
 	"bytes"
 	"errors"
 	"fmt"
+	"github.com/go-leo/gox/slicex"
+	"github.com/go-leo/gox/stringx"
+	"google.golang.org/protobuf/compiler/protogen"
 	"log"
 	"path"
 	"path/filepath"
 	"strings"
 )
+
+type ServiceInfo struct {
+	Name        string
+	Description string
+	BasePath    string
+	Routers     []*RouterInfo
+	FullName    string
+	PackageName string
+	OutDir      string
+	PkgPath     string
+	Imports     map[string]*GoImport
+}
 
 func ParseService(args []string, serviceName string, pathToLower bool) (*ServiceInfo, error) {
 	// load package information
@@ -47,16 +63,50 @@ func ParseService(args []string, serviceName string, pathToLower bool) (*Service
 	return serviceInfo, nil
 }
 
-type ServiceInfo struct {
-	Name        string
-	Description string
-	BasePath    string
-	Routers     []*RouterInfo
-	FullName    string
-	PackageName string
-	OutDir      string
-	PkgPath     string
-	Imports     map[string]*GoImport
+func ParseServiceFromPb(service *protogen.Service, pathToLower bool) (*ServiceInfo, error) {
+	serviceInfo, err := NewService(splitComment(service.Comments.Leading.String()))
+	if err != nil {
+		return nil, err
+	}
+	serviceInfo.SetServiceName(service.GoName)
+	serviceInfo.SetFullName(string(service.Desc.FullName()))
+	var routers []*RouterInfo
+	for _, method := range service.Methods {
+		if !method.Desc.IsStreamingServer() && !method.Desc.IsStreamingClient() {
+			// Unary RPC method
+			router, err := ParseRouter(splitComment(method.Comments.Leading.String()))
+			if err != nil {
+				return nil, err
+			}
+			router.SetMethodName(method.GoName)
+			router.SetFullMethodName(fullMethodName(service, method))
+			if stringx.IsBlank(router.HttpMethod) {
+				router.HttpMethod = POST
+			}
+			if stringx.IsBlank(router.Path) {
+				router.Path = router.FullMethodName
+				if pathToLower {
+					router.Path = strings.ToLower(router.Path)
+				}
+			}
+			if slicex.IsEmpty(router.Bindings) {
+				router.Bindings = []Binding{ProtoJSONBinding}
+				router.BindingContentType = JSONContentType
+			}
+			if stringx.IsBlank(router.Render) {
+				router.Render = ProtoJSONRender
+				router.RenderContentType = JSONContentType
+			}
+			router.HandlerName = handlerName(service, method)
+			router.ProtoMethod = method
+			routers = append(routers, router)
+		} else {
+			// Streaming RPC method
+			continue
+		}
+	}
+	serviceInfo.Routers = routers
+	return serviceInfo, nil
 }
 
 func (info *ServiceInfo) SetServiceName(s string) {
@@ -130,4 +180,22 @@ func detectOutputDir(paths []string) (string, error) {
 		}
 	}
 	return dir, nil
+}
+
+func splitComment(leadingComment string) []string {
+	var comments []string
+	scanner := bufio.NewScanner(strings.NewReader(leadingComment))
+	for scanner.Scan() {
+		line := scanner.Text()
+		comments = append(comments, line)
+	}
+	return comments
+}
+
+func fullMethodName(service *protogen.Service, method *protogen.Method) string {
+	return fmt.Sprintf("/%s/%s", service.Desc.FullName(), method.Desc.Name())
+}
+
+func handlerName(service *protogen.Service, method *protogen.Method) string {
+	return fmt.Sprintf("_%s_%s_GORS_Handler", service.Desc.Name(), method.Desc.Name())
 }

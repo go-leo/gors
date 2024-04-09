@@ -31,6 +31,7 @@ func init() {
 }
 
 func main() {
+	return
 	showVersion := flag.Bool("version", false, "print the version and exit")
 	flag.Usage = Usage
 	flag.Parse()

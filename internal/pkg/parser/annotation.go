@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"net/http"
 	"regexp"
 	"strings"
 )
@@ -90,6 +91,31 @@ func (m Method) HttpMethod() string {
 		return "MethodOptions"
 	case TRACE:
 		return "MethodTrace"
+	default:
+		return ""
+	}
+}
+
+func (m Method) HttpMethodName() string {
+	switch m {
+	case GET:
+		return http.MethodGet
+	case POST:
+		return http.MethodPost
+	case PUT:
+		return http.MethodPut
+	case DELETE:
+		return http.MethodDelete
+	case PATCH:
+		return http.MethodPatch
+	case HEAD:
+		return http.MethodHead
+	case CONNECT:
+		return http.MethodConnect
+	case OPTIONS:
+		return http.MethodOptions
+	case TRACE:
+		return http.MethodTrace
 	default:
 		return ""
 	}

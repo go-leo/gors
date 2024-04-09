@@ -10,6 +10,13 @@ service ProtoService {
   rpc Method (HelloRequest1) returns (HelloReply1) {}
 }
 
+// @GORS @Path(/v1)
+service ProtoService2 {
+  // @GORS @POST @Path(/Method) @ProtoJSONBinding @ProtoJSONRender
+  rpc Method (HelloRequest1) returns (HelloReply1) {}
+}
+
+
 message HelloRequest1 {
   string name = 1;
   int32 age = 2;

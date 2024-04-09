@@ -15,10 +15,8 @@ protoc_gen:
 		--go-grpc_opt=paths=source_relative \
 		--go-gors_out=. \
 		--go-gors_opt=paths=source_relative \
-		--jsonschema_out=. \
-		--jsonschema_opt=paths=source_relative \
-		--gorsopenapi_out=. \
-		--gorsopenapi_opt=paths=source_relative \
+		--go-gorsopenapi_out=. \
+		--go-gorsopenapi_opt=paths=source_relative \
 		example/api/*/*.proto
 	@echo "--- protoc generate end ---"
 

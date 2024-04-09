@@ -12,7 +12,7 @@ import (
 	"golang.org/x/tools/go/packages"
 	"google.golang.org/protobuf/compiler/protogen"
 	"log"
-	"path"
+	"net/url"
 	"strings"
 )
 
@@ -621,7 +621,10 @@ func parseRouterComment(r *RouterInfo, comment []string) error {
 			return err
 		}
 		if ok {
-			r.Path = path.Join(r.Path, pathSeg)
+			r.Path, err = url.JoinPath(r.Path, pathSeg)
+			if err != nil {
+				return nil
+			}
 			continue
 		}
 

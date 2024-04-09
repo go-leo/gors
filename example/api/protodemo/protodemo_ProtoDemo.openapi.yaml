@@ -1,0 +1,356 @@
+# Generated with protoc-gen-go-gorsopenapi
+# https://github.com/go-leo/gors/tree/master/cmd/protoc-gen-go-gorsopenapi
+
+openapi: 3.0.3
+info:
+    title: ProtoDemo API
+    description: |-
+        ProtoDemo is a grpc or restful demo
+         @GORS @Path(/v1)
+    version: 0.0.1
+paths:
+    /v1/CustomBinding/CustomRender:
+        post:
+            tags:
+                - ProtoDemo
+            description: '@GORS @POST @Path(/CustomBinding/CustomRender) @CustomBinding @CustomRender'
+            operationId: ProtoDemo_POSTCustomBindingCustomRender
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/HelloRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/HelloReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/Error:
+        post:
+            tags:
+                - ProtoDemo
+            description: '@GORS @POST @Path(/Error) @ProtoJSONBinding @ProtoJSONRender'
+            operationId: ProtoDemo_POSTError
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/HelloRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/HelloReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/GRPCStatus:
+        post:
+            tags:
+                - ProtoDemo
+            description: '@GORS @POST @Path(/GRPCStatus) @ProtoJSONBinding @ProtoJSONRender'
+            operationId: ProtoDemo_POSTGRPCStatus
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/HelloRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/HelloReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/HeaderJSONBinding/AsciiJSONRender:
+        put:
+            tags:
+                - ProtoDemo
+            description: '@GORS @PUT @Path(/HeaderJSONBinding/AsciiJSONRender) @HeaderBinding @JSONBinding @AsciiJSONRender'
+            operationId: ProtoDemo_PUTHeaderJSONBindingAsciiJSONRender
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/HelloRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/HelloReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/HeaderProtoFormBinding/PureJSONRender:
+        patch:
+            tags:
+                - ProtoDemo
+            description: '@GORS @PATCH @Path(/HeaderProtoFormBinding/PureJSONRender) @HeaderBinding @FormBinding @PureJSONRender'
+            operationId: ProtoDemo_PATCHHeaderProtoFormBindingPureJSONRender
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/HelloRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/HelloReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/POSTSetHeaderTrailer:
+        post:
+            tags:
+                - ProtoDemo
+            description: '@GORS @POST @Path(/POSTSetHeaderTrailer) @ProtoJSONBinding @ProtoJSONRender'
+            operationId: ProtoDemo_POSTSetHeaderTrailer
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/HelloRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/HelloReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/ProtoBufBinding/ProtoBufRender:
+        post:
+            tags:
+                - ProtoDemo
+            description: '@GORS @POST @Path(/ProtoBufBinding/ProtoBufRender) @ProtoBufBinding @ProtoBufRender'
+            operationId: ProtoDemo_POSTProtoBufBindingProtoBufRender
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/HelloRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/HelloReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/ProtoJSONBinding/ProtoJSONRender:
+        post:
+            tags:
+                - ProtoDemo
+            description: '@GORS @POST @Path(/ProtoJSONBinding/ProtoJSONRender) @ProtoJSONBinding @ProtoJSONRender'
+            operationId: ProtoDemo_POSTProtoJSONBindingProtoJSONRender
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/HelloRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/HelloReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/UriBinding/IndentedJSONRender/:name:
+        get:
+            tags:
+                - ProtoDemo
+            description: '@GORS @GET @Path(/UriBinding/IndentedJSONRender/:name) @UriBinding @IndentedJSONRender'
+            operationId: ProtoDemo_GETUriBindingIndentedJSONRender
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/HelloRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/HelloReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/UriBinding/JSONRender/:name:
+        delete:
+            tags:
+                - ProtoDemo
+            description: '@GORS @DELETE @Path(/UriBinding/JSONRender/:name) @UriBinding @JSONRender'
+            operationId: ProtoDemo_DELETEUriBindingJSONRender
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/HelloRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/HelloReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/UriQueryBinding/SecureJSONRender/:name:
+        get:
+            tags:
+                - ProtoDemo
+            description: '@GORS @GET @Path(/UriQueryBinding/SecureJSONRender/:name) @UriBinding @QueryBinding @SecureJSONRender'
+            operationId: ProtoDemo_GETUriQueryBindingSecureJSONRender
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/HelloRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/HelloReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /v1/protodemo.ProtoDemo/NotDefine:
+        post:
+            tags:
+                - ProtoDemo
+            operationId: ProtoDemo_NotDefine
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/HelloRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/HelloReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+components:
+    schemas:
+        GoogleProtobufAny:
+            type: object
+            properties:
+                '@type':
+                    type: string
+                    description: The type of the serialized message.
+            additionalProperties: true
+            description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message.
+        HelloReply:
+            type: object
+            properties:
+                message:
+                    type: string
+        HelloRequest:
+            type: object
+            properties:
+                name:
+                    type: string
+                age:
+                    type: integer
+                    format: int32
+                salary:
+                    type: number
+                    format: double
+                Token:
+                    type: string
+        Status:
+            type: object
+            properties:
+                code:
+                    type: integer
+                    description: The status code, which should be an enum value of [google.rpc.Code][google.rpc.Code].
+                    format: int32
+                message:
+                    type: string
+                    description: A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the [google.rpc.Status.details][google.rpc.Status.details] field, or localized by the client.
+                details:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/GoogleProtobufAny'
+                    description: A list of messages that carry the error details.  There is a common set of message types for APIs to use.
+            description: 'The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https://github.com/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https://cloud.google.com/apis/design/errors).'
+tags:
+    - name: ProtoDemo
