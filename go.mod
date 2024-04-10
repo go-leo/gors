@@ -4,13 +4,15 @@ go 1.20
 
 require (
 	github.com/gin-gonic/gin v1.9.1
-	github.com/go-leo/gox v0.0.0-20240328014744-3b2b2b576919
+	github.com/go-leo/gox v0.0.0-20240409111930-3806aae7f270
 	github.com/go-openapi/spec v0.21.0
 	github.com/google/gnostic v0.7.0
+	github.com/google/gnostic-models v0.6.9-0.20230804172637-c7be7c783f49
 	github.com/pkg/errors v0.9.1
 	github.com/stretchr/testify v1.9.0
 	golang.org/x/exp v0.0.0-20240222234643-814bf88cf225
 	golang.org/x/tools v0.18.0
+	google.golang.org/genproto v0.0.0-20230803162519-f966b187b2e5
 	google.golang.org/genproto/googleapis/api v0.0.0-20230726155614-23370e0ffb3e
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20230821184602-ccc8af3d0e93
 	google.golang.org/grpc v1.57.0
@@ -33,7 +35,6 @@ require (
 	github.com/go-playground/validator/v10 v10.15.1 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
-	github.com/google/gnostic-models v0.6.9-0.20230804172637-c7be7c783f49 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.6 // indirect
@@ -52,5 +53,4 @@ require (
 	golang.org/x/net v0.21.0 // indirect
 	golang.org/x/sys v0.17.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
-	google.golang.org/genproto v0.0.0-20230803162519-f966b187b2e5 // indirect
 )
