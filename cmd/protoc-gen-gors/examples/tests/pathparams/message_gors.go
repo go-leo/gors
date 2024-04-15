@@ -33,9 +33,9 @@ func MessagingServiceRoutes(svc MessagingService, opts ...gors.Option) []gors.Ro
 	options := gors.NewOptions(opts...)
 	wrapper := &_MessagingServiceWrapper{svc: svc, options: options}
 	return []gors.Route{
-		gors.NewRoute("GET", "/v1/messages/:message_id", _Messaging_GetMessage_GORS_Handler(wrapper, options)),
-		gors.NewRoute("GET", "/v1/users/:user_id/messages/:message_id", _Messaging_GetUserMessage_GORS_Handler(wrapper, options)),
-		gors.NewRoute("POST", "/v1/messages/:message_id", _Messaging_CreateMessage_GORS_Handler(wrapper, options)),
+		gors.NewRoute("GET", "/v1/messages/:message_id", _Messaging_GetMessage_GORS_Handler(wrapper, options, _Messaging_GetMessage_GORS_Handler_GET_71b8052a59ef2e1e6bb26f276891271b_Parameter())),
+		gors.NewRoute("GET", "/v1/users/:user_id/messages/:message_id", _Messaging_GetUserMessage_GORS_Handler(wrapper, options, _Messaging_GetUserMessage_GORS_Handler_GET_f493169961ea91f8acc474e5fde43dfd_Parameter())),
+		gors.NewRoute("POST", "/v1/messages/:message_id", _Messaging_CreateMessage_GORS_Handler(wrapper, options, _Messaging_CreateMessage_GORS_Handler_POST_71b8052a59ef2e1e6bb26f276891271b_Parameter())),
 	}
 }
 
@@ -43,9 +43,9 @@ func MessagingServerRoutes(srv MessagingServer, opts ...gors.Option) []gors.Rout
 	options := gors.NewOptions(opts...)
 	wrapper := &_MessagingServerWrapper{srv: srv, options: options}
 	return []gors.Route{
-		gors.NewRoute("GET", "/v1/messages/:message_id", _Messaging_GetMessage_GORS_Handler(wrapper, options)),
-		gors.NewRoute("GET", "/v1/users/:user_id/messages/:message_id", _Messaging_GetUserMessage_GORS_Handler(wrapper, options)),
-		gors.NewRoute("POST", "/v1/messages/:message_id", _Messaging_CreateMessage_GORS_Handler(wrapper, options)),
+		gors.NewRoute("GET", "/v1/messages/:message_id", _Messaging_GetMessage_GORS_Handler(wrapper, options, _Messaging_GetMessage_GORS_Handler_GET_71b8052a59ef2e1e6bb26f276891271b_Parameter())),
+		gors.NewRoute("GET", "/v1/users/:user_id/messages/:message_id", _Messaging_GetUserMessage_GORS_Handler(wrapper, options, _Messaging_GetUserMessage_GORS_Handler_GET_f493169961ea91f8acc474e5fde43dfd_Parameter())),
+		gors.NewRoute("POST", "/v1/messages/:message_id", _Messaging_CreateMessage_GORS_Handler(wrapper, options, _Messaging_CreateMessage_GORS_Handler_POST_71b8052a59ef2e1e6bb26f276891271b_Parameter())),
 	}
 }
 
@@ -53,9 +53,9 @@ func MessagingClientRoutes(cli MessagingClient, opts ...gors.Option) []gors.Rout
 	options := gors.NewOptions(opts...)
 	wrapper := &_MessagingClientWrapper{cli: cli, options: options}
 	return []gors.Route{
-		gors.NewRoute("GET", "/v1/messages/:message_id", _Messaging_GetMessage_GORS_Handler(wrapper, options)),
-		gors.NewRoute("GET", "/v1/users/:user_id/messages/:message_id", _Messaging_GetUserMessage_GORS_Handler(wrapper, options)),
-		gors.NewRoute("POST", "/v1/messages/:message_id", _Messaging_CreateMessage_GORS_Handler(wrapper, options)),
+		gors.NewRoute("GET", "/v1/messages/:message_id", _Messaging_GetMessage_GORS_Handler(wrapper, options, _Messaging_GetMessage_GORS_Handler_GET_71b8052a59ef2e1e6bb26f276891271b_Parameter())),
+		gors.NewRoute("GET", "/v1/users/:user_id/messages/:message_id", _Messaging_GetUserMessage_GORS_Handler(wrapper, options, _Messaging_GetUserMessage_GORS_Handler_GET_f493169961ea91f8acc474e5fde43dfd_Parameter())),
+		gors.NewRoute("POST", "/v1/messages/:message_id", _Messaging_CreateMessage_GORS_Handler(wrapper, options, _Messaging_CreateMessage_GORS_Handler_POST_71b8052a59ef2e1e6bb26f276891271b_Parameter())),
 	}
 }
 
@@ -149,7 +149,7 @@ func (wrapper *_MessagingClientWrapper) CreateMessage(ctx context.Context, reque
 	return resp, err
 }
 
-func _Messaging_GetMessage_GORS_Handler(svc MessagingService, options *gors.Options) func(c *gin.Context) {
+func _Messaging_GetMessage_GORS_Handler(svc MessagingService, options *gors.Options, payload *gors.Payload) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var rpcMethodName = "/tests.pathparams.message.v1.Messaging/GetMessage"
 		var ctx = gors.NewContext(c, rpcMethodName)
@@ -157,6 +157,12 @@ func _Messaging_GetMessage_GORS_Handler(svc MessagingService, options *gors.Opti
 		var resp *Message
 		var err error
 		req = new(GetMessageRequest)
+		if err = gors.RequestBind(
+			ctx, req, options.Tag,
+		); err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
 		if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
@@ -169,7 +175,7 @@ func _Messaging_GetMessage_GORS_Handler(svc MessagingService, options *gors.Opti
 	}
 }
 
-func _Messaging_GetUserMessage_GORS_Handler(svc MessagingService, options *gors.Options) func(c *gin.Context) {
+func _Messaging_GetUserMessage_GORS_Handler(svc MessagingService, options *gors.Options, payload *gors.Payload) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var rpcMethodName = "/tests.pathparams.message.v1.Messaging/GetUserMessage"
 		var ctx = gors.NewContext(c, rpcMethodName)
@@ -177,6 +183,12 @@ func _Messaging_GetUserMessage_GORS_Handler(svc MessagingService, options *gors.
 		var resp *Message
 		var err error
 		req = new(GetMessageRequest)
+		if err = gors.RequestBind(
+			ctx, req, options.Tag,
+		); err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
 		if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
@@ -189,7 +201,7 @@ func _Messaging_GetUserMessage_GORS_Handler(svc MessagingService, options *gors.
 	}
 }
 
-func _Messaging_CreateMessage_GORS_Handler(svc MessagingService, options *gors.Options) func(c *gin.Context) {
+func _Messaging_CreateMessage_GORS_Handler(svc MessagingService, options *gors.Options, payload *gors.Payload) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var rpcMethodName = "/tests.pathparams.message.v1.Messaging/CreateMessage"
 		var ctx = gors.NewContext(c, rpcMethodName)
@@ -197,6 +209,12 @@ func _Messaging_CreateMessage_GORS_Handler(svc MessagingService, options *gors.O
 		var resp *Message
 		var err error
 		req = new(Message)
+		if err = gors.RequestBind(
+			ctx, req, options.Tag,
+		); err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
 		if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
@@ -206,5 +224,35 @@ func _Messaging_CreateMessage_GORS_Handler(svc MessagingService, options *gors.O
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
+	}
+}
+
+func _Messaging_GetMessage_GORS_Handler_GET_71b8052a59ef2e1e6bb26f276891271b_Parameter() *gors.Payload {
+	return &gors.Payload{
+		Path: []*gors.PathParameter{
+			{Name: "message_id", Type: "string"},
+		},
+		Query: []*gors.QueryParameter{
+			{Name: "user_id", Type: "string"},
+		},
+	}
+}
+func _Messaging_GetUserMessage_GORS_Handler_GET_f493169961ea91f8acc474e5fde43dfd_Parameter() *gors.Payload {
+	return &gors.Payload{
+		Path: []*gors.PathParameter{
+			{Name: "user_id", Type: "string"},
+			{Name: "message_id", Type: "string"},
+		},
+	}
+}
+func _Messaging_CreateMessage_GORS_Handler_POST_71b8052a59ef2e1e6bb26f276891271b_Parameter() *gors.Payload {
+	return &gors.Payload{
+		Path: []*gors.PathParameter{
+			{Name: "message_id", Type: "string"},
+		},
+		Body: &gors.BodyParameter{
+			Name: "*",
+			Type: "object",
+		},
 	}
 }

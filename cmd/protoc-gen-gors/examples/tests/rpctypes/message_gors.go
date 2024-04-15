@@ -35,7 +35,7 @@ func StatusServiceRoutes(svc StatusService, opts ...gors.Option) []gors.Route {
 	options := gors.NewOptions(opts...)
 	wrapper := &_StatusServiceWrapper{svc: svc, options: options}
 	return []gors.Route{
-		gors.NewRoute("GET", "/v1/status", _Status_GetStatus_GORS_Handler(wrapper, options)),
+		gors.NewRoute("GET", "/v1/status", _Status_GetStatus_GORS_Handler(wrapper, options, _Status_GetStatus_GORS_Handler_GET_b2f15b089d05a01f62c53b6e8eccb1e9_Parameter())),
 	}
 }
 
@@ -43,7 +43,7 @@ func StatusServerRoutes(srv StatusServer, opts ...gors.Option) []gors.Route {
 	options := gors.NewOptions(opts...)
 	wrapper := &_StatusServerWrapper{srv: srv, options: options}
 	return []gors.Route{
-		gors.NewRoute("GET", "/v1/status", _Status_GetStatus_GORS_Handler(wrapper, options)),
+		gors.NewRoute("GET", "/v1/status", _Status_GetStatus_GORS_Handler(wrapper, options, _Status_GetStatus_GORS_Handler_GET_b2f15b089d05a01f62c53b6e8eccb1e9_Parameter())),
 	}
 }
 
@@ -51,7 +51,7 @@ func StatusClientRoutes(cli StatusClient, opts ...gors.Option) []gors.Route {
 	options := gors.NewOptions(opts...)
 	wrapper := &_StatusClientWrapper{cli: cli, options: options}
 	return []gors.Route{
-		gors.NewRoute("GET", "/v1/status", _Status_GetStatus_GORS_Handler(wrapper, options)),
+		gors.NewRoute("GET", "/v1/status", _Status_GetStatus_GORS_Handler(wrapper, options, _Status_GetStatus_GORS_Handler_GET_b2f15b089d05a01f62c53b6e8eccb1e9_Parameter())),
 	}
 }
 
@@ -103,7 +103,7 @@ func (wrapper *_StatusClientWrapper) GetStatus(ctx context.Context, request *emp
 	return resp, err
 }
 
-func _Status_GetStatus_GORS_Handler(svc StatusService, options *gors.Options) func(c *gin.Context) {
+func _Status_GetStatus_GORS_Handler(svc StatusService, options *gors.Options, payload *gors.Payload) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var rpcMethodName = "/tests.rpctypes.message.v1.Status/GetStatus"
 		var ctx = gors.NewContext(c, rpcMethodName)
@@ -111,6 +111,12 @@ func _Status_GetStatus_GORS_Handler(svc StatusService, options *gors.Options) fu
 		var resp *status.Status
 		var err error
 		req = new(emptypb.Empty)
+		if err = gors.RequestBind(
+			ctx, req, options.Tag,
+		); err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
 		if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
@@ -121,4 +127,8 @@ func _Status_GetStatus_GORS_Handler(svc StatusService, options *gors.Options) fu
 			return
 		}
 	}
+}
+
+func _Status_GetStatus_GORS_Handler_GET_b2f15b089d05a01f62c53b6e8eccb1e9_Parameter() *gors.Payload {
+	return &gors.Payload{}
 }

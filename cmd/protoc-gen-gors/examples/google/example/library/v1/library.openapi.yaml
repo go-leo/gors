@@ -25,7 +25,7 @@ paths:
             description: |-
                 Lists shelves. The order is unspecified but deterministic. Newly created
                  shelves will not necessarily be added to the end of this list.
-            operationId: LibraryService_ListShelves
+            operationId: LibraryService_ListOneShelves
             parameters:
                 - name: page_size
                   in: query
@@ -75,45 +75,6 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/Shelf'
-                default:
-                    description: Default error response
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/Status'
-    /v1/shelves/:
-        get:
-            tags:
-                - LibraryService
-            description: |-
-                Lists shelves. The order is unspecified but deterministic. Newly created
-                 shelves will not necessarily be added to the end of this list.
-            operationId: LibraryService_ListOneShelves
-            parameters:
-                - name: page_size
-                  in: query
-                  description: |-
-                    Requested page size. Server may return fewer shelves than requested.
-                     If unspecified, server will pick an appropriate default.
-                  schema:
-                    type: integer
-                    format: int32
-                - name: page_token
-                  in: query
-                  description: |-
-                    A token identifying a page of results the server should return.
-                     Typically, this is the value of
-                     [ListShelvesResponse.next_page_token][google.example.library.v1.ListShelvesResponse.next_page_token]
-                     returned from the previous call to `ListShelves` method.
-                  schema:
-                    type: string
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/ListShelvesResponse'
                 default:
                     description: Default error response
                     content:

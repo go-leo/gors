@@ -33,7 +33,7 @@ func Messaging1ServiceRoutes(svc Messaging1Service, opts ...gors.Option) []gors.
 	options := gors.NewOptions(opts...)
 	wrapper := &_Messaging1ServiceWrapper{svc: svc, options: options}
 	return []gors.Route{
-		gors.NewRoute("PATCH", "/v1/messages/:message_id", _Messaging1_UpdateMessage_GORS_Handler(wrapper, options)),
+		gors.NewRoute("PATCH", "/v1/messages/:message_id", _Messaging1_UpdateMessage_GORS_Handler(wrapper, options, _Messaging1_UpdateMessage_GORS_Handler_PATCH_71b8052a59ef2e1e6bb26f276891271b_Parameter())),
 	}
 }
 
@@ -47,7 +47,7 @@ func Messaging1ServerRoutes(srv Messaging1Server, opts ...gors.Option) []gors.Ro
 	options := gors.NewOptions(opts...)
 	wrapper := &_Messaging1ServerWrapper{srv: srv, options: options}
 	return []gors.Route{
-		gors.NewRoute("PATCH", "/v1/messages/:message_id", _Messaging1_UpdateMessage_GORS_Handler(wrapper, options)),
+		gors.NewRoute("PATCH", "/v1/messages/:message_id", _Messaging1_UpdateMessage_GORS_Handler(wrapper, options, _Messaging1_UpdateMessage_GORS_Handler_PATCH_71b8052a59ef2e1e6bb26f276891271b_Parameter())),
 	}
 }
 
@@ -61,7 +61,7 @@ func Messaging1ClientRoutes(cli Messaging1Client, opts ...gors.Option) []gors.Ro
 	options := gors.NewOptions(opts...)
 	wrapper := &_Messaging1ClientWrapper{cli: cli, options: options}
 	return []gors.Route{
-		gors.NewRoute("PATCH", "/v1/messages/:message_id", _Messaging1_UpdateMessage_GORS_Handler(wrapper, options)),
+		gors.NewRoute("PATCH", "/v1/messages/:message_id", _Messaging1_UpdateMessage_GORS_Handler(wrapper, options, _Messaging1_UpdateMessage_GORS_Handler_PATCH_71b8052a59ef2e1e6bb26f276891271b_Parameter())),
 	}
 }
 
@@ -167,7 +167,7 @@ func (wrapper *_Messaging2ClientWrapper) UpdateMessage(ctx context.Context, requ
 	return resp, err
 }
 
-func _Messaging1_UpdateMessage_GORS_Handler(svc Messaging1Service, options *gors.Options) func(c *gin.Context) {
+func _Messaging1_UpdateMessage_GORS_Handler(svc Messaging1Service, options *gors.Options, payload *gors.Payload) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var rpcMethodName = "/tests.noannotations.message.v1.Messaging1/UpdateMessage"
 		var ctx = gors.NewContext(c, rpcMethodName)
@@ -175,6 +175,12 @@ func _Messaging1_UpdateMessage_GORS_Handler(svc Messaging1Service, options *gors
 		var resp *Message
 		var err error
 		req = new(Message)
+		if err = gors.RequestBind(
+			ctx, req, options.Tag,
+		); err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
 		if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
@@ -187,7 +193,7 @@ func _Messaging1_UpdateMessage_GORS_Handler(svc Messaging1Service, options *gors
 	}
 }
 
-func _Messaging2_UpdateMessage_GORS_Handler(svc Messaging2Service, options *gors.Options) func(c *gin.Context) {
+func _Messaging2_UpdateMessage_GORS_Handler(svc Messaging2Service, options *gors.Options, payload *gors.Payload) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var rpcMethodName = "/tests.noannotations.message.v1.Messaging2/UpdateMessage"
 		var ctx = gors.NewContext(c, rpcMethodName)
@@ -195,6 +201,12 @@ func _Messaging2_UpdateMessage_GORS_Handler(svc Messaging2Service, options *gors
 		var resp *Message
 		var err error
 		req = new(Message)
+		if err = gors.RequestBind(
+			ctx, req, options.Tag,
+		); err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
 		if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
@@ -204,5 +216,17 @@ func _Messaging2_UpdateMessage_GORS_Handler(svc Messaging2Service, options *gors
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
+	}
+}
+
+func _Messaging1_UpdateMessage_GORS_Handler_PATCH_71b8052a59ef2e1e6bb26f276891271b_Parameter() *gors.Payload {
+	return &gors.Payload{
+		Path: []*gors.PathParameter{
+			{Name: "message_id", Type: "string"},
+		},
+		Body: &gors.BodyParameter{
+			Name: "*",
+			Type: "object",
+		},
 	}
 }

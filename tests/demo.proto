@@ -1,0 +1,21 @@
+syntax = "proto3";
+package tests;
+option go_package = "github.com/go-leo/gors/tests/tests;tests";
+
+message Message {
+  string message_id = 1;
+  string name = 2;
+  int32 page_size = 3;
+  string page_token = 4;
+  SubMessage sub_message = 5;
+}
+
+message SubMessage {
+  string address = 1;
+  SubSubMessage sub_sub_message = 2;
+}
+
+message SubSubMessage {
+  string title = 1;
+  string text = 2;
+}

@@ -18,6 +18,7 @@ syntax = "proto3";
 package tests.bodymappying.message.v1;
 
 import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
 
 option go_package = "github.com/google/gnostic/apps/protoc-gen-openapi/examples/tests/bodymapping/message/v1;message";
 
@@ -26,6 +27,13 @@ service Messaging {
         option(google.api.http) = {
             patch: "/v1/messages/{message_id}"
             body: "text"
+        };
+    }
+
+    rpc DoAny(google.protobuf.Empty) returns (google.protobuf.Empty) {
+        option(google.api.http) = {
+            post: "/v1/messages/any"
+            body: "*"
         };
     }
 }

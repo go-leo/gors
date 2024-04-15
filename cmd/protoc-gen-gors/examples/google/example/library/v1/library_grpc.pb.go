@@ -36,7 +36,6 @@ const _ = grpc.SupportPackageIsVersion7
 
 const (
 	LibraryService_CreateShelf_FullMethodName    = "/google.example.library.v1.LibraryService/CreateShelf"
-	LibraryService_ListShelves_FullMethodName    = "/google.example.library.v1.LibraryService/ListShelves"
 	LibraryService_ListOneShelves_FullMethodName = "/google.example.library.v1.LibraryService/ListOneShelves"
 	LibraryService_GetShelf_FullMethodName       = "/google.example.library.v1.LibraryService/GetShelf"
 	LibraryService_DeleteShelf_FullMethodName    = "/google.example.library.v1.LibraryService/DeleteShelf"
@@ -55,9 +54,6 @@ const (
 type LibraryServiceClient interface {
 	// Creates a shelf, and returns the new Shelf.
 	CreateShelf(ctx context.Context, in *CreateShelfRequest, opts ...grpc.CallOption) (*Shelf, error)
-	// Lists shelves. The order is unspecified but deterministic. Newly created
-	// shelves will not necessarily be added to the end of this list.
-	ListShelves(ctx context.Context, in *ListShelvesRequest, opts ...grpc.CallOption) (*ListShelvesResponse, error)
 	// Lists shelves. The order is unspecified but deterministic. Newly created
 	// shelves will not necessarily be added to the end of this list.
 	ListOneShelves(ctx context.Context, in *ListShelvesRequest, opts ...grpc.CallOption) (*ListShelvesResponse, error)
@@ -102,15 +98,6 @@ func NewLibraryServiceClient(cc grpc.ClientConnInterface) LibraryServiceClient {
 func (c *libraryServiceClient) CreateShelf(ctx context.Context, in *CreateShelfRequest, opts ...grpc.CallOption) (*Shelf, error) {
 	out := new(Shelf)
 	err := c.cc.Invoke(ctx, LibraryService_CreateShelf_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *libraryServiceClient) ListShelves(ctx context.Context, in *ListShelvesRequest, opts ...grpc.CallOption) (*ListShelvesResponse, error) {
-	out := new(ListShelvesResponse)
-	err := c.cc.Invoke(ctx, LibraryService_ListShelves_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -215,9 +202,6 @@ type LibraryServiceServer interface {
 	CreateShelf(context.Context, *CreateShelfRequest) (*Shelf, error)
 	// Lists shelves. The order is unspecified but deterministic. Newly created
 	// shelves will not necessarily be added to the end of this list.
-	ListShelves(context.Context, *ListShelvesRequest) (*ListShelvesResponse, error)
-	// Lists shelves. The order is unspecified but deterministic. Newly created
-	// shelves will not necessarily be added to the end of this list.
 	ListOneShelves(context.Context, *ListShelvesRequest) (*ListShelvesResponse, error)
 	// Gets a shelf. Returns NOT_FOUND if the shelf does not exist.
 	GetShelf(context.Context, *GetShelfRequest) (*Shelf, error)
@@ -256,9 +240,6 @@ type UnimplementedLibraryServiceServer struct {
 
 func (UnimplementedLibraryServiceServer) CreateShelf(context.Context, *CreateShelfRequest) (*Shelf, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateShelf not implemented")
-}
-func (UnimplementedLibraryServiceServer) ListShelves(context.Context, *ListShelvesRequest) (*ListShelvesResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListShelves not implemented")
 }
 func (UnimplementedLibraryServiceServer) ListOneShelves(context.Context, *ListShelvesRequest) (*ListShelvesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListOneShelves not implemented")
@@ -317,24 +298,6 @@ func _LibraryService_CreateShelf_Handler(srv interface{}, ctx context.Context, d
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(LibraryServiceServer).CreateShelf(ctx, req.(*CreateShelfRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _LibraryService_ListShelves_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListShelvesRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(LibraryServiceServer).ListShelves(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: LibraryService_ListShelves_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LibraryServiceServer).ListShelves(ctx, req.(*ListShelvesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -529,10 +492,6 @@ var LibraryService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateShelf",
 			Handler:    _LibraryService_CreateShelf_Handler,
-		},
-		{
-			MethodName: "ListShelves",
-			Handler:    _LibraryService_ListShelves_Handler,
 		},
 		{
 			MethodName: "ListOneShelves",

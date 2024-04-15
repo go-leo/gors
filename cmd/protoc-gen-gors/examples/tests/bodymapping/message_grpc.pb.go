@@ -26,6 +26,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -35,6 +36,7 @@ const _ = grpc.SupportPackageIsVersion7
 
 const (
 	Messaging_UpdateMessage_FullMethodName = "/tests.bodymappying.message.v1.Messaging/UpdateMessage"
+	Messaging_DoAny_FullMethodName         = "/tests.bodymappying.message.v1.Messaging/DoAny"
 )
 
 // MessagingClient is the client API for Messaging service.
@@ -42,6 +44,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type MessagingClient interface {
 	UpdateMessage(ctx context.Context, in *Message, opts ...grpc.CallOption) (*Message, error)
+	DoAny(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type messagingClient struct {
@@ -61,11 +64,21 @@ func (c *messagingClient) UpdateMessage(ctx context.Context, in *Message, opts .
 	return out, nil
 }
 
+func (c *messagingClient) DoAny(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, Messaging_DoAny_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MessagingServer is the server API for Messaging service.
 // All implementations must embed UnimplementedMessagingServer
 // for forward compatibility
 type MessagingServer interface {
 	UpdateMessage(context.Context, *Message) (*Message, error)
+	DoAny(context.Context, *emptypb.Empty) (*emptypb.Empty, error)
 	mustEmbedUnimplementedMessagingServer()
 }
 
@@ -75,6 +88,9 @@ type UnimplementedMessagingServer struct {
 
 func (UnimplementedMessagingServer) UpdateMessage(context.Context, *Message) (*Message, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateMessage not implemented")
+}
+func (UnimplementedMessagingServer) DoAny(context.Context, *emptypb.Empty) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DoAny not implemented")
 }
 func (UnimplementedMessagingServer) mustEmbedUnimplementedMessagingServer() {}
 
@@ -107,6 +123,24 @@ func _Messaging_UpdateMessage_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Messaging_DoAny_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MessagingServer).DoAny(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Messaging_DoAny_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MessagingServer).DoAny(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Messaging_ServiceDesc is the grpc.ServiceDesc for Messaging service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -117,6 +151,10 @@ var Messaging_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateMessage",
 			Handler:    _Messaging_UpdateMessage_Handler,
+		},
+		{
+			MethodName: "DoAny",
+			Handler:    _Messaging_DoAny_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

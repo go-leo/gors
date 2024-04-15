@@ -25,7 +25,9 @@ paths:
                     format: enum
             requestBody:
                 content:
-                    application/json: {}
+                    application/json:
+                        schema:
+                            type: string
                 required: true
             responses:
                 "200":

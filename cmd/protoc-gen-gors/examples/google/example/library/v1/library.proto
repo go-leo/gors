@@ -52,19 +52,13 @@ service LibraryService {
     option (google.api.method_signature) = "shelf";
   }
 
-  // Lists shelves. The order is unspecified but deterministic. Newly created
-  // shelves will not necessarily be added to the end of this list.
-  rpc ListShelves(ListShelvesRequest) returns (ListShelvesResponse) {
-    option (google.api.http) = {
-      get: "/v1/shelves"
-    };
-  }
+
 
   // Lists shelves. The order is unspecified but deterministic. Newly created
   // shelves will not necessarily be added to the end of this list.
   rpc ListOneShelves(ListShelvesRequest) returns (ListShelvesResponse) {
     option (google.api.http) = {
-      get: "/v1/shelves/"
+      get: "/v1/shelves"
     };
   }
 

@@ -13,6 +13,18 @@ protoc_gen:
 		--go_opt=paths=source_relative \
 		--go-grpc_out=. \
 		--go-grpc_opt=paths=source_relative \
+		tests/*.proto
+	@echo "--- protoc generate end ---"
+
+.PHONY: protoc_go_gors_gen
+protoc_go_gors_gen:
+	@echo "--- protoc generate start ---"
+	@protoc \
+		--proto_path=. \
+		--go_out=. \
+		--go_opt=paths=source_relative \
+		--go-grpc_out=. \
+		--go-grpc_opt=paths=source_relative \
 		--go-gors_out=. \
 		--go-gors_opt=paths=source_relative \
 		example/api/*/*.proto
@@ -37,7 +49,8 @@ protoc_gors_gen:
 		cmd/protoc-gen-gors/examples/tests/*/*.proto \
 		cmd/protoc-gen-gors/examples/google/example/library/*/*.proto
 	@echo "--- protoc generate end ---"
-
+#		--grpc-gateway_out=. \
+#		--grpc-gateway_opt=paths=source_relative \
 protoc_pkg_gen:
 	@echo "--- protoc generate start ---"
 	@protoc \

@@ -42,4 +42,5 @@ message Message {
   Sub sub_desc = 4;
   // test repeated, should not allof wrapped
   repeated Sub subs = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
+  string message_id = 6;
 }

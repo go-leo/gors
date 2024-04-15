@@ -32,6 +32,8 @@ service Messaging {
 }
 message Message {
   Kind kind = 1;
+  string message_id = 2;
+  string body_text = 3;
 }
 enum Kind {
   UNKNOWN_KIND = 0;

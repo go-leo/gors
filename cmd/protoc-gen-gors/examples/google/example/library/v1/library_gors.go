@@ -34,18 +34,17 @@ func LibraryServiceServiceRoutes(svc LibraryServiceService, opts ...gors.Option)
 	options := gors.NewOptions(opts...)
 	wrapper := &_LibraryServiceServiceWrapper{svc: svc, options: options}
 	return []gors.Route{
-		gors.NewRoute("POST", "/v1/shelves", _LibraryService_CreateShelf_GORS_Handler(wrapper, options)),
-		gors.NewRoute("GET", "/v1/shelves", _LibraryService_ListShelves_GORS_Handler(wrapper, options)),
-		gors.NewRoute("GET", "/v1/shelves/", _LibraryService_ListOneShelves_GORS_Handler(wrapper, options)),
-		gors.NewRoute("GET", "/v1/shelves/:shelf", _LibraryService_GetShelf_GORS_Handler(wrapper, options)),
-		gors.NewRoute("DELETE", "/v1/shelves/:shelf", _LibraryService_DeleteShelf_GORS_Handler(wrapper, options)),
-		gors.NewRoute("GET", "/v1/shelves/:shelf/books", _LibraryService_ListBooks_GORS_Handler(wrapper, options)),
-		gors.NewRoute("POST", "/v1/shelves/:shelf/books", _LibraryService_CreateBook_GORS_Handler(wrapper, options)),
-		gors.NewRoute("GET", "/v1/shelves/:shelf/books/:book", _LibraryService_GetBook_GORS_Handler(wrapper, options)),
-		gors.NewRoute("PUT", "/v1/shelves/:shelf/books/:book", _LibraryService_UpdateBook_GORS_Handler(wrapper, options)),
-		gors.NewRoute("DELETE", "/v1/shelves/:shelf/books/:book", _LibraryService_DeleteBook_GORS_Handler(wrapper, options)),
-		gors.NewRoute("POST", "/v1/shelves/:shelf:merge", _LibraryService_MergeShelves_GORS_Handler(wrapper, options)),
-		gors.NewRoute("POST", "/v1/shelves/:shelf/books/:book:move", _LibraryService_MoveBook_GORS_Handler(wrapper, options)),
+		gors.NewRoute("POST", "/v1/shelves", _LibraryService_CreateShelf_GORS_Handler(wrapper, options, _LibraryService_CreateShelf_GORS_Handler_POST_933fe354a7c3c7d9865206c828f8c483_Parameter())),
+		gors.NewRoute("GET", "/v1/shelves", _LibraryService_ListOneShelves_GORS_Handler(wrapper, options, _LibraryService_ListOneShelves_GORS_Handler_GET_933fe354a7c3c7d9865206c828f8c483_Parameter())),
+		gors.NewRoute("GET", "/v1/shelves/:shelf", _LibraryService_GetShelf_GORS_Handler(wrapper, options, _LibraryService_GetShelf_GORS_Handler_GET_2abcf91b917e818f32bade73708a3c18_Parameter())),
+		gors.NewRoute("DELETE", "/v1/shelves/:shelf", _LibraryService_DeleteShelf_GORS_Handler(wrapper, options, _LibraryService_DeleteShelf_GORS_Handler_DELETE_2abcf91b917e818f32bade73708a3c18_Parameter())),
+		gors.NewRoute("GET", "/v1/shelves/:shelf/books", _LibraryService_ListBooks_GORS_Handler(wrapper, options, _LibraryService_ListBooks_GORS_Handler_GET_0fbff9c990144497ddae3b379cad6203_Parameter())),
+		gors.NewRoute("POST", "/v1/shelves/:shelf/books", _LibraryService_CreateBook_GORS_Handler(wrapper, options, _LibraryService_CreateBook_GORS_Handler_POST_0fbff9c990144497ddae3b379cad6203_Parameter())),
+		gors.NewRoute("GET", "/v1/shelves/:shelf/books/:book", _LibraryService_GetBook_GORS_Handler(wrapper, options, _LibraryService_GetBook_GORS_Handler_GET_8a01d92f2e02fc807cde2a4e4bb36cca_Parameter())),
+		gors.NewRoute("PUT", "/v1/shelves/:shelf/books/:book", _LibraryService_UpdateBook_GORS_Handler(wrapper, options, _LibraryService_UpdateBook_GORS_Handler_PUT_8a01d92f2e02fc807cde2a4e4bb36cca_Parameter())),
+		gors.NewRoute("DELETE", "/v1/shelves/:shelf/books/:book", _LibraryService_DeleteBook_GORS_Handler(wrapper, options, _LibraryService_DeleteBook_GORS_Handler_DELETE_8a01d92f2e02fc807cde2a4e4bb36cca_Parameter())),
+		gors.NewRoute("POST", "/v1/shelves/:shelf:merge", _LibraryService_MergeShelves_GORS_Handler(wrapper, options, _LibraryService_MergeShelves_GORS_Handler_POST_4b703ad56441d8d25c2b17d36635b9a4_Parameter())),
+		gors.NewRoute("POST", "/v1/shelves/:shelf/books/:book:move", _LibraryService_MoveBook_GORS_Handler(wrapper, options, _LibraryService_MoveBook_GORS_Handler_POST_2fc2b66ac71dbdf85c836dc9a57e0a6b_Parameter())),
 	}
 }
 
@@ -53,18 +52,17 @@ func LibraryServiceServerRoutes(srv LibraryServiceServer, opts ...gors.Option) [
 	options := gors.NewOptions(opts...)
 	wrapper := &_LibraryServiceServerWrapper{srv: srv, options: options}
 	return []gors.Route{
-		gors.NewRoute("POST", "/v1/shelves", _LibraryService_CreateShelf_GORS_Handler(wrapper, options)),
-		gors.NewRoute("GET", "/v1/shelves", _LibraryService_ListShelves_GORS_Handler(wrapper, options)),
-		gors.NewRoute("GET", "/v1/shelves/", _LibraryService_ListOneShelves_GORS_Handler(wrapper, options)),
-		gors.NewRoute("GET", "/v1/shelves/:shelf", _LibraryService_GetShelf_GORS_Handler(wrapper, options)),
-		gors.NewRoute("DELETE", "/v1/shelves/:shelf", _LibraryService_DeleteShelf_GORS_Handler(wrapper, options)),
-		gors.NewRoute("GET", "/v1/shelves/:shelf/books", _LibraryService_ListBooks_GORS_Handler(wrapper, options)),
-		gors.NewRoute("POST", "/v1/shelves/:shelf/books", _LibraryService_CreateBook_GORS_Handler(wrapper, options)),
-		gors.NewRoute("GET", "/v1/shelves/:shelf/books/:book", _LibraryService_GetBook_GORS_Handler(wrapper, options)),
-		gors.NewRoute("PUT", "/v1/shelves/:shelf/books/:book", _LibraryService_UpdateBook_GORS_Handler(wrapper, options)),
-		gors.NewRoute("DELETE", "/v1/shelves/:shelf/books/:book", _LibraryService_DeleteBook_GORS_Handler(wrapper, options)),
-		gors.NewRoute("POST", "/v1/shelves/:shelf:merge", _LibraryService_MergeShelves_GORS_Handler(wrapper, options)),
-		gors.NewRoute("POST", "/v1/shelves/:shelf/books/:book:move", _LibraryService_MoveBook_GORS_Handler(wrapper, options)),
+		gors.NewRoute("POST", "/v1/shelves", _LibraryService_CreateShelf_GORS_Handler(wrapper, options, _LibraryService_CreateShelf_GORS_Handler_POST_933fe354a7c3c7d9865206c828f8c483_Parameter())),
+		gors.NewRoute("GET", "/v1/shelves", _LibraryService_ListOneShelves_GORS_Handler(wrapper, options, _LibraryService_ListOneShelves_GORS_Handler_GET_933fe354a7c3c7d9865206c828f8c483_Parameter())),
+		gors.NewRoute("GET", "/v1/shelves/:shelf", _LibraryService_GetShelf_GORS_Handler(wrapper, options, _LibraryService_GetShelf_GORS_Handler_GET_2abcf91b917e818f32bade73708a3c18_Parameter())),
+		gors.NewRoute("DELETE", "/v1/shelves/:shelf", _LibraryService_DeleteShelf_GORS_Handler(wrapper, options, _LibraryService_DeleteShelf_GORS_Handler_DELETE_2abcf91b917e818f32bade73708a3c18_Parameter())),
+		gors.NewRoute("GET", "/v1/shelves/:shelf/books", _LibraryService_ListBooks_GORS_Handler(wrapper, options, _LibraryService_ListBooks_GORS_Handler_GET_0fbff9c990144497ddae3b379cad6203_Parameter())),
+		gors.NewRoute("POST", "/v1/shelves/:shelf/books", _LibraryService_CreateBook_GORS_Handler(wrapper, options, _LibraryService_CreateBook_GORS_Handler_POST_0fbff9c990144497ddae3b379cad6203_Parameter())),
+		gors.NewRoute("GET", "/v1/shelves/:shelf/books/:book", _LibraryService_GetBook_GORS_Handler(wrapper, options, _LibraryService_GetBook_GORS_Handler_GET_8a01d92f2e02fc807cde2a4e4bb36cca_Parameter())),
+		gors.NewRoute("PUT", "/v1/shelves/:shelf/books/:book", _LibraryService_UpdateBook_GORS_Handler(wrapper, options, _LibraryService_UpdateBook_GORS_Handler_PUT_8a01d92f2e02fc807cde2a4e4bb36cca_Parameter())),
+		gors.NewRoute("DELETE", "/v1/shelves/:shelf/books/:book", _LibraryService_DeleteBook_GORS_Handler(wrapper, options, _LibraryService_DeleteBook_GORS_Handler_DELETE_8a01d92f2e02fc807cde2a4e4bb36cca_Parameter())),
+		gors.NewRoute("POST", "/v1/shelves/:shelf:merge", _LibraryService_MergeShelves_GORS_Handler(wrapper, options, _LibraryService_MergeShelves_GORS_Handler_POST_4b703ad56441d8d25c2b17d36635b9a4_Parameter())),
+		gors.NewRoute("POST", "/v1/shelves/:shelf/books/:book:move", _LibraryService_MoveBook_GORS_Handler(wrapper, options, _LibraryService_MoveBook_GORS_Handler_POST_2fc2b66ac71dbdf85c836dc9a57e0a6b_Parameter())),
 	}
 }
 
@@ -72,18 +70,17 @@ func LibraryServiceClientRoutes(cli LibraryServiceClient, opts ...gors.Option) [
 	options := gors.NewOptions(opts...)
 	wrapper := &_LibraryServiceClientWrapper{cli: cli, options: options}
 	return []gors.Route{
-		gors.NewRoute("POST", "/v1/shelves", _LibraryService_CreateShelf_GORS_Handler(wrapper, options)),
-		gors.NewRoute("GET", "/v1/shelves", _LibraryService_ListShelves_GORS_Handler(wrapper, options)),
-		gors.NewRoute("GET", "/v1/shelves/", _LibraryService_ListOneShelves_GORS_Handler(wrapper, options)),
-		gors.NewRoute("GET", "/v1/shelves/:shelf", _LibraryService_GetShelf_GORS_Handler(wrapper, options)),
-		gors.NewRoute("DELETE", "/v1/shelves/:shelf", _LibraryService_DeleteShelf_GORS_Handler(wrapper, options)),
-		gors.NewRoute("GET", "/v1/shelves/:shelf/books", _LibraryService_ListBooks_GORS_Handler(wrapper, options)),
-		gors.NewRoute("POST", "/v1/shelves/:shelf/books", _LibraryService_CreateBook_GORS_Handler(wrapper, options)),
-		gors.NewRoute("GET", "/v1/shelves/:shelf/books/:book", _LibraryService_GetBook_GORS_Handler(wrapper, options)),
-		gors.NewRoute("PUT", "/v1/shelves/:shelf/books/:book", _LibraryService_UpdateBook_GORS_Handler(wrapper, options)),
-		gors.NewRoute("DELETE", "/v1/shelves/:shelf/books/:book", _LibraryService_DeleteBook_GORS_Handler(wrapper, options)),
-		gors.NewRoute("POST", "/v1/shelves/:shelf:merge", _LibraryService_MergeShelves_GORS_Handler(wrapper, options)),
-		gors.NewRoute("POST", "/v1/shelves/:shelf/books/:book:move", _LibraryService_MoveBook_GORS_Handler(wrapper, options)),
+		gors.NewRoute("POST", "/v1/shelves", _LibraryService_CreateShelf_GORS_Handler(wrapper, options, _LibraryService_CreateShelf_GORS_Handler_POST_933fe354a7c3c7d9865206c828f8c483_Parameter())),
+		gors.NewRoute("GET", "/v1/shelves", _LibraryService_ListOneShelves_GORS_Handler(wrapper, options, _LibraryService_ListOneShelves_GORS_Handler_GET_933fe354a7c3c7d9865206c828f8c483_Parameter())),
+		gors.NewRoute("GET", "/v1/shelves/:shelf", _LibraryService_GetShelf_GORS_Handler(wrapper, options, _LibraryService_GetShelf_GORS_Handler_GET_2abcf91b917e818f32bade73708a3c18_Parameter())),
+		gors.NewRoute("DELETE", "/v1/shelves/:shelf", _LibraryService_DeleteShelf_GORS_Handler(wrapper, options, _LibraryService_DeleteShelf_GORS_Handler_DELETE_2abcf91b917e818f32bade73708a3c18_Parameter())),
+		gors.NewRoute("GET", "/v1/shelves/:shelf/books", _LibraryService_ListBooks_GORS_Handler(wrapper, options, _LibraryService_ListBooks_GORS_Handler_GET_0fbff9c990144497ddae3b379cad6203_Parameter())),
+		gors.NewRoute("POST", "/v1/shelves/:shelf/books", _LibraryService_CreateBook_GORS_Handler(wrapper, options, _LibraryService_CreateBook_GORS_Handler_POST_0fbff9c990144497ddae3b379cad6203_Parameter())),
+		gors.NewRoute("GET", "/v1/shelves/:shelf/books/:book", _LibraryService_GetBook_GORS_Handler(wrapper, options, _LibraryService_GetBook_GORS_Handler_GET_8a01d92f2e02fc807cde2a4e4bb36cca_Parameter())),
+		gors.NewRoute("PUT", "/v1/shelves/:shelf/books/:book", _LibraryService_UpdateBook_GORS_Handler(wrapper, options, _LibraryService_UpdateBook_GORS_Handler_PUT_8a01d92f2e02fc807cde2a4e4bb36cca_Parameter())),
+		gors.NewRoute("DELETE", "/v1/shelves/:shelf/books/:book", _LibraryService_DeleteBook_GORS_Handler(wrapper, options, _LibraryService_DeleteBook_GORS_Handler_DELETE_8a01d92f2e02fc807cde2a4e4bb36cca_Parameter())),
+		gors.NewRoute("POST", "/v1/shelves/:shelf:merge", _LibraryService_MergeShelves_GORS_Handler(wrapper, options, _LibraryService_MergeShelves_GORS_Handler_POST_4b703ad56441d8d25c2b17d36635b9a4_Parameter())),
+		gors.NewRoute("POST", "/v1/shelves/:shelf/books/:book:move", _LibraryService_MoveBook_GORS_Handler(wrapper, options, _LibraryService_MoveBook_GORS_Handler_POST_2fc2b66ac71dbdf85c836dc9a57e0a6b_Parameter())),
 	}
 }
 
@@ -91,9 +88,6 @@ func LibraryServiceClientRoutes(cli LibraryServiceClient, opts ...gors.Option) [
 type LibraryServiceService interface {
 	// Creates a shelf, and returns the new Shelf.
 	CreateShelf(context.Context, *CreateShelfRequest) (*Shelf, error)
-	// Lists shelves. The order is unspecified but deterministic. Newly created
-	// shelves will not necessarily be added to the end of this list.
-	ListShelves(context.Context, *ListShelvesRequest) (*ListShelvesResponse, error)
 	// Lists shelves. The order is unspecified but deterministic. Newly created
 	// shelves will not necessarily be added to the end of this list.
 	ListOneShelves(context.Context, *ListShelvesRequest) (*ListShelvesResponse, error)
@@ -136,10 +130,6 @@ type _LibraryServiceServiceWrapper struct {
 
 func (wrapper *_LibraryServiceServiceWrapper) CreateShelf(ctx context.Context, request *CreateShelfRequest) (*Shelf, error) {
 	return wrapper.svc.CreateShelf(ctx, request)
-}
-
-func (wrapper *_LibraryServiceServiceWrapper) ListShelves(ctx context.Context, request *ListShelvesRequest) (*ListShelvesResponse, error) {
-	return wrapper.svc.ListShelves(ctx, request)
 }
 
 func (wrapper *_LibraryServiceServiceWrapper) ListOneShelves(ctx context.Context, request *ListShelvesRequest) (*ListShelvesResponse, error) {
@@ -195,15 +185,6 @@ func (wrapper *_LibraryServiceServerWrapper) CreateShelf(ctx context.Context, re
 	stream := gors.NewServerTransportStream(rpcMethodName)
 	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
 	resp, err := wrapper.srv.CreateShelf(ctx, request)
-	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher)
-	return resp, err
-}
-
-func (wrapper *_LibraryServiceServerWrapper) ListShelves(ctx context.Context, request *ListShelvesRequest) (*ListShelvesResponse, error) {
-	rpcMethodName := "/google.example.library.v1.LibraryService/ListShelves"
-	stream := gors.NewServerTransportStream(rpcMethodName)
-	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
-	resp, err := wrapper.srv.ListShelves(ctx, request)
 	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher)
 	return resp, err
 }
@@ -313,13 +294,6 @@ func (wrapper *_LibraryServiceClientWrapper) CreateShelf(ctx context.Context, re
 	return resp, err
 }
 
-func (wrapper *_LibraryServiceClientWrapper) ListShelves(ctx context.Context, request *ListShelvesRequest) (*ListShelvesResponse, error) {
-	var headerMD, trailerMD metadata.MD
-	resp, err := wrapper.cli.ListShelves(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
-	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher)
-	return resp, err
-}
-
 func (wrapper *_LibraryServiceClientWrapper) ListOneShelves(ctx context.Context, request *ListShelvesRequest) (*ListShelvesResponse, error) {
 	var headerMD, trailerMD metadata.MD
 	resp, err := wrapper.cli.ListOneShelves(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
@@ -390,7 +364,7 @@ func (wrapper *_LibraryServiceClientWrapper) MoveBook(ctx context.Context, reque
 	return resp, err
 }
 
-func _LibraryService_CreateShelf_GORS_Handler(svc LibraryServiceService, options *gors.Options) func(c *gin.Context) {
+func _LibraryService_CreateShelf_GORS_Handler(svc LibraryServiceService, options *gors.Options, payload *gors.Payload) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var rpcMethodName = "/google.example.library.v1.LibraryService/CreateShelf"
 		var ctx = gors.NewContext(c, rpcMethodName)
@@ -398,6 +372,12 @@ func _LibraryService_CreateShelf_GORS_Handler(svc LibraryServiceService, options
 		var resp *Shelf
 		var err error
 		req = new(CreateShelfRequest)
+		if err = gors.RequestBind(
+			ctx, req, options.Tag,
+		); err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
 		if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
@@ -410,27 +390,7 @@ func _LibraryService_CreateShelf_GORS_Handler(svc LibraryServiceService, options
 	}
 }
 
-func _LibraryService_ListShelves_GORS_Handler(svc LibraryServiceService, options *gors.Options) func(c *gin.Context) {
-	return func(c *gin.Context) {
-		var rpcMethodName = "/google.example.library.v1.LibraryService/ListShelves"
-		var ctx = gors.NewContext(c, rpcMethodName)
-		var req *ListShelvesRequest
-		var resp *ListShelvesResponse
-		var err error
-		req = new(ListShelvesRequest)
-		if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
-			return
-		}
-		resp, err = svc.ListShelves(ctx, req)
-		if err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
-			return
-		}
-	}
-}
-
-func _LibraryService_ListOneShelves_GORS_Handler(svc LibraryServiceService, options *gors.Options) func(c *gin.Context) {
+func _LibraryService_ListOneShelves_GORS_Handler(svc LibraryServiceService, options *gors.Options, payload *gors.Payload) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var rpcMethodName = "/google.example.library.v1.LibraryService/ListOneShelves"
 		var ctx = gors.NewContext(c, rpcMethodName)
@@ -438,6 +398,12 @@ func _LibraryService_ListOneShelves_GORS_Handler(svc LibraryServiceService, opti
 		var resp *ListShelvesResponse
 		var err error
 		req = new(ListShelvesRequest)
+		if err = gors.RequestBind(
+			ctx, req, options.Tag,
+		); err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
 		if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
@@ -450,7 +416,7 @@ func _LibraryService_ListOneShelves_GORS_Handler(svc LibraryServiceService, opti
 	}
 }
 
-func _LibraryService_GetShelf_GORS_Handler(svc LibraryServiceService, options *gors.Options) func(c *gin.Context) {
+func _LibraryService_GetShelf_GORS_Handler(svc LibraryServiceService, options *gors.Options, payload *gors.Payload) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var rpcMethodName = "/google.example.library.v1.LibraryService/GetShelf"
 		var ctx = gors.NewContext(c, rpcMethodName)
@@ -458,6 +424,12 @@ func _LibraryService_GetShelf_GORS_Handler(svc LibraryServiceService, options *g
 		var resp *Shelf
 		var err error
 		req = new(GetShelfRequest)
+		if err = gors.RequestBind(
+			ctx, req, options.Tag,
+		); err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
 		if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
@@ -470,7 +442,7 @@ func _LibraryService_GetShelf_GORS_Handler(svc LibraryServiceService, options *g
 	}
 }
 
-func _LibraryService_DeleteShelf_GORS_Handler(svc LibraryServiceService, options *gors.Options) func(c *gin.Context) {
+func _LibraryService_DeleteShelf_GORS_Handler(svc LibraryServiceService, options *gors.Options, payload *gors.Payload) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var rpcMethodName = "/google.example.library.v1.LibraryService/DeleteShelf"
 		var ctx = gors.NewContext(c, rpcMethodName)
@@ -478,6 +450,12 @@ func _LibraryService_DeleteShelf_GORS_Handler(svc LibraryServiceService, options
 		var resp *emptypb.Empty
 		var err error
 		req = new(DeleteShelfRequest)
+		if err = gors.RequestBind(
+			ctx, req, options.Tag,
+		); err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
 		if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
@@ -490,7 +468,7 @@ func _LibraryService_DeleteShelf_GORS_Handler(svc LibraryServiceService, options
 	}
 }
 
-func _LibraryService_ListBooks_GORS_Handler(svc LibraryServiceService, options *gors.Options) func(c *gin.Context) {
+func _LibraryService_ListBooks_GORS_Handler(svc LibraryServiceService, options *gors.Options, payload *gors.Payload) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var rpcMethodName = "/google.example.library.v1.LibraryService/ListBooks"
 		var ctx = gors.NewContext(c, rpcMethodName)
@@ -498,6 +476,12 @@ func _LibraryService_ListBooks_GORS_Handler(svc LibraryServiceService, options *
 		var resp *ListBooksResponse
 		var err error
 		req = new(ListBooksRequest)
+		if err = gors.RequestBind(
+			ctx, req, options.Tag,
+		); err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
 		if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
@@ -510,7 +494,7 @@ func _LibraryService_ListBooks_GORS_Handler(svc LibraryServiceService, options *
 	}
 }
 
-func _LibraryService_CreateBook_GORS_Handler(svc LibraryServiceService, options *gors.Options) func(c *gin.Context) {
+func _LibraryService_CreateBook_GORS_Handler(svc LibraryServiceService, options *gors.Options, payload *gors.Payload) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var rpcMethodName = "/google.example.library.v1.LibraryService/CreateBook"
 		var ctx = gors.NewContext(c, rpcMethodName)
@@ -518,6 +502,12 @@ func _LibraryService_CreateBook_GORS_Handler(svc LibraryServiceService, options 
 		var resp *Book
 		var err error
 		req = new(CreateBookRequest)
+		if err = gors.RequestBind(
+			ctx, req, options.Tag,
+		); err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
 		if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
@@ -530,7 +520,7 @@ func _LibraryService_CreateBook_GORS_Handler(svc LibraryServiceService, options 
 	}
 }
 
-func _LibraryService_GetBook_GORS_Handler(svc LibraryServiceService, options *gors.Options) func(c *gin.Context) {
+func _LibraryService_GetBook_GORS_Handler(svc LibraryServiceService, options *gors.Options, payload *gors.Payload) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var rpcMethodName = "/google.example.library.v1.LibraryService/GetBook"
 		var ctx = gors.NewContext(c, rpcMethodName)
@@ -538,6 +528,12 @@ func _LibraryService_GetBook_GORS_Handler(svc LibraryServiceService, options *go
 		var resp *Book
 		var err error
 		req = new(GetBookRequest)
+		if err = gors.RequestBind(
+			ctx, req, options.Tag,
+		); err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
 		if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
@@ -550,7 +546,7 @@ func _LibraryService_GetBook_GORS_Handler(svc LibraryServiceService, options *go
 	}
 }
 
-func _LibraryService_UpdateBook_GORS_Handler(svc LibraryServiceService, options *gors.Options) func(c *gin.Context) {
+func _LibraryService_UpdateBook_GORS_Handler(svc LibraryServiceService, options *gors.Options, payload *gors.Payload) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var rpcMethodName = "/google.example.library.v1.LibraryService/UpdateBook"
 		var ctx = gors.NewContext(c, rpcMethodName)
@@ -558,6 +554,12 @@ func _LibraryService_UpdateBook_GORS_Handler(svc LibraryServiceService, options 
 		var resp *Book
 		var err error
 		req = new(UpdateBookRequest)
+		if err = gors.RequestBind(
+			ctx, req, options.Tag,
+		); err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
 		if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
@@ -570,7 +572,7 @@ func _LibraryService_UpdateBook_GORS_Handler(svc LibraryServiceService, options 
 	}
 }
 
-func _LibraryService_DeleteBook_GORS_Handler(svc LibraryServiceService, options *gors.Options) func(c *gin.Context) {
+func _LibraryService_DeleteBook_GORS_Handler(svc LibraryServiceService, options *gors.Options, payload *gors.Payload) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var rpcMethodName = "/google.example.library.v1.LibraryService/DeleteBook"
 		var ctx = gors.NewContext(c, rpcMethodName)
@@ -578,6 +580,12 @@ func _LibraryService_DeleteBook_GORS_Handler(svc LibraryServiceService, options 
 		var resp *emptypb.Empty
 		var err error
 		req = new(DeleteBookRequest)
+		if err = gors.RequestBind(
+			ctx, req, options.Tag,
+		); err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
 		if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
@@ -590,7 +598,7 @@ func _LibraryService_DeleteBook_GORS_Handler(svc LibraryServiceService, options 
 	}
 }
 
-func _LibraryService_MergeShelves_GORS_Handler(svc LibraryServiceService, options *gors.Options) func(c *gin.Context) {
+func _LibraryService_MergeShelves_GORS_Handler(svc LibraryServiceService, options *gors.Options, payload *gors.Payload) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var rpcMethodName = "/google.example.library.v1.LibraryService/MergeShelves"
 		var ctx = gors.NewContext(c, rpcMethodName)
@@ -598,6 +606,12 @@ func _LibraryService_MergeShelves_GORS_Handler(svc LibraryServiceService, option
 		var resp *Shelf
 		var err error
 		req = new(MergeShelvesRequest)
+		if err = gors.RequestBind(
+			ctx, req, options.Tag,
+		); err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
 		if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
@@ -610,7 +624,7 @@ func _LibraryService_MergeShelves_GORS_Handler(svc LibraryServiceService, option
 	}
 }
 
-func _LibraryService_MoveBook_GORS_Handler(svc LibraryServiceService, options *gors.Options) func(c *gin.Context) {
+func _LibraryService_MoveBook_GORS_Handler(svc LibraryServiceService, options *gors.Options, payload *gors.Payload) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var rpcMethodName = "/google.example.library.v1.LibraryService/MoveBook"
 		var ctx = gors.NewContext(c, rpcMethodName)
@@ -618,6 +632,12 @@ func _LibraryService_MoveBook_GORS_Handler(svc LibraryServiceService, options *g
 		var resp *Book
 		var err error
 		req = new(MoveBookRequest)
+		if err = gors.RequestBind(
+			ctx, req, options.Tag,
+		); err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
 		if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
@@ -627,5 +647,126 @@ func _LibraryService_MoveBook_GORS_Handler(svc LibraryServiceService, options *g
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
+	}
+}
+
+func _LibraryService_CreateShelf_GORS_Handler_POST_933fe354a7c3c7d9865206c828f8c483_Parameter() *gors.Payload {
+	return &gors.Payload{
+		Body: &gors.BodyParameter{
+			Name: "shelf",
+			Type: "object",
+		},
+	}
+}
+func _LibraryService_ListOneShelves_GORS_Handler_GET_933fe354a7c3c7d9865206c828f8c483_Parameter() *gors.Payload {
+	return &gors.Payload{
+		Query: []*gors.QueryParameter{
+			{Name: "page_size", Type: "integer"},
+			{Name: "page_token", Type: "string"},
+		},
+	}
+}
+func _LibraryService_GetShelf_GORS_Handler_GET_2abcf91b917e818f32bade73708a3c18_Parameter() *gors.Payload {
+	return &gors.Payload{
+		NamedPath: &gors.NamedPath{
+			Name:       "name",
+			Parameters: []string{"shelf"},
+			Template:   "shelves/%s",
+		},
+	}
+}
+func _LibraryService_DeleteShelf_GORS_Handler_DELETE_2abcf91b917e818f32bade73708a3c18_Parameter() *gors.Payload {
+	return &gors.Payload{
+		NamedPath: &gors.NamedPath{
+			Name:       "name",
+			Parameters: []string{"shelf"},
+			Template:   "shelves/%s",
+		},
+	}
+}
+func _LibraryService_ListBooks_GORS_Handler_GET_0fbff9c990144497ddae3b379cad6203_Parameter() *gors.Payload {
+	return &gors.Payload{
+		NamedPath: &gors.NamedPath{
+			Name:       "name",
+			Parameters: []string{"shelf"},
+			Template:   "shelves/%s",
+		},
+		Query: []*gors.QueryParameter{
+			{Name: "page_size", Type: "integer"},
+			{Name: "page_token", Type: "string"},
+		},
+	}
+}
+func _LibraryService_CreateBook_GORS_Handler_POST_0fbff9c990144497ddae3b379cad6203_Parameter() *gors.Payload {
+	return &gors.Payload{
+		NamedPath: &gors.NamedPath{
+			Name:       "name",
+			Parameters: []string{"shelf"},
+			Template:   "shelves/%s",
+		},
+		Body: &gors.BodyParameter{
+			Name: "book",
+			Type: "object",
+		},
+	}
+}
+func _LibraryService_GetBook_GORS_Handler_GET_8a01d92f2e02fc807cde2a4e4bb36cca_Parameter() *gors.Payload {
+	return &gors.Payload{
+		NamedPath: &gors.NamedPath{
+			Name:       "name",
+			Parameters: []string{"shelf", "book"},
+			Template:   "shelves/%s/books/%s",
+		},
+	}
+}
+func _LibraryService_UpdateBook_GORS_Handler_PUT_8a01d92f2e02fc807cde2a4e4bb36cca_Parameter() *gors.Payload {
+	return &gors.Payload{
+		NamedPath: &gors.NamedPath{
+			Name:       "book.name",
+			Parameters: []string{"shelf", "book"},
+			Template:   "shelves/%s/books/%s",
+		},
+		Query: []*gors.QueryParameter{
+			{Name: "name", Type: "string"},
+		},
+		Body: &gors.BodyParameter{
+			Name: "book",
+			Type: "object",
+		},
+	}
+}
+func _LibraryService_DeleteBook_GORS_Handler_DELETE_8a01d92f2e02fc807cde2a4e4bb36cca_Parameter() *gors.Payload {
+	return &gors.Payload{
+		NamedPath: &gors.NamedPath{
+			Name:       "name",
+			Parameters: []string{"shelf", "book"},
+			Template:   "shelves/%s/books/%s",
+		},
+	}
+}
+func _LibraryService_MergeShelves_GORS_Handler_POST_4b703ad56441d8d25c2b17d36635b9a4_Parameter() *gors.Payload {
+	return &gors.Payload{
+		NamedPath: &gors.NamedPath{
+			Name:       "name",
+			Parameters: []string{"shelf"},
+			Template:   "shelves/%s",
+		},
+		Body: &gors.BodyParameter{
+			Name: "*",
+			Type: "object",
+		},
+	}
+}
+func _LibraryService_MoveBook_GORS_Handler_POST_2fc2b66ac71dbdf85c836dc9a57e0a6b_Parameter() *gors.Payload {
+	return &gors.Payload{
+		NamedPath: &gors.NamedPath{
+			Name:       "name",
+			Parameters: []string{"shelf", "book"},
+			Template:   "shelves/%s/books/%s",
+		},
+		Body: &gors.BodyParameter{
+			Name: "*",
+			Type: "object",
+		},
 	}
 }

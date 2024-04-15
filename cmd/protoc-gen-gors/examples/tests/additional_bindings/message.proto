@@ -34,19 +34,7 @@ service Messaging {
     }
 }
 
-service Messaging2 {
-    rpc UpdateMessage(Message) returns(Message) {
-        option(google.api.http) = {
-            patch: "/v1/messages2/{message_id}"
-            body: "text"
-            additional_bindings {
-                patch: "/v1/messages2"
-                body: "*"
-            }
-        };
-    }
-}
 message Message {
-    string message_id = 1;
+    string message_id = 1 [json_name="msg_id"];
     string text = 2;
 }

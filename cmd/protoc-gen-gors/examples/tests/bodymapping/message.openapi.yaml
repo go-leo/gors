@@ -6,6 +6,25 @@ info:
     title: Messaging API
     version: 0.0.1
 paths:
+    /v1/messages/any:
+        post:
+            tags:
+                - Messaging
+            operationId: Messaging_DoAny
+            requestBody:
+                content:
+                    application/json: {}
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
     /v1/messages/{message_id}:
         patch:
             tags:

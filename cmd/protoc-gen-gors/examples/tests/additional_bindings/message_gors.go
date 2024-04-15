@@ -33,17 +33,8 @@ func MessagingServiceRoutes(svc MessagingService, opts ...gors.Option) []gors.Ro
 	options := gors.NewOptions(opts...)
 	wrapper := &_MessagingServiceWrapper{svc: svc, options: options}
 	return []gors.Route{
-		gors.NewRoute("PATCH", "/v1/messages/:message_id", _Messaging_UpdateMessage_GORS_Handler(wrapper, options)),
-		gors.NewRoute("PATCH", "/v1/messages", _Messaging_UpdateMessage_GORS_Handler(wrapper, options)),
-	}
-}
-
-func Messaging2ServiceRoutes(svc Messaging2Service, opts ...gors.Option) []gors.Route {
-	options := gors.NewOptions(opts...)
-	wrapper := &_Messaging2ServiceWrapper{svc: svc, options: options}
-	return []gors.Route{
-		gors.NewRoute("PATCH", "/v1/messages2/:message_id", _Messaging2_UpdateMessage_GORS_Handler(wrapper, options)),
-		gors.NewRoute("PATCH", "/v1/messages2", _Messaging2_UpdateMessage_GORS_Handler(wrapper, options)),
+		gors.NewRoute("PATCH", "/v1/messages/:message_id", _Messaging_UpdateMessage_GORS_Handler(wrapper, options, _Messaging_UpdateMessage_GORS_Handler_PATCH_71b8052a59ef2e1e6bb26f276891271b_Parameter())),
+		gors.NewRoute("PATCH", "/v1/messages", _Messaging_UpdateMessage_GORS_Handler(wrapper, options, _Messaging_UpdateMessage_GORS_Handler_PATCH_46cfd5872c02a89afb8c3f6fac56cbf9_Parameter())),
 	}
 }
 
@@ -51,17 +42,8 @@ func MessagingServerRoutes(srv MessagingServer, opts ...gors.Option) []gors.Rout
 	options := gors.NewOptions(opts...)
 	wrapper := &_MessagingServerWrapper{srv: srv, options: options}
 	return []gors.Route{
-		gors.NewRoute("PATCH", "/v1/messages/:message_id", _Messaging_UpdateMessage_GORS_Handler(wrapper, options)),
-		gors.NewRoute("PATCH", "/v1/messages", _Messaging_UpdateMessage_GORS_Handler(wrapper, options)),
-	}
-}
-
-func Messaging2ServerRoutes(srv Messaging2Server, opts ...gors.Option) []gors.Route {
-	options := gors.NewOptions(opts...)
-	wrapper := &_Messaging2ServerWrapper{srv: srv, options: options}
-	return []gors.Route{
-		gors.NewRoute("PATCH", "/v1/messages2/:message_id", _Messaging2_UpdateMessage_GORS_Handler(wrapper, options)),
-		gors.NewRoute("PATCH", "/v1/messages2", _Messaging2_UpdateMessage_GORS_Handler(wrapper, options)),
+		gors.NewRoute("PATCH", "/v1/messages/:message_id", _Messaging_UpdateMessage_GORS_Handler(wrapper, options, _Messaging_UpdateMessage_GORS_Handler_PATCH_71b8052a59ef2e1e6bb26f276891271b_Parameter())),
+		gors.NewRoute("PATCH", "/v1/messages", _Messaging_UpdateMessage_GORS_Handler(wrapper, options, _Messaging_UpdateMessage_GORS_Handler_PATCH_46cfd5872c02a89afb8c3f6fac56cbf9_Parameter())),
 	}
 }
 
@@ -69,27 +51,13 @@ func MessagingClientRoutes(cli MessagingClient, opts ...gors.Option) []gors.Rout
 	options := gors.NewOptions(opts...)
 	wrapper := &_MessagingClientWrapper{cli: cli, options: options}
 	return []gors.Route{
-		gors.NewRoute("PATCH", "/v1/messages/:message_id", _Messaging_UpdateMessage_GORS_Handler(wrapper, options)),
-		gors.NewRoute("PATCH", "/v1/messages", _Messaging_UpdateMessage_GORS_Handler(wrapper, options)),
-	}
-}
-
-func Messaging2ClientRoutes(cli Messaging2Client, opts ...gors.Option) []gors.Route {
-	options := gors.NewOptions(opts...)
-	wrapper := &_Messaging2ClientWrapper{cli: cli, options: options}
-	return []gors.Route{
-		gors.NewRoute("PATCH", "/v1/messages2/:message_id", _Messaging2_UpdateMessage_GORS_Handler(wrapper, options)),
-		gors.NewRoute("PATCH", "/v1/messages2", _Messaging2_UpdateMessage_GORS_Handler(wrapper, options)),
+		gors.NewRoute("PATCH", "/v1/messages/:message_id", _Messaging_UpdateMessage_GORS_Handler(wrapper, options, _Messaging_UpdateMessage_GORS_Handler_PATCH_71b8052a59ef2e1e6bb26f276891271b_Parameter())),
+		gors.NewRoute("PATCH", "/v1/messages", _Messaging_UpdateMessage_GORS_Handler(wrapper, options, _Messaging_UpdateMessage_GORS_Handler_PATCH_46cfd5872c02a89afb8c3f6fac56cbf9_Parameter())),
 	}
 }
 
 // MessagingService is the service API for Messaging service.
 type MessagingService interface {
-	UpdateMessage(context.Context, *Message) (*Message, error)
-}
-
-// Messaging2Service is the service API for Messaging2 service.
-type Messaging2Service interface {
 	UpdateMessage(context.Context, *Message) (*Message, error)
 }
 
@@ -104,17 +72,6 @@ func (wrapper *_MessagingServiceWrapper) UpdateMessage(ctx context.Context, requ
 	return wrapper.svc.UpdateMessage(ctx, request)
 }
 
-var _ Messaging2Service = (*_Messaging2ServiceWrapper)(nil)
-
-type _Messaging2ServiceWrapper struct {
-	svc     Messaging2Service
-	options *gors.Options
-}
-
-func (wrapper *_Messaging2ServiceWrapper) UpdateMessage(ctx context.Context, request *Message) (*Message, error) {
-	return wrapper.svc.UpdateMessage(ctx, request)
-}
-
 var _ MessagingService = (*_MessagingServerWrapper)(nil)
 
 // _MessagingServerWrapper implement MessagingService and wrap gRPC MessagingServer
@@ -125,23 +82,6 @@ type _MessagingServerWrapper struct {
 
 func (wrapper *_MessagingServerWrapper) UpdateMessage(ctx context.Context, request *Message) (*Message, error) {
 	rpcMethodName := "/tests.additional_bindings.message.v1.Messaging/UpdateMessage"
-	stream := gors.NewServerTransportStream(rpcMethodName)
-	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
-	resp, err := wrapper.srv.UpdateMessage(ctx, request)
-	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher)
-	return resp, err
-}
-
-var _ Messaging2Service = (*_Messaging2ServerWrapper)(nil)
-
-// _Messaging2ServerWrapper implement Messaging2Service and wrap gRPC Messaging2Server
-type _Messaging2ServerWrapper struct {
-	srv     Messaging2Server
-	options *gors.Options
-}
-
-func (wrapper *_Messaging2ServerWrapper) UpdateMessage(ctx context.Context, request *Message) (*Message, error) {
-	rpcMethodName := "/tests.additional_bindings.message.v1.Messaging2/UpdateMessage"
 	stream := gors.NewServerTransportStream(rpcMethodName)
 	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
 	resp, err := wrapper.srv.UpdateMessage(ctx, request)
@@ -164,22 +104,7 @@ func (wrapper *_MessagingClientWrapper) UpdateMessage(ctx context.Context, reque
 	return resp, err
 }
 
-var _ Messaging2Service = (*_Messaging2ClientWrapper)(nil)
-
-// _Messaging2ClientWrapper implement Messaging2Service and wrap gRPC Messaging2Client
-type _Messaging2ClientWrapper struct {
-	cli     Messaging2Client
-	options *gors.Options
-}
-
-func (wrapper *_Messaging2ClientWrapper) UpdateMessage(ctx context.Context, request *Message) (*Message, error) {
-	var headerMD, trailerMD metadata.MD
-	resp, err := wrapper.cli.UpdateMessage(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
-	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher)
-	return resp, err
-}
-
-func _Messaging_UpdateMessage_GORS_Handler(svc MessagingService, options *gors.Options) func(c *gin.Context) {
+func _Messaging_UpdateMessage_GORS_Handler(svc MessagingService, options *gors.Options, payload *gors.Payload) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var rpcMethodName = "/tests.additional_bindings.message.v1.Messaging/UpdateMessage"
 		var ctx = gors.NewContext(c, rpcMethodName)
@@ -187,6 +112,12 @@ func _Messaging_UpdateMessage_GORS_Handler(svc MessagingService, options *gors.O
 		var resp *Message
 		var err error
 		req = new(Message)
+		if err = gors.RequestBind(
+			ctx, req, options.Tag,
+		); err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
 		if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
@@ -199,22 +130,22 @@ func _Messaging_UpdateMessage_GORS_Handler(svc MessagingService, options *gors.O
 	}
 }
 
-func _Messaging2_UpdateMessage_GORS_Handler(svc Messaging2Service, options *gors.Options) func(c *gin.Context) {
-	return func(c *gin.Context) {
-		var rpcMethodName = "/tests.additional_bindings.message.v1.Messaging2/UpdateMessage"
-		var ctx = gors.NewContext(c, rpcMethodName)
-		var req *Message
-		var resp *Message
-		var err error
-		req = new(Message)
-		if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
-			return
-		}
-		resp, err = svc.UpdateMessage(ctx, req)
-		if err != nil {
-			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
-			return
-		}
+func _Messaging_UpdateMessage_GORS_Handler_PATCH_71b8052a59ef2e1e6bb26f276891271b_Parameter() *gors.Payload {
+	return &gors.Payload{
+		Path: []*gors.PathParameter{
+			{Name: "message_id", Type: "string"},
+		},
+		Body: &gors.BodyParameter{
+			Name: "text",
+			Type: "string",
+		},
+	}
+}
+func _Messaging_UpdateMessage_GORS_Handler_PATCH_46cfd5872c02a89afb8c3f6fac56cbf9_Parameter() *gors.Payload {
+	return &gors.Payload{
+		Body: &gors.BodyParameter{
+			Name: "*",
+			Type: "object",
+		},
 	}
 }

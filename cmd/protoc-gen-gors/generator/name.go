@@ -2,6 +2,7 @@ package generator
 
 import (
 	"fmt"
+	"github.com/go-leo/gox/cryptox/md5x"
 	"google.golang.org/protobuf/compiler/protogen"
 )
 
@@ -34,7 +35,11 @@ func fullMethodName(service *protogen.Service, method *protogen.Method) string {
 }
 
 func handlerName(service *protogen.Service, method *protogen.Method) string {
-	return fmt.Sprintf("_%s_%s_GORS_Handler", service.GoName, method.GoName) //"_ProtoDemo_POSTProtoJSONBindingProtoJSONRender_GORS_Handler"
+	return fmt.Sprintf("_%s_%s_GORS_Handler", service.GoName, method.GoName)
+}
+
+func parameterName(service *protogen.Service, method *protogen.Method, httpMethod string, namedPath string) string {
+	return fmt.Sprintf("%s_%s_%s_Parameter", handlerName(service, method), httpMethod, md5x.TextMD5Hex(namedPath))
 }
 
 func serviceRoutesFunctionName(service *protogen.Service) string {

@@ -93,4 +93,5 @@ message Message {
       max_length: 255;
     }
   ];
+  string message_id = 3;
 }

@@ -36,12 +36,12 @@ func MessagingServiceRoutes(svc MessagingService, opts ...gors.Option) []gors.Ro
 	options := gors.NewOptions(opts...)
 	wrapper := &_MessagingServiceWrapper{svc: svc, options: options}
 	return []gors.Route{
-		gors.NewRoute("POST", "/v1/messages/:message_id", _Messaging_CreateMessage_GORS_Handler(wrapper, options)),
-		gors.NewRoute("POST", "/v1/messages:csv", _Messaging_CreateMessagesFromCSV_GORS_Handler(wrapper, options)),
-		gors.NewRoute("GET", "/v1/messages", _Messaging_ListMessages_GORS_Handler(wrapper, options)),
-		gors.NewRoute("GET", "/v1/messages:csv", _Messaging_ListMessagesCSV_GORS_Handler(wrapper, options)),
-		gors.NewRoute("GET", "/v1/messages/:message_id", _Messaging_GetMessage_GORS_Handler(wrapper, options)),
-		gors.NewRoute("PATCH", "/v1/messages/:message_id", _Messaging_UpdateMessage_GORS_Handler(wrapper, options)),
+		gors.NewRoute("POST", "/v1/messages/:message_id", _Messaging_CreateMessage_GORS_Handler(wrapper, options, _Messaging_CreateMessage_GORS_Handler_POST_71b8052a59ef2e1e6bb26f276891271b_Parameter())),
+		gors.NewRoute("POST", "/v1/messages:csv", _Messaging_CreateMessagesFromCSV_GORS_Handler(wrapper, options, _Messaging_CreateMessagesFromCSV_GORS_Handler_POST_bb9003b5beb9432c1541343e9e470f29_Parameter())),
+		gors.NewRoute("GET", "/v1/messages", _Messaging_ListMessages_GORS_Handler(wrapper, options, _Messaging_ListMessages_GORS_Handler_GET_46cfd5872c02a89afb8c3f6fac56cbf9_Parameter())),
+		gors.NewRoute("GET", "/v1/messages:csv", _Messaging_ListMessagesCSV_GORS_Handler(wrapper, options, _Messaging_ListMessagesCSV_GORS_Handler_GET_bb9003b5beb9432c1541343e9e470f29_Parameter())),
+		gors.NewRoute("GET", "/v1/messages/:message_id", _Messaging_GetMessage_GORS_Handler(wrapper, options, _Messaging_GetMessage_GORS_Handler_GET_71b8052a59ef2e1e6bb26f276891271b_Parameter())),
+		gors.NewRoute("PATCH", "/v1/messages/:message_id", _Messaging_UpdateMessage_GORS_Handler(wrapper, options, _Messaging_UpdateMessage_GORS_Handler_PATCH_71b8052a59ef2e1e6bb26f276891271b_Parameter())),
 	}
 }
 
@@ -49,12 +49,12 @@ func MessagingServerRoutes(srv MessagingServer, opts ...gors.Option) []gors.Rout
 	options := gors.NewOptions(opts...)
 	wrapper := &_MessagingServerWrapper{srv: srv, options: options}
 	return []gors.Route{
-		gors.NewRoute("POST", "/v1/messages/:message_id", _Messaging_CreateMessage_GORS_Handler(wrapper, options)),
-		gors.NewRoute("POST", "/v1/messages:csv", _Messaging_CreateMessagesFromCSV_GORS_Handler(wrapper, options)),
-		gors.NewRoute("GET", "/v1/messages", _Messaging_ListMessages_GORS_Handler(wrapper, options)),
-		gors.NewRoute("GET", "/v1/messages:csv", _Messaging_ListMessagesCSV_GORS_Handler(wrapper, options)),
-		gors.NewRoute("GET", "/v1/messages/:message_id", _Messaging_GetMessage_GORS_Handler(wrapper, options)),
-		gors.NewRoute("PATCH", "/v1/messages/:message_id", _Messaging_UpdateMessage_GORS_Handler(wrapper, options)),
+		gors.NewRoute("POST", "/v1/messages/:message_id", _Messaging_CreateMessage_GORS_Handler(wrapper, options, _Messaging_CreateMessage_GORS_Handler_POST_71b8052a59ef2e1e6bb26f276891271b_Parameter())),
+		gors.NewRoute("POST", "/v1/messages:csv", _Messaging_CreateMessagesFromCSV_GORS_Handler(wrapper, options, _Messaging_CreateMessagesFromCSV_GORS_Handler_POST_bb9003b5beb9432c1541343e9e470f29_Parameter())),
+		gors.NewRoute("GET", "/v1/messages", _Messaging_ListMessages_GORS_Handler(wrapper, options, _Messaging_ListMessages_GORS_Handler_GET_46cfd5872c02a89afb8c3f6fac56cbf9_Parameter())),
+		gors.NewRoute("GET", "/v1/messages:csv", _Messaging_ListMessagesCSV_GORS_Handler(wrapper, options, _Messaging_ListMessagesCSV_GORS_Handler_GET_bb9003b5beb9432c1541343e9e470f29_Parameter())),
+		gors.NewRoute("GET", "/v1/messages/:message_id", _Messaging_GetMessage_GORS_Handler(wrapper, options, _Messaging_GetMessage_GORS_Handler_GET_71b8052a59ef2e1e6bb26f276891271b_Parameter())),
+		gors.NewRoute("PATCH", "/v1/messages/:message_id", _Messaging_UpdateMessage_GORS_Handler(wrapper, options, _Messaging_UpdateMessage_GORS_Handler_PATCH_71b8052a59ef2e1e6bb26f276891271b_Parameter())),
 	}
 }
 
@@ -62,12 +62,12 @@ func MessagingClientRoutes(cli MessagingClient, opts ...gors.Option) []gors.Rout
 	options := gors.NewOptions(opts...)
 	wrapper := &_MessagingClientWrapper{cli: cli, options: options}
 	return []gors.Route{
-		gors.NewRoute("POST", "/v1/messages/:message_id", _Messaging_CreateMessage_GORS_Handler(wrapper, options)),
-		gors.NewRoute("POST", "/v1/messages:csv", _Messaging_CreateMessagesFromCSV_GORS_Handler(wrapper, options)),
-		gors.NewRoute("GET", "/v1/messages", _Messaging_ListMessages_GORS_Handler(wrapper, options)),
-		gors.NewRoute("GET", "/v1/messages:csv", _Messaging_ListMessagesCSV_GORS_Handler(wrapper, options)),
-		gors.NewRoute("GET", "/v1/messages/:message_id", _Messaging_GetMessage_GORS_Handler(wrapper, options)),
-		gors.NewRoute("PATCH", "/v1/messages/:message_id", _Messaging_UpdateMessage_GORS_Handler(wrapper, options)),
+		gors.NewRoute("POST", "/v1/messages/:message_id", _Messaging_CreateMessage_GORS_Handler(wrapper, options, _Messaging_CreateMessage_GORS_Handler_POST_71b8052a59ef2e1e6bb26f276891271b_Parameter())),
+		gors.NewRoute("POST", "/v1/messages:csv", _Messaging_CreateMessagesFromCSV_GORS_Handler(wrapper, options, _Messaging_CreateMessagesFromCSV_GORS_Handler_POST_bb9003b5beb9432c1541343e9e470f29_Parameter())),
+		gors.NewRoute("GET", "/v1/messages", _Messaging_ListMessages_GORS_Handler(wrapper, options, _Messaging_ListMessages_GORS_Handler_GET_46cfd5872c02a89afb8c3f6fac56cbf9_Parameter())),
+		gors.NewRoute("GET", "/v1/messages:csv", _Messaging_ListMessagesCSV_GORS_Handler(wrapper, options, _Messaging_ListMessagesCSV_GORS_Handler_GET_bb9003b5beb9432c1541343e9e470f29_Parameter())),
+		gors.NewRoute("GET", "/v1/messages/:message_id", _Messaging_GetMessage_GORS_Handler(wrapper, options, _Messaging_GetMessage_GORS_Handler_GET_71b8052a59ef2e1e6bb26f276891271b_Parameter())),
+		gors.NewRoute("PATCH", "/v1/messages/:message_id", _Messaging_UpdateMessage_GORS_Handler(wrapper, options, _Messaging_UpdateMessage_GORS_Handler_PATCH_71b8052a59ef2e1e6bb26f276891271b_Parameter())),
 	}
 }
 
@@ -226,7 +226,7 @@ func (wrapper *_MessagingClientWrapper) UpdateMessage(ctx context.Context, reque
 	return resp, err
 }
 
-func _Messaging_CreateMessage_GORS_Handler(svc MessagingService, options *gors.Options) func(c *gin.Context) {
+func _Messaging_CreateMessage_GORS_Handler(svc MessagingService, options *gors.Options, payload *gors.Payload) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var rpcMethodName = "/tests.protobuftypes.message.v1.Messaging/CreateMessage"
 		var ctx = gors.NewContext(c, rpcMethodName)
@@ -234,6 +234,12 @@ func _Messaging_CreateMessage_GORS_Handler(svc MessagingService, options *gors.O
 		var resp *Message
 		var err error
 		req = new(Message)
+		if err = gors.RequestBind(
+			ctx, req, options.Tag,
+		); err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
 		if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
@@ -246,7 +252,7 @@ func _Messaging_CreateMessage_GORS_Handler(svc MessagingService, options *gors.O
 	}
 }
 
-func _Messaging_CreateMessagesFromCSV_GORS_Handler(svc MessagingService, options *gors.Options) func(c *gin.Context) {
+func _Messaging_CreateMessagesFromCSV_GORS_Handler(svc MessagingService, options *gors.Options, payload *gors.Payload) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var rpcMethodName = "/tests.protobuftypes.message.v1.Messaging/CreateMessagesFromCSV"
 		var ctx = gors.NewContext(c, rpcMethodName)
@@ -254,6 +260,12 @@ func _Messaging_CreateMessagesFromCSV_GORS_Handler(svc MessagingService, options
 		var resp *httpbody.HttpBody
 		var err error
 		req = new(httpbody.HttpBody)
+		if err = gors.RequestBind(
+			ctx, req, options.Tag,
+		); err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
 		if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
@@ -266,7 +278,7 @@ func _Messaging_CreateMessagesFromCSV_GORS_Handler(svc MessagingService, options
 	}
 }
 
-func _Messaging_ListMessages_GORS_Handler(svc MessagingService, options *gors.Options) func(c *gin.Context) {
+func _Messaging_ListMessages_GORS_Handler(svc MessagingService, options *gors.Options, payload *gors.Payload) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var rpcMethodName = "/tests.protobuftypes.message.v1.Messaging/ListMessages"
 		var ctx = gors.NewContext(c, rpcMethodName)
@@ -274,6 +286,12 @@ func _Messaging_ListMessages_GORS_Handler(svc MessagingService, options *gors.Op
 		var resp *structpb.Value
 		var err error
 		req = new(emptypb.Empty)
+		if err = gors.RequestBind(
+			ctx, req, options.Tag,
+		); err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
 		if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
@@ -286,7 +304,7 @@ func _Messaging_ListMessages_GORS_Handler(svc MessagingService, options *gors.Op
 	}
 }
 
-func _Messaging_ListMessagesCSV_GORS_Handler(svc MessagingService, options *gors.Options) func(c *gin.Context) {
+func _Messaging_ListMessagesCSV_GORS_Handler(svc MessagingService, options *gors.Options, payload *gors.Payload) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var rpcMethodName = "/tests.protobuftypes.message.v1.Messaging/ListMessagesCSV"
 		var ctx = gors.NewContext(c, rpcMethodName)
@@ -294,6 +312,12 @@ func _Messaging_ListMessagesCSV_GORS_Handler(svc MessagingService, options *gors
 		var resp *httpbody.HttpBody
 		var err error
 		req = new(httpbody.HttpBody)
+		if err = gors.RequestBind(
+			ctx, req, options.Tag,
+		); err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
 		if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
@@ -306,7 +330,7 @@ func _Messaging_ListMessagesCSV_GORS_Handler(svc MessagingService, options *gors
 	}
 }
 
-func _Messaging_GetMessage_GORS_Handler(svc MessagingService, options *gors.Options) func(c *gin.Context) {
+func _Messaging_GetMessage_GORS_Handler(svc MessagingService, options *gors.Options, payload *gors.Payload) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var rpcMethodName = "/tests.protobuftypes.message.v1.Messaging/GetMessage"
 		var ctx = gors.NewContext(c, rpcMethodName)
@@ -314,6 +338,12 @@ func _Messaging_GetMessage_GORS_Handler(svc MessagingService, options *gors.Opti
 		var resp *Message
 		var err error
 		req = new(Message)
+		if err = gors.RequestBind(
+			ctx, req, options.Tag,
+		); err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
 		if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
@@ -326,7 +356,7 @@ func _Messaging_GetMessage_GORS_Handler(svc MessagingService, options *gors.Opti
 	}
 }
 
-func _Messaging_UpdateMessage_GORS_Handler(svc MessagingService, options *gors.Options) func(c *gin.Context) {
+func _Messaging_UpdateMessage_GORS_Handler(svc MessagingService, options *gors.Options, payload *gors.Payload) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		var rpcMethodName = "/tests.protobuftypes.message.v1.Messaging/UpdateMessage"
 		var ctx = gors.NewContext(c, rpcMethodName)
@@ -334,6 +364,12 @@ func _Messaging_UpdateMessage_GORS_Handler(svc MessagingService, options *gors.O
 		var resp *structpb.Struct
 		var err error
 		req = new(Message)
+		if err = gors.RequestBind(
+			ctx, req, options.Tag,
+		); err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
 		if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
@@ -343,5 +379,99 @@ func _Messaging_UpdateMessage_GORS_Handler(svc MessagingService, options *gors.O
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
+	}
+}
+
+func _Messaging_CreateMessage_GORS_Handler_POST_71b8052a59ef2e1e6bb26f276891271b_Parameter() *gors.Payload {
+	return &gors.Payload{
+		Path: []*gors.PathParameter{
+			{Name: "message_id", Type: "string"},
+		},
+		Body: &gors.BodyParameter{
+			Name: "*",
+			Type: "object",
+		},
+	}
+}
+func _Messaging_CreateMessagesFromCSV_GORS_Handler_POST_bb9003b5beb9432c1541343e9e470f29_Parameter() *gors.Payload {
+	return &gors.Payload{
+		Body: &gors.BodyParameter{
+			Name: "*",
+			Type: "string",
+		},
+	}
+}
+func _Messaging_ListMessages_GORS_Handler_GET_46cfd5872c02a89afb8c3f6fac56cbf9_Parameter() *gors.Payload {
+	return &gors.Payload{}
+}
+func _Messaging_ListMessagesCSV_GORS_Handler_GET_bb9003b5beb9432c1541343e9e470f29_Parameter() *gors.Payload {
+	return &gors.Payload{}
+}
+func _Messaging_GetMessage_GORS_Handler_GET_71b8052a59ef2e1e6bb26f276891271b_Parameter() *gors.Payload {
+	return &gors.Payload{
+		Path: []*gors.PathParameter{
+			{Name: "message_id", Type: "string"},
+		},
+		Query: []*gors.QueryParameter{
+			{Name: "string_type", Type: "string"},
+			{Name: "recursive_type.parent_id", Type: "integer"},
+			{Name: "recursive_type.child.child_id", Type: "integer"},
+			{Name: "recursive_type.child.parent.parent_id", Type: "integer"},
+			{Name: "recursive_type.child.parent.child.child_id", Type: "integer"},
+			{Name: "embedded_type.message_id", Type: "string"},
+			{Name: "sub_type.message_id", Type: "string"},
+			{Name: "sub_type.sub_sub_message.message_id", Type: "string"},
+			{Name: "sub_type.sub_sub_message.integers", Type: "array"},
+			{Name: "repeated_type", Type: "array"},
+			{Name: "value_type", Type: ""},
+			{Name: "repeated_value_type", Type: "array"},
+			{Name: "bool_value_type", Type: "boolean"},
+			{Name: "bytes_value_type", Type: "string"},
+			{Name: "int32_value_type", Type: "integer"},
+			{Name: "uint32_value_type", Type: "integer"},
+			{Name: "string_value_type", Type: "string"},
+			{Name: "int64_value_type", Type: "string"},
+			{Name: "uint64_value_type", Type: "string"},
+			{Name: "float_value_type", Type: "number"},
+			{Name: "double_value_type", Type: "number"},
+			{Name: "timestamp_type", Type: "string"},
+			{Name: "duration_type", Type: "string"},
+		},
+	}
+}
+func _Messaging_UpdateMessage_GORS_Handler_PATCH_71b8052a59ef2e1e6bb26f276891271b_Parameter() *gors.Payload {
+	return &gors.Payload{
+		Path: []*gors.PathParameter{
+			{Name: "message_id", Type: "string"},
+		},
+		Query: []*gors.QueryParameter{
+			{Name: "string_type", Type: "string"},
+			{Name: "recursive_type.parent_id", Type: "integer"},
+			{Name: "recursive_type.child.child_id", Type: "integer"},
+			{Name: "recursive_type.child.parent.parent_id", Type: "integer"},
+			{Name: "recursive_type.child.parent.child.child_id", Type: "integer"},
+			{Name: "embedded_type.message_id", Type: "string"},
+			{Name: "sub_type.message_id", Type: "string"},
+			{Name: "sub_type.sub_sub_message.message_id", Type: "string"},
+			{Name: "sub_type.sub_sub_message.integers", Type: "array"},
+			{Name: "repeated_type", Type: "array"},
+			{Name: "value_type", Type: ""},
+			{Name: "repeated_value_type", Type: "array"},
+			{Name: "bool_value_type", Type: "boolean"},
+			{Name: "bytes_value_type", Type: "string"},
+			{Name: "int32_value_type", Type: "integer"},
+			{Name: "uint32_value_type", Type: "integer"},
+			{Name: "string_value_type", Type: "string"},
+			{Name: "int64_value_type", Type: "string"},
+			{Name: "uint64_value_type", Type: "string"},
+			{Name: "float_value_type", Type: "number"},
+			{Name: "double_value_type", Type: "number"},
+			{Name: "timestamp_type", Type: "string"},
+			{Name: "duration_type", Type: "string"},
+		},
+		Body: &gors.BodyParameter{
+			Name: "body",
+			Type: "object",
+		},
 	}
 }

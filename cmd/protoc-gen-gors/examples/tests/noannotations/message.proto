@@ -37,4 +37,5 @@ service Messaging2 {
 message Message {
   int64 id = 1;
   string label = 2;
+  string message_id = 3;
 }
