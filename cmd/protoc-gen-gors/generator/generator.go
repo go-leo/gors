@@ -2,6 +2,7 @@ package generator
 
 import (
 	"github.com/go-leo/gors/cmd/protoc-gen-gors/protoc-gen-openapi/generator"
+	"github.com/go-leo/gors/internal/pkg/parser"
 	"github.com/google/gnostic-models/openapiv3"
 	openapiv3 "github.com/google/gnostic/openapiv3"
 	"google.golang.org/protobuf/types/descriptorpb"
@@ -34,6 +35,7 @@ const (
 	statusPackage    = protogen.GoImportPath("google.golang.org/grpc/status")
 	httpPackage      = protogen.GoImportPath("net/http")
 	openapiv3Package = protogen.GoImportPath("github.com/google/gnostic/openapiv3")
+	bindingPackage   = protogen.GoImportPath("github.com/go-leo/gors/pkg/binding")
 )
 
 // Generator holds internal state needed to generate an OpenAPIv3 document for a transcoded Protocol Buffer service.
@@ -184,7 +186,7 @@ func (g *Generator) printServiceRoutes(service *protogen.Service) {
 			pathItem := namedPathItem.GetValue()
 			httpMethod, _ := convertHttpMethod(pathItem)
 			namedPath := convertPath(namedPathItem.GetName())
-			g.outputFile.P(gorsPackage.Ident("NewRoute"), "(", strconv.Quote(httpMethod), ",", strconv.Quote(namedPath), ",", handlerName(service, method), "(wrapper, options,", parameterName(service, method, httpMethod, namedPath), "()),", "),")
+			g.outputFile.P(gorsPackage.Ident("NewRoute"), "(", strconv.Quote(httpMethod), ",", strconv.Quote(namedPath), ",", handlerName(service, method), "(wrapper, options,", bindingName(service, method, httpMethod, namedPath), "()),", "),")
 		}
 	}
 }
@@ -193,6 +195,7 @@ func (g *Generator) printServiceRoutesFunction(service *protogen.Service) {
 	g.outputFile.P("func ", serviceRoutesFunctionName(service), "(svc ", serviceName(service), ", opts ...", gorsPackage.Ident("Option"), ") []", gorsPackage.Ident("Route"), " {")
 	g.outputFile.P("options := ", gorsPackage.Ident("NewOptions"), "(opts...)")
 	g.outputFile.P("wrapper := &", serviceWrapperName(service), "{svc: svc, options: options}")
+	g.outputFile.P("_ = wrapper")
 	g.outputFile.P("return []", gorsPackage.Ident("Route"), "{")
 	g.printServiceRoutes(service)
 	g.outputFile.P("}")
@@ -210,6 +213,7 @@ func (g *Generator) printGRPCServerRoutesFunction(service *protogen.Service) {
 	g.outputFile.P("func ", gRPCServerRoutesFunctionName(service), "(srv ", gRPCServerName(service), ", opts ...", gorsPackage.Ident("Option"), ") []", gorsPackage.Ident("Route"), " {")
 	g.outputFile.P("options := ", gorsPackage.Ident("NewOptions"), "(opts...)")
 	g.outputFile.P("wrapper := &", gRPCServerWrapperName(service), "{srv: srv, options: options}")
+	g.outputFile.P("_ = wrapper")
 	g.outputFile.P("return []", gorsPackage.Ident("Route"), "{")
 	g.printServiceRoutes(service)
 	g.outputFile.P("}")
@@ -227,6 +231,7 @@ func (g *Generator) printGRPCClientRoutesFunction(service *protogen.Service) {
 	g.outputFile.P("func ", gRPCClientRoutesFunctionName(service), "(cli ", gRPCClientName(service), ", opts ...", gorsPackage.Ident("Option"), ") []", gorsPackage.Ident("Route"), " {")
 	g.outputFile.P("options := ", gorsPackage.Ident("NewOptions"), "(opts...)")
 	g.outputFile.P("wrapper := &", grpcClientWrapperName(service), "{cli: cli, options: options}")
+	g.outputFile.P("_ = wrapper")
 	g.outputFile.P("return []", gorsPackage.Ident("Route"), "{")
 	g.printServiceRoutes(service)
 	g.outputFile.P("}")
@@ -345,7 +350,7 @@ func (g *Generator) printHandlers() {
 func (g *Generator) printHandler(service *protogen.Service) {
 	serviceName := serviceName(service)
 	for _, method := range service.Methods {
-		g.outputFile.P("func ", handlerName(service, method), "(svc ", serviceName, ", options *", gorsPackage.Ident("Options"), ", payload *", gorsPackage.Ident("Payload"), ") func(c *", ginPackage.Ident("Context"), ") {")
+		g.outputFile.P("func ", handlerName(service, method), "(svc ", serviceName, ", options *", gorsPackage.Ident("Options"), ", binding *", bindingPackage.Ident("HttpRuleBinding"), ") func(c *", ginPackage.Ident("Context"), ") {")
 		g.outputFile.P("return func(c *", ginPackage.Ident("Context"), ") {")
 		g.printRouteHandler(service, method)
 		g.outputFile.P("}")
@@ -363,7 +368,7 @@ func (g *Generator) printRouteHandler(service *protogen.Service, method *protoge
 	g.outputFile.P("var err error")
 	g.outputFile.P("req = new(", method.Input.GoIdent, ")")
 
-	g.printRequestBinding(service, method)
+	g.printRequestBinding()
 
 	g.outputFile.P("if ctx, err = ", gorsPackage.Ident("NewGRPCContext"), "(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {")
 	g.outputFile.P(gorsPackage.Ident("ErrorRender"), "(ctx, err, options.ErrorHandler, options.ResponseWrapper)")
@@ -379,17 +384,10 @@ func (g *Generator) printRouteHandler(service *protogen.Service, method *protoge
 	g.printResponseRender(service, method)
 }
 
-func (g *Generator) printRequestBinding(service *protogen.Service, method *protogen.Method) {
+func (g *Generator) printRequestBinding() {
 	g.outputFile.P("if err = ", gorsPackage.Ident("RequestBind"), "(")
 	g.outputFile.P("ctx, req, options.Tag,")
-
-	//paths := g.openAPIv3Generator.BuildPaths(g.inputFile, service, method)
-	//for _, namedPathItem := range paths.GetPath() {
-	//
-	//}
-	//for _, binding := range router.Bindings {
-	//	g.outputFile.P(gorsPackage.Ident(strings.TrimPrefix(string(binding), "@")), ",")
-	//}
+	g.outputFile.P(gorsPackage.Ident("HttpRuleBinding"), "(binding),")
 	g.outputFile.P("); err != nil {")
 	g.outputFile.P(gorsPackage.Ident("ErrorRender"), "(ctx, err, options.ErrorHandler, options.ResponseWrapper)")
 	g.outputFile.P("return")
@@ -397,22 +395,11 @@ func (g *Generator) printRequestBinding(service *protogen.Service, method *proto
 }
 
 func (g *Generator) printResponseRender(service *protogen.Service, method *protogen.Method) {
-	//renders := []parser.Render{
-	//	parser.JSONRender, parser.IndentedJSONRender, parser.SecureJSONRender,
-	//	parser.PureJSONRender, parser.AsciiJSONRender, parser.ProtoJSONRender,
-	//	parser.ProtoBufRender, parser.CustomRender, parser.XMLRender,
-	//	parser.YAMLRender, parser.TOMLRender, parser.MsgPackRender,
-	//}
-	//
-	//renderName := strings.TrimPrefix(router.Render.String(), "@")
-	//renderArg := ""
-	//if router.Render == parser.ProtoJSONRender {
-	//	renderArg = "(options.ProtoJSONMarshalOptions)"
-	//}
-	//g.outputFile.P(gorsPackage.Ident("ResponseRender"),
-	//	"(ctx, ", gorsPackage.Ident("StatusCode"), "(ctx), resp,",
-	//	strconv.Quote(router.RenderContentType), ",", gorsPackage.Ident(renderName), renderArg,
-	//	", options.ResponseWrapper)")
+	render := parser.ProtoJSONRender
+	renderName := strings.TrimPrefix(render.String(), "@")
+	renderArg := "(options.ProtoJSONMarshalOptions)"
+	g.outputFile.P(gorsPackage.Ident("ResponseRender"),
+		"(ctx, ", gorsPackage.Ident("StatusCode"), "(ctx), resp,", strconv.Quote(""), ",", gorsPackage.Ident(renderName), renderArg, ", options.ResponseWrapper)")
 }
 
 func (g *Generator) printParameters() {
@@ -451,8 +438,8 @@ func (g *Generator) printRouteParameter(service *protogen.Service, method *proto
 				cookieParameters = append(cookieParameters, parameter.GetParameter())
 			}
 		}
-		g.outputFile.P("func ", parameterName(service, method, httpMethod, convertPath(namedPathItem.GetName())), "() *", gorsPackage.Ident("Payload"), " {")
-		g.outputFile.P("return &", gorsPackage.Ident("Payload"), "{")
+		g.outputFile.P("func ", bindingName(service, method, httpMethod, convertPath(namedPathItem.GetName())), "() *", bindingPackage.Ident("HttpRuleBinding"), " {")
+		g.outputFile.P("return &", bindingPackage.Ident("HttpRuleBinding"), "{")
 		g.printPathParameters(simplePathParameters)
 		g.printNamedPathParameters(namedPathParameters)
 		g.printQueryParameters(queryParameters)
@@ -466,7 +453,7 @@ func (g *Generator) printPathParameters(parameters []*generator.PathParameters) 
 	if len(parameters) <= 0 {
 		return
 	}
-	g.outputFile.P("Path:[]*", gorsPackage.Ident("PathParameter"), "{")
+	g.outputFile.P("Path:[]*", bindingPackage.Ident("PathRule"), "{")
 	for _, parameter := range parameters {
 		parameterDoc := parameter.ParameterOrReference.GetParameter()
 		name := strconv.Quote(parameterDoc.GetName())
@@ -481,7 +468,7 @@ func (g *Generator) printNamedPathParameters(parameters *generator.PathParameter
 	if parameters == nil {
 		return
 	}
-	g.outputFile.P("NamedPath:&", gorsPackage.Ident("NamedPath"), "{")
+	g.outputFile.P("NamedPath:&", bindingPackage.Ident("NamedPathRule"), "{")
 	g.outputFile.P("Name:       ", strconv.Quote(parameters.Name), ",")
 	g.outputFile.P("Parameters: []string{", "\""+strings.Join(parameters.Parameters, "\",\"")+"\"", "}", ",")
 	g.outputFile.P("Template:   ", strconv.Quote(parameters.Template), ",")
@@ -492,7 +479,7 @@ func (g *Generator) printQueryParameters(parameters []*openapiv3.Parameter) {
 	if len(parameters) <= 0 {
 		return
 	}
-	g.outputFile.P("Query:[]*", gorsPackage.Ident("QueryParameter"), "{")
+	g.outputFile.P("Query:[]*", bindingPackage.Ident("QueryRule"), "{")
 	for _, parameterDoc := range parameters {
 		name := strconv.Quote(parameterDoc.GetName())
 		typ := strconv.Quote(parameterDoc.GetSchema().GetSchema().GetType())
@@ -521,13 +508,13 @@ func (g *Generator) PrintBodyParameters(body string, bodyDoc *openapi_v3.Request
 	mediaValue := mediaType.GetValue()
 	schemaOrReference := mediaValue.GetSchema()
 	if schema := schemaOrReference.GetSchema(); schema != nil {
-		g.outputFile.P("Body:&", gorsPackage.Ident("BodyParameter"), "{")
+		g.outputFile.P("Body:&", bindingPackage.Ident("BodyRule"), "{")
 		g.outputFile.P("Name:", strconv.Quote(body), ",")
 		g.outputFile.P("Type: ", strconv.Quote(schema.GetType()), ",")
 		g.outputFile.P("},")
 		return
 	} else if reference := schemaOrReference.GetReference(); reference != nil {
-		g.outputFile.P("Body:&", gorsPackage.Ident("BodyParameter"), "{")
+		g.outputFile.P("Body:&", bindingPackage.Ident("BodyRule"), "{")
 		g.outputFile.P("Name:", strconv.Quote(body), ",")
 		g.outputFile.P("Type: ", strconv.Quote("object"), ",")
 		g.outputFile.P("},")

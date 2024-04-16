@@ -16,9 +16,9 @@ func TestPayloadBinding(t *testing.T) {
 	urlString := "http://localhost:8080/demo/10/shelves/20/books/30?page_size=10&page_token=xxl"
 
 	engine := gin.New()
-	engine.GET(relativePath, func(context *gin.Context) {
+	engine.POST(relativePath, func(context *gin.Context) {
 		ctx := gors.NewContext(context, "demo")
-		binding := gors.PayloadBinding(&gors.Payload{
+		binding := gors.ProtoHttpBinding(&gors.ProtoHttpParameter{
 			Path: []*gors.PathParameter{
 				{Name: "message_id", Type: "string"},
 			},
@@ -30,6 +30,10 @@ func TestPayloadBinding(t *testing.T) {
 			Query: []*gors.QueryParameter{
 				{Name: "page_size", Type: "integer"},
 				{Name: "page_token", Type: "string"},
+			},
+			Body: &gors.BodyParameter{
+				Name: "sub_message",
+				Type: "object",
 			},
 		})
 		var req tests.Message
@@ -48,9 +52,17 @@ func TestPayloadBinding(t *testing.T) {
 	time.Sleep(time.Second)
 
 	t.Log("send...")
+	subMessage := tests.SubMessage{
+		Address: "shanghai",
+		SubSubMessage: &tests.SubSubMessage{
+			Title: "leo",
+			Text:  "leo, gors",
+		},
+	}
 	send, err := outgoing.Sender().
-		Get().
+		Post().
 		URLString(urlString).
+		JSONBody(&subMessage).
 		Send(context.Background(), &http.Client{})
 	if err != nil {
 		panic(err)

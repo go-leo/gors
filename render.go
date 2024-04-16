@@ -10,7 +10,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin/render"
-	internalrender "github.com/go-leo/gors/internal/pkg/render"
+	renderPkg "github.com/go-leo/gors/pkg/render"
 	"github.com/go-leo/gox/iox"
 	"google.golang.org/grpc/metadata"
 )
@@ -150,7 +150,7 @@ func AsciiJSONRender(ctx context.Context, code int, resp any, _ string) {
 
 func ProtoJSONRender(mo protojson.MarshalOptions) func(ctx context.Context, code int, resp any, _ string) {
 	return func(ctx context.Context, code int, resp any, _ string) {
-		FromContext(ctx).Render(code, internalrender.ProtoJSON{Data: resp, MarshalOptions: mo})
+		FromContext(ctx).Render(code, renderPkg.ProtoJSON{Data: resp, MarshalOptions: mo})
 	}
 }
 

@@ -38,8 +38,8 @@ func handlerName(service *protogen.Service, method *protogen.Method) string {
 	return fmt.Sprintf("_%s_%s_GORS_Handler", service.GoName, method.GoName)
 }
 
-func parameterName(service *protogen.Service, method *protogen.Method, httpMethod string, namedPath string) string {
-	return fmt.Sprintf("%s_%s_%s_Parameter", handlerName(service, method), httpMethod, md5x.TextMD5Hex(namedPath))
+func bindingName(service *protogen.Service, method *protogen.Method, httpMethod string, namedPath string) string {
+	return fmt.Sprintf("%s_%s_%s_Binding", handlerName(service, method), httpMethod, md5x.TextMD5Hex(namedPath))
 }
 
 func serviceRoutesFunctionName(service *protogen.Service) string {

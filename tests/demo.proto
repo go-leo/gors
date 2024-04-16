@@ -8,6 +8,11 @@ message Message {
   int32 page_size = 3;
   string page_token = 4;
   SubMessage sub_message = 5;
+  Book book = 7;
+}
+
+message Book {
+  string name = 1;
 }
 
 message SubMessage {

@@ -2,19 +2,13 @@ package gors
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
-	internalbinding "github.com/go-leo/gors/internal/pkg/binding"
+	bindingPkg "github.com/go-leo/gors/pkg/binding"
 	"github.com/go-leo/gox/stringx"
-	"google.golang.org/protobuf/encoding/protojson"
-	"google.golang.org/protobuf/proto"
 	"io"
 	"net/http"
-	"strconv"
-	"strings"
 )
 
 func RequestBind(ctx context.Context, req any, tag string, bindings ...func(ctx context.Context, req any, tag string) error) error {
@@ -130,7 +124,7 @@ func JSONBinding(ctx context.Context, req any, _ string) error {
 }
 
 func ProtoJSONBinding(ctx context.Context, req any, _ string) error {
-	return FromContext(ctx).ShouldBindWith(req, internalbinding.ProtoJSON)
+	return FromContext(ctx).ShouldBindWith(req, bindingPkg.ProtoJSON)
 }
 
 func XMLBinding(ctx context.Context, req any, _ string) error {
@@ -161,179 +155,8 @@ func CustomBinding(ctx context.Context, req any, _ string) error {
 	return customBinding.Bind(ctx)
 }
 
-// PathParameter /{message_id} => /:message_id
-type PathParameter struct {
-	// Name message_id
-	Name string
-	// Type string,integer,number,boolean
-	Type string
-}
-
-// NamedPathParameter /{book.name=shelves/*/books/*} => /shelves/{shelf}/books/{book}
-type NamedPathParameter struct {
-	// Name book.name
-	Name string
-	// Parameters shelf,book
-	Parameters []string
-	// Template shelves/%s/books/%s
-	Template string
-}
-
-// QueryParameter ?message_id=1
-type QueryParameter struct {
-	// Name message_id
-	Name string
-	// Type string,integer,number,boolean,array
-	Type string
-	// ItemType
-	ItemType string
-}
-
-// BodyParameter body
-type BodyParameter struct {
-	// Name * or xxx
-	Name string
-	// Type string,integer,number,boolean,array,object
-	Type string
-}
-
-type Payload struct {
-	Path      []*PathParameter
-	NamedPath *NamedPathParameter
-	Query     []*QueryParameter
-	Body      *BodyParameter
-}
-
-func PayloadBinding(payload *Payload) func(ctx context.Context, req any, tag string) error {
-	return func(ctx context.Context, req any, tag string) error {
-		ginCtx := FromContext(ctx)
-		message, ok := req.(proto.Message)
-		if !ok {
-			return fmt.Errorf("failed convert to proto.Message, %T", req)
-		}
-		parameters := make(map[string]any)
-
-		if err := addPathParameters(payload, ginCtx, parameters); err != nil {
-			return err
-		}
-
-		addNamedPathParameter(payload, ginCtx, parameters)
-
-		if err := addQueryParameters(payload, ginCtx, parameters); err != nil {
-			return err
-		}
-
-		parameterJson, err := json.Marshal(parameters)
-		if err != nil {
-			return err
-		}
-		if err := protojson.Unmarshal(parameterJson, message); err != nil {
-			return err
-		}
-
-		if payload.Body != nil {
-			if payload.Body.Name != "*" {
-				return nil
-			}
-		}
-
-		return nil
+func HttpRuleBinding(binding *bindingPkg.HttpRuleBinding) func(ctx context.Context, req any, _ string) error {
+	return func(ctx context.Context, req any, _ string) error {
+		return binding.Bind(FromContext(ctx), req)
 	}
 }
-
-func addQueryParameters(payload *Payload, ginCtx *gin.Context, parameters map[string]any) error {
-	for _, parameter := range payload.Query {
-		queryParameters := parameters
-		namePath := strings.Split(parameter.Name, ".")
-		for _, nameSeg := range namePath[:len(namePath)-1] {
-			if _, ok := queryParameters[nameSeg]; !ok {
-				queryParameters[nameSeg] = make(map[string]any)
-			}
-		}
-		name := namePath[len(namePath)-1]
-		switch parameter.Type {
-		case typeArray:
-			values := ginCtx.QueryArray(parameter.Name)
-			queryParameter := make([]any, 0, len(values))
-			for _, value := range values {
-				val, err := regularValue(parameter.Type, value)
-				if err != nil {
-					return err
-				}
-				queryParameter = append(queryParameter, val)
-			}
-			parameters[name] = parameter
-		default:
-			val, err := regularValue(parameter.Type, ginCtx.Query(parameter.Name))
-			if err != nil {
-				return err
-			}
-			parameters[name] = val
-		}
-	}
-	return nil
-}
-
-func addNamedPathParameter(payload *Payload, ginCtx *gin.Context, parameters map[string]any) {
-	if payload.NamedPath == nil {
-		return
-	}
-	args := make([]any, 0, len(payload.NamedPath.Parameters))
-	for _, parameterName := range payload.NamedPath.Parameters {
-		args = append(args, ginCtx.Param(parameterName))
-	}
-	value := fmt.Sprintf(payload.NamedPath.Template, args...)
-	namedPathParameter := parameters
-	namePath := strings.Split(payload.NamedPath.Name, ".")
-	for _, nameSeg := range namePath[:len(namePath)-1] {
-		if _, ok := namedPathParameter[nameSeg]; !ok {
-			subParameter := make(map[string]any)
-			namedPathParameter[nameSeg] = subParameter
-			namedPathParameter = subParameter
-		}
-	}
-	namedPathParameter[namePath[len(namePath)-1]] = value
-}
-
-func addPathParameters(payload *Payload, ginCtx *gin.Context, parameters map[string]any) error {
-	for _, parameter := range payload.Path {
-		val, err := regularValue(parameter.Type, ginCtx.Param(parameter.Name))
-		if err != nil {
-			return err
-		}
-		parameters[parameter.Name] = val
-	}
-	return nil
-}
-
-func regularValue(typ string, val string) (any, error) {
-	switch typ {
-	case typeString:
-		return val, nil
-	case typeNumber:
-		return strconv.ParseFloat(val, 64)
-	case typeInteger:
-		return strconv.ParseInt(val, 10, 64)
-	case typeBoolean:
-		return strconv.ParseBool(val)
-	case typeObject:
-		return nil, fmt.Errorf("invalid path parameter type: %s, value: %s", typ, typeObject)
-	case typeArray:
-		return nil, fmt.Errorf("invalid path parameter type: %s, value: %s", typ, typeObject)
-	}
-	return nil, fmt.Errorf("unsurpport type: %s", typ)
-}
-
-var (
-	typeString  = "string"
-	typeNumber  = "number"
-	typeInteger = "integer"
-	typeBoolean = "boolean"
-	typeObject  = "object"
-	typeArray   = "array"
-
-	formatDate     = "date"
-	formatDateTime = "date-time"
-	formatEnum     = "enum"
-	formatBytes    = "bytes"
-)
