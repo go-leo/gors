@@ -44,7 +44,10 @@ protoc_gors_gen:
 		--gors_opt=paths=source_relative \
 		--gors_opt=naming=proto \
 		--openapi_out=. \
+		--openapi_opt=paths=source_relative \
 		--openapi_opt=output_mode=source_relative \
+		--openapi_opt=fq_schema_naming=true \
+		--openapi_opt=depth=5 \
 		--openapi_opt=naming=proto \
 		example/api/tests/*/*.proto
 	@echo "--- protoc generate end ---"

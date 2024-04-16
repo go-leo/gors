@@ -21,7 +21,7 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/Message'
+                            $ref: '#/components/schemas/tests.allofwrap.message.v1.Message'
                 required: true
             responses:
                 "200":
@@ -29,16 +29,16 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/Message'
+                                $ref: '#/components/schemas/tests.allofwrap.message.v1.Message'
                 default:
                     description: Default error response
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/Status'
+                                $ref: '#/components/schemas/google.rpc.Status'
 components:
     schemas:
-        GoogleProtobufAny:
+        google.protobuf.Any:
             type: object
             properties:
                 '@type':
@@ -46,14 +46,7 @@ components:
                     description: The type of the serialized message.
             additionalProperties: true
             description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message.
-        Message:
-            type: object
-            properties:
-                message_id:
-                    type: string
-                text:
-                    type: string
-        Status:
+        google.rpc.Status:
             type: object
             properties:
                 code:
@@ -66,8 +59,38 @@ components:
                 details:
                     type: array
                     items:
-                        $ref: '#/components/schemas/GoogleProtobufAny'
+                        $ref: '#/components/schemas/google.protobuf.Any'
                     description: A list of messages that carry the error details.  There is a common set of message types for APIs to use.
             description: 'The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https://github.com/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https://cloud.google.com/apis/design/errors).'
+        tests.allofwrap.message.v1.Message:
+            type: object
+            properties:
+                sub:
+                    $ref: '#/components/schemas/tests.allofwrap.message.v1.Message_Sub'
+                sub_input:
+                    writeOnly: true
+                    allOf:
+                        - $ref: '#/components/schemas/tests.allofwrap.message.v1.Message_Sub'
+                sub_output:
+                    readOnly: true
+                    allOf:
+                        - $ref: '#/components/schemas/tests.allofwrap.message.v1.Message_Sub'
+                sub_desc:
+                    allOf:
+                        - $ref: '#/components/schemas/tests.allofwrap.message.v1.Message_Sub'
+                    description: this sub has a description
+                subs:
+                    readOnly: true
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/tests.allofwrap.message.v1.Message_Sub'
+                    description: test repeated, should not allof wrapped
+                message_id:
+                    type: string
+        tests.allofwrap.message.v1.Message_Sub:
+            type: object
+            properties:
+                content:
+                    type: string
 tags:
     - name: Messaging

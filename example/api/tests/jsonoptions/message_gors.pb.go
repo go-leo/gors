@@ -19,7 +19,7 @@
 // - protoc             v4.24.3
 // source: example/api/tests/jsonoptions/message.proto
 
-package jsonnames
+package jsonoptions
 
 import (
 	context "context"
