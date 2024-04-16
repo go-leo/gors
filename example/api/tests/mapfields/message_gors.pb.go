@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC.
+// Copyright 2021 Google LLC.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,9 +17,9 @@
 // versions:
 // - protoc-gen-gors v1.3.0
 // - protoc             v4.24.3
-// source: cmd/protoc-gen-gors/examples/tests/enumoptions/message.proto
+// source: example/api/tests/mapfields/message.proto
 
-package message
+package mapfields
 
 import (
 	context "context"
@@ -35,7 +35,7 @@ func MessagingServiceRoutes(svc MessagingService, opts ...gors.Option) []gors.Ro
 	wrapper := &_MessagingServiceWrapper{svc: svc, options: options}
 	_ = wrapper
 	return []gors.Route{
-		gors.NewRoute("POST", "/v1/messages/:message_id", _Messaging_CreateMessage_GORS_Handler(wrapper, options, _Messaging_CreateMessage_GORS_Handler_POST_71b8052a59ef2e1e6bb26f276891271b_Binding())),
+		gors.NewRoute("PATCH", "/v1/messages/:message_id", _Messaging_UpdateMessage_GORS_Handler(wrapper, options, _Messaging_UpdateMessage_GORS_Handler_PATCH_71b8052a59ef2e1e6bb26f276891271b_Binding())),
 	}
 }
 
@@ -44,7 +44,7 @@ func MessagingServerRoutes(srv MessagingServer, opts ...gors.Option) []gors.Rout
 	wrapper := &_MessagingServerWrapper{srv: srv, options: options}
 	_ = wrapper
 	return []gors.Route{
-		gors.NewRoute("POST", "/v1/messages/:message_id", _Messaging_CreateMessage_GORS_Handler(wrapper, options, _Messaging_CreateMessage_GORS_Handler_POST_71b8052a59ef2e1e6bb26f276891271b_Binding())),
+		gors.NewRoute("PATCH", "/v1/messages/:message_id", _Messaging_UpdateMessage_GORS_Handler(wrapper, options, _Messaging_UpdateMessage_GORS_Handler_PATCH_71b8052a59ef2e1e6bb26f276891271b_Binding())),
 	}
 }
 
@@ -53,13 +53,13 @@ func MessagingClientRoutes(cli MessagingClient, opts ...gors.Option) []gors.Rout
 	wrapper := &_MessagingClientWrapper{cli: cli, options: options}
 	_ = wrapper
 	return []gors.Route{
-		gors.NewRoute("POST", "/v1/messages/:message_id", _Messaging_CreateMessage_GORS_Handler(wrapper, options, _Messaging_CreateMessage_GORS_Handler_POST_71b8052a59ef2e1e6bb26f276891271b_Binding())),
+		gors.NewRoute("PATCH", "/v1/messages/:message_id", _Messaging_UpdateMessage_GORS_Handler(wrapper, options, _Messaging_UpdateMessage_GORS_Handler_PATCH_71b8052a59ef2e1e6bb26f276891271b_Binding())),
 	}
 }
 
 // MessagingService is the service API for Messaging service.
 type MessagingService interface {
-	CreateMessage(context.Context, *Message) (*Message, error)
+	UpdateMessage(context.Context, *Message) (*Message, error)
 }
 
 var _ MessagingService = (*_MessagingServiceWrapper)(nil)
@@ -69,8 +69,8 @@ type _MessagingServiceWrapper struct {
 	options *gors.Options
 }
 
-func (wrapper *_MessagingServiceWrapper) CreateMessage(ctx context.Context, request *Message) (*Message, error) {
-	return wrapper.svc.CreateMessage(ctx, request)
+func (wrapper *_MessagingServiceWrapper) UpdateMessage(ctx context.Context, request *Message) (*Message, error) {
+	return wrapper.svc.UpdateMessage(ctx, request)
 }
 
 var _ MessagingService = (*_MessagingServerWrapper)(nil)
@@ -81,11 +81,11 @@ type _MessagingServerWrapper struct {
 	options *gors.Options
 }
 
-func (wrapper *_MessagingServerWrapper) CreateMessage(ctx context.Context, request *Message) (*Message, error) {
-	rpcMethodName := "/tests.enumoptions.message.v1.Messaging/CreateMessage"
+func (wrapper *_MessagingServerWrapper) UpdateMessage(ctx context.Context, request *Message) (*Message, error) {
+	rpcMethodName := "/tests.mapfields.message.v1.Messaging/UpdateMessage"
 	stream := gors.NewServerTransportStream(rpcMethodName)
 	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
-	resp, err := wrapper.srv.CreateMessage(ctx, request)
+	resp, err := wrapper.srv.UpdateMessage(ctx, request)
 	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher)
 	return resp, err
 }
@@ -98,16 +98,16 @@ type _MessagingClientWrapper struct {
 	options *gors.Options
 }
 
-func (wrapper *_MessagingClientWrapper) CreateMessage(ctx context.Context, request *Message) (*Message, error) {
+func (wrapper *_MessagingClientWrapper) UpdateMessage(ctx context.Context, request *Message) (*Message, error) {
 	var headerMD, trailerMD metadata.MD
-	resp, err := wrapper.cli.CreateMessage(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
+	resp, err := wrapper.cli.UpdateMessage(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
 	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher)
 	return resp, err
 }
 
-func _Messaging_CreateMessage_GORS_Handler(svc MessagingService, options *gors.Options, binding *binding.HttpRuleBinding) func(c *gin.Context) {
+func _Messaging_UpdateMessage_GORS_Handler(svc MessagingService, options *gors.Options, binding *binding.HttpRuleBinding) func(c *gin.Context) {
 	return func(c *gin.Context) {
-		var rpcMethodName = "/tests.enumoptions.message.v1.Messaging/CreateMessage"
+		var rpcMethodName = "/tests.mapfields.message.v1.Messaging/UpdateMessage"
 		var ctx = gors.NewContext(c, rpcMethodName)
 		var req *Message
 		var resp *Message
@@ -124,7 +124,7 @@ func _Messaging_CreateMessage_GORS_Handler(svc MessagingService, options *gors.O
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
 		}
-		resp, err = svc.CreateMessage(ctx, req)
+		resp, err = svc.UpdateMessage(ctx, req)
 		if err != nil {
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
@@ -133,17 +133,14 @@ func _Messaging_CreateMessage_GORS_Handler(svc MessagingService, options *gors.O
 	}
 }
 
-func _Messaging_CreateMessage_GORS_Handler_POST_71b8052a59ef2e1e6bb26f276891271b_Binding() *binding.HttpRuleBinding {
+func _Messaging_UpdateMessage_GORS_Handler_PATCH_71b8052a59ef2e1e6bb26f276891271b_Binding() *binding.HttpRuleBinding {
 	return &binding.HttpRuleBinding{
 		Path: []*binding.PathRule{
 			{Name: "message_id", Type: "string"},
 		},
-		Query: []*binding.QueryRule{
-			{Name: "kind", Type: "integer"},
-		},
 		Body: &binding.BodyRule{
-			Name: "body_text",
-			Type: "string",
+			Name: "*",
+			Type: "object",
 		},
 	}
 }

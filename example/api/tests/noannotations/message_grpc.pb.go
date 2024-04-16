@@ -17,9 +17,9 @@
 // versions:
 // - protoc-gen-go-grpc v1.3.0
 // - protoc             v4.24.3
-// source: cmd/protoc-gen-gors/examples/tests/noannotations/message.proto
+// source: example/api/tests/noannotations/message.proto
 
-package message
+package noannotations
 
 import (
 	context "context"
@@ -120,7 +120,7 @@ var Messaging1_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "cmd/protoc-gen-gors/examples/tests/noannotations/message.proto",
+	Metadata: "example/api/tests/noannotations/message.proto",
 }
 
 const (
@@ -210,5 +210,5 @@ var Messaging2_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "cmd/protoc-gen-gors/examples/tests/noannotations/message.proto",
+	Metadata: "example/api/tests/noannotations/message.proto",
 }

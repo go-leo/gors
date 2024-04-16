@@ -2,6 +2,7 @@ package binding
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/render"
@@ -123,11 +124,13 @@ func (binding *HttpRuleBinding) bindBody(ginCtx *gin.Context, message proto.Mess
 	} else {
 		buffer.WriteString(`{"` + bodyField + `":`)
 		if binding.Body.Type == typeString {
-			buffer.WriteString(`"`)
-		}
-		buffer.Write(bodyData)
-		if binding.Body.Type == typeString {
-			buffer.WriteString(`"`)
+			data, err := json.Marshal(string(bodyData))
+			if err != nil {
+				return err
+			}
+			buffer.Write(data)
+		} else {
+			buffer.Write(bodyData)
 		}
 		buffer.WriteString("}")
 	}

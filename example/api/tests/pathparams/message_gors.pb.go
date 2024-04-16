@@ -17,9 +17,9 @@
 // versions:
 // - protoc-gen-gors v1.3.0
 // - protoc             v4.24.3
-// source: cmd/protoc-gen-gors/examples/tests/pathparams/message.proto
+// source: example/api/tests/pathparams/message.proto
 
-package message
+package pathparams
 
 import (
 	context "context"

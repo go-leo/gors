@@ -17,9 +17,9 @@
 // versions:
 // - protoc-gen-gors v1.3.0
 // - protoc             v4.24.3
-// source: cmd/protoc-gen-gors/examples/tests/openapiv3annotations/message.proto
+// source: example/api/tests/noannotations/message.proto
 
-package message
+package noannotations
 
 import (
 	context "context"
@@ -119,7 +119,7 @@ type _Messaging1ServerWrapper struct {
 }
 
 func (wrapper *_Messaging1ServerWrapper) UpdateMessage(ctx context.Context, request *Message) (*Message, error) {
-	rpcMethodName := "/tests.openapiv3annotations.message.v1.Messaging1/UpdateMessage"
+	rpcMethodName := "/tests.noannotations.message.v1.Messaging1/UpdateMessage"
 	stream := gors.NewServerTransportStream(rpcMethodName)
 	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
 	resp, err := wrapper.srv.UpdateMessage(ctx, request)
@@ -136,7 +136,7 @@ type _Messaging2ServerWrapper struct {
 }
 
 func (wrapper *_Messaging2ServerWrapper) UpdateMessage(ctx context.Context, request *Message) (*Message, error) {
-	rpcMethodName := "/tests.openapiv3annotations.message.v1.Messaging2/UpdateMessage"
+	rpcMethodName := "/tests.noannotations.message.v1.Messaging2/UpdateMessage"
 	stream := gors.NewServerTransportStream(rpcMethodName)
 	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
 	resp, err := wrapper.srv.UpdateMessage(ctx, request)
@@ -176,7 +176,7 @@ func (wrapper *_Messaging2ClientWrapper) UpdateMessage(ctx context.Context, requ
 
 func _Messaging1_UpdateMessage_GORS_Handler(svc Messaging1Service, options *gors.Options, binding *binding.HttpRuleBinding) func(c *gin.Context) {
 	return func(c *gin.Context) {
-		var rpcMethodName = "/tests.openapiv3annotations.message.v1.Messaging1/UpdateMessage"
+		var rpcMethodName = "/tests.noannotations.message.v1.Messaging1/UpdateMessage"
 		var ctx = gors.NewContext(c, rpcMethodName)
 		var req *Message
 		var resp *Message
@@ -204,7 +204,7 @@ func _Messaging1_UpdateMessage_GORS_Handler(svc Messaging1Service, options *gors
 
 func _Messaging2_UpdateMessage_GORS_Handler(svc Messaging2Service, options *gors.Options, binding *binding.HttpRuleBinding) func(c *gin.Context) {
 	return func(c *gin.Context) {
-		var rpcMethodName = "/tests.openapiv3annotations.message.v1.Messaging2/UpdateMessage"
+		var rpcMethodName = "/tests.noannotations.message.v1.Messaging2/UpdateMessage"
 		var ctx = gors.NewContext(c, rpcMethodName)
 		var req *Message
 		var resp *Message

@@ -20,7 +20,7 @@ package tests.openapiv3annotations.message.v1;
 import "google/api/annotations.proto";
 import "openapiv3/annotations.proto";
 
-option go_package = "github.com/google/gnostic/apps/protoc-gen-openapi/examples/tests/openapiv3annotations/message/v1;message";
+option go_package = "github.com/go-leo/gors/example/api/tests/openapiv3annotations/v1;openapiv3annotations";
 
 option (openapi.v3.document) = {
   info: {

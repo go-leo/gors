@@ -17,9 +17,9 @@
 // versions:
 // - protoc-gen-go-grpc v1.3.0
 // - protoc             v4.24.3
-// source: cmd/protoc-gen-gors/examples/tests/allofwrap/message.proto
+// source: example/api/tests/allofwrap/message.proto
 
-package message
+package allofwrap
 
 import (
 	context "context"
@@ -120,5 +120,5 @@ var Messaging_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "cmd/protoc-gen-gors/examples/tests/allofwrap/message.proto",
+	Metadata: "example/api/tests/allofwrap/message.proto",
 }

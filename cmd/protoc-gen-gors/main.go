@@ -33,7 +33,7 @@ func main() {
 			if !file.Generate {
 				continue
 			}
-			filename := file.GeneratedFilenamePrefix + "_gors.go"
+			filename := file.GeneratedFilenamePrefix + "_gors.pb.go"
 			outputFile := plugin.NewGeneratedFile(filename, file.GoImportPath)
 			openapiGenerator := openapigenerator.NewOpenAPIv3Generator(plugin, conf, []*protogen.File{file})
 			gen := generator.NewGenerator(plugin, file, outputFile, openapiGenerator)

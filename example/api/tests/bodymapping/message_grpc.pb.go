@@ -17,9 +17,9 @@
 // versions:
 // - protoc-gen-go-grpc v1.3.0
 // - protoc             v4.24.3
-// source: cmd/protoc-gen-gors/examples/tests/bodymapping/message.proto
+// source: example/api/tests/bodymapping/message.proto
 
-package message
+package bodymapping
 
 import (
 	context "context"
@@ -158,5 +158,5 @@ var Messaging_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "cmd/protoc-gen-gors/examples/tests/bodymapping/message.proto",
+	Metadata: "example/api/tests/bodymapping/message.proto",
 }

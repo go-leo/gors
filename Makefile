@@ -35,7 +35,7 @@ protoc_gors_gen:
 	@echo "--- protoc generate start ---"
 	@protoc \
 		--proto_path=. \
-		--proto_path=cmd/protoc-gen-gors/examples \
+		--proto_path=example/api \
 		--go_out=. \
 		--go_opt=paths=source_relative \
 		--go-grpc_out=. \
@@ -46,11 +46,9 @@ protoc_gors_gen:
 		--openapi_out=. \
 		--openapi_opt=output_mode=source_relative \
 		--openapi_opt=naming=proto \
-		cmd/protoc-gen-gors/examples/tests/*/*.proto \
-		cmd/protoc-gen-gors/examples/google/example/library/*/*.proto
+		example/api/tests/*/*.proto
 	@echo "--- protoc generate end ---"
-#		--grpc-gateway_out=. \
-#		--grpc-gateway_opt=paths=source_relative \
+
 protoc_pkg_gen:
 	@echo "--- protoc generate start ---"
 	@protoc \
