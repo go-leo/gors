@@ -37,6 +37,7 @@ const (
 	Messaging_GetMessage_FullMethodName     = "/tests.pathparams.message.v1.Messaging/GetMessage"
 	Messaging_GetUserMessage_FullMethodName = "/tests.pathparams.message.v1.Messaging/GetUserMessage"
 	Messaging_CreateMessage_FullMethodName  = "/tests.pathparams.message.v1.Messaging/CreateMessage"
+	Messaging_UpdateMessage_FullMethodName  = "/tests.pathparams.message.v1.Messaging/UpdateMessage"
 )
 
 // MessagingClient is the client API for Messaging service.
@@ -46,6 +47,7 @@ type MessagingClient interface {
 	GetMessage(ctx context.Context, in *GetMessageRequest, opts ...grpc.CallOption) (*Message, error)
 	GetUserMessage(ctx context.Context, in *GetMessageRequest, opts ...grpc.CallOption) (*Message, error)
 	CreateMessage(ctx context.Context, in *Message, opts ...grpc.CallOption) (*Message, error)
+	UpdateMessage(ctx context.Context, in *UpdateMessageRequest, opts ...grpc.CallOption) (*Message, error)
 }
 
 type messagingClient struct {
@@ -83,6 +85,15 @@ func (c *messagingClient) CreateMessage(ctx context.Context, in *Message, opts .
 	return out, nil
 }
 
+func (c *messagingClient) UpdateMessage(ctx context.Context, in *UpdateMessageRequest, opts ...grpc.CallOption) (*Message, error) {
+	out := new(Message)
+	err := c.cc.Invoke(ctx, Messaging_UpdateMessage_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MessagingServer is the server API for Messaging service.
 // All implementations must embed UnimplementedMessagingServer
 // for forward compatibility
@@ -90,6 +101,7 @@ type MessagingServer interface {
 	GetMessage(context.Context, *GetMessageRequest) (*Message, error)
 	GetUserMessage(context.Context, *GetMessageRequest) (*Message, error)
 	CreateMessage(context.Context, *Message) (*Message, error)
+	UpdateMessage(context.Context, *UpdateMessageRequest) (*Message, error)
 	mustEmbedUnimplementedMessagingServer()
 }
 
@@ -105,6 +117,9 @@ func (UnimplementedMessagingServer) GetUserMessage(context.Context, *GetMessageR
 }
 func (UnimplementedMessagingServer) CreateMessage(context.Context, *Message) (*Message, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateMessage not implemented")
+}
+func (UnimplementedMessagingServer) UpdateMessage(context.Context, *UpdateMessageRequest) (*Message, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateMessage not implemented")
 }
 func (UnimplementedMessagingServer) mustEmbedUnimplementedMessagingServer() {}
 
@@ -173,6 +188,24 @@ func _Messaging_CreateMessage_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Messaging_UpdateMessage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateMessageRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MessagingServer).UpdateMessage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Messaging_UpdateMessage_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MessagingServer).UpdateMessage(ctx, req.(*UpdateMessageRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Messaging_ServiceDesc is the grpc.ServiceDesc for Messaging service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -191,6 +224,10 @@ var Messaging_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateMessage",
 			Handler:    _Messaging_CreateMessage_Handler,
+		},
+		{
+			MethodName: "UpdateMessage",
+			Handler:    _Messaging_UpdateMessage_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

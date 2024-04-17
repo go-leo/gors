@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin/render"
 	"google.golang.org/genproto/googleapis/api/httpbody"
+	rpchttp "google.golang.org/genproto/googleapis/rpc/http"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"net/http"
@@ -25,6 +26,14 @@ func (r ProtoJSON) Render(w http.ResponseWriter) (err error) {
 			header["Content-Type"] = []string{httpBody.GetContentType()}
 		}
 		_, err := w.Write(httpBody.GetData())
+		return err
+	}
+	if response, ok := r.Data.(*rpchttp.HttpResponse); ok {
+		w.WriteHeader(int(response.GetStatus()))
+		for _, header := range response.GetHeaders() {
+			w.Header().Set(header.GetKey(), header.GetValue())
+		}
+		_, err := w.Write(response.GetBody())
 		return err
 	}
 	r.WriteContentType(w)

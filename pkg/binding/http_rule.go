@@ -8,10 +8,12 @@ import (
 	"github.com/gin-gonic/gin/render"
 	renderPkg "github.com/go-leo/gors/pkg/render"
 	"google.golang.org/genproto/googleapis/api/httpbody"
+	rpchttp "google.golang.org/genproto/googleapis/rpc/http"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"io"
+	"net/http"
 	"strconv"
 	"strings"
 )
@@ -66,6 +68,9 @@ func (binding *HttpRuleBinding) Bind(ginCtx *gin.Context, req any) error {
 	if httpBody, ok := req.(*httpbody.HttpBody); ok {
 		return binding.bindHttpBody(ginCtx, httpBody)
 	}
+	if request, ok := req.(*rpchttp.HttpRequest); ok {
+		return binding.bindHttpRequest(ginCtx, request)
+	}
 	message, ok := req.(proto.Message)
 	if !ok {
 		return fmt.Errorf("failed convert to proto.Message, %T", req)
@@ -83,6 +88,23 @@ func (binding *HttpRuleBinding) bindHttpBody(ginCtx *gin.Context, body *httpbody
 		return err
 	}
 	body.Data = data
+	return nil
+}
+
+func (binding *HttpRuleBinding) bindHttpRequest(ctx *gin.Context, request *rpchttp.HttpRequest) error {
+	data, err := io.ReadAll(ctx.Request.Body)
+	if err != nil {
+		return err
+	}
+	request.Body = data
+	request.Method = ctx.Request.Method
+	request.Uri = ctx.Request.RequestURI
+	for key := range ctx.Request.Header {
+		request.Headers = append(request.Headers, &rpchttp.HttpHeader{
+			Key:   http.CanonicalHeaderKey(key),
+			Value: ctx.Request.Header.Get(key),
+		})
+	}
 	return nil
 }
 
@@ -172,7 +194,10 @@ func (binding *HttpRuleBinding) addQueryParameters(ginCtx *gin.Context, paramete
 		name := namePath[len(namePath)-1]
 		switch parameter.Type {
 		case typeArray:
-			values := ginCtx.QueryArray(parameter.Name)
+			values, ok := ginCtx.GetQueryArray(parameter.Name)
+			if !ok {
+				return nil
+			}
 			queryParameter := make([]any, 0, len(values))
 			for _, value := range values {
 				val, err := regularValue(parameter.Type, value)
@@ -183,7 +208,11 @@ func (binding *HttpRuleBinding) addQueryParameters(ginCtx *gin.Context, paramete
 			}
 			parameters[name] = parameter
 		default:
-			val, err := regularValue(parameter.Type, ginCtx.Query(parameter.Name))
+			value, ok := ginCtx.GetQuery(parameter.Name)
+			if !ok {
+				return nil
+			}
+			val, err := regularValue(parameter.Type, value)
 			if err != nil {
 				return err
 			}

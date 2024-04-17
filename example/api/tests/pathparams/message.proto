@@ -40,6 +40,13 @@ service Messaging {
       body : "*"
     };
   }
+
+  rpc UpdateMessage(UpdateMessageRequest) returns (Message) {
+    option (google.api.http) = {
+      patch :  "/v1/{name=users/*/messages/*}"
+      body : "*"
+    };
+  }
 }
 
 message GetMessageRequest {
@@ -64,4 +71,10 @@ message Comment {
   string comment_id = 1;
   uint64 user_id = 2;
   string content = 3;
+}
+
+message UpdateMessageRequest {
+  string name = 1;
+  string content = 2;
+  optional string maybe = 3;
 }
