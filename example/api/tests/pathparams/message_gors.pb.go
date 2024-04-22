@@ -295,7 +295,8 @@ func _Messaging_GetMessage_GORS_Handler_GET_71b8052a59ef2e1e6bb26f276891271b_Bin
 			{Name: "message_id", Type: "string"},
 		},
 		Query: []*binding.QueryRule{
-			{Name: "user_id", Type: "string"},
+			// typ:string
+			{Name: "user_id", Type: "string", ItemType: ""},
 		},
 	}
 }

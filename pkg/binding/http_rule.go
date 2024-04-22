@@ -200,13 +200,13 @@ func (binding *HttpRuleBinding) addQueryParameters(ginCtx *gin.Context, paramete
 			}
 			queryParameter := make([]any, 0, len(values))
 			for _, value := range values {
-				val, err := regularValue(parameter.Type, value)
+				val, err := regularValue(parameter.ItemType, value)
 				if err != nil {
 					return err
 				}
 				queryParameter = append(queryParameter, val)
 			}
-			parameters[name] = parameter
+			parameters[name] = queryParameter
 		default:
 			value, ok := ginCtx.GetQuery(parameter.Name)
 			if !ok {
@@ -253,12 +253,11 @@ func regularValue(typ string, val string) (any, error) {
 		return strconv.ParseInt(val, 10, 64)
 	case typeBoolean:
 		return strconv.ParseBool(val)
-	case typeObject:
-		return nil, fmt.Errorf("invalid path parameter type: %s, value: %s", typ, typeObject)
-	case typeArray:
-		return nil, fmt.Errorf("invalid path parameter type: %s, value: %s", typ, typeObject)
+	case typeArray, typeObject:
+		return nil, fmt.Errorf("invalid parameter type: %s, value: %s", typ, typeObject)
+	default:
+		return nil, fmt.Errorf("unsurpport type: %s", typ)
 	}
-	return nil, fmt.Errorf("unsurpport type: %s", typ)
 }
 
 var (

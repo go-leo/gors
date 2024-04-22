@@ -33,6 +33,7 @@ func (m MessagingService) GetMessage(ctx context.Context, request *example.GetMe
 		UserId:    request.GetUserId(),
 		Content:   "this is content",
 		Maybe:     proto.String("this is maybe"),
+		Tags:      request.GetTags(),
 	}, nil
 }
 

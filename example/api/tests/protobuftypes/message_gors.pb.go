@@ -429,29 +429,52 @@ func _Messaging_GetMessage_GORS_Handler_GET_71b8052a59ef2e1e6bb26f276891271b_Bin
 			{Name: "message_id", Type: "string"},
 		},
 		Query: []*binding.QueryRule{
-			{Name: "string_type", Type: "string"},
-			{Name: "recursive_type.parent_id", Type: "integer"},
-			{Name: "recursive_type.child.child_id", Type: "integer"},
-			{Name: "recursive_type.child.parent.parent_id", Type: "integer"},
-			{Name: "recursive_type.child.parent.child.child_id", Type: "integer"},
-			{Name: "embedded_type.message_id", Type: "string"},
-			{Name: "sub_type.message_id", Type: "string"},
-			{Name: "sub_type.sub_sub_message.message_id", Type: "string"},
-			{Name: "sub_type.sub_sub_message.integers", Type: "array"},
-			{Name: "repeated_type", Type: "array"},
-			{Name: "value_type", Type: ""},
-			{Name: "repeated_value_type", Type: "array"},
-			{Name: "bool_value_type", Type: "boolean"},
-			{Name: "bytes_value_type", Type: "string"},
-			{Name: "int32_value_type", Type: "integer"},
-			{Name: "uint32_value_type", Type: "integer"},
-			{Name: "string_value_type", Type: "string"},
-			{Name: "int64_value_type", Type: "string"},
-			{Name: "uint64_value_type", Type: "string"},
-			{Name: "float_value_type", Type: "number"},
-			{Name: "double_value_type", Type: "number"},
-			{Name: "timestamp_type", Type: "string"},
-			{Name: "duration_type", Type: "string"},
+			// typ:string
+			{Name: "string_type", Type: "string", ItemType: ""},
+			// typ:integer
+			{Name: "recursive_type.parent_id", Type: "integer", ItemType: ""},
+			// typ:integer
+			{Name: "recursive_type.child.child_id", Type: "integer", ItemType: ""},
+			// typ:integer
+			{Name: "recursive_type.child.parent.parent_id", Type: "integer", ItemType: ""},
+			// typ:integer
+			{Name: "recursive_type.child.parent.child.child_id", Type: "integer", ItemType: ""},
+			// typ:string
+			{Name: "embedded_type.message_id", Type: "string", ItemType: ""},
+			// typ:string
+			{Name: "sub_type.message_id", Type: "string", ItemType: ""},
+			// typ:string
+			{Name: "sub_type.sub_sub_message.message_id", Type: "string", ItemType: ""},
+			// typ:array
+			{Name: "sub_type.sub_sub_message.integers", Type: "array", ItemType: "integer"},
+			// typ:array
+			{Name: "repeated_type", Type: "array", ItemType: "string"},
+			// typ:
+			{Name: "value_type", Type: "", ItemType: ""},
+			// typ:array
+			{Name: "repeated_value_type", Type: "array", ItemType: ""},
+			// typ:boolean
+			{Name: "bool_value_type", Type: "boolean", ItemType: ""},
+			// typ:string
+			{Name: "bytes_value_type", Type: "string", ItemType: ""},
+			// typ:integer
+			{Name: "int32_value_type", Type: "integer", ItemType: ""},
+			// typ:integer
+			{Name: "uint32_value_type", Type: "integer", ItemType: ""},
+			// typ:string
+			{Name: "string_value_type", Type: "string", ItemType: ""},
+			// typ:string
+			{Name: "int64_value_type", Type: "string", ItemType: ""},
+			// typ:string
+			{Name: "uint64_value_type", Type: "string", ItemType: ""},
+			// typ:number
+			{Name: "float_value_type", Type: "number", ItemType: ""},
+			// typ:number
+			{Name: "double_value_type", Type: "number", ItemType: ""},
+			// typ:string
+			{Name: "timestamp_type", Type: "string", ItemType: ""},
+			// typ:string
+			{Name: "duration_type", Type: "string", ItemType: ""},
 		},
 	}
 }
@@ -461,29 +484,52 @@ func _Messaging_UpdateMessage_GORS_Handler_PATCH_71b8052a59ef2e1e6bb26f276891271
 			{Name: "message_id", Type: "string"},
 		},
 		Query: []*binding.QueryRule{
-			{Name: "string_type", Type: "string"},
-			{Name: "recursive_type.parent_id", Type: "integer"},
-			{Name: "recursive_type.child.child_id", Type: "integer"},
-			{Name: "recursive_type.child.parent.parent_id", Type: "integer"},
-			{Name: "recursive_type.child.parent.child.child_id", Type: "integer"},
-			{Name: "embedded_type.message_id", Type: "string"},
-			{Name: "sub_type.message_id", Type: "string"},
-			{Name: "sub_type.sub_sub_message.message_id", Type: "string"},
-			{Name: "sub_type.sub_sub_message.integers", Type: "array"},
-			{Name: "repeated_type", Type: "array"},
-			{Name: "value_type", Type: ""},
-			{Name: "repeated_value_type", Type: "array"},
-			{Name: "bool_value_type", Type: "boolean"},
-			{Name: "bytes_value_type", Type: "string"},
-			{Name: "int32_value_type", Type: "integer"},
-			{Name: "uint32_value_type", Type: "integer"},
-			{Name: "string_value_type", Type: "string"},
-			{Name: "int64_value_type", Type: "string"},
-			{Name: "uint64_value_type", Type: "string"},
-			{Name: "float_value_type", Type: "number"},
-			{Name: "double_value_type", Type: "number"},
-			{Name: "timestamp_type", Type: "string"},
-			{Name: "duration_type", Type: "string"},
+			// typ:string
+			{Name: "string_type", Type: "string", ItemType: ""},
+			// typ:integer
+			{Name: "recursive_type.parent_id", Type: "integer", ItemType: ""},
+			// typ:integer
+			{Name: "recursive_type.child.child_id", Type: "integer", ItemType: ""},
+			// typ:integer
+			{Name: "recursive_type.child.parent.parent_id", Type: "integer", ItemType: ""},
+			// typ:integer
+			{Name: "recursive_type.child.parent.child.child_id", Type: "integer", ItemType: ""},
+			// typ:string
+			{Name: "embedded_type.message_id", Type: "string", ItemType: ""},
+			// typ:string
+			{Name: "sub_type.message_id", Type: "string", ItemType: ""},
+			// typ:string
+			{Name: "sub_type.sub_sub_message.message_id", Type: "string", ItemType: ""},
+			// typ:array
+			{Name: "sub_type.sub_sub_message.integers", Type: "array", ItemType: "integer"},
+			// typ:array
+			{Name: "repeated_type", Type: "array", ItemType: "string"},
+			// typ:
+			{Name: "value_type", Type: "", ItemType: ""},
+			// typ:array
+			{Name: "repeated_value_type", Type: "array", ItemType: ""},
+			// typ:boolean
+			{Name: "bool_value_type", Type: "boolean", ItemType: ""},
+			// typ:string
+			{Name: "bytes_value_type", Type: "string", ItemType: ""},
+			// typ:integer
+			{Name: "int32_value_type", Type: "integer", ItemType: ""},
+			// typ:integer
+			{Name: "uint32_value_type", Type: "integer", ItemType: ""},
+			// typ:string
+			{Name: "string_value_type", Type: "string", ItemType: ""},
+			// typ:string
+			{Name: "int64_value_type", Type: "string", ItemType: ""},
+			// typ:string
+			{Name: "uint64_value_type", Type: "string", ItemType: ""},
+			// typ:number
+			{Name: "float_value_type", Type: "number", ItemType: ""},
+			// typ:number
+			{Name: "double_value_type", Type: "number", ItemType: ""},
+			// typ:string
+			{Name: "timestamp_type", Type: "string", ItemType: ""},
+			// typ:string
+			{Name: "duration_type", Type: "string", ItemType: ""},
 		},
 		Body: &binding.BodyRule{
 			Name: "body",

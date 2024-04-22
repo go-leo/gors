@@ -191,7 +191,8 @@ func _Messaging_CreateMessage_GORS_Handler_POST_71b8052a59ef2e1e6bb26f276891271b
 			{Name: "message_id", Type: "string"},
 		},
 		Query: []*binding.QueryRule{
-			{Name: "not_used", Type: "string"},
+			// typ:string
+			{Name: "not_used", Type: "string", ItemType: ""},
 		},
 		Body: &binding.BodyRule{
 			Name: "body_text",
@@ -205,7 +206,8 @@ func _Messaging_UpdateMessage_GORS_Handler_PATCH_71b8052a59ef2e1e6bb26f276891271
 			{Name: "message_id", Type: "string"},
 		},
 		Query: []*binding.QueryRule{
-			{Name: "not_used", Type: "string"},
+			// typ:string
+			{Name: "not_used", Type: "string", ItemType: ""},
 		},
 		Body: &binding.BodyRule{
 			Name: "body_text",

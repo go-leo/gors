@@ -21,6 +21,12 @@ paths:
                   in: query
                   schema:
                     type: string
+                - name: tags
+                  in: query
+                  schema:
+                    type: array
+                    items:
+                        type: string
             responses:
                 "200":
                     description: OK
@@ -100,5 +106,9 @@ components:
                     type: string
                 maybe:
                     type: string
+                tags:
+                    type: array
+                    items:
+                        type: string
 tags:
     - name: Messaging

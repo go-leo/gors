@@ -481,9 +481,19 @@ func (g *Generator) printQueryParameters(parameters []*openapiv3.Parameter) {
 	}
 	g.outputFile.P("Query:[]*", bindingPackage.Ident("QueryRule"), "{")
 	for _, parameterDoc := range parameters {
-		name := strconv.Quote(parameterDoc.GetName())
-		typ := strconv.Quote(parameterDoc.GetSchema().GetSchema().GetType())
-		g.outputFile.P("{Name:", name, ", Type: ", typ, "},")
+		name := parameterDoc.GetName()
+		schema := parameterDoc.GetSchema().GetSchema()
+		typ := schema.GetType()
+		var itemTyp string
+		g.outputFile.P("// typ:", typ)
+		if typ == "array" {
+			items := schema.GetItems()
+			itemTyp = items.GetSchemaOrReference()[0].GetSchema().GetType()
+		}
+		name = strconv.Quote(name)
+		typ = strconv.Quote(typ)
+		itemTyp = strconv.Quote(itemTyp)
+		g.outputFile.P("{Name:", name, ", Type:", typ, ", ItemType:", itemTyp, "},")
 	}
 	g.outputFile.P("},")
 }

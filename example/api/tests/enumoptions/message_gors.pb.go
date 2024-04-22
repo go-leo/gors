@@ -139,7 +139,8 @@ func _Messaging_CreateMessage_GORS_Handler_POST_71b8052a59ef2e1e6bb26f276891271b
 			{Name: "message_id", Type: "string"},
 		},
 		Query: []*binding.QueryRule{
-			{Name: "kind", Type: "integer"},
+			// typ:integer
+			{Name: "kind", Type: "integer", ItemType: ""},
 		},
 		Body: &binding.BodyRule{
 			Name: "body_text",

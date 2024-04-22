@@ -39,6 +39,7 @@ service Messaging {
 message GetMessageRequest {
   string message_id = 1;
   uint64 user_id = 2;
+  repeated string tags = 3;
 }
 
 message Message {
@@ -46,4 +47,5 @@ message Message {
   uint64 user_id = 2;
   string content = 3;
   optional string maybe = 4;
+  repeated string tags = 5;
 }
