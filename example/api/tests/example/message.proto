@@ -22,6 +22,12 @@ import "google/api/annotations.proto";
 option go_package = "github.com/go-leo/gors/example/api/tests/example/v1;example";
 
 service Messaging {
+  rpc GetMessages(GetMessageRequest) returns (Message) {
+    option (google.api.http) = {
+      get : "/v1/messages/list"
+    };
+  }
+
   rpc GetMessage(GetMessageRequest) returns (Message) {
     option (google.api.http) = {
       get : "/v1/messages/{message_id}"
@@ -34,6 +40,13 @@ service Messaging {
       body : "*"
     };
   }
+
+  rpc UpdateMessage(Message) returns (Message) {
+    option (google.api.http) = {
+      patch : "/v1/messages/{message_id}"
+      body : "content"
+    };
+  }
 }
 
 message GetMessageRequest {
@@ -43,7 +56,9 @@ message GetMessageRequest {
 }
 
 message Message {
+  // 消息id
   string message_id = 1;
+  // 用户id
   uint64 user_id = 2;
   string content = 3;
   optional string maybe = 4;

@@ -35,8 +35,10 @@ func MessagingServiceRoutes(svc MessagingService, opts ...gors.Option) []gors.Ro
 	wrapper := &_MessagingServiceWrapper{svc: svc, options: options}
 	_ = wrapper
 	return []gors.Route{
+		gors.NewRoute("GET", "/v1/messages/list", _Messaging_GetMessages_GORS_Handler(wrapper, options, _Messaging_GetMessages_GORS_Handler_GET_507fd414e6697a601bbd927b37916b75_Binding())),
 		gors.NewRoute("GET", "/v1/messages/:message_id", _Messaging_GetMessage_GORS_Handler(wrapper, options, _Messaging_GetMessage_GORS_Handler_GET_71b8052a59ef2e1e6bb26f276891271b_Binding())),
 		gors.NewRoute("POST", "/v1/messages/:message_id", _Messaging_CreateMessage_GORS_Handler(wrapper, options, _Messaging_CreateMessage_GORS_Handler_POST_71b8052a59ef2e1e6bb26f276891271b_Binding())),
+		gors.NewRoute("PATCH", "/v1/messages/:message_id", _Messaging_UpdateMessage_GORS_Handler(wrapper, options, _Messaging_UpdateMessage_GORS_Handler_PATCH_71b8052a59ef2e1e6bb26f276891271b_Binding())),
 	}
 }
 
@@ -45,8 +47,10 @@ func MessagingServerRoutes(srv MessagingServer, opts ...gors.Option) []gors.Rout
 	wrapper := &_MessagingServerWrapper{srv: srv, options: options}
 	_ = wrapper
 	return []gors.Route{
+		gors.NewRoute("GET", "/v1/messages/list", _Messaging_GetMessages_GORS_Handler(wrapper, options, _Messaging_GetMessages_GORS_Handler_GET_507fd414e6697a601bbd927b37916b75_Binding())),
 		gors.NewRoute("GET", "/v1/messages/:message_id", _Messaging_GetMessage_GORS_Handler(wrapper, options, _Messaging_GetMessage_GORS_Handler_GET_71b8052a59ef2e1e6bb26f276891271b_Binding())),
 		gors.NewRoute("POST", "/v1/messages/:message_id", _Messaging_CreateMessage_GORS_Handler(wrapper, options, _Messaging_CreateMessage_GORS_Handler_POST_71b8052a59ef2e1e6bb26f276891271b_Binding())),
+		gors.NewRoute("PATCH", "/v1/messages/:message_id", _Messaging_UpdateMessage_GORS_Handler(wrapper, options, _Messaging_UpdateMessage_GORS_Handler_PATCH_71b8052a59ef2e1e6bb26f276891271b_Binding())),
 	}
 }
 
@@ -55,15 +59,19 @@ func MessagingClientRoutes(cli MessagingClient, opts ...gors.Option) []gors.Rout
 	wrapper := &_MessagingClientWrapper{cli: cli, options: options}
 	_ = wrapper
 	return []gors.Route{
+		gors.NewRoute("GET", "/v1/messages/list", _Messaging_GetMessages_GORS_Handler(wrapper, options, _Messaging_GetMessages_GORS_Handler_GET_507fd414e6697a601bbd927b37916b75_Binding())),
 		gors.NewRoute("GET", "/v1/messages/:message_id", _Messaging_GetMessage_GORS_Handler(wrapper, options, _Messaging_GetMessage_GORS_Handler_GET_71b8052a59ef2e1e6bb26f276891271b_Binding())),
 		gors.NewRoute("POST", "/v1/messages/:message_id", _Messaging_CreateMessage_GORS_Handler(wrapper, options, _Messaging_CreateMessage_GORS_Handler_POST_71b8052a59ef2e1e6bb26f276891271b_Binding())),
+		gors.NewRoute("PATCH", "/v1/messages/:message_id", _Messaging_UpdateMessage_GORS_Handler(wrapper, options, _Messaging_UpdateMessage_GORS_Handler_PATCH_71b8052a59ef2e1e6bb26f276891271b_Binding())),
 	}
 }
 
 // MessagingService is the service API for Messaging service.
 type MessagingService interface {
+	GetMessages(context.Context, *GetMessageRequest) (*Message, error)
 	GetMessage(context.Context, *GetMessageRequest) (*Message, error)
 	CreateMessage(context.Context, *Message) (*Message, error)
+	UpdateMessage(context.Context, *Message) (*Message, error)
 }
 
 var _ MessagingService = (*_MessagingServiceWrapper)(nil)
@@ -71,6 +79,10 @@ var _ MessagingService = (*_MessagingServiceWrapper)(nil)
 type _MessagingServiceWrapper struct {
 	svc     MessagingService
 	options *gors.Options
+}
+
+func (wrapper *_MessagingServiceWrapper) GetMessages(ctx context.Context, request *GetMessageRequest) (*Message, error) {
+	return wrapper.svc.GetMessages(ctx, request)
 }
 
 func (wrapper *_MessagingServiceWrapper) GetMessage(ctx context.Context, request *GetMessageRequest) (*Message, error) {
@@ -81,12 +93,25 @@ func (wrapper *_MessagingServiceWrapper) CreateMessage(ctx context.Context, requ
 	return wrapper.svc.CreateMessage(ctx, request)
 }
 
+func (wrapper *_MessagingServiceWrapper) UpdateMessage(ctx context.Context, request *Message) (*Message, error) {
+	return wrapper.svc.UpdateMessage(ctx, request)
+}
+
 var _ MessagingService = (*_MessagingServerWrapper)(nil)
 
 // _MessagingServerWrapper implement MessagingService and wrap gRPC MessagingServer
 type _MessagingServerWrapper struct {
 	srv     MessagingServer
 	options *gors.Options
+}
+
+func (wrapper *_MessagingServerWrapper) GetMessages(ctx context.Context, request *GetMessageRequest) (*Message, error) {
+	rpcMethodName := "/tests.example.message.v1.Messaging/GetMessages"
+	stream := gors.NewServerTransportStream(rpcMethodName)
+	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
+	resp, err := wrapper.srv.GetMessages(ctx, request)
+	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher)
+	return resp, err
 }
 
 func (wrapper *_MessagingServerWrapper) GetMessage(ctx context.Context, request *GetMessageRequest) (*Message, error) {
@@ -107,12 +132,28 @@ func (wrapper *_MessagingServerWrapper) CreateMessage(ctx context.Context, reque
 	return resp, err
 }
 
+func (wrapper *_MessagingServerWrapper) UpdateMessage(ctx context.Context, request *Message) (*Message, error) {
+	rpcMethodName := "/tests.example.message.v1.Messaging/UpdateMessage"
+	stream := gors.NewServerTransportStream(rpcMethodName)
+	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
+	resp, err := wrapper.srv.UpdateMessage(ctx, request)
+	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher)
+	return resp, err
+}
+
 var _ MessagingService = (*_MessagingClientWrapper)(nil)
 
 // _MessagingClientWrapper implement MessagingService and wrap gRPC MessagingClient
 type _MessagingClientWrapper struct {
 	cli     MessagingClient
 	options *gors.Options
+}
+
+func (wrapper *_MessagingClientWrapper) GetMessages(ctx context.Context, request *GetMessageRequest) (*Message, error) {
+	var headerMD, trailerMD metadata.MD
+	resp, err := wrapper.cli.GetMessages(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
+	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher)
+	return resp, err
 }
 
 func (wrapper *_MessagingClientWrapper) GetMessage(ctx context.Context, request *GetMessageRequest) (*Message, error) {
@@ -127,6 +168,41 @@ func (wrapper *_MessagingClientWrapper) CreateMessage(ctx context.Context, reque
 	resp, err := wrapper.cli.CreateMessage(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
 	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher)
 	return resp, err
+}
+
+func (wrapper *_MessagingClientWrapper) UpdateMessage(ctx context.Context, request *Message) (*Message, error) {
+	var headerMD, trailerMD metadata.MD
+	resp, err := wrapper.cli.UpdateMessage(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
+	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher)
+	return resp, err
+}
+
+func _Messaging_GetMessages_GORS_Handler(svc MessagingService, options *gors.Options, binding *binding.HttpRuleBinding) func(c *gin.Context) {
+	return func(c *gin.Context) {
+		var rpcMethodName = "/tests.example.message.v1.Messaging/GetMessages"
+		var ctx = gors.NewContext(c, rpcMethodName)
+		var req *GetMessageRequest
+		var resp *Message
+		var err error
+		req = new(GetMessageRequest)
+		if err = gors.RequestBind(
+			ctx, req, options.Tag,
+			gors.HttpRuleBinding(binding),
+		); err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
+		if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
+		resp, err = svc.GetMessages(ctx, req)
+		if err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.ProtoJSONRender(options.ProtoJSONMarshalOptions), options.ResponseWrapper)
+	}
 }
 
 func _Messaging_GetMessage_GORS_Handler(svc MessagingService, options *gors.Options, binding *binding.HttpRuleBinding) func(c *gin.Context) {
@@ -185,6 +261,46 @@ func _Messaging_CreateMessage_GORS_Handler(svc MessagingService, options *gors.O
 	}
 }
 
+func _Messaging_UpdateMessage_GORS_Handler(svc MessagingService, options *gors.Options, binding *binding.HttpRuleBinding) func(c *gin.Context) {
+	return func(c *gin.Context) {
+		var rpcMethodName = "/tests.example.message.v1.Messaging/UpdateMessage"
+		var ctx = gors.NewContext(c, rpcMethodName)
+		var req *Message
+		var resp *Message
+		var err error
+		req = new(Message)
+		if err = gors.RequestBind(
+			ctx, req, options.Tag,
+			gors.HttpRuleBinding(binding),
+		); err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
+		if ctx, err = gors.NewGRPCContext(ctx, options.IncomingHeaderMatcher, options.MetadataAnnotators); err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
+		resp, err = svc.UpdateMessage(ctx, req)
+		if err != nil {
+			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
+			return
+		}
+		gors.ResponseRender(ctx, gors.StatusCode(ctx), resp, "", gors.ProtoJSONRender(options.ProtoJSONMarshalOptions), options.ResponseWrapper)
+	}
+}
+
+func _Messaging_GetMessages_GORS_Handler_GET_507fd414e6697a601bbd927b37916b75_Binding() *binding.HttpRuleBinding {
+	return &binding.HttpRuleBinding{
+		Query: []*binding.QueryRule{
+			// typ:string
+			{Name: "message_id", Type: "string", ItemType: ""},
+			// typ:string
+			{Name: "user_id", Type: "string", ItemType: ""},
+			// typ:array
+			{Name: "tags", Type: "array", ItemType: "string"},
+		},
+	}
+}
 func _Messaging_GetMessage_GORS_Handler_GET_71b8052a59ef2e1e6bb26f276891271b_Binding() *binding.HttpRuleBinding {
 	return &binding.HttpRuleBinding{
 		Path: []*binding.PathRule{
@@ -206,6 +322,25 @@ func _Messaging_CreateMessage_GORS_Handler_POST_71b8052a59ef2e1e6bb26f276891271b
 		Body: &binding.BodyRule{
 			Name: "*",
 			Type: "object",
+		},
+	}
+}
+func _Messaging_UpdateMessage_GORS_Handler_PATCH_71b8052a59ef2e1e6bb26f276891271b_Binding() *binding.HttpRuleBinding {
+	return &binding.HttpRuleBinding{
+		Path: []*binding.PathRule{
+			{Name: "message_id", Type: "string"},
+		},
+		Query: []*binding.QueryRule{
+			// typ:string
+			{Name: "user_id", Type: "string", ItemType: ""},
+			// typ:string
+			{Name: "maybe", Type: "string", ItemType: ""},
+			// typ:array
+			{Name: "tags", Type: "array", ItemType: "string"},
+		},
+		Body: &binding.BodyRule{
+			Name: "content",
+			Type: "string",
 		},
 	}
 }

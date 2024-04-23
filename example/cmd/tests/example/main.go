@@ -27,6 +27,16 @@ func main() {
 type MessagingService struct {
 }
 
+func (m MessagingService) GetMessages(ctx context.Context, request *example.GetMessageRequest) (*example.Message, error) {
+	return &example.Message{
+		MessageId: request.GetMessageId(),
+		UserId:    request.GetUserId(),
+		Content:   "this is content",
+		Maybe:     proto.String("this is maybe"),
+		Tags:      request.GetTags(),
+	}, nil
+}
+
 func (m MessagingService) GetMessage(ctx context.Context, request *example.GetMessageRequest) (*example.Message, error) {
 	return &example.Message{
 		MessageId: request.GetMessageId(),
@@ -39,6 +49,16 @@ func (m MessagingService) GetMessage(ctx context.Context, request *example.GetMe
 
 func (m MessagingService) CreateMessage(ctx context.Context, message *example.Message) (*example.Message, error) {
 	return message, nil
+}
+
+func (m MessagingService) UpdateMessage(ctx context.Context, message *example.Message) (*example.Message, error) {
+	return &example.Message{
+		MessageId: message.GetMessageId(),
+		UserId:    0,
+		Content:   message.GetContent(),
+		Maybe:     nil,
+		Tags:      nil,
+	}, nil
 }
 
 func NewMessagingService() example.MessagingService {
