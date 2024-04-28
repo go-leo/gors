@@ -8,7 +8,7 @@ gors（Golang Restful service）可以生成Go语言的Restful服务。
 ## 1. 安装
 如果通过grpc生成Restful服务，需要安装protoc-gen-go-gors：
 ```
-go install github.com/go-leo/gors/cmd/protoc-gen-go-gors@latest
+go install github.com/go-leo/gors/cmd/protoc-gen-gors@latest
 ```
 
 ## 2. 定义Restful服务
