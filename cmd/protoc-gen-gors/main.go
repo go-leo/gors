@@ -23,6 +23,9 @@ func main() {
 		OutputMode:      flags.String("output_mode", "merged", `output generation mode. By default, a single openapi.yaml is generated at the out folder. Use "source_relative' to generate a separate '[inputfile].openapi.yaml' next to each '[inputfile].proto'.`),
 	}
 
+	generator.GrpcServer = flags.Bool("grpc_server", false, `add grpc server.`)
+	generator.GrpcClient = flags.Bool("grpc_client", false, `add grpc client.`)
+
 	opts := protogen.Options{
 		ParamFunc: flags.Set,
 	}

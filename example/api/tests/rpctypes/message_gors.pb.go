@@ -27,32 +27,12 @@ import (
 	gors "github.com/go-leo/gors"
 	binding "github.com/go-leo/gors/pkg/binding"
 	status "google.golang.org/genproto/googleapis/rpc/status"
-	grpc "google.golang.org/grpc"
-	metadata "google.golang.org/grpc/metadata"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 func StatusServiceRoutes(svc StatusService, opts ...gors.Option) []gors.Route {
 	options := gors.NewOptions(opts...)
 	wrapper := &_StatusServiceWrapper{svc: svc, options: options}
-	_ = wrapper
-	return []gors.Route{
-		gors.NewRoute("GET", "/v1/status", _Status_GetStatus_GORS_Handler(wrapper, options, _Status_GetStatus_GORS_Handler_GET_b2f15b089d05a01f62c53b6e8eccb1e9_Binding())),
-	}
-}
-
-func StatusServerRoutes(srv StatusServer, opts ...gors.Option) []gors.Route {
-	options := gors.NewOptions(opts...)
-	wrapper := &_StatusServerWrapper{srv: srv, options: options}
-	_ = wrapper
-	return []gors.Route{
-		gors.NewRoute("GET", "/v1/status", _Status_GetStatus_GORS_Handler(wrapper, options, _Status_GetStatus_GORS_Handler_GET_b2f15b089d05a01f62c53b6e8eccb1e9_Binding())),
-	}
-}
-
-func StatusClientRoutes(cli StatusClient, opts ...gors.Option) []gors.Route {
-	options := gors.NewOptions(opts...)
-	wrapper := &_StatusClientWrapper{cli: cli, options: options}
 	_ = wrapper
 	return []gors.Route{
 		gors.NewRoute("GET", "/v1/status", _Status_GetStatus_GORS_Handler(wrapper, options, _Status_GetStatus_GORS_Handler_GET_b2f15b089d05a01f62c53b6e8eccb1e9_Binding())),
@@ -73,38 +53,6 @@ type _StatusServiceWrapper struct {
 
 func (wrapper *_StatusServiceWrapper) GetStatus(ctx context.Context, request *emptypb.Empty) (*status.Status, error) {
 	return wrapper.svc.GetStatus(ctx, request)
-}
-
-var _ StatusService = (*_StatusServerWrapper)(nil)
-
-// _StatusServerWrapper implement StatusService and wrap gRPC StatusServer
-type _StatusServerWrapper struct {
-	srv     StatusServer
-	options *gors.Options
-}
-
-func (wrapper *_StatusServerWrapper) GetStatus(ctx context.Context, request *emptypb.Empty) (*status.Status, error) {
-	rpcMethodName := "/tests.rpctypes.message.v1.Status/GetStatus"
-	stream := gors.NewServerTransportStream(rpcMethodName)
-	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
-	resp, err := wrapper.srv.GetStatus(ctx, request)
-	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher)
-	return resp, err
-}
-
-var _ StatusService = (*_StatusClientWrapper)(nil)
-
-// _StatusClientWrapper implement StatusService and wrap gRPC StatusClient
-type _StatusClientWrapper struct {
-	cli     StatusClient
-	options *gors.Options
-}
-
-func (wrapper *_StatusClientWrapper) GetStatus(ctx context.Context, request *emptypb.Empty) (*status.Status, error) {
-	var headerMD, trailerMD metadata.MD
-	resp, err := wrapper.cli.GetStatus(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
-	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher)
-	return resp, err
 }
 
 func _Status_GetStatus_GORS_Handler(svc StatusService, options *gors.Options, binding *binding.HttpRuleBinding) func(c *gin.Context) {

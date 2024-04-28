@@ -105,11 +105,12 @@ type Message struct {
 	unknownFields protoimpl.UnknownFields
 
 	// 消息id
-	MessageId string   `protobuf:"bytes,1,opt,name=message_id,json=messageId,proto3" json:"message_id,omitempty"`
-	UserId    uint64   `protobuf:"varint,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
-	Content   string   `protobuf:"bytes,3,opt,name=content,proto3" json:"content,omitempty"`
-	Maybe     *string  `protobuf:"bytes,4,opt,name=maybe,proto3,oneof" json:"maybe,omitempty"`
-	Tags      []string `protobuf:"bytes,5,rep,name=tags,proto3" json:"tags,omitempty"`
+	MessageId string `protobuf:"bytes,1,opt,name=message_id,json=messageId,proto3" json:"message_id,omitempty"`
+	// 用户id
+	UserId  uint64   `protobuf:"varint,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	Content string   `protobuf:"bytes,3,opt,name=content,proto3" json:"content,omitempty"`
+	Maybe   *string  `protobuf:"bytes,4,opt,name=maybe,proto3,oneof" json:"maybe,omitempty"`
+	Tags    []string `protobuf:"bytes,5,rep,name=tags,proto3" json:"tags,omitempty"`
 }
 
 func (x *Message) Reset() {

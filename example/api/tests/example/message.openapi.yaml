@@ -116,6 +116,7 @@ paths:
                     type: string
                 - name: user_id
                   in: query
+                  description: 用户id
                   schema:
                     type: string
                 - name: maybe
@@ -181,6 +182,7 @@ components:
                     description: 消息id
                 user_id:
                     type: string
+                    description: 用户id
                 content:
                     type: string
                 maybe:

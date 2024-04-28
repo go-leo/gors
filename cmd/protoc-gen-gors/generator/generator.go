@@ -70,16 +70,24 @@ func (g *Generator) Run() error {
 	g.printHeader()
 
 	g.printServiceRoutesFunctions()
-	g.printGRPCServerRoutesFunctions()
-	g.printGRPCClientRoutesFunctions()
+
+	if *GrpcServer {
+		g.printGRPCServerRoutesFunctions()
+	}
+	if *GrpcClient {
+		g.printGRPCClientRoutesFunctions()
+	}
 
 	g.printServices()
 
 	g.printServiceWrappers()
 
-	g.printGRPCServerWrappers()
-
-	g.printGRPCClientWrappers()
+	if *GrpcServer {
+		g.printGRPCServerWrappers()
+	}
+	if *GrpcClient {
+		g.printGRPCClientWrappers()
+	}
 
 	g.printHandlers()
 
