@@ -1,7 +1,7 @@
 package render
 
 import (
-	"fmt"
+	"encoding/json"
 	"github.com/gin-gonic/gin/render"
 	"google.golang.org/genproto/googleapis/api/httpbody"
 	rpchttp "google.golang.org/genproto/googleapis/rpc/http"
@@ -39,7 +39,12 @@ func (r ProtoJSON) Render(w http.ResponseWriter) (err error) {
 	r.WriteContentType(w)
 	m, ok := r.Data.(proto.Message)
 	if !ok {
-		return fmt.Errorf("failed to convert data, %v", r.Data)
+		jsonBytes, err := json.Marshal(r.Data)
+		if err != nil {
+			return err
+		}
+		_, err = w.Write(jsonBytes)
+		return err
 	}
 	jsonBytes, err := r.MarshalOptions.Marshal(m)
 	if err != nil {
