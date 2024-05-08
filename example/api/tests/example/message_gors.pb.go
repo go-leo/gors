@@ -231,6 +231,8 @@ func _Messaging_UpdateMessage_GORS_Handler_PATCH_71b8052a59ef2e1e6bb26f276891271
 			{Name: "maybe", Type: "string", ItemType: ""},
 			// typ:array
 			{Name: "tags", Type: "array", ItemType: "string"},
+			// typ:string
+			{Name: "update_mask", Type: "string", ItemType: ""},
 		},
 		Body: &binding.BodyRule{
 			Name: "content",

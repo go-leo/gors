@@ -129,6 +129,11 @@ paths:
                     type: array
                     items:
                         type: string
+                - name: update_mask
+                  in: query
+                  schema:
+                    type: string
+                    format: field-mask
             requestBody:
                 content:
                     application/json:
@@ -191,5 +196,8 @@ components:
                     type: array
                     items:
                         type: string
+                update_mask:
+                    type: string
+                    format: field-mask
 tags:
     - name: Messaging

@@ -18,6 +18,7 @@ syntax = "proto3";
 package tests.example.message.v1;
 
 import "google/api/annotations.proto";
+import "google/protobuf/field_mask.proto";
 
 option go_package = "github.com/go-leo/gors/example/api/tests/example/v1;example";
 
@@ -63,4 +64,5 @@ message Message {
   string content = 3;
   optional string maybe = 4;
   repeated string tags = 5;
+  google.protobuf.FieldMask update_mask = 6;
 }

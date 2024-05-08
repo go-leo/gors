@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/gin-gonic/gin v1.9.1
-	github.com/go-leo/gox v0.0.0-20240411094934-3378e8edf15e
+	github.com/go-leo/gox v0.0.0-20240506071354-2e5bba83b22f
 	github.com/google/gnostic v0.7.0
 	github.com/google/gnostic-models v0.6.9-0.20230804172637-c7be7c783f49
 	github.com/pkg/errors v0.9.1
