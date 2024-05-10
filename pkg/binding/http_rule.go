@@ -248,10 +248,19 @@ func regularValue(typ string, val string) (any, error) {
 	case typeString:
 		return val, nil
 	case typeNumber:
+		if val == "" {
+			return float64(0), nil
+		}
 		return strconv.ParseFloat(val, 64)
 	case typeInteger:
+		if val == "" {
+			return int64(0), nil
+		}
 		return strconv.ParseInt(val, 10, 64)
 	case typeBoolean:
+		if val == "" {
+			return false, nil
+		}
 		return strconv.ParseBool(val)
 	case typeArray, typeObject:
 		return nil, fmt.Errorf("invalid parameter type: %s, value: %s", typ, typeObject)
