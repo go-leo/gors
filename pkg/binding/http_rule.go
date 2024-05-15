@@ -5,11 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"github.com/gin-gonic/gin/render"
 	renderPkg "github.com/go-leo/gors/pkg/render"
 	"google.golang.org/genproto/googleapis/api/httpbody"
 	rpchttp "google.golang.org/genproto/googleapis/rpc/http"
-	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"io"
@@ -61,27 +61,27 @@ type HttpRuleBinding struct {
 	Body      *BodyRule
 }
 
-func (binding *HttpRuleBinding) Bind(ginCtx *gin.Context, req any) error {
+func (b *HttpRuleBinding) Bind(ginCtx *gin.Context, req any) error {
 	if _, ok := req.(*emptypb.Empty); ok {
 		return nil
 	}
 	if httpBody, ok := req.(*httpbody.HttpBody); ok {
-		return binding.bindHttpBody(ginCtx, httpBody)
+		return b.bindHttpBody(ginCtx, httpBody)
 	}
 	if request, ok := req.(*rpchttp.HttpRequest); ok {
-		return binding.bindHttpRequest(ginCtx, request)
+		return b.bindHttpRequest(ginCtx, request)
 	}
 	message, ok := req.(proto.Message)
 	if !ok {
 		return fmt.Errorf("failed convert to proto.Message, %T", req)
 	}
-	if err := binding.bindParameter(ginCtx, message); err != nil {
+	if err := b.bindParameter(ginCtx, message); err != nil {
 		return err
 	}
-	return binding.bindBody(ginCtx, message)
+	return b.bindBody(ginCtx, message)
 }
 
-func (binding *HttpRuleBinding) bindHttpBody(ginCtx *gin.Context, body *httpbody.HttpBody) error {
+func (b *HttpRuleBinding) bindHttpBody(ginCtx *gin.Context, body *httpbody.HttpBody) error {
 	body.ContentType = ginCtx.ContentType()
 	data, err := io.ReadAll(ginCtx.Request.Body)
 	if err != nil {
@@ -91,7 +91,7 @@ func (binding *HttpRuleBinding) bindHttpBody(ginCtx *gin.Context, body *httpbody
 	return nil
 }
 
-func (binding *HttpRuleBinding) bindHttpRequest(ctx *gin.Context, request *rpchttp.HttpRequest) error {
+func (b *HttpRuleBinding) bindHttpRequest(ctx *gin.Context, request *rpchttp.HttpRequest) error {
 	data, err := io.ReadAll(ctx.Request.Body)
 	if err != nil {
 		return err
@@ -108,13 +108,13 @@ func (binding *HttpRuleBinding) bindHttpRequest(ctx *gin.Context, request *rpcht
 	return nil
 }
 
-func (binding *HttpRuleBinding) bindParameter(ginCtx *gin.Context, message proto.Message) error {
+func (b *HttpRuleBinding) bindParameter(ginCtx *gin.Context, message proto.Message) error {
 	parameters := make(map[string]any)
-	if err := binding.addPathParameters(ginCtx, parameters); err != nil {
+	if err := b.addPathParameters(ginCtx, parameters); err != nil {
 		return err
 	}
-	binding.addNamedPathParameter(ginCtx, parameters)
-	if err := binding.addQueryParameters(ginCtx, parameters); err != nil {
+	b.addNamedPathParameter(ginCtx, parameters)
+	if err := b.addQueryParameters(ginCtx, parameters); err != nil {
 		return err
 	}
 	if len(parameters) == 0 {
@@ -124,14 +124,14 @@ func (binding *HttpRuleBinding) bindParameter(ginCtx *gin.Context, message proto
 	if err := render.WriteJSON(writer, parameters); err != nil {
 		return err
 	}
-	return protojson.Unmarshal(writer.Buffer.Bytes(), message)
+	return binding.JSON.BindBody(writer.Buffer.Bytes(), message)
 }
 
-func (binding *HttpRuleBinding) bindBody(ginCtx *gin.Context, message proto.Message) error {
-	if binding.Body == nil {
+func (b *HttpRuleBinding) bindBody(ginCtx *gin.Context, message proto.Message) error {
+	if b.Body == nil {
 		return nil
 	}
-	bodyField := binding.Body.Name
+	bodyField := b.Body.Name
 	if len(bodyField) == 0 {
 		return nil
 	}
@@ -145,7 +145,7 @@ func (binding *HttpRuleBinding) bindBody(ginCtx *gin.Context, message proto.Mess
 		buffer.Write(bodyData)
 	} else {
 		buffer.WriteString(`{"` + bodyField + `":`)
-		if binding.Body.Type == typeString {
+		if b.Body.Type == typeString {
 			data, err := json.Marshal(string(bodyData))
 			if err != nil {
 				return err
@@ -164,15 +164,15 @@ func (binding *HttpRuleBinding) bindBody(ginCtx *gin.Context, message proto.Mess
 		dst := messageRef.New()
 		bodyMessage = dst.Interface()
 	}
-	if err := protojson.Unmarshal(buffer.Bytes(), bodyMessage); err != nil {
+	if err := binding.JSON.BindBody(buffer.Bytes(), bodyMessage); err != nil {
 		return err
 	}
 	proto.Merge(message, bodyMessage)
 	return nil
 }
 
-func (binding *HttpRuleBinding) addPathParameters(ginCtx *gin.Context, parameters map[string]any) error {
-	for _, parameter := range binding.Path {
+func (b *HttpRuleBinding) addPathParameters(ginCtx *gin.Context, parameters map[string]any) error {
+	for _, parameter := range b.Path {
 		val, err := regularValue(parameter.Type, ginCtx.Param(parameter.Name))
 		if err != nil {
 			return err
@@ -182,8 +182,8 @@ func (binding *HttpRuleBinding) addPathParameters(ginCtx *gin.Context, parameter
 	return nil
 }
 
-func (binding *HttpRuleBinding) addQueryParameters(ginCtx *gin.Context, parameters map[string]any) error {
-	for _, parameter := range binding.Query {
+func (b *HttpRuleBinding) addQueryParameters(ginCtx *gin.Context, parameters map[string]any) error {
+	for _, parameter := range b.Query {
 		queryParameters := parameters
 		namePath := strings.Split(parameter.Name, ".")
 		for _, nameSeg := range namePath[:len(namePath)-1] {
@@ -222,17 +222,17 @@ func (binding *HttpRuleBinding) addQueryParameters(ginCtx *gin.Context, paramete
 	return nil
 }
 
-func (binding *HttpRuleBinding) addNamedPathParameter(ginCtx *gin.Context, parameters map[string]any) {
-	if binding.NamedPath == nil {
+func (b *HttpRuleBinding) addNamedPathParameter(ginCtx *gin.Context, parameters map[string]any) {
+	if b.NamedPath == nil {
 		return
 	}
-	args := make([]any, 0, len(binding.NamedPath.Parameters))
-	for _, parameterName := range binding.NamedPath.Parameters {
+	args := make([]any, 0, len(b.NamedPath.Parameters))
+	for _, parameterName := range b.NamedPath.Parameters {
 		args = append(args, ginCtx.Param(parameterName))
 	}
-	value := fmt.Sprintf(binding.NamedPath.Template, args...)
+	value := fmt.Sprintf(b.NamedPath.Template, args...)
 	namedPathParameter := parameters
-	namePath := strings.Split(binding.NamedPath.Name, ".")
+	namePath := strings.Split(b.NamedPath.Name, ".")
 	for _, nameSeg := range namePath[:len(namePath)-1] {
 		if _, ok := namedPathParameter[nameSeg]; !ok {
 			subParameter := make(map[string]any)
