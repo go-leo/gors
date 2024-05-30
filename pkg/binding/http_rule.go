@@ -196,7 +196,7 @@ func (b *HttpRuleBinding) addQueryParameters(ginCtx *gin.Context, parameters map
 		case typeArray:
 			values, ok := ginCtx.GetQueryArray(parameter.Name)
 			if !ok {
-				return nil
+				continue
 			}
 			queryParameter := make([]any, 0, len(values))
 			for _, value := range values {
@@ -210,7 +210,7 @@ func (b *HttpRuleBinding) addQueryParameters(ginCtx *gin.Context, parameters map
 		default:
 			value, ok := ginCtx.GetQuery(parameter.Name)
 			if !ok {
-				return nil
+				continue
 			}
 			val, err := regularValue(parameter.Type, value)
 			if err != nil {
