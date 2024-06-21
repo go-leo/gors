@@ -47,7 +47,7 @@ type ObjObj interface {
 	FormPostBindingPureJSONRender(context.Context, *FormPostBindingReq) (*PureJSONRenderResp, error)
 
 	// FormMultipartBindingAsciiJSONRender
-	// @GORS @POST @Path(/FormMultipartBindingAsciiJSONRender/:id) @UriBinding @QueryBinding @HeaderBinding @FormMultipartBinding @AsciiJSONRender
+	// @GORS @POST @Path(/FormMultipartBindingAsciiJSONRender/:id)  @FormMultipartBinding @UriBinding @QueryBinding @HeaderBinding @AsciiJSONRender
 	FormMultipartBindingAsciiJSONRender(context.Context, *FormMultipartBindingReq) (*AsciiJSONRenderResp, error)
 
 	// ProtoBufBindingProtoBufRender

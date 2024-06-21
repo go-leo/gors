@@ -256,7 +256,7 @@ func parseRouterComment(r *RouterInfo, comment []string) error {
 		bindingSeg, value, ok := bindingSegment(segment)
 		if ok {
 			r.Bindings = append(r.Bindings, bindingSeg)
-			if stringx.IsNotBlank(r.BindingContentType) {
+			if stringx.IsNotBlank(r.BindingContentType) && slicex.NotContains([]Binding{UriBinding, QueryBinding, HeaderBinding}, bindingSeg) {
 				return ErrMultipleBodyBinding
 			}
 			if bindingSeg == UriBinding {

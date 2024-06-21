@@ -249,10 +249,10 @@ func _ObjObj_FormMultipartBindingAsciiJSONRender_Handler(srv ObjObj, options *go
 		req = new(FormMultipartBindingReq)
 		if err = gors.RequestBind(
 			ctx, req, options.Tag,
+			gors.FormMultipartBinding,
 			gors.UriBinding,
 			gors.QueryBinding,
 			gors.HeaderBinding,
-			gors.FormMultipartBinding,
 		); err != nil {
 			gors.ErrorRender(ctx, err, options.ErrorHandler, options.ResponseWrapper)
 			return
