@@ -46,6 +46,9 @@ type MessagingService interface {
 	GetMessage(context.Context, *GetMessageRequest) (*Message, error)
 	CreateMessage(context.Context, *Message) (*Message, error)
 	UpdateMessage(context.Context, *Message) (*Message, error)
+	StreamRequest(Messaging_StreamRequestServer) error
+	StreamResponse(*Message, Messaging_StreamResponseServer) error
+	Stream(Messaging_StreamServer) error
 }
 
 var _ MessagingService = (*_MessagingServiceWrapper)(nil)
@@ -69,6 +72,18 @@ func (wrapper *_MessagingServiceWrapper) CreateMessage(ctx context.Context, requ
 
 func (wrapper *_MessagingServiceWrapper) UpdateMessage(ctx context.Context, request *Message) (*Message, error) {
 	return wrapper.svc.UpdateMessage(ctx, request)
+}
+
+func (wrapper *_MessagingServiceWrapper) StreamRequest(stream Messaging_StreamRequestServer) error {
+	return wrapper.svc.StreamRequest(stream)
+}
+
+func (wrapper *_MessagingServiceWrapper) StreamResponse(req *Message, stream Messaging_StreamResponseServer) error {
+	return wrapper.svc.StreamResponse(req, stream)
+}
+
+func (wrapper *_MessagingServiceWrapper) Stream(stream Messaging_StreamServer) error {
+	return wrapper.svc.Stream(stream)
 }
 
 func _Messaging_GetMessages_GORS_Handler(svc MessagingService, options *gors.Options, binding *binding.HttpRuleBinding) func(c *gin.Context) {

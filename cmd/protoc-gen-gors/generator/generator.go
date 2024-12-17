@@ -265,14 +265,25 @@ func (g *Generator) printServiceWrapper(service *protogen.Service) {
 	g.outputFile.P()
 	for _, method := range service.Methods {
 		if !method.Desc.IsStreamingServer() && !method.Desc.IsStreamingClient() {
-			// Unary RPC method
 			g.outputFile.P("func (wrapper *", wrapperName, ") ", method.GoName, "(ctx ", contextPackage.Ident("Context"), ", request *", method.Input.GoIdent, ") (*", method.Output.GoIdent, ", error) {")
 			g.outputFile.P("return wrapper.svc.", method.GoName, "(ctx, request)")
 			g.outputFile.P("}")
 			g.outputFile.P()
-		} else {
-			// Streaming RPC method
-			continue
+		} else if method.Desc.IsStreamingServer() && method.Desc.IsStreamingClient() {
+			g.outputFile.P("func (wrapper *", wrapperName, ") ", method.GoName, "(stream ", method.Parent.GoName, "_", method.GoName, "Server", ") error {")
+			g.outputFile.P("return wrapper.svc.", method.GoName, "(stream)")
+			g.outputFile.P("}")
+			g.outputFile.P()
+		} else if method.Desc.IsStreamingServer() {
+			g.outputFile.P("func (wrapper *", wrapperName, ") ", method.GoName, "(req *", method.Input.GoIdent, ", stream ", method.Parent.GoName, "_", method.GoName, "Server", ") error {")
+			g.outputFile.P("return wrapper.svc.", method.GoName, "(req, stream)")
+			g.outputFile.P("}")
+			g.outputFile.P()
+		} else if method.Desc.IsStreamingClient() {
+			g.outputFile.P("func (wrapper *", wrapperName, ") ", method.GoName, "(stream ", method.Parent.GoName, "_", method.GoName, "Server", ") error {")
+			g.outputFile.P("return wrapper.svc.", method.GoName, "(stream)")
+			g.outputFile.P("}")
+			g.outputFile.P()
 		}
 	}
 }
@@ -358,6 +369,9 @@ func (g *Generator) printHandlers() {
 func (g *Generator) printHandler(service *protogen.Service) {
 	serviceName := serviceName(service)
 	for _, method := range service.Methods {
+		if method.Desc.IsStreamingServer() || method.Desc.IsStreamingClient() {
+			continue
+		}
 		g.outputFile.P("func ", handlerName(service, method), "(svc ", serviceName, ", options *", gorsPackage.Ident("Options"), ", binding *", bindingPackage.Ident("HttpRuleBinding"), ") func(c *", ginPackage.Ident("Context"), ") {")
 		g.outputFile.P("return func(c *", ginPackage.Ident("Context"), ") {")
 		g.printRouteHandler(service, method)

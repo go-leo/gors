@@ -48,6 +48,10 @@ service Messaging {
       body : "content"
     };
   }
+
+  rpc StreamRequest(stream Message) returns ( Message);
+  rpc StreamResponse(Message) returns (stream Message);
+  rpc Stream(stream Message) returns (stream Message);
 }
 
 message GetMessageRequest {
