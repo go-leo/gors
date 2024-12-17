@@ -35,7 +35,7 @@ import (
 )
 
 type Configuration struct {
-	Version         *string
+	DocVersion      *string
 	Title           *string
 	Description     *string
 	Naming          *string
@@ -103,7 +103,7 @@ func (g *OpenAPIv3Generator) buildDocumentV3() *v3.Document {
 
 	d.Openapi = "3.0.3"
 	d.Info = &v3.Info{
-		Version:     *g.conf.Version,
+		Version:     *g.conf.DocVersion,
 		Title:       *g.conf.Title,
 		Description: *g.conf.Description,
 	}

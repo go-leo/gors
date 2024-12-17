@@ -25,7 +25,7 @@ func (g *OpenAPIv3Generator) newDocument(file *protogen.File) *v3.Document {
 
 	d.Openapi = "3.0.3"
 	d.Info = &v3.Info{
-		Version:     *g.conf.Version,
+		Version:     *g.conf.DocVersion,
 		Title:       *g.conf.Title,
 		Description: *g.conf.Description,
 	}

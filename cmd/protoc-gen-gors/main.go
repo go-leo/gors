@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"github.com/go-leo/gors/cmd/protoc-gen-gors/generator"
 	openapigenerator "github.com/go-leo/gors/cmd/protoc-gen-gors/protoc-gen-openapi/generator"
 	"google.golang.org/protobuf/compiler/protogen"
@@ -11,8 +12,15 @@ import (
 var flags flag.FlagSet
 
 func main() {
+	showVersion := flag.Bool("version", false, "print the version and exit")
+	flag.Parse()
+	if *showVersion {
+		fmt.Printf("protoc-gen-gors %v\n", "1.5.7")
+		return
+	}
+
 	conf := openapigenerator.Configuration{
-		Version:         flags.String("version", "0.0.1", "version number text, e.g. 1.2.3"),
+		DocVersion:      flags.String("doc_version", "0.0.1", "version number text, e.g. 1.2.3"),
 		Title:           flags.String("title", "", "name of the API"),
 		Description:     flags.String("description", "", "description of the API"),
 		Naming:          flags.String("naming", "json", `naming convention. Use "proto" for passing names directly from the proto files`),
