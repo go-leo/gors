@@ -26,6 +26,8 @@ import (
 	gin "github.com/gin-gonic/gin"
 	gors "github.com/go-leo/gors"
 	binding "github.com/go-leo/gors/pkg/binding"
+	grpc "google.golang.org/grpc"
+	metadata "google.golang.org/grpc/metadata"
 )
 
 func Messaging1ServiceRoutes(svc Messaging1Service, opts ...gors.Option) []gors.Route {
@@ -40,6 +42,38 @@ func Messaging1ServiceRoutes(svc Messaging1Service, opts ...gors.Option) []gors.
 func Messaging2ServiceRoutes(svc Messaging2Service, opts ...gors.Option) []gors.Route {
 	options := gors.NewOptions(opts...)
 	wrapper := &_Messaging2ServiceWrapper{svc: svc, options: options}
+	_ = wrapper
+	return []gors.Route{}
+}
+
+func Messaging1ServerRoutes(srv Messaging1Server, opts ...gors.Option) []gors.Route {
+	options := gors.NewOptions(opts...)
+	wrapper := &_Messaging1ServerWrapper{srv: srv, options: options}
+	_ = wrapper
+	return []gors.Route{
+		gors.NewRoute("PATCH", "/v1/messages/:message_id", _Messaging1_UpdateMessage_GORS_Handler(wrapper, options, _Messaging1_UpdateMessage_GORS_Handler_PATCH_71b8052a59ef2e1e6bb26f276891271b_Binding())),
+	}
+}
+
+func Messaging2ServerRoutes(srv Messaging2Server, opts ...gors.Option) []gors.Route {
+	options := gors.NewOptions(opts...)
+	wrapper := &_Messaging2ServerWrapper{srv: srv, options: options}
+	_ = wrapper
+	return []gors.Route{}
+}
+
+func Messaging1ClientRoutes(cli Messaging1Client, opts ...gors.Option) []gors.Route {
+	options := gors.NewOptions(opts...)
+	wrapper := &_Messaging1ClientWrapper{cli: cli, options: options}
+	_ = wrapper
+	return []gors.Route{
+		gors.NewRoute("PATCH", "/v1/messages/:message_id", _Messaging1_UpdateMessage_GORS_Handler(wrapper, options, _Messaging1_UpdateMessage_GORS_Handler_PATCH_71b8052a59ef2e1e6bb26f276891271b_Binding())),
+	}
+}
+
+func Messaging2ClientRoutes(cli Messaging2Client, opts ...gors.Option) []gors.Route {
+	options := gors.NewOptions(opts...)
+	wrapper := &_Messaging2ClientWrapper{cli: cli, options: options}
 	_ = wrapper
 	return []gors.Route{}
 }
@@ -74,6 +108,70 @@ type _Messaging2ServiceWrapper struct {
 
 func (wrapper *_Messaging2ServiceWrapper) UpdateMessage(ctx context.Context, request *Message) (*Message, error) {
 	return wrapper.svc.UpdateMessage(ctx, request)
+}
+
+var _ Messaging1Service = (*_Messaging1ServerWrapper)(nil)
+
+// _Messaging1ServerWrapper implement Messaging1Service and wrap gRPC Messaging1Server
+type _Messaging1ServerWrapper struct {
+	srv     Messaging1Server
+	options *gors.Options
+}
+
+func (wrapper *_Messaging1ServerWrapper) UpdateMessage(ctx context.Context, request *Message) (*Message, error) {
+	rpcMethodName := "/tests.noannotations.message.v1.Messaging1/UpdateMessage"
+	stream := gors.NewServerTransportStream(rpcMethodName)
+	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
+	resp, err := wrapper.srv.UpdateMessage(ctx, request)
+	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher)
+	return resp, err
+}
+
+var _ Messaging2Service = (*_Messaging2ServerWrapper)(nil)
+
+// _Messaging2ServerWrapper implement Messaging2Service and wrap gRPC Messaging2Server
+type _Messaging2ServerWrapper struct {
+	srv     Messaging2Server
+	options *gors.Options
+}
+
+func (wrapper *_Messaging2ServerWrapper) UpdateMessage(ctx context.Context, request *Message) (*Message, error) {
+	rpcMethodName := "/tests.noannotations.message.v1.Messaging2/UpdateMessage"
+	stream := gors.NewServerTransportStream(rpcMethodName)
+	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
+	resp, err := wrapper.srv.UpdateMessage(ctx, request)
+	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher)
+	return resp, err
+}
+
+var _ Messaging1Service = (*_Messaging1ClientWrapper)(nil)
+
+// _Messaging1ClientWrapper implement Messaging1Service and wrap gRPC Messaging1Client
+type _Messaging1ClientWrapper struct {
+	cli     Messaging1Client
+	options *gors.Options
+}
+
+func (wrapper *_Messaging1ClientWrapper) UpdateMessage(ctx context.Context, request *Message) (*Message, error) {
+	var headerMD, trailerMD metadata.MD
+	resp, err := wrapper.cli.UpdateMessage(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
+	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher)
+	return resp, err
+}
+
+var _ Messaging2Service = (*_Messaging2ClientWrapper)(nil)
+
+// _Messaging2ClientWrapper implement Messaging2Service and wrap gRPC Messaging2Client
+type _Messaging2ClientWrapper struct {
+	cli     Messaging2Client
+	options *gors.Options
+}
+
+func (wrapper *_Messaging2ClientWrapper) UpdateMessage(ctx context.Context, request *Message) (*Message, error) {
+	var headerMD, trailerMD metadata.MD
+	resp, err := wrapper.cli.UpdateMessage(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
+	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher)
+	return resp, err
 }
 
 func _Messaging1_UpdateMessage_GORS_Handler(svc Messaging1Service, options *gors.Options, binding *binding.HttpRuleBinding) func(c *gin.Context) {

@@ -43,6 +43,8 @@ protoc_gors_gen:
 		--gors_out=. \
 		--gors_opt=paths=source_relative \
 		--gors_opt=naming=proto \
+  		--gors_opt=grpc_server=true \
+  		--gors_opt=grpc_client=true \
 		--openapi_out=. \
 		--openapi_opt=paths=source_relative \
 		--openapi_opt=output_mode=source_relative \

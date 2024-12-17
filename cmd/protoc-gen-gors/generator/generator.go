@@ -143,6 +143,9 @@ func (g *Generator) printService(service *protogen.Service) {
 	g.outputFile.AnnotateSymbol(serviceName, protogen.Annotation{Location: service.Location})
 	g.outputFile.P("type ", serviceName, " interface {")
 	for _, method := range service.Methods {
+		if method.Desc.IsStreamingClient() || method.Desc.IsStreamingServer() {
+			continue
+		}
 		g.outputFile.AnnotateSymbol(serviceName+"."+method.GoName, protogen.Annotation{Location: method.Location})
 		if method.Desc.Options().(*descriptorpb.MethodOptions).GetDeprecated() {
 			g.outputFile.P(deprecationComment)
@@ -156,16 +159,10 @@ func (g *Generator) printService(service *protogen.Service) {
 func (g *Generator) serverSignature(method *protogen.Method) string {
 	var reqArgs []string
 	ret := "error"
-	if !method.Desc.IsStreamingClient() && !method.Desc.IsStreamingServer() {
-		reqArgs = append(reqArgs, g.outputFile.QualifiedGoIdent(contextPackage.Ident("Context")))
-		ret = "(*" + g.outputFile.QualifiedGoIdent(method.Output.GoIdent) + ", error)"
-	}
-	if !method.Desc.IsStreamingClient() {
-		reqArgs = append(reqArgs, "*"+g.outputFile.QualifiedGoIdent(method.Input.GoIdent))
-	}
-	if method.Desc.IsStreamingClient() || method.Desc.IsStreamingServer() {
-		reqArgs = append(reqArgs, method.Parent.GoName+"_"+method.GoName+"Server")
-	}
+	// Unary RPC method
+	reqArgs = append(reqArgs, g.outputFile.QualifiedGoIdent(contextPackage.Ident("Context")))
+	reqArgs = append(reqArgs, "*"+g.outputFile.QualifiedGoIdent(method.Input.GoIdent))
+	ret = "(*" + g.outputFile.QualifiedGoIdent(method.Output.GoIdent) + ", error)"
 	return method.GoName + "(" + strings.Join(reqArgs, ", ") + ") " + ret
 }
 
@@ -265,25 +262,13 @@ func (g *Generator) printServiceWrapper(service *protogen.Service) {
 	g.outputFile.P()
 	for _, method := range service.Methods {
 		if !method.Desc.IsStreamingServer() && !method.Desc.IsStreamingClient() {
+			// Unary RPC method
 			g.outputFile.P("func (wrapper *", wrapperName, ") ", method.GoName, "(ctx ", contextPackage.Ident("Context"), ", request *", method.Input.GoIdent, ") (*", method.Output.GoIdent, ", error) {")
 			g.outputFile.P("return wrapper.svc.", method.GoName, "(ctx, request)")
 			g.outputFile.P("}")
 			g.outputFile.P()
-		} else if method.Desc.IsStreamingServer() && method.Desc.IsStreamingClient() {
-			g.outputFile.P("func (wrapper *", wrapperName, ") ", method.GoName, "(stream ", method.Parent.GoName, "_", method.GoName, "Server", ") error {")
-			g.outputFile.P("return wrapper.svc.", method.GoName, "(stream)")
-			g.outputFile.P("}")
-			g.outputFile.P()
-		} else if method.Desc.IsStreamingServer() {
-			g.outputFile.P("func (wrapper *", wrapperName, ") ", method.GoName, "(req *", method.Input.GoIdent, ", stream ", method.Parent.GoName, "_", method.GoName, "Server", ") error {")
-			g.outputFile.P("return wrapper.svc.", method.GoName, "(req, stream)")
-			g.outputFile.P("}")
-			g.outputFile.P()
-		} else if method.Desc.IsStreamingClient() {
-			g.outputFile.P("func (wrapper *", wrapperName, ") ", method.GoName, "(stream ", method.Parent.GoName, "_", method.GoName, "Server", ") error {")
-			g.outputFile.P("return wrapper.svc.", method.GoName, "(stream)")
-			g.outputFile.P("}")
-			g.outputFile.P()
+		} else {
+			// Streaming RPC method
 		}
 	}
 }
@@ -320,7 +305,6 @@ func (g *Generator) printGRPCServerWrapper(service *protogen.Service) {
 			g.outputFile.P()
 		} else {
 			// Streaming RPC method
-			continue
 		}
 	}
 }
@@ -355,7 +339,6 @@ func (g *Generator) printGRPCClientWrapper(service *protogen.Service) {
 			g.outputFile.P()
 		} else {
 			// Streaming RPC method
-			continue
 		}
 	}
 }

@@ -26,11 +26,37 @@ import (
 	gin "github.com/gin-gonic/gin"
 	gors "github.com/go-leo/gors"
 	binding "github.com/go-leo/gors/pkg/binding"
+	grpc "google.golang.org/grpc"
+	metadata "google.golang.org/grpc/metadata"
 )
 
 func MessagingServiceRoutes(svc MessagingService, opts ...gors.Option) []gors.Route {
 	options := gors.NewOptions(opts...)
 	wrapper := &_MessagingServiceWrapper{svc: svc, options: options}
+	_ = wrapper
+	return []gors.Route{
+		gors.NewRoute("GET", "/v1/messages/list", _Messaging_GetMessages_GORS_Handler(wrapper, options, _Messaging_GetMessages_GORS_Handler_GET_507fd414e6697a601bbd927b37916b75_Binding())),
+		gors.NewRoute("GET", "/v1/messages/:message_id", _Messaging_GetMessage_GORS_Handler(wrapper, options, _Messaging_GetMessage_GORS_Handler_GET_71b8052a59ef2e1e6bb26f276891271b_Binding())),
+		gors.NewRoute("POST", "/v1/messages/:message_id", _Messaging_CreateMessage_GORS_Handler(wrapper, options, _Messaging_CreateMessage_GORS_Handler_POST_71b8052a59ef2e1e6bb26f276891271b_Binding())),
+		gors.NewRoute("PATCH", "/v1/messages/:message_id", _Messaging_UpdateMessage_GORS_Handler(wrapper, options, _Messaging_UpdateMessage_GORS_Handler_PATCH_71b8052a59ef2e1e6bb26f276891271b_Binding())),
+	}
+}
+
+func MessagingServerRoutes(srv MessagingServer, opts ...gors.Option) []gors.Route {
+	options := gors.NewOptions(opts...)
+	wrapper := &_MessagingServerWrapper{srv: srv, options: options}
+	_ = wrapper
+	return []gors.Route{
+		gors.NewRoute("GET", "/v1/messages/list", _Messaging_GetMessages_GORS_Handler(wrapper, options, _Messaging_GetMessages_GORS_Handler_GET_507fd414e6697a601bbd927b37916b75_Binding())),
+		gors.NewRoute("GET", "/v1/messages/:message_id", _Messaging_GetMessage_GORS_Handler(wrapper, options, _Messaging_GetMessage_GORS_Handler_GET_71b8052a59ef2e1e6bb26f276891271b_Binding())),
+		gors.NewRoute("POST", "/v1/messages/:message_id", _Messaging_CreateMessage_GORS_Handler(wrapper, options, _Messaging_CreateMessage_GORS_Handler_POST_71b8052a59ef2e1e6bb26f276891271b_Binding())),
+		gors.NewRoute("PATCH", "/v1/messages/:message_id", _Messaging_UpdateMessage_GORS_Handler(wrapper, options, _Messaging_UpdateMessage_GORS_Handler_PATCH_71b8052a59ef2e1e6bb26f276891271b_Binding())),
+	}
+}
+
+func MessagingClientRoutes(cli MessagingClient, opts ...gors.Option) []gors.Route {
+	options := gors.NewOptions(opts...)
+	wrapper := &_MessagingClientWrapper{cli: cli, options: options}
 	_ = wrapper
 	return []gors.Route{
 		gors.NewRoute("GET", "/v1/messages/list", _Messaging_GetMessages_GORS_Handler(wrapper, options, _Messaging_GetMessages_GORS_Handler_GET_507fd414e6697a601bbd927b37916b75_Binding())),
@@ -46,9 +72,6 @@ type MessagingService interface {
 	GetMessage(context.Context, *GetMessageRequest) (*Message, error)
 	CreateMessage(context.Context, *Message) (*Message, error)
 	UpdateMessage(context.Context, *Message) (*Message, error)
-	StreamRequest(Messaging_StreamRequestServer) error
-	StreamResponse(*Message, Messaging_StreamResponseServer) error
-	Stream(Messaging_StreamServer) error
 }
 
 var _ MessagingService = (*_MessagingServiceWrapper)(nil)
@@ -74,16 +97,84 @@ func (wrapper *_MessagingServiceWrapper) UpdateMessage(ctx context.Context, requ
 	return wrapper.svc.UpdateMessage(ctx, request)
 }
 
-func (wrapper *_MessagingServiceWrapper) StreamRequest(stream Messaging_StreamRequestServer) error {
-	return wrapper.svc.StreamRequest(stream)
+var _ MessagingService = (*_MessagingServerWrapper)(nil)
+
+// _MessagingServerWrapper implement MessagingService and wrap gRPC MessagingServer
+type _MessagingServerWrapper struct {
+	srv     MessagingServer
+	options *gors.Options
 }
 
-func (wrapper *_MessagingServiceWrapper) StreamResponse(req *Message, stream Messaging_StreamResponseServer) error {
-	return wrapper.svc.StreamResponse(req, stream)
+func (wrapper *_MessagingServerWrapper) GetMessages(ctx context.Context, request *GetMessageRequest) (*Message, error) {
+	rpcMethodName := "/tests.example.message.v1.Messaging/GetMessages"
+	stream := gors.NewServerTransportStream(rpcMethodName)
+	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
+	resp, err := wrapper.srv.GetMessages(ctx, request)
+	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher)
+	return resp, err
 }
 
-func (wrapper *_MessagingServiceWrapper) Stream(stream Messaging_StreamServer) error {
-	return wrapper.svc.Stream(stream)
+func (wrapper *_MessagingServerWrapper) GetMessage(ctx context.Context, request *GetMessageRequest) (*Message, error) {
+	rpcMethodName := "/tests.example.message.v1.Messaging/GetMessage"
+	stream := gors.NewServerTransportStream(rpcMethodName)
+	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
+	resp, err := wrapper.srv.GetMessage(ctx, request)
+	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher)
+	return resp, err
+}
+
+func (wrapper *_MessagingServerWrapper) CreateMessage(ctx context.Context, request *Message) (*Message, error) {
+	rpcMethodName := "/tests.example.message.v1.Messaging/CreateMessage"
+	stream := gors.NewServerTransportStream(rpcMethodName)
+	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
+	resp, err := wrapper.srv.CreateMessage(ctx, request)
+	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher)
+	return resp, err
+}
+
+func (wrapper *_MessagingServerWrapper) UpdateMessage(ctx context.Context, request *Message) (*Message, error) {
+	rpcMethodName := "/tests.example.message.v1.Messaging/UpdateMessage"
+	stream := gors.NewServerTransportStream(rpcMethodName)
+	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
+	resp, err := wrapper.srv.UpdateMessage(ctx, request)
+	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher)
+	return resp, err
+}
+
+var _ MessagingService = (*_MessagingClientWrapper)(nil)
+
+// _MessagingClientWrapper implement MessagingService and wrap gRPC MessagingClient
+type _MessagingClientWrapper struct {
+	cli     MessagingClient
+	options *gors.Options
+}
+
+func (wrapper *_MessagingClientWrapper) GetMessages(ctx context.Context, request *GetMessageRequest) (*Message, error) {
+	var headerMD, trailerMD metadata.MD
+	resp, err := wrapper.cli.GetMessages(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
+	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher)
+	return resp, err
+}
+
+func (wrapper *_MessagingClientWrapper) GetMessage(ctx context.Context, request *GetMessageRequest) (*Message, error) {
+	var headerMD, trailerMD metadata.MD
+	resp, err := wrapper.cli.GetMessage(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
+	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher)
+	return resp, err
+}
+
+func (wrapper *_MessagingClientWrapper) CreateMessage(ctx context.Context, request *Message) (*Message, error) {
+	var headerMD, trailerMD metadata.MD
+	resp, err := wrapper.cli.CreateMessage(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
+	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher)
+	return resp, err
+}
+
+func (wrapper *_MessagingClientWrapper) UpdateMessage(ctx context.Context, request *Message) (*Message, error) {
+	var headerMD, trailerMD metadata.MD
+	resp, err := wrapper.cli.UpdateMessage(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
+	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher)
+	return resp, err
 }
 
 func _Messaging_GetMessages_GORS_Handler(svc MessagingService, options *gors.Options, binding *binding.HttpRuleBinding) func(c *gin.Context) {

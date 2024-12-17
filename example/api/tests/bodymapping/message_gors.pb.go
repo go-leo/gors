@@ -26,12 +26,34 @@ import (
 	gin "github.com/gin-gonic/gin"
 	gors "github.com/go-leo/gors"
 	binding "github.com/go-leo/gors/pkg/binding"
+	grpc "google.golang.org/grpc"
+	metadata "google.golang.org/grpc/metadata"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 func MessagingServiceRoutes(svc MessagingService, opts ...gors.Option) []gors.Route {
 	options := gors.NewOptions(opts...)
 	wrapper := &_MessagingServiceWrapper{svc: svc, options: options}
+	_ = wrapper
+	return []gors.Route{
+		gors.NewRoute("PATCH", "/v1/messages/:message_id", _Messaging_UpdateMessage_GORS_Handler(wrapper, options, _Messaging_UpdateMessage_GORS_Handler_PATCH_71b8052a59ef2e1e6bb26f276891271b_Binding())),
+		gors.NewRoute("POST", "/v1/messages/any", _Messaging_DoAny_GORS_Handler(wrapper, options, _Messaging_DoAny_GORS_Handler_POST_2fd4348b76f8f52de12f1b07c64bcf2e_Binding())),
+	}
+}
+
+func MessagingServerRoutes(srv MessagingServer, opts ...gors.Option) []gors.Route {
+	options := gors.NewOptions(opts...)
+	wrapper := &_MessagingServerWrapper{srv: srv, options: options}
+	_ = wrapper
+	return []gors.Route{
+		gors.NewRoute("PATCH", "/v1/messages/:message_id", _Messaging_UpdateMessage_GORS_Handler(wrapper, options, _Messaging_UpdateMessage_GORS_Handler_PATCH_71b8052a59ef2e1e6bb26f276891271b_Binding())),
+		gors.NewRoute("POST", "/v1/messages/any", _Messaging_DoAny_GORS_Handler(wrapper, options, _Messaging_DoAny_GORS_Handler_POST_2fd4348b76f8f52de12f1b07c64bcf2e_Binding())),
+	}
+}
+
+func MessagingClientRoutes(cli MessagingClient, opts ...gors.Option) []gors.Route {
+	options := gors.NewOptions(opts...)
+	wrapper := &_MessagingClientWrapper{cli: cli, options: options}
 	_ = wrapper
 	return []gors.Route{
 		gors.NewRoute("PATCH", "/v1/messages/:message_id", _Messaging_UpdateMessage_GORS_Handler(wrapper, options, _Messaging_UpdateMessage_GORS_Handler_PATCH_71b8052a59ef2e1e6bb26f276891271b_Binding())),
@@ -58,6 +80,54 @@ func (wrapper *_MessagingServiceWrapper) UpdateMessage(ctx context.Context, requ
 
 func (wrapper *_MessagingServiceWrapper) DoAny(ctx context.Context, request *emptypb.Empty) (*emptypb.Empty, error) {
 	return wrapper.svc.DoAny(ctx, request)
+}
+
+var _ MessagingService = (*_MessagingServerWrapper)(nil)
+
+// _MessagingServerWrapper implement MessagingService and wrap gRPC MessagingServer
+type _MessagingServerWrapper struct {
+	srv     MessagingServer
+	options *gors.Options
+}
+
+func (wrapper *_MessagingServerWrapper) UpdateMessage(ctx context.Context, request *Message) (*Message, error) {
+	rpcMethodName := "/tests.bodymappying.message.v1.Messaging/UpdateMessage"
+	stream := gors.NewServerTransportStream(rpcMethodName)
+	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
+	resp, err := wrapper.srv.UpdateMessage(ctx, request)
+	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher)
+	return resp, err
+}
+
+func (wrapper *_MessagingServerWrapper) DoAny(ctx context.Context, request *emptypb.Empty) (*emptypb.Empty, error) {
+	rpcMethodName := "/tests.bodymappying.message.v1.Messaging/DoAny"
+	stream := gors.NewServerTransportStream(rpcMethodName)
+	ctx = grpc.NewContextWithServerTransportStream(ctx, stream)
+	resp, err := wrapper.srv.DoAny(ctx, request)
+	gors.AddGRPCMetadata(ctx, stream.Header(), stream.Trailer(), wrapper.options.OutgoingHeaderMatcher)
+	return resp, err
+}
+
+var _ MessagingService = (*_MessagingClientWrapper)(nil)
+
+// _MessagingClientWrapper implement MessagingService and wrap gRPC MessagingClient
+type _MessagingClientWrapper struct {
+	cli     MessagingClient
+	options *gors.Options
+}
+
+func (wrapper *_MessagingClientWrapper) UpdateMessage(ctx context.Context, request *Message) (*Message, error) {
+	var headerMD, trailerMD metadata.MD
+	resp, err := wrapper.cli.UpdateMessage(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
+	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher)
+	return resp, err
+}
+
+func (wrapper *_MessagingClientWrapper) DoAny(ctx context.Context, request *emptypb.Empty) (*emptypb.Empty, error) {
+	var headerMD, trailerMD metadata.MD
+	resp, err := wrapper.cli.DoAny(ctx, request, grpc.Header(&headerMD), grpc.Trailer(&trailerMD))
+	gors.AddGRPCMetadata(ctx, headerMD, trailerMD, wrapper.options.OutgoingHeaderMatcher)
+	return resp, err
 }
 
 func _Messaging_UpdateMessage_GORS_Handler(svc MessagingService, options *gors.Options, binding *binding.HttpRuleBinding) func(c *gin.Context) {
