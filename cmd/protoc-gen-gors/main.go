@@ -15,7 +15,7 @@ func main() {
 	showVersion := flag.Bool("version", false, "print the version and exit")
 	flag.Parse()
 	if *showVersion {
-		fmt.Printf("protoc-gen-gors %v\n", "1.5.7")
+		fmt.Printf("protoc-gen-gors %v\n", "1.5.8")
 		return
 	}
 
