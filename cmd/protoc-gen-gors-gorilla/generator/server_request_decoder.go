@@ -9,9 +9,10 @@ import (
 
 func (f *Generator) GenerateServerRequestDecoder(service *internal.Service, g *protogen.GeneratedFile) error {
 	g.P("type ", service.GorillaRequestDecoderName(), " struct {")
+	g.P("unmarshalOptions ", internal.ProtoJsonPackage.Ident("UnmarshalOptions"))
 	g.P("}")
 	for _, endpoint := range service.Endpoints {
-		g.P("func (*", service.GorillaRequestDecoderName(), ")", endpoint.Name(), "(ctx ", internal.ContextPackage.Ident("Context"), ", r *", internal.HttpPackage.Ident("Request"), ") (*", endpoint.InputGoIdent(), ", error){")
+		g.P("func (decoder ", service.GorillaRequestDecoderName(), ")", endpoint.Name(), "(ctx ", internal.ContextIdent, ", r *", internal.HttpPackage.Ident("Request"), ") (*", endpoint.InputGoIdent(), ", error){")
 		g.P("req := &", endpoint.InputGoIdent(), "{}")
 		bodyMessage, bodyField, namedPathFields, pathFields, queryFields, err := endpoint.ParseParameters()
 		if err != nil {
@@ -23,18 +24,14 @@ func (f *Generator) GenerateServerRequestDecoder(service *internal.Service, g *p
 			case "google.api.HttpBody":
 				f.PrintGoogleApiHttpBodyDecodeBlock(g, []any{"req"}, []any{"r.Body"})
 			default:
-				f.PrintDecodeBlock(g, internal.JsonxPackage.Ident("NewDecoder"), []any{"req"}, []any{"r.Body"})
+				f.PrintDecodeBlock(g, []any{"req"}, []any{"r.Body"})
 			}
 		} else if bodyField != nil {
 			if bodyField.Desc.Kind() == protoreflect.MessageKind && bodyField.Message.Desc.FullName() == "google.api.HttpBody" {
 				g.P("req.", bodyField.GoName, " = &", bodyField.Message.GoIdent, "{}")
-				tgtValue := []any{"req.", bodyField.GoName}
-				srcValue := []any{"r.Body"}
-				f.PrintGoogleApiHttpBodyDecodeBlock(g, tgtValue, srcValue)
+				f.PrintGoogleApiHttpBodyDecodeBlock(g, []any{"req.", bodyField.GoName}, []any{"r.Body"})
 			} else {
-				tgtValue := []any{"&req.", bodyField.GoName}
-				srcValue := []any{"r.Body"}
-				f.PrintDecodeBlock(g, internal.JsonxPackage.Ident("NewDecoder"), tgtValue, srcValue)
+				f.PrintDecodeBlock(g, []any{"req.", bodyField.GoName}, []any{"r.Body"})
 			}
 		}
 
@@ -75,8 +72,12 @@ func (f *Generator) PrintGoogleApiHttpBodyDecodeBlock(g *protogen.GeneratedFile,
 	g.P(append(append([]any{}, tgtValue...), []any{".ContentType = r.Header.Get(", strconv.Quote(internal.ContentTypeKey), ")"}...)...)
 }
 
-func (f *Generator) PrintDecodeBlock(g *protogen.GeneratedFile, decoder protogen.GoIdent, tgtValue []any, srcValue []any) {
-	g.P(append(append(append(append([]any{"if err := ", decoder, "("}, srcValue...), []any{").Decode("}...), tgtValue...), []any{"); err != nil {"}...)...)
+func (f *Generator) PrintDecodeBlock(g *protogen.GeneratedFile, tgtValue []any, srcValue []any) {
+	g.P(append(append([]any{"data, err := ", internal.IOPackage.Ident("ReadAll"), "("}, srcValue...), ")")...)
+	g.P("if err != nil {")
+	g.P("return nil, err")
+	g.P("}")
+	g.P(append(append(append([]any{"if err := decoder.unmarshalOptions.Unmarshal("}, []any{"data, "}...), tgtValue...), []any{"); err != nil {"}...)...)
 	g.P("return nil, err")
 	g.P("}")
 }

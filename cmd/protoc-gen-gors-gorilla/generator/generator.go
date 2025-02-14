@@ -45,7 +45,7 @@ func (f *Generator) GenerateFile() error {
 		if err := f.GenerateAppendServerFunc(service, g); err != nil {
 			return err
 		}
-		if err := f.GenerateTransports(service, g); err != nil {
+		if err := f.GenerateHandlers(service, g); err != nil {
 			return err
 		}
 		if err := f.GenerateServerRequestDecoder(service, g); err != nil {
@@ -55,34 +55,13 @@ func (f *Generator) GenerateFile() error {
 			return err
 		}
 	}
-
-	//
-	//serverTransportsGenerator := ServerTransportsGenerator{}
-	//serverRequestDecoderGenerator := ServerRequestDecoderGenerator{}
-	//serverResponseEncoderGenerator := ServerResponseEncoderGenerator{}
-	//for _, service := range services {
-	//	if err := serverTransportsGenerator.GenerateTransports(service, g); err != nil {
-	//		return err
-	//	}
-
-	//	if err := serverTransportsGenerator.GenerateTransportsImplements(service, g); err != nil {
-	//		return err
-	//	}
-	//	if err := serverRequestDecoderGenerator.GenerateServerRequestDecoderImplements(service, g); err != nil {
-	//		return err
-	//	}
-	//	if err := serverResponseEncoderGenerator.GenerateServerResponseEncoderImplements(service, g); err != nil {
-	//		return err
-	//	}
-	//
-	//}
 	return nil
 }
 
 func (f *Generator) GenerateServices(service *internal.Service, g *protogen.GeneratedFile) error {
 	g.P("type ", service.GorillaServiceName(), " interface {")
 	for _, endpoint := range service.Endpoints {
-		g.P(endpoint.Name(), "(ctx ", internal.ContextPackage.Ident("Context"), ", request *", endpoint.InputGoIdent(), ") (*", endpoint.OutputGoIdent(), ", error)")
+		g.P(endpoint.Name(), "(ctx ", internal.ContextIdent, ", request *", endpoint.InputGoIdent(), ") (*", endpoint.OutputGoIdent(), ", error)")
 	}
 	g.P("}")
 	g.P()
@@ -91,7 +70,17 @@ func (f *Generator) GenerateServices(service *internal.Service, g *protogen.Gene
 
 func (f *Generator) GenerateAppendServerFunc(service *internal.Service, g *protogen.GeneratedFile) error {
 	g.P("func ", service.AppendGorillaRouteName(), "(router *", internal.MuxPackage.Ident("Router"), ", svc ", service.GorillaServiceName(), ") ", "*", internal.MuxPackage.Ident("Router"), " {")
-	g.P("transports := new", service.GorillaTransportsName(), "(svc)")
+	g.P("handler :=  &", service.GorillaHandlerName(), "{")
+	g.P("svc: svc,")
+	g.P("decoder: ", service.GorillaRequestDecoderName(), "{")
+	g.P("unmarshalOptions: ", internal.ProtoJsonPackage.Ident("UnmarshalOptions"), "{},")
+	g.P("},")
+	g.P("encoder: ", service.GorillaResponseEncoderName(), "{")
+	g.P("marshalOptions:   ", internal.ProtoJsonPackage.Ident("MarshalOptions"), "{},")
+	g.P("unmarshalOptions: ", internal.ProtoJsonPackage.Ident("UnmarshalOptions"), "{},")
+	g.P("},")
+	g.P("errorEncoder: ", internal.DefaultErrorEncoderIdent, ",")
+	g.P("}")
 	for _, endpoint := range service.Endpoints {
 		httpRule := endpoint.HttpRule()
 		// 调整路径，来适应 github.com/gorilla/mux 路由规则
@@ -99,7 +88,7 @@ func (f *Generator) GenerateAppendServerFunc(service *internal.Service, g *proto
 		g.P("router.NewRoute().Name(", strconv.Quote(endpoint.FullName()), ").")
 		g.P("Methods(", strconv.Quote(httpRule.Method()), ").")
 		g.P("Path(", strconv.Quote(path), ").")
-		g.P("Handler(transports.", endpoint.Name(), "())")
+		g.P("Handler(handler.", endpoint.Name(), "())")
 	}
 	g.P("return router")
 	g.P("}")
@@ -107,38 +96,35 @@ func (f *Generator) GenerateAppendServerFunc(service *internal.Service, g *proto
 	return nil
 }
 
-func (f *Generator) GenerateTransports(service *internal.Service, g *protogen.GeneratedFile) error {
-	g.P("type ", service.GorillaTransportsName(), " struct {")
+func (f *Generator) GenerateHandlers(service *internal.Service, g *protogen.GeneratedFile) error {
+	g.P("type ", service.GorillaHandlerName(), " struct {")
 	g.P("svc ", service.GorillaServiceName())
-	g.P("decoder *", service.GorillaRequestDecoderName())
-	g.P("encoder *", service.GorillaResponseEncoderName())
+	g.P("decoder ", service.GorillaRequestDecoderName())
+	g.P("encoder ", service.GorillaResponseEncoderName())
+	g.P("errorEncoder ", internal.ErrorEncoderIdent)
 	g.P("}")
 	g.P()
 	for _, endpoint := range service.Endpoints {
-		g.P("func (t *", service.GorillaTransportsName(), ")", endpoint.Name(), "()", internal.HttpPackage.Ident("Handler"), " {")
+		g.P("func (h *", service.GorillaHandlerName(), ")", endpoint.Name(), "()", internal.HttpPackage.Ident("Handler"), " {")
 		g.P("return ", internal.HttpPackage.Ident("HandlerFunc"), "(func(writer ", internal.HttpPackage.Ident("ResponseWriter"), ", request *", internal.HttpPackage.Ident("Request"), ") {")
 		g.P("ctx := request.Context()")
-		g.P("in, err := t.decoder.", endpoint.Name(), "(ctx, request)")
+		g.P("in, err := h.decoder.", endpoint.Name(), "(ctx, request)")
 		g.P("if err != nil {")
+		g.P("h.errorEncoder(ctx, err, writer)")
 		g.P("return")
 		g.P("}")
-		g.P("out, err := t.svc.", endpoint.Name(), "(ctx, in)")
+		g.P("out, err := h.svc.", endpoint.Name(), "(ctx, in)")
 		g.P("if err != nil {")
+		g.P("h.errorEncoder(ctx, err, writer)")
 		g.P("return")
 		g.P("}")
-		g.P("if err := t.encoder.", endpoint.Name(), "(ctx, writer, out); err != nil {")
+		g.P("if err := h.encoder.", endpoint.Name(), "(ctx, writer, out); err != nil {")
+		g.P("h.errorEncoder(ctx, err, writer)")
 		g.P("return")
 		g.P("}")
 		g.P("})")
 		g.P("}")
 		g.P()
 	}
-	g.P("func new", service.GorillaTransportsName(), "(svc ", service.GorillaServiceName(), ") *", service.GorillaTransportsName(), " {")
-	g.P("return &", service.GorillaTransportsName(), "{")
-	g.P("svc: svc,")
-	g.P("decoder: &", service.GorillaRequestDecoderName(), "{},")
-	g.P("encoder: &", service.GorillaResponseEncoderName(), "{},")
-	g.P("}")
-	g.P("}")
 	return nil
 }

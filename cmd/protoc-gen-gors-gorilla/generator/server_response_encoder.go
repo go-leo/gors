@@ -10,10 +10,12 @@ import (
 
 func (f *Generator) GenerateServerResponseEncoder(service *internal.Service, g *protogen.GeneratedFile) error {
 	g.P("type ", service.GorillaResponseEncoderName(), " struct {")
+	g.P("marshalOptions ", internal.ProtoJsonPackage.Ident("MarshalOptions"))
+	g.P("unmarshalOptions ", internal.ProtoJsonPackage.Ident("UnmarshalOptions"))
 	g.P("}")
 	for _, endpoint := range service.Endpoints {
 		httpRule := endpoint.HttpRule()
-		g.P("func (*", service.GorillaResponseEncoderName(), ")", endpoint.Name(), "(ctx ", internal.ContextPackage.Ident("Context"), ", w ", internal.HttpPackage.Ident("ResponseWriter"), ", resp *", endpoint.OutputGoIdent(), ") error {")
+		g.P("func (encoder ", service.GorillaResponseEncoderName(), ")", endpoint.Name(), "(ctx ", internal.ContextIdent, ", w ", internal.HttpPackage.Ident("ResponseWriter"), ", resp *", endpoint.OutputGoIdent(), ") error {")
 		bodyParameter := httpRule.ResponseBody()
 		switch bodyParameter {
 		case "", "*":
@@ -47,7 +49,7 @@ func (f *Generator) GenerateServerResponseEncoder(service *internal.Service, g *
 func (f *Generator) PrintGoogleApiHttpBodyEncodeBlock(g *protogen.GeneratedFile, srcValue []any) {
 	g.P(append(append([]any{"w.Header().Set(", strconv.Quote("Content-Type"), ", "}, srcValue...), ".GetContentType())")...)
 	g.P(append(append([]any{"for _, src := range "}, srcValue...), ".GetExtensions() {")...)
-	g.P("dst, err := ", internal.AnypbPackage.Ident("UnmarshalNew"), "(src, ", internal.ProtoPackage.Ident("UnmarshalOptions"), "{})")
+	g.P("dst, err := ", internal.AnypbPackage.Ident("UnmarshalNew"), "(src, encoder.unmarshalOptions)")
 	g.P("if err != nil {")
 	g.P("return err")
 	g.P("}")
@@ -56,7 +58,7 @@ func (f *Generator) PrintGoogleApiHttpBodyEncodeBlock(g *protogen.GeneratedFile,
 	g.P("continue")
 	g.P("}")
 	g.P("for key, value := range metadata.GetFields() {")
-	g.P("w.Header().Add(key, string(", internal.ErrorxPackage.Ident("Ignore"), "(", internal.JsonxPackage.Ident("Marshal"), "(value))))")
+	g.P("w.Header().Add(key, string(", internal.ErrorxPackage.Ident("Ignore"), "(encoder.marshalOptions(value))))")
 	g.P("}")
 	g.P("}")
 	g.P("w.WriteHeader(", internal.HttpPackage.Ident("StatusOK"), ")")
@@ -68,11 +70,10 @@ func (f *Generator) PrintGoogleApiHttpBodyEncodeBlock(g *protogen.GeneratedFile,
 func (f *Generator) PrintJsonEncodeBlock(g *protogen.GeneratedFile, srcValue []any) {
 	g.P("w.Header().Set(", strconv.Quote("Content-Type"), ", ", strconv.Quote(internal.JsonContentType), ")")
 	g.P("w.WriteHeader(", internal.HttpPackage.Ident("StatusOK"), ")")
-	g.P("data, err := ", internal.ProtoJsonPackage.Ident("MarshalOptions"), "{}", ".Marshal(resp)")
+	g.P(append(append([]any{"data, err := ", "encoder.marshalOptions.Marshal("}, srcValue...), ")")...)
 	g.P("if err != nil {")
 	g.P("return err")
 	g.P("}")
-
 	g.P("if _, err := w.Write(data); err != nil {")
 	g.P("return err")
 	g.P("}")

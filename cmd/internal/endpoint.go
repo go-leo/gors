@@ -202,14 +202,17 @@ func (e *Endpoint) ParseParameters() (*protogen.Message, *protogen.Field, []*pro
 func (e *Endpoint) SetHttpRule() {
 	httpRule := proto.GetExtension(e.protoMethod.Desc.Options(), annotations.E_Http)
 	if httpRule == nil || httpRule == annotations.E_Http.InterfaceOf(annotations.E_Http.Zero()) {
-		httpRule = &annotations.HttpRule{
+		e.httpRule = &HttpRule{rule: &annotations.HttpRule{
 			Pattern: &annotations.HttpRule_Post{
 				Post: e.FullName(),
 			},
 			Body: "*",
-		}
+		}}
+		return
 	}
-	e.httpRule = &HttpRule{rule: httpRule.(*annotations.HttpRule)}
+	e.httpRule = &HttpRule{
+		rule: httpRule.(*annotations.HttpRule),
+	}
 }
 
 type HttpRule struct {

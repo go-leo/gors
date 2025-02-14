@@ -31,32 +31,12 @@ func (s *Service) GorillaServiceName() string {
 	return s.Name() + "GorillaService"
 }
 
-func (s *Service) ServerEndpointsName() string {
-	return s.Name() + "ServerEndpoints"
-}
-
-func (s *Service) TransportsName() string {
-	return s.Name() + "Transports"
-}
-
-func (s *Service) ServerName() string {
-	return s.Name() + "Server"
-}
-
 func (s *Service) GorillaName() string {
 	return s.Name() + "Gorilla"
 }
 
-func (s *Service) GorillaTransportsName() string {
-	return s.GorillaName() + "Transports"
-}
-
-func (s *Service) HttpRoutesName() string {
-	return s.Name() + "HttpRoutes"
-}
-
-func (s *Service) GorillaRoutesName() string {
-	return s.Name() + "GorillaRoutes"
+func (s *Service) GorillaHandlerName() string {
+	return s.GorillaName() + "Handler"
 }
 
 func (s *Service) UnimplementedServerName() string {
@@ -83,7 +63,7 @@ func NewServices(file *protogen.File) ([]*Service, error) {
 				protoMethod: pbMethod,
 			}
 			if endpoint.IsStreaming() {
-				return nil, fmt.Errorf("leo: unsupport stream method, %s", endpoint.FullName())
+				return nil, fmt.Errorf("gors: unsupport stream method, %s", endpoint.FullName())
 			}
 			endpoint.SetHttpRule()
 			endpoints = append(endpoints, endpoint)
