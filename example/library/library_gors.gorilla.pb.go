@@ -11,7 +11,6 @@ import (
 	mux "github.com/gorilla/mux"
 	protojson "google.golang.org/protobuf/encoding/protojson"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
-	io "io"
 	http "net/http"
 )
 
@@ -321,11 +320,10 @@ type LibraryServiceGorillaRequestDecoder struct {
 
 func (decoder LibraryServiceGorillaRequestDecoder) CreateShelf(ctx context.Context, r *http.Request) (*CreateShelfRequest, error) {
 	req := &CreateShelfRequest{}
-	data, err := io.ReadAll(r.Body)
-	if err != nil {
-		return nil, err
+	if req.Shelf == nil {
+		req.Shelf = &Shelf{}
 	}
-	if err := decoder.unmarshalOptions.Unmarshal(data, req.Shelf); err != nil {
+	if err := v2.RequestDecoder(ctx, r, req.Shelf, decoder.unmarshalOptions); err != nil {
 		return nil, err
 	}
 	return req, nil
@@ -363,11 +361,7 @@ func (decoder LibraryServiceGorillaRequestDecoder) DeleteShelf(ctx context.Conte
 }
 func (decoder LibraryServiceGorillaRequestDecoder) MergeShelves(ctx context.Context, r *http.Request) (*MergeShelvesRequest, error) {
 	req := &MergeShelvesRequest{}
-	data, err := io.ReadAll(r.Body)
-	if err != nil {
-		return nil, err
-	}
-	if err := decoder.unmarshalOptions.Unmarshal(data, req); err != nil {
+	if err := v2.RequestDecoder(ctx, r, req, decoder.unmarshalOptions); err != nil {
 		return nil, err
 	}
 	vars := urlx.FormFromMap(mux.Vars(r))
@@ -380,11 +374,10 @@ func (decoder LibraryServiceGorillaRequestDecoder) MergeShelves(ctx context.Cont
 }
 func (decoder LibraryServiceGorillaRequestDecoder) CreateBook(ctx context.Context, r *http.Request) (*CreateBookRequest, error) {
 	req := &CreateBookRequest{}
-	data, err := io.ReadAll(r.Body)
-	if err != nil {
-		return nil, err
+	if req.Book == nil {
+		req.Book = &Book{}
 	}
-	if err := decoder.unmarshalOptions.Unmarshal(data, req.Book); err != nil {
+	if err := v2.RequestDecoder(ctx, r, req.Book, decoder.unmarshalOptions); err != nil {
 		return nil, err
 	}
 	vars := urlx.FormFromMap(mux.Vars(r))
@@ -434,11 +427,10 @@ func (decoder LibraryServiceGorillaRequestDecoder) DeleteBook(ctx context.Contex
 }
 func (decoder LibraryServiceGorillaRequestDecoder) UpdateBook(ctx context.Context, r *http.Request) (*UpdateBookRequest, error) {
 	req := &UpdateBookRequest{}
-	data, err := io.ReadAll(r.Body)
-	if err != nil {
-		return nil, err
+	if req.Book == nil {
+		req.Book = &Book{}
 	}
-	if err := decoder.unmarshalOptions.Unmarshal(data, req.Book); err != nil {
+	if err := v2.RequestDecoder(ctx, r, req.Book, decoder.unmarshalOptions); err != nil {
 		return nil, err
 	}
 	vars := urlx.FormFromMap(mux.Vars(r))
@@ -454,11 +446,7 @@ func (decoder LibraryServiceGorillaRequestDecoder) UpdateBook(ctx context.Contex
 }
 func (decoder LibraryServiceGorillaRequestDecoder) MoveBook(ctx context.Context, r *http.Request) (*MoveBookRequest, error) {
 	req := &MoveBookRequest{}
-	data, err := io.ReadAll(r.Body)
-	if err != nil {
-		return nil, err
-	}
-	if err := decoder.unmarshalOptions.Unmarshal(data, req); err != nil {
+	if err := v2.RequestDecoder(ctx, r, req, decoder.unmarshalOptions); err != nil {
 		return nil, err
 	}
 	vars := urlx.FormFromMap(mux.Vars(r))

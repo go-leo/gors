@@ -23,19 +23,23 @@ func (f *Generator) GenerateServerRequestDecoder(service *internal.Service, g *p
 			switch bodyMessage.Desc.FullName() {
 			case "google.api.HttpBody":
 				f.PrintHttpBodyDecodeBlock(g, []any{"req"})
+			case "google.rpc.HttpRequest":
+				f.PrintHttpRequestEncodeBlock(g, []any{"req"})
 			default:
-				f.PrintDecodeBlock(g, []any{"req"}, []any{"r.Body"})
+				f.PrintRequestDecodeBlock(g, []any{"req"})
 			}
 		} else if bodyField != nil {
+			tgtValue := []any{"req.", bodyField.GoName}
+			g.P(append(append(append([]any{"if "}, tgtValue...), " == nil {"))...)
+			g.P(append(tgtValue, " = &", bodyField.Message.GoIdent, "{}")...)
+			g.P("}")
 			switch bodyField.Desc.Kind() {
 			case protoreflect.MessageKind:
 				switch bodyField.Message.Desc.FullName() {
 				case "google.api.HttpBody":
-					tgtValue := []any{"req.", bodyField.GoName}
-					g.P(append(tgtValue, " = &", bodyField.Message.GoIdent, "{}")...)
 					f.PrintHttpBodyDecodeBlock(g, tgtValue)
 				default:
-					f.PrintDecodeBlock(g, []any{"req.", bodyField.GoName}, []any{"r.Body"})
+					f.PrintRequestDecodeBlock(g, []any{"req.", bodyField.GoName})
 				}
 			}
 		}
@@ -74,21 +78,14 @@ func (f *Generator) PrintHttpBodyDecodeBlock(g *protogen.GeneratedFile, tgtValue
 	g.P("}")
 }
 
-func (f *Generator) PrintGoogleApiHttpBodyDecodeBlock(g *protogen.GeneratedFile, tgtValue []any, srcValue []any) {
-	g.P(append(append([]any{"body, err := ", internal.IOPackage.Ident("ReadAll"), "("}, srcValue...), []any{")"}...)...)
-	g.P("if err != nil {")
+func (f *Generator) PrintHttpRequestEncodeBlock(g *protogen.GeneratedFile, tgtValue []any) {
+	g.P(append(append([]any{"if err := ", internal.HttpRequestDecoderIdent, "(ctx, r, "}, tgtValue...), "); err != nil {")...)
 	g.P("return nil, err")
 	g.P("}")
-	g.P(append(append([]any{}, tgtValue...), []any{".Data = body"}...)...)
-	g.P(append(append([]any{}, tgtValue...), []any{".ContentType = r.Header.Get(", strconv.Quote(internal.ContentTypeKey), ")"}...)...)
 }
 
-func (f *Generator) PrintDecodeBlock(g *protogen.GeneratedFile, tgtValue []any, srcValue []any) {
-	g.P(append(append([]any{"data, err := ", internal.IOPackage.Ident("ReadAll"), "("}, srcValue...), ")")...)
-	g.P("if err != nil {")
-	g.P("return nil, err")
-	g.P("}")
-	g.P(append(append(append([]any{"if err := decoder.unmarshalOptions.Unmarshal("}, []any{"data, "}...), tgtValue...), []any{"); err != nil {"}...)...)
+func (f *Generator) PrintRequestDecodeBlock(g *protogen.GeneratedFile, tgtValue []any) {
+	g.P(append(append([]any{"if err := ", internal.RequestDecoderIdent, "(ctx, r, "}, tgtValue...), ", decoder.unmarshalOptions); err != nil {")...)
 	g.P("return nil, err")
 	g.P("}")
 }

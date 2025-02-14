@@ -11,7 +11,6 @@ import (
 	mux "github.com/gorilla/mux"
 	protojson "google.golang.org/protobuf/encoding/protojson"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
-	io "io"
 	http "net/http"
 )
 
@@ -198,11 +197,10 @@ func (decoder WorkspacesGorillaRequestDecoder) GetWorkspace(ctx context.Context,
 }
 func (decoder WorkspacesGorillaRequestDecoder) CreateWorkspace(ctx context.Context, r *http.Request) (*CreateWorkspaceRequest, error) {
 	req := &CreateWorkspaceRequest{}
-	data, err := io.ReadAll(r.Body)
-	if err != nil {
-		return nil, err
+	if req.Workspace == nil {
+		req.Workspace = &Workspace{}
 	}
-	if err := decoder.unmarshalOptions.Unmarshal(data, req.Workspace); err != nil {
+	if err := v2.RequestDecoder(ctx, r, req.Workspace, decoder.unmarshalOptions); err != nil {
 		return nil, err
 	}
 	vars := urlx.FormFromMap(mux.Vars(r))
@@ -215,11 +213,10 @@ func (decoder WorkspacesGorillaRequestDecoder) CreateWorkspace(ctx context.Conte
 }
 func (decoder WorkspacesGorillaRequestDecoder) UpdateWorkspace(ctx context.Context, r *http.Request) (*UpdateWorkspaceRequest, error) {
 	req := &UpdateWorkspaceRequest{}
-	data, err := io.ReadAll(r.Body)
-	if err != nil {
-		return nil, err
+	if req.Workspace == nil {
+		req.Workspace = &Workspace{}
 	}
-	if err := decoder.unmarshalOptions.Unmarshal(data, req.Workspace); err != nil {
+	if err := v2.RequestDecoder(ctx, r, req.Workspace, decoder.unmarshalOptions); err != nil {
 		return nil, err
 	}
 	vars := urlx.FormFromMap(mux.Vars(r))
