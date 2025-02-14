@@ -25,21 +25,14 @@ func singular(plural string) string {
 
 func FindField(name string, inMessage *protogen.Message) *protogen.Field {
 	for _, field := range inMessage.Fields {
-		if FieldNameEquals(name, field) {
+		if string(field.Desc.Name()) == name {
+			return field
+		}
+		if field.Desc.JSONName() == name {
 			return field
 		}
 	}
 	return nil
-}
-
-func FieldNameEquals(name string, field *protogen.Field) bool {
-	if string(field.Desc.Name()) == name {
-		return true
-	}
-	if field.Desc.JSONName() == name {
-		return true
-	}
-	return false
 }
 
 func FullFieldName(fields []*protogen.Field) string {

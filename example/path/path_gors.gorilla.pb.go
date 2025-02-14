@@ -29,7 +29,7 @@ type PathGorillaService interface {
 }
 
 func AppendPathGorillaRoute(router *mux.Router, svc PathGorillaService) *mux.Router {
-	handler := &PathGorillaHandler{
+	handler := PathGorillaHandler{
 		svc: svc,
 		decoder: PathGorillaRequestDecoder{
 			unmarshalOptions: protojson.UnmarshalOptions{},
@@ -86,7 +86,7 @@ type PathGorillaHandler struct {
 	errorEncoder v2.ErrorEncoder
 }
 
-func (h *PathGorillaHandler) BoolPath() http.Handler {
+func (h PathGorillaHandler) BoolPath() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.BoolPath(ctx, request)
@@ -106,7 +106,7 @@ func (h *PathGorillaHandler) BoolPath() http.Handler {
 	})
 }
 
-func (h *PathGorillaHandler) Int32Path() http.Handler {
+func (h PathGorillaHandler) Int32Path() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.Int32Path(ctx, request)
@@ -126,7 +126,7 @@ func (h *PathGorillaHandler) Int32Path() http.Handler {
 	})
 }
 
-func (h *PathGorillaHandler) Int64Path() http.Handler {
+func (h PathGorillaHandler) Int64Path() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.Int64Path(ctx, request)
@@ -146,7 +146,7 @@ func (h *PathGorillaHandler) Int64Path() http.Handler {
 	})
 }
 
-func (h *PathGorillaHandler) Uint32Path() http.Handler {
+func (h PathGorillaHandler) Uint32Path() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.Uint32Path(ctx, request)
@@ -166,7 +166,7 @@ func (h *PathGorillaHandler) Uint32Path() http.Handler {
 	})
 }
 
-func (h *PathGorillaHandler) Uint64Path() http.Handler {
+func (h PathGorillaHandler) Uint64Path() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.Uint64Path(ctx, request)
@@ -186,7 +186,7 @@ func (h *PathGorillaHandler) Uint64Path() http.Handler {
 	})
 }
 
-func (h *PathGorillaHandler) FloatPath() http.Handler {
+func (h PathGorillaHandler) FloatPath() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.FloatPath(ctx, request)
@@ -206,7 +206,7 @@ func (h *PathGorillaHandler) FloatPath() http.Handler {
 	})
 }
 
-func (h *PathGorillaHandler) DoublePath() http.Handler {
+func (h PathGorillaHandler) DoublePath() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.DoublePath(ctx, request)
@@ -226,7 +226,7 @@ func (h *PathGorillaHandler) DoublePath() http.Handler {
 	})
 }
 
-func (h *PathGorillaHandler) StringPath() http.Handler {
+func (h PathGorillaHandler) StringPath() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.StringPath(ctx, request)
@@ -246,7 +246,7 @@ func (h *PathGorillaHandler) StringPath() http.Handler {
 	})
 }
 
-func (h *PathGorillaHandler) EnumPath() http.Handler {
+func (h PathGorillaHandler) EnumPath() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.EnumPath(ctx, request)
@@ -745,112 +745,31 @@ type PathGorillaResponseEncoder struct {
 }
 
 func (encoder PathGorillaResponseEncoder) BoolPath(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	data, err := encoder.marshalOptions.Marshal(resp)
-	if err != nil {
-		return err
-	}
-	if _, err := w.Write(data); err != nil {
-		return err
-	}
-	return nil
+	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }
 func (encoder PathGorillaResponseEncoder) Int32Path(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	data, err := encoder.marshalOptions.Marshal(resp)
-	if err != nil {
-		return err
-	}
-	if _, err := w.Write(data); err != nil {
-		return err
-	}
-	return nil
+	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }
 func (encoder PathGorillaResponseEncoder) Int64Path(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	data, err := encoder.marshalOptions.Marshal(resp)
-	if err != nil {
-		return err
-	}
-	if _, err := w.Write(data); err != nil {
-		return err
-	}
-	return nil
+	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }
 func (encoder PathGorillaResponseEncoder) Uint32Path(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	data, err := encoder.marshalOptions.Marshal(resp)
-	if err != nil {
-		return err
-	}
-	if _, err := w.Write(data); err != nil {
-		return err
-	}
-	return nil
+	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }
 func (encoder PathGorillaResponseEncoder) Uint64Path(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	data, err := encoder.marshalOptions.Marshal(resp)
-	if err != nil {
-		return err
-	}
-	if _, err := w.Write(data); err != nil {
-		return err
-	}
-	return nil
+	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }
 func (encoder PathGorillaResponseEncoder) FloatPath(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	data, err := encoder.marshalOptions.Marshal(resp)
-	if err != nil {
-		return err
-	}
-	if _, err := w.Write(data); err != nil {
-		return err
-	}
-	return nil
+	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }
 func (encoder PathGorillaResponseEncoder) DoublePath(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	data, err := encoder.marshalOptions.Marshal(resp)
-	if err != nil {
-		return err
-	}
-	if _, err := w.Write(data); err != nil {
-		return err
-	}
-	return nil
+	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }
 func (encoder PathGorillaResponseEncoder) StringPath(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	data, err := encoder.marshalOptions.Marshal(resp)
-	if err != nil {
-		return err
-	}
-	if _, err := w.Write(data); err != nil {
-		return err
-	}
-	return nil
+	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }
 func (encoder PathGorillaResponseEncoder) EnumPath(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	data, err := encoder.marshalOptions.Marshal(resp)
-	if err != nil {
-		return err
-	}
-	if _, err := w.Write(data); err != nil {
-		return err
-	}
-	return nil
+	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }
 
 type NamedPathGorillaService interface {
@@ -863,7 +782,7 @@ type NamedPathGorillaService interface {
 }
 
 func AppendNamedPathGorillaRoute(router *mux.Router, svc NamedPathGorillaService) *mux.Router {
-	handler := &NamedPathGorillaHandler{
+	handler := NamedPathGorillaHandler{
 		svc: svc,
 		decoder: NamedPathGorillaRequestDecoder{
 			unmarshalOptions: protojson.UnmarshalOptions{},
@@ -908,7 +827,7 @@ type NamedPathGorillaHandler struct {
 	errorEncoder v2.ErrorEncoder
 }
 
-func (h *NamedPathGorillaHandler) NamedPathString() http.Handler {
+func (h NamedPathGorillaHandler) NamedPathString() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.NamedPathString(ctx, request)
@@ -928,7 +847,7 @@ func (h *NamedPathGorillaHandler) NamedPathString() http.Handler {
 	})
 }
 
-func (h *NamedPathGorillaHandler) NamedPathOptString() http.Handler {
+func (h NamedPathGorillaHandler) NamedPathOptString() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.NamedPathOptString(ctx, request)
@@ -948,7 +867,7 @@ func (h *NamedPathGorillaHandler) NamedPathOptString() http.Handler {
 	})
 }
 
-func (h *NamedPathGorillaHandler) NamedPathWrapString() http.Handler {
+func (h NamedPathGorillaHandler) NamedPathWrapString() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.NamedPathWrapString(ctx, request)
@@ -968,7 +887,7 @@ func (h *NamedPathGorillaHandler) NamedPathWrapString() http.Handler {
 	})
 }
 
-func (h *NamedPathGorillaHandler) EmbedNamedPathString() http.Handler {
+func (h NamedPathGorillaHandler) EmbedNamedPathString() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.EmbedNamedPathString(ctx, request)
@@ -988,7 +907,7 @@ func (h *NamedPathGorillaHandler) EmbedNamedPathString() http.Handler {
 	})
 }
 
-func (h *NamedPathGorillaHandler) EmbedNamedPathOptString() http.Handler {
+func (h NamedPathGorillaHandler) EmbedNamedPathOptString() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.EmbedNamedPathOptString(ctx, request)
@@ -1008,7 +927,7 @@ func (h *NamedPathGorillaHandler) EmbedNamedPathOptString() http.Handler {
 	})
 }
 
-func (h *NamedPathGorillaHandler) EmbedNamedPathWrapString() http.Handler {
+func (h NamedPathGorillaHandler) EmbedNamedPathWrapString() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.EmbedNamedPathWrapString(ctx, request)
@@ -1129,76 +1048,22 @@ type NamedPathGorillaResponseEncoder struct {
 }
 
 func (encoder NamedPathGorillaResponseEncoder) NamedPathString(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	data, err := encoder.marshalOptions.Marshal(resp)
-	if err != nil {
-		return err
-	}
-	if _, err := w.Write(data); err != nil {
-		return err
-	}
-	return nil
+	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }
 func (encoder NamedPathGorillaResponseEncoder) NamedPathOptString(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	data, err := encoder.marshalOptions.Marshal(resp)
-	if err != nil {
-		return err
-	}
-	if _, err := w.Write(data); err != nil {
-		return err
-	}
-	return nil
+	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }
 func (encoder NamedPathGorillaResponseEncoder) NamedPathWrapString(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	data, err := encoder.marshalOptions.Marshal(resp)
-	if err != nil {
-		return err
-	}
-	if _, err := w.Write(data); err != nil {
-		return err
-	}
-	return nil
+	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }
 func (encoder NamedPathGorillaResponseEncoder) EmbedNamedPathString(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	data, err := encoder.marshalOptions.Marshal(resp)
-	if err != nil {
-		return err
-	}
-	if _, err := w.Write(data); err != nil {
-		return err
-	}
-	return nil
+	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }
 func (encoder NamedPathGorillaResponseEncoder) EmbedNamedPathOptString(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	data, err := encoder.marshalOptions.Marshal(resp)
-	if err != nil {
-		return err
-	}
-	if _, err := w.Write(data); err != nil {
-		return err
-	}
-	return nil
+	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }
 func (encoder NamedPathGorillaResponseEncoder) EmbedNamedPathWrapString(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	data, err := encoder.marshalOptions.Marshal(resp)
-	if err != nil {
-		return err
-	}
-	if _, err := w.Write(data); err != nil {
-		return err
-	}
-	return nil
+	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }
 
 type MixPathGorillaService interface {
@@ -1206,7 +1071,7 @@ type MixPathGorillaService interface {
 }
 
 func AppendMixPathGorillaRoute(router *mux.Router, svc MixPathGorillaService) *mux.Router {
-	handler := &MixPathGorillaHandler{
+	handler := MixPathGorillaHandler{
 		svc: svc,
 		decoder: MixPathGorillaRequestDecoder{
 			unmarshalOptions: protojson.UnmarshalOptions{},
@@ -1231,7 +1096,7 @@ type MixPathGorillaHandler struct {
 	errorEncoder v2.ErrorEncoder
 }
 
-func (h *MixPathGorillaHandler) MixPath() http.Handler {
+func (h MixPathGorillaHandler) MixPath() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.MixPath(ctx, request)
@@ -1278,14 +1143,5 @@ type MixPathGorillaResponseEncoder struct {
 }
 
 func (encoder MixPathGorillaResponseEncoder) MixPath(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	data, err := encoder.marshalOptions.Marshal(resp)
-	if err != nil {
-		return err
-	}
-	if _, err := w.Write(data); err != nil {
-		return err
-	}
-	return nil
+	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }

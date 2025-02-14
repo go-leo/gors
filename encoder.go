@@ -3,6 +3,10 @@ package gors
 import (
 	"context"
 	"encoding/json"
+	"google.golang.org/genproto/googleapis/api/httpbody"
+	rpchttp "google.golang.org/genproto/googleapis/rpc/http"
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 	"log"
 	"net/http"
 )
@@ -33,4 +37,37 @@ func DefaultErrorEncoder(ctx context.Context, err error, w http.ResponseWriter) 
 	if err != nil {
 		log.Default().Println("gors: response write error: ", err)
 	}
+}
+
+func ResponseEncoder(ctx context.Context, w http.ResponseWriter, resp proto.Message, marshalOptions protojson.MarshalOptions) error {
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	data, err := marshalOptions.Marshal(resp)
+	if err != nil {
+		return err
+	}
+	if _, err := w.Write(data); err != nil {
+		return err
+	}
+	return nil
+}
+
+func HttpBodyEncoder(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
+	w.Header().Set("Content-Type", resp.GetContentType())
+	w.WriteHeader(http.StatusOK)
+	if _, err := w.Write(resp.GetData()); err != nil {
+		return err
+	}
+	return nil
+}
+
+func HttpResponseEncoder(ctx context.Context, w http.ResponseWriter, resp *rpchttp.HttpResponse) error {
+	for _, header := range resp.GetHeaders() {
+		w.Header().Add(header.GetKey(), header.GetValue())
+	}
+	w.WriteHeader(int(resp.GetStatus()))
+	if _, err := w.Write(resp.GetBody()); err != nil {
+		return err
+	}
+	return nil
 }

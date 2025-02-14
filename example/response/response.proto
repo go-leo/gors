@@ -5,6 +5,7 @@ option go_package = "github.com/go-leo/gors/v2/example/response/v1;response";
 import "google/protobuf/empty.proto";
 import "google/api/annotations.proto";
 import "google/api/httpbody.proto";
+import "google/rpc/http.proto";
 
 service Response {
   rpc OmittedResponse (google.protobuf.Empty) returns (UserResponse) {
@@ -37,6 +38,12 @@ service Response {
     option (google.api.http) = {
       put : "/v1/http/body/named/response"
       response_body : "body"
+    };
+  }
+
+  rpc HttpResponse (google.protobuf.Empty) returns (google.rpc.HttpResponse) {
+    option (google.api.http) = {
+      get : "/v1/http/response"
     };
   }
 }

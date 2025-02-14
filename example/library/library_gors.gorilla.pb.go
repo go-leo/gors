@@ -30,7 +30,7 @@ type LibraryServiceGorillaService interface {
 }
 
 func AppendLibraryServiceGorillaRoute(router *mux.Router, svc LibraryServiceGorillaService) *mux.Router {
-	handler := &LibraryServiceGorillaHandler{
+	handler := LibraryServiceGorillaHandler{
 		svc: svc,
 		decoder: LibraryServiceGorillaRequestDecoder{
 			unmarshalOptions: protojson.UnmarshalOptions{},
@@ -95,7 +95,7 @@ type LibraryServiceGorillaHandler struct {
 	errorEncoder v2.ErrorEncoder
 }
 
-func (h *LibraryServiceGorillaHandler) CreateShelf() http.Handler {
+func (h LibraryServiceGorillaHandler) CreateShelf() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.CreateShelf(ctx, request)
@@ -115,7 +115,7 @@ func (h *LibraryServiceGorillaHandler) CreateShelf() http.Handler {
 	})
 }
 
-func (h *LibraryServiceGorillaHandler) GetShelf() http.Handler {
+func (h LibraryServiceGorillaHandler) GetShelf() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.GetShelf(ctx, request)
@@ -135,7 +135,7 @@ func (h *LibraryServiceGorillaHandler) GetShelf() http.Handler {
 	})
 }
 
-func (h *LibraryServiceGorillaHandler) ListShelves() http.Handler {
+func (h LibraryServiceGorillaHandler) ListShelves() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.ListShelves(ctx, request)
@@ -155,7 +155,7 @@ func (h *LibraryServiceGorillaHandler) ListShelves() http.Handler {
 	})
 }
 
-func (h *LibraryServiceGorillaHandler) DeleteShelf() http.Handler {
+func (h LibraryServiceGorillaHandler) DeleteShelf() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.DeleteShelf(ctx, request)
@@ -175,7 +175,7 @@ func (h *LibraryServiceGorillaHandler) DeleteShelf() http.Handler {
 	})
 }
 
-func (h *LibraryServiceGorillaHandler) MergeShelves() http.Handler {
+func (h LibraryServiceGorillaHandler) MergeShelves() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.MergeShelves(ctx, request)
@@ -195,7 +195,7 @@ func (h *LibraryServiceGorillaHandler) MergeShelves() http.Handler {
 	})
 }
 
-func (h *LibraryServiceGorillaHandler) CreateBook() http.Handler {
+func (h LibraryServiceGorillaHandler) CreateBook() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.CreateBook(ctx, request)
@@ -215,7 +215,7 @@ func (h *LibraryServiceGorillaHandler) CreateBook() http.Handler {
 	})
 }
 
-func (h *LibraryServiceGorillaHandler) GetBook() http.Handler {
+func (h LibraryServiceGorillaHandler) GetBook() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.GetBook(ctx, request)
@@ -235,7 +235,7 @@ func (h *LibraryServiceGorillaHandler) GetBook() http.Handler {
 	})
 }
 
-func (h *LibraryServiceGorillaHandler) ListBooks() http.Handler {
+func (h LibraryServiceGorillaHandler) ListBooks() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.ListBooks(ctx, request)
@@ -255,7 +255,7 @@ func (h *LibraryServiceGorillaHandler) ListBooks() http.Handler {
 	})
 }
 
-func (h *LibraryServiceGorillaHandler) DeleteBook() http.Handler {
+func (h LibraryServiceGorillaHandler) DeleteBook() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.DeleteBook(ctx, request)
@@ -275,7 +275,7 @@ func (h *LibraryServiceGorillaHandler) DeleteBook() http.Handler {
 	})
 }
 
-func (h *LibraryServiceGorillaHandler) UpdateBook() http.Handler {
+func (h LibraryServiceGorillaHandler) UpdateBook() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.UpdateBook(ctx, request)
@@ -295,7 +295,7 @@ func (h *LibraryServiceGorillaHandler) UpdateBook() http.Handler {
 	})
 }
 
-func (h *LibraryServiceGorillaHandler) MoveBook() http.Handler {
+func (h LibraryServiceGorillaHandler) MoveBook() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.MoveBook(ctx, request)
@@ -476,134 +476,35 @@ type LibraryServiceGorillaResponseEncoder struct {
 }
 
 func (encoder LibraryServiceGorillaResponseEncoder) CreateShelf(ctx context.Context, w http.ResponseWriter, resp *Shelf) error {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	data, err := encoder.marshalOptions.Marshal(resp)
-	if err != nil {
-		return err
-	}
-	if _, err := w.Write(data); err != nil {
-		return err
-	}
-	return nil
+	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }
 func (encoder LibraryServiceGorillaResponseEncoder) GetShelf(ctx context.Context, w http.ResponseWriter, resp *Shelf) error {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	data, err := encoder.marshalOptions.Marshal(resp)
-	if err != nil {
-		return err
-	}
-	if _, err := w.Write(data); err != nil {
-		return err
-	}
-	return nil
+	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }
 func (encoder LibraryServiceGorillaResponseEncoder) ListShelves(ctx context.Context, w http.ResponseWriter, resp *ListShelvesResponse) error {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	data, err := encoder.marshalOptions.Marshal(resp)
-	if err != nil {
-		return err
-	}
-	if _, err := w.Write(data); err != nil {
-		return err
-	}
-	return nil
+	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }
 func (encoder LibraryServiceGorillaResponseEncoder) DeleteShelf(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	data, err := encoder.marshalOptions.Marshal(resp)
-	if err != nil {
-		return err
-	}
-	if _, err := w.Write(data); err != nil {
-		return err
-	}
-	return nil
+	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }
 func (encoder LibraryServiceGorillaResponseEncoder) MergeShelves(ctx context.Context, w http.ResponseWriter, resp *Shelf) error {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	data, err := encoder.marshalOptions.Marshal(resp)
-	if err != nil {
-		return err
-	}
-	if _, err := w.Write(data); err != nil {
-		return err
-	}
-	return nil
+	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }
 func (encoder LibraryServiceGorillaResponseEncoder) CreateBook(ctx context.Context, w http.ResponseWriter, resp *Book) error {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	data, err := encoder.marshalOptions.Marshal(resp)
-	if err != nil {
-		return err
-	}
-	if _, err := w.Write(data); err != nil {
-		return err
-	}
-	return nil
+	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }
 func (encoder LibraryServiceGorillaResponseEncoder) GetBook(ctx context.Context, w http.ResponseWriter, resp *Book) error {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	data, err := encoder.marshalOptions.Marshal(resp)
-	if err != nil {
-		return err
-	}
-	if _, err := w.Write(data); err != nil {
-		return err
-	}
-	return nil
+	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }
 func (encoder LibraryServiceGorillaResponseEncoder) ListBooks(ctx context.Context, w http.ResponseWriter, resp *ListBooksResponse) error {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	data, err := encoder.marshalOptions.Marshal(resp)
-	if err != nil {
-		return err
-	}
-	if _, err := w.Write(data); err != nil {
-		return err
-	}
-	return nil
+	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }
 func (encoder LibraryServiceGorillaResponseEncoder) DeleteBook(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	data, err := encoder.marshalOptions.Marshal(resp)
-	if err != nil {
-		return err
-	}
-	if _, err := w.Write(data); err != nil {
-		return err
-	}
-	return nil
+	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }
 func (encoder LibraryServiceGorillaResponseEncoder) UpdateBook(ctx context.Context, w http.ResponseWriter, resp *Book) error {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	data, err := encoder.marshalOptions.Marshal(resp)
-	if err != nil {
-		return err
-	}
-	if _, err := w.Write(data); err != nil {
-		return err
-	}
-	return nil
+	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }
 func (encoder LibraryServiceGorillaResponseEncoder) MoveBook(ctx context.Context, w http.ResponseWriter, resp *Book) error {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	data, err := encoder.marshalOptions.Marshal(resp)
-	if err != nil {
-		return err
-	}
-	if _, err := w.Write(data); err != nil {
-		return err
-	}
-	return nil
+	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }

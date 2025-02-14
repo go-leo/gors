@@ -22,7 +22,7 @@ type BodyGorillaService interface {
 }
 
 func AppendBodyGorillaRoute(router *mux.Router, svc BodyGorillaService) *mux.Router {
-	handler := &BodyGorillaHandler{
+	handler := BodyGorillaHandler{
 		svc: svc,
 		decoder: BodyGorillaRequestDecoder{
 			unmarshalOptions: protojson.UnmarshalOptions{},
@@ -63,7 +63,7 @@ type BodyGorillaHandler struct {
 	errorEncoder v2.ErrorEncoder
 }
 
-func (h *BodyGorillaHandler) StarBody() http.Handler {
+func (h BodyGorillaHandler) StarBody() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.StarBody(ctx, request)
@@ -83,7 +83,7 @@ func (h *BodyGorillaHandler) StarBody() http.Handler {
 	})
 }
 
-func (h *BodyGorillaHandler) NamedBody() http.Handler {
+func (h BodyGorillaHandler) NamedBody() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.NamedBody(ctx, request)
@@ -103,7 +103,7 @@ func (h *BodyGorillaHandler) NamedBody() http.Handler {
 	})
 }
 
-func (h *BodyGorillaHandler) NonBody() http.Handler {
+func (h BodyGorillaHandler) NonBody() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.NonBody(ctx, request)
@@ -123,7 +123,7 @@ func (h *BodyGorillaHandler) NonBody() http.Handler {
 	})
 }
 
-func (h *BodyGorillaHandler) HttpBodyStarBody() http.Handler {
+func (h BodyGorillaHandler) HttpBodyStarBody() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.HttpBodyStarBody(ctx, request)
@@ -143,7 +143,7 @@ func (h *BodyGorillaHandler) HttpBodyStarBody() http.Handler {
 	})
 }
 
-func (h *BodyGorillaHandler) HttpBodyNamedBody() http.Handler {
+func (h BodyGorillaHandler) HttpBodyNamedBody() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.HttpBodyNamedBody(ctx, request)
@@ -221,62 +221,17 @@ type BodyGorillaResponseEncoder struct {
 }
 
 func (encoder BodyGorillaResponseEncoder) StarBody(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	data, err := encoder.marshalOptions.Marshal(resp)
-	if err != nil {
-		return err
-	}
-	if _, err := w.Write(data); err != nil {
-		return err
-	}
-	return nil
+	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }
 func (encoder BodyGorillaResponseEncoder) NamedBody(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	data, err := encoder.marshalOptions.Marshal(resp)
-	if err != nil {
-		return err
-	}
-	if _, err := w.Write(data); err != nil {
-		return err
-	}
-	return nil
+	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }
 func (encoder BodyGorillaResponseEncoder) NonBody(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	data, err := encoder.marshalOptions.Marshal(resp)
-	if err != nil {
-		return err
-	}
-	if _, err := w.Write(data); err != nil {
-		return err
-	}
-	return nil
+	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }
 func (encoder BodyGorillaResponseEncoder) HttpBodyStarBody(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	data, err := encoder.marshalOptions.Marshal(resp)
-	if err != nil {
-		return err
-	}
-	if _, err := w.Write(data); err != nil {
-		return err
-	}
-	return nil
+	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }
 func (encoder BodyGorillaResponseEncoder) HttpBodyNamedBody(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	data, err := encoder.marshalOptions.Marshal(resp)
-	if err != nil {
-		return err
-	}
-	if _, err := w.Write(data); err != nil {
-		return err
-	}
-	return nil
+	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }

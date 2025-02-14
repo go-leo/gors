@@ -24,7 +24,7 @@ type WorkspacesGorillaService interface {
 }
 
 func AppendWorkspacesGorillaRoute(router *mux.Router, svc WorkspacesGorillaService) *mux.Router {
-	handler := &WorkspacesGorillaHandler{
+	handler := WorkspacesGorillaHandler{
 		svc: svc,
 		decoder: WorkspacesGorillaRequestDecoder{
 			unmarshalOptions: protojson.UnmarshalOptions{},
@@ -65,7 +65,7 @@ type WorkspacesGorillaHandler struct {
 	errorEncoder v2.ErrorEncoder
 }
 
-func (h *WorkspacesGorillaHandler) ListWorkspaces() http.Handler {
+func (h WorkspacesGorillaHandler) ListWorkspaces() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.ListWorkspaces(ctx, request)
@@ -85,7 +85,7 @@ func (h *WorkspacesGorillaHandler) ListWorkspaces() http.Handler {
 	})
 }
 
-func (h *WorkspacesGorillaHandler) GetWorkspace() http.Handler {
+func (h WorkspacesGorillaHandler) GetWorkspace() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.GetWorkspace(ctx, request)
@@ -105,7 +105,7 @@ func (h *WorkspacesGorillaHandler) GetWorkspace() http.Handler {
 	})
 }
 
-func (h *WorkspacesGorillaHandler) CreateWorkspace() http.Handler {
+func (h WorkspacesGorillaHandler) CreateWorkspace() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.CreateWorkspace(ctx, request)
@@ -125,7 +125,7 @@ func (h *WorkspacesGorillaHandler) CreateWorkspace() http.Handler {
 	})
 }
 
-func (h *WorkspacesGorillaHandler) UpdateWorkspace() http.Handler {
+func (h WorkspacesGorillaHandler) UpdateWorkspace() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.UpdateWorkspace(ctx, request)
@@ -145,7 +145,7 @@ func (h *WorkspacesGorillaHandler) UpdateWorkspace() http.Handler {
 	})
 }
 
-func (h *WorkspacesGorillaHandler) DeleteWorkspace() http.Handler {
+func (h WorkspacesGorillaHandler) DeleteWorkspace() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.DeleteWorkspace(ctx, request)
@@ -247,62 +247,17 @@ type WorkspacesGorillaResponseEncoder struct {
 }
 
 func (encoder WorkspacesGorillaResponseEncoder) ListWorkspaces(ctx context.Context, w http.ResponseWriter, resp *ListWorkspacesResponse) error {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	data, err := encoder.marshalOptions.Marshal(resp)
-	if err != nil {
-		return err
-	}
-	if _, err := w.Write(data); err != nil {
-		return err
-	}
-	return nil
+	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }
 func (encoder WorkspacesGorillaResponseEncoder) GetWorkspace(ctx context.Context, w http.ResponseWriter, resp *Workspace) error {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	data, err := encoder.marshalOptions.Marshal(resp)
-	if err != nil {
-		return err
-	}
-	if _, err := w.Write(data); err != nil {
-		return err
-	}
-	return nil
+	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }
 func (encoder WorkspacesGorillaResponseEncoder) CreateWorkspace(ctx context.Context, w http.ResponseWriter, resp *Workspace) error {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	data, err := encoder.marshalOptions.Marshal(resp)
-	if err != nil {
-		return err
-	}
-	if _, err := w.Write(data); err != nil {
-		return err
-	}
-	return nil
+	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }
 func (encoder WorkspacesGorillaResponseEncoder) UpdateWorkspace(ctx context.Context, w http.ResponseWriter, resp *Workspace) error {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	data, err := encoder.marshalOptions.Marshal(resp)
-	if err != nil {
-		return err
-	}
-	if _, err := w.Write(data); err != nil {
-		return err
-	}
-	return nil
+	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }
 func (encoder WorkspacesGorillaResponseEncoder) DeleteWorkspace(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	data, err := encoder.marshalOptions.Marshal(resp)
-	if err != nil {
-		return err
-	}
-	if _, err := w.Write(data); err != nil {
-		return err
-	}
-	return nil
+	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }
