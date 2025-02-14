@@ -1,0 +1,90 @@
+syntax = "proto3";
+package leo.gors.body.v1;
+option go_package = "github.com/go-leo/gors/v2/example/demo/v1;demo";
+
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+
+service Demo {
+
+  // CreateUser 创建用户
+  rpc CreateUser (CreateUserRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post : "/v1/user"
+      body : "*"
+    };
+  }
+
+  // DeleteUser 删除用户
+  rpc DeleteUser (DeleteUserRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete : "/v1/user/{id}"
+    };
+  }
+
+  // ModifyUser 修改用户
+  rpc ModifyUser (ModifyUserRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put : "/v1/user/{id}"
+      body : "*"
+    };
+  }
+
+  // GetUser 获取用户
+  rpc GetUser (GetUserRequest) returns (GetUserResponse) {
+    option (google.api.http) = {
+      get : "/v1/user/{id}"
+    };
+  }
+
+  // ListUser 获取用户列表
+  rpc ListUser (ListUserRequest) returns (ListUserResponse) {
+    option (google.api.http) = {
+      get : "/v1/users"
+    };
+  }
+}
+
+message User {
+  int64 id = 1;
+  string name = 2;
+  string email = 3;
+  string phone = 4;
+  string address = 5;
+}
+
+message CreateUserRequest {
+  string name = 1;
+  string email = 2;
+  string phone = 3;
+  string address = 4;
+}
+
+message DeleteUserRequest {
+  int64 id = 1;
+}
+
+message ModifyUserRequest {
+  int64 id = 1;
+  string name = 2;
+  string email = 3;
+  string phone = 4;
+  string address = 5;
+}
+
+message GetUserRequest {
+  int64 id = 1;
+}
+
+message GetUserResponse {
+  User item = 1;
+}
+
+message ListUserRequest {
+  int64 page_num = 1;
+  int64 page_size = 2;
+}
+
+message ListUserResponse {
+  repeated User list = 1;
+}

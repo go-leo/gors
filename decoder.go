@@ -29,7 +29,7 @@ func HttpBodyDecoder(ctx context.Context, r *http.Request, body *httpbody.HttpBo
 		return err
 	}
 	body.Data = data
-	body.ContentType = r.Header.Get("Content-Type")
+	body.ContentType = r.Header.Get(ContentTypeKey)
 	return nil
 }
 

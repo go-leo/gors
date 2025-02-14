@@ -9,10 +9,10 @@ import (
 
 func (f *Generator) GenerateServerRequestDecoder(service *internal.Service, g *protogen.GeneratedFile) error {
 	g.P("type ", service.GorillaRequestDecoderName(), " struct {")
-	g.P("unmarshalOptions ", internal.ProtoJsonPackage.Ident("UnmarshalOptions"))
+	g.P("unmarshalOptions ", internal.ProtoJsonUnmarshalOptionsIdent)
 	g.P("}")
 	for _, endpoint := range service.Endpoints {
-		g.P("func (decoder ", service.GorillaRequestDecoderName(), ")", endpoint.Name(), "(ctx ", internal.ContextIdent, ", r *", internal.HttpPackage.Ident("Request"), ") (*", endpoint.InputGoIdent(), ", error){")
+		g.P("func (decoder ", service.GorillaRequestDecoderName(), ")", endpoint.Name(), "(ctx ", internal.ContextIdent, ", r *", internal.RequestIdent, ") (*", endpoint.InputGoIdent(), ", error){")
 		g.P("req := &", endpoint.InputGoIdent(), "{}")
 		bodyMessage, bodyField, namedPathFields, pathFields, queryFields, err := endpoint.ParseParameters()
 		if err != nil {
@@ -45,7 +45,7 @@ func (f *Generator) GenerateServerRequestDecoder(service *internal.Service, g *p
 		}
 
 		if len(namedPathFields)+len(pathFields) > 0 {
-			g.P("vars := ", internal.UrlxPackage.Ident("FormFromMap"), "(", internal.MuxPackage.Ident("Vars"), "(r)", ")")
+			g.P("vars := ", internal.UrlxPackage.Ident("FormFromMap"), "(", internal.VarsIdent, "(r)", ")")
 			f.PrintNamedPathField(g, namedPathFields, endpoint.HttpRule())
 			f.PrintPathField(g, pathFields)
 		}
@@ -94,7 +94,7 @@ func (f *Generator) PrintNamedPathField(g *protogen.GeneratedFile, namedPathFiel
 		} else {
 			_, _, namedPathTemplate, namedPathParameters := httpRule.RegularizePath(httpRule.Path())
 			tgtValue := []any{"req.", fullFieldName, " = "}
-			srcValue := []any{internal.FmtPackage.Ident("Sprintf"), "(", strconv.Quote(namedPathTemplate)}
+			srcValue := []any{internal.SprintfIdent, "(", strconv.Quote(namedPathTemplate)}
 			for _, namedPathParameter := range namedPathParameters {
 				srcValue = append(srcValue, ", vars.Get(", strconv.Quote(namedPathParameter), ")")
 			}
@@ -374,14 +374,14 @@ func (f *Generator) PrintFieldAssign(g *protogen.GeneratedFile, tgtValue []any, 
 
 func (f *Generator) PrintStringValueAssign(g *protogen.GeneratedFile, tgtValue []any, srcValue []any, hasPresence bool) {
 	if hasPresence {
-		g.P(append(tgtValue, append(append([]any{internal.ProtoPackage.Ident("String"), "("}, srcValue...), ")")...)...)
+		g.P(append(tgtValue, append(append([]any{internal.ProtoStringIdent, "("}, srcValue...), ")")...)...)
 	} else {
 		g.P(append(tgtValue, srcValue...)...)
 	}
 }
 
 func (f *Generator) PrintWrapStringValueAssign(g *protogen.GeneratedFile, tgtValue []any, srcValue []any) {
-	g.P(append(tgtValue, append(append([]any{internal.WrapperspbPackage.Ident("String"), "("}, srcValue...), ")")...)...)
+	g.P(append(tgtValue, append(append([]any{internal.WrapperspbStringIdent, "("}, srcValue...), ")")...)...)
 }
 
 func (f *Generator) PrintStringListAssign(g *protogen.GeneratedFile, tgtValue []any, srcValue []any) {
@@ -389,5 +389,5 @@ func (f *Generator) PrintStringListAssign(g *protogen.GeneratedFile, tgtValue []
 }
 
 func (f *Generator) PrintWrapStringListAssign(g *protogen.GeneratedFile, tgtValue []any, srcValue []any) {
-	g.P(append(tgtValue, append(append([]any{internal.ProtoxPackage.Ident("WrapStringSlice"), "("}, srcValue...), ")")...)...)
+	g.P(append(tgtValue, append(append([]any{internal.WrapStringSliceIdent, "("}, srcValue...), ")")...)...)
 }

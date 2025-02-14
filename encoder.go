@@ -17,10 +17,10 @@ func DefaultErrorEncoder(ctx context.Context, err error, w http.ResponseWriter) 
 	contentType, body := "text/plain; charset=utf-8", []byte(err.Error())
 	if marshaler, ok := err.(json.Marshaler); ok {
 		if jsonBody, marshalErr := marshaler.MarshalJSON(); marshalErr == nil {
-			contentType, body = "application/json; charset=utf-8", jsonBody
+			contentType, body = JsonContentType, jsonBody
 		}
 	}
-	w.Header().Set("Content-Type", contentType)
+	w.Header().Set(ContentTypeKey, contentType)
 	if headerer, ok := err.(interface{ Headers() http.Header }); ok {
 		for k, values := range headerer.Headers() {
 			for _, v := range values {
@@ -40,7 +40,7 @@ func DefaultErrorEncoder(ctx context.Context, err error, w http.ResponseWriter) 
 }
 
 func ResponseEncoder(ctx context.Context, w http.ResponseWriter, resp proto.Message, marshalOptions protojson.MarshalOptions) error {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.Header().Set(ContentTypeKey, JsonContentType)
 	w.WriteHeader(http.StatusOK)
 	data, err := marshalOptions.Marshal(resp)
 	if err != nil {
@@ -53,7 +53,7 @@ func ResponseEncoder(ctx context.Context, w http.ResponseWriter, resp proto.Mess
 }
 
 func HttpBodyEncoder(ctx context.Context, w http.ResponseWriter, resp *httpbody.HttpBody) error {
-	w.Header().Set("Content-Type", resp.GetContentType())
+	w.Header().Set(ContentTypeKey, resp.GetContentType())
 	w.WriteHeader(http.StatusOK)
 	if _, err := w.Write(resp.GetData()); err != nil {
 		return err

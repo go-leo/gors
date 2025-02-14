@@ -69,15 +69,15 @@ func (f *Generator) GenerateServices(service *internal.Service, g *protogen.Gene
 }
 
 func (f *Generator) GenerateAppendServerFunc(service *internal.Service, g *protogen.GeneratedFile) error {
-	g.P("func ", service.AppendGorillaRouteName(), "(router *", internal.MuxPackage.Ident("Router"), ", service ", service.GorillaServiceName(), ") ", "*", internal.MuxPackage.Ident("Router"), " {")
+	g.P("func ", service.AppendGorillaRouteName(), "(router *", internal.RouterIdent, ", service ", service.GorillaServiceName(), ") ", "*", internal.MuxPackage.Ident("Router"), " {")
 	g.P("handler :=  ", service.GorillaHandlerName(), "{")
 	g.P("service: service,")
 	g.P("decoder: ", service.GorillaRequestDecoderName(), "{")
-	g.P("unmarshalOptions: ", internal.ProtoJsonPackage.Ident("UnmarshalOptions"), "{},")
+	g.P("unmarshalOptions: ", internal.ProtoJsonUnmarshalOptionsIdent, "{},")
 	g.P("},")
 	g.P("encoder: ", service.GorillaResponseEncoderName(), "{")
-	g.P("marshalOptions:   ", internal.ProtoJsonPackage.Ident("MarshalOptions"), "{},")
-	g.P("unmarshalOptions: ", internal.ProtoJsonPackage.Ident("UnmarshalOptions"), "{},")
+	g.P("marshalOptions:   ", internal.ProtoJsonMarshalOptionsIdent, "{},")
+	g.P("unmarshalOptions: ", internal.ProtoJsonUnmarshalOptionsIdent, "{},")
 	g.P("},")
 	g.P("errorEncoder: ", internal.DefaultErrorEncoderIdent, ",")
 	g.P("}")
@@ -106,8 +106,8 @@ func (f *Generator) GenerateHandlers(service *internal.Service, g *protogen.Gene
 	g.P("}")
 	g.P()
 	for _, endpoint := range service.Endpoints {
-		g.P("func (h ", service.GorillaHandlerName(), ")", endpoint.Name(), "()", internal.HttpPackage.Ident("Handler"), " {")
-		g.P("return ", internal.HttpPackage.Ident("HandlerFunc"), "(func(writer ", internal.HttpPackage.Ident("ResponseWriter"), ", request *", internal.HttpPackage.Ident("Request"), ") {")
+		g.P("func (h ", service.GorillaHandlerName(), ")", endpoint.Name(), "()", internal.HttpHandlerIdent, " {")
+		g.P("return ", internal.HttpHandlerFuncIdent, "(func(writer ", internal.ResponseWriterIdent, ", request *", internal.RequestIdent, ") {")
 		g.P("ctx := request.Context()")
 		g.P("in, err := h.decoder.", endpoint.Name(), "(ctx, request)")
 		g.P("if err != nil {")
