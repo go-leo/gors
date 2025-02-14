@@ -331,11 +331,7 @@ func (decoder LibraryServiceGorillaRequestDecoder) CreateShelf(ctx context.Conte
 func (decoder LibraryServiceGorillaRequestDecoder) GetShelf(ctx context.Context, r *http.Request) (*GetShelfRequest, error) {
 	req := &GetShelfRequest{}
 	vars := urlx.FormFromMap(mux.Vars(r))
-	var varErr error
 	req.Name = fmt.Sprintf("shelves/%s", vars.Get("shelf"))
-	if varErr != nil {
-		return nil, varErr
-	}
 	return req, nil
 }
 func (decoder LibraryServiceGorillaRequestDecoder) ListShelves(ctx context.Context, r *http.Request) (*ListShelvesRequest, error) {
@@ -352,11 +348,7 @@ func (decoder LibraryServiceGorillaRequestDecoder) ListShelves(ctx context.Conte
 func (decoder LibraryServiceGorillaRequestDecoder) DeleteShelf(ctx context.Context, r *http.Request) (*DeleteShelfRequest, error) {
 	req := &DeleteShelfRequest{}
 	vars := urlx.FormFromMap(mux.Vars(r))
-	var varErr error
 	req.Name = fmt.Sprintf("shelves/%s", vars.Get("shelf"))
-	if varErr != nil {
-		return nil, varErr
-	}
 	return req, nil
 }
 func (decoder LibraryServiceGorillaRequestDecoder) MergeShelves(ctx context.Context, r *http.Request) (*MergeShelvesRequest, error) {
@@ -365,11 +357,7 @@ func (decoder LibraryServiceGorillaRequestDecoder) MergeShelves(ctx context.Cont
 		return nil, err
 	}
 	vars := urlx.FormFromMap(mux.Vars(r))
-	var varErr error
 	req.Name = fmt.Sprintf("shelves/%s", vars.Get("shelf"))
-	if varErr != nil {
-		return nil, varErr
-	}
 	return req, nil
 }
 func (decoder LibraryServiceGorillaRequestDecoder) CreateBook(ctx context.Context, r *http.Request) (*CreateBookRequest, error) {
@@ -381,31 +369,19 @@ func (decoder LibraryServiceGorillaRequestDecoder) CreateBook(ctx context.Contex
 		return nil, err
 	}
 	vars := urlx.FormFromMap(mux.Vars(r))
-	var varErr error
 	req.Parent = fmt.Sprintf("shelves/%s", vars.Get("shelf"))
-	if varErr != nil {
-		return nil, varErr
-	}
 	return req, nil
 }
 func (decoder LibraryServiceGorillaRequestDecoder) GetBook(ctx context.Context, r *http.Request) (*GetBookRequest, error) {
 	req := &GetBookRequest{}
 	vars := urlx.FormFromMap(mux.Vars(r))
-	var varErr error
 	req.Name = fmt.Sprintf("shelves/%s/books/%s", vars.Get("shelf"), vars.Get("book"))
-	if varErr != nil {
-		return nil, varErr
-	}
 	return req, nil
 }
 func (decoder LibraryServiceGorillaRequestDecoder) ListBooks(ctx context.Context, r *http.Request) (*ListBooksRequest, error) {
 	req := &ListBooksRequest{}
 	vars := urlx.FormFromMap(mux.Vars(r))
-	var varErr error
 	req.Parent = fmt.Sprintf("shelves/%s", vars.Get("shelf"))
-	if varErr != nil {
-		return nil, varErr
-	}
 	queries := r.URL.Query()
 	var queryErr error
 	req.PageSize, queryErr = errorx.Break[int32](queryErr)(urlx.GetInt[int32](queries, "page_size"))
@@ -418,11 +394,7 @@ func (decoder LibraryServiceGorillaRequestDecoder) ListBooks(ctx context.Context
 func (decoder LibraryServiceGorillaRequestDecoder) DeleteBook(ctx context.Context, r *http.Request) (*DeleteBookRequest, error) {
 	req := &DeleteBookRequest{}
 	vars := urlx.FormFromMap(mux.Vars(r))
-	var varErr error
 	req.Name = fmt.Sprintf("shelves/%s/books/%s", vars.Get("shelf"), vars.Get("book"))
-	if varErr != nil {
-		return nil, varErr
-	}
 	return req, nil
 }
 func (decoder LibraryServiceGorillaRequestDecoder) UpdateBook(ctx context.Context, r *http.Request) (*UpdateBookRequest, error) {
@@ -434,14 +406,10 @@ func (decoder LibraryServiceGorillaRequestDecoder) UpdateBook(ctx context.Contex
 		return nil, err
 	}
 	vars := urlx.FormFromMap(mux.Vars(r))
-	var varErr error
 	if req.Book == nil {
 		req.Book = &Book{}
 	}
 	req.Book.Name = fmt.Sprintf("shelves/%s/books/%s", vars.Get("shelf"), vars.Get("book"))
-	if varErr != nil {
-		return nil, varErr
-	}
 	return req, nil
 }
 func (decoder LibraryServiceGorillaRequestDecoder) MoveBook(ctx context.Context, r *http.Request) (*MoveBookRequest, error) {
@@ -450,11 +418,7 @@ func (decoder LibraryServiceGorillaRequestDecoder) MoveBook(ctx context.Context,
 		return nil, err
 	}
 	vars := urlx.FormFromMap(mux.Vars(r))
-	var varErr error
 	req.Name = fmt.Sprintf("shelves/%s/books/%s", vars.Get("shelf"), vars.Get("book"))
-	if varErr != nil {
-		return nil, varErr
-	}
 	return req, nil
 }
 

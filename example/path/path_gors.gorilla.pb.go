@@ -954,11 +954,7 @@ type NamedPathGorillaRequestDecoder struct {
 func (decoder NamedPathGorillaRequestDecoder) NamedPathString(ctx context.Context, r *http.Request) (*NamedPathRequest, error) {
 	req := &NamedPathRequest{}
 	vars := urlx.FormFromMap(mux.Vars(r))
-	var varErr error
 	req.String_ = fmt.Sprintf("classes/%s/shelves/%s/books/%s/families/%s", vars.Get("class"), vars.Get("shelf"), vars.Get("book"), vars.Get("family"))
-	if varErr != nil {
-		return nil, varErr
-	}
 	queries := r.URL.Query()
 	var queryErr error
 	req.OptString = proto.String(queries.Get("opt_string"))
@@ -971,11 +967,7 @@ func (decoder NamedPathGorillaRequestDecoder) NamedPathString(ctx context.Contex
 func (decoder NamedPathGorillaRequestDecoder) NamedPathOptString(ctx context.Context, r *http.Request) (*NamedPathRequest, error) {
 	req := &NamedPathRequest{}
 	vars := urlx.FormFromMap(mux.Vars(r))
-	var varErr error
 	req.OptString = proto.String(fmt.Sprintf("classes/%s/shelves/%s/books/%s/families/%s", vars.Get("class"), vars.Get("shelf"), vars.Get("book"), vars.Get("family")))
-	if varErr != nil {
-		return nil, varErr
-	}
 	queries := r.URL.Query()
 	var queryErr error
 	req.String_ = queries.Get("string")
@@ -988,11 +980,7 @@ func (decoder NamedPathGorillaRequestDecoder) NamedPathOptString(ctx context.Con
 func (decoder NamedPathGorillaRequestDecoder) NamedPathWrapString(ctx context.Context, r *http.Request) (*NamedPathRequest, error) {
 	req := &NamedPathRequest{}
 	vars := urlx.FormFromMap(mux.Vars(r))
-	var varErr error
 	req.WrapString = wrapperspb.String(fmt.Sprintf("classes/%s/shelves/%s/books/%s/families/%s", vars.Get("class"), vars.Get("shelf"), vars.Get("book"), vars.Get("family")))
-	if varErr != nil {
-		return nil, varErr
-	}
 	queries := r.URL.Query()
 	var queryErr error
 	req.String_ = queries.Get("string")
@@ -1005,40 +993,28 @@ func (decoder NamedPathGorillaRequestDecoder) NamedPathWrapString(ctx context.Co
 func (decoder NamedPathGorillaRequestDecoder) EmbedNamedPathString(ctx context.Context, r *http.Request) (*EmbedNamedPathRequest, error) {
 	req := &EmbedNamedPathRequest{}
 	vars := urlx.FormFromMap(mux.Vars(r))
-	var varErr error
 	if req.Embed == nil {
 		req.Embed = &NamedPathRequest{}
 	}
 	req.Embed.String_ = fmt.Sprintf("classes/%s/shelves/%s/books/%s/families/%s", vars.Get("class"), vars.Get("shelf"), vars.Get("book"), vars.Get("family"))
-	if varErr != nil {
-		return nil, varErr
-	}
 	return req, nil
 }
 func (decoder NamedPathGorillaRequestDecoder) EmbedNamedPathOptString(ctx context.Context, r *http.Request) (*EmbedNamedPathRequest, error) {
 	req := &EmbedNamedPathRequest{}
 	vars := urlx.FormFromMap(mux.Vars(r))
-	var varErr error
 	if req.Embed == nil {
 		req.Embed = &NamedPathRequest{}
 	}
 	req.Embed.OptString = proto.String(fmt.Sprintf("classes/%s/shelves/%s/books/%s/families/%s", vars.Get("class"), vars.Get("shelf"), vars.Get("book"), vars.Get("family")))
-	if varErr != nil {
-		return nil, varErr
-	}
 	return req, nil
 }
 func (decoder NamedPathGorillaRequestDecoder) EmbedNamedPathWrapString(ctx context.Context, r *http.Request) (*EmbedNamedPathRequest, error) {
 	req := &EmbedNamedPathRequest{}
 	vars := urlx.FormFromMap(mux.Vars(r))
-	var varErr error
 	if req.Embed == nil {
 		req.Embed = &NamedPathRequest{}
 	}
 	req.Embed.WrapString = wrapperspb.String(fmt.Sprintf("classes/%s/shelves/%s/books/%s/families/%s", vars.Get("class"), vars.Get("shelf"), vars.Get("book"), vars.Get("family")))
-	if varErr != nil {
-		return nil, varErr
-	}
 	return req, nil
 }
 
@@ -1123,11 +1099,11 @@ type MixPathGorillaRequestDecoder struct {
 func (decoder MixPathGorillaRequestDecoder) MixPath(ctx context.Context, r *http.Request) (*MixPathRequest, error) {
 	req := &MixPathRequest{}
 	vars := urlx.FormFromMap(mux.Vars(r))
-	var varErr error
 	if req.Embed == nil {
 		req.Embed = &NamedPathRequest{}
 	}
 	req.Embed.WrapString = wrapperspb.String(fmt.Sprintf("classes/%s/shelves/%s/books/%s/families/%s", vars.Get("class"), vars.Get("shelf"), vars.Get("book"), vars.Get("family")))
+	var varErr error
 	req.String_ = vars.Get("string")
 	req.OptString = proto.String(vars.Get("opt_string"))
 	req.WrapString = wrapperspb.String(vars.Get("wrap_string"))

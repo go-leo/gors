@@ -171,11 +171,7 @@ type WorkspacesGorillaRequestDecoder struct {
 func (decoder WorkspacesGorillaRequestDecoder) ListWorkspaces(ctx context.Context, r *http.Request) (*ListWorkspacesRequest, error) {
 	req := &ListWorkspacesRequest{}
 	vars := urlx.FormFromMap(mux.Vars(r))
-	var varErr error
 	req.Parent = fmt.Sprintf("projects/%s/locations/%s", vars.Get("project"), vars.Get("location"))
-	if varErr != nil {
-		return nil, varErr
-	}
 	queries := r.URL.Query()
 	var queryErr error
 	req.PageSize, queryErr = errorx.Break[int32](queryErr)(urlx.GetInt[int32](queries, "page_size"))
@@ -188,11 +184,7 @@ func (decoder WorkspacesGorillaRequestDecoder) ListWorkspaces(ctx context.Contex
 func (decoder WorkspacesGorillaRequestDecoder) GetWorkspace(ctx context.Context, r *http.Request) (*GetWorkspaceRequest, error) {
 	req := &GetWorkspaceRequest{}
 	vars := urlx.FormFromMap(mux.Vars(r))
-	var varErr error
 	req.Name = fmt.Sprintf("projects/%s/locations/%s/workspaces/%s", vars.Get("project"), vars.Get("location"), vars.Get("workspac"))
-	if varErr != nil {
-		return nil, varErr
-	}
 	return req, nil
 }
 func (decoder WorkspacesGorillaRequestDecoder) CreateWorkspace(ctx context.Context, r *http.Request) (*CreateWorkspaceRequest, error) {
@@ -204,11 +196,7 @@ func (decoder WorkspacesGorillaRequestDecoder) CreateWorkspace(ctx context.Conte
 		return nil, err
 	}
 	vars := urlx.FormFromMap(mux.Vars(r))
-	var varErr error
 	req.Parent = fmt.Sprintf("projects/%s/locations/%s", vars.Get("project"), vars.Get("location"))
-	if varErr != nil {
-		return nil, varErr
-	}
 	return req, nil
 }
 func (decoder WorkspacesGorillaRequestDecoder) UpdateWorkspace(ctx context.Context, r *http.Request) (*UpdateWorkspaceRequest, error) {
@@ -220,21 +208,13 @@ func (decoder WorkspacesGorillaRequestDecoder) UpdateWorkspace(ctx context.Conte
 		return nil, err
 	}
 	vars := urlx.FormFromMap(mux.Vars(r))
-	var varErr error
 	req.Name = fmt.Sprintf("projects/%s/locations/%s/Workspaces/%s", vars.Get("project"), vars.Get("location"), vars.Get("Workspac"))
-	if varErr != nil {
-		return nil, varErr
-	}
 	return req, nil
 }
 func (decoder WorkspacesGorillaRequestDecoder) DeleteWorkspace(ctx context.Context, r *http.Request) (*DeleteWorkspaceRequest, error) {
 	req := &DeleteWorkspaceRequest{}
 	vars := urlx.FormFromMap(mux.Vars(r))
-	var varErr error
 	req.Name = fmt.Sprintf("projects/%s/locations/%s/workspaces/%s", vars.Get("project"), vars.Get("location"), vars.Get("workspac"))
-	if varErr != nil {
-		return nil, varErr
-	}
 	return req, nil
 }
 

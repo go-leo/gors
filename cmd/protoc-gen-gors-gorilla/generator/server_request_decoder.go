@@ -46,14 +46,8 @@ func (f *Generator) GenerateServerRequestDecoder(service *internal.Service, g *p
 
 		if len(namedPathFields)+len(pathFields) > 0 {
 			g.P("vars := ", internal.UrlxPackage.Ident("FormFromMap"), "(", internal.MuxPackage.Ident("Vars"), "(r)", ")")
-			g.P("var varErr error")
-			if err := f.PrintNamedPathField(g, namedPathFields, endpoint.HttpRule()); err != nil {
-				return err
-			}
+			f.PrintNamedPathField(g, namedPathFields, endpoint.HttpRule())
 			f.PrintPathField(g, pathFields)
-			g.P("if varErr != nil {")
-			g.P("return nil, varErr")
-			g.P("}")
 		}
 
 		if len(queryFields) > 0 {
@@ -90,7 +84,7 @@ func (f *Generator) PrintRequestDecodeBlock(g *protogen.GeneratedFile, tgtValue 
 	g.P("}")
 }
 
-func (f *Generator) PrintNamedPathField(g *protogen.GeneratedFile, namedPathFields []*protogen.Field, httpRule *internal.HttpRule) error {
+func (f *Generator) PrintNamedPathField(g *protogen.GeneratedFile, namedPathFields []*protogen.Field, httpRule *internal.HttpRule) {
 	for i, namedPathField := range namedPathFields {
 		fullFieldName := internal.FullFieldName(namedPathFields[:i+1])
 		if i < len(namedPathFields)-1 {
@@ -114,18 +108,20 @@ func (f *Generator) PrintNamedPathField(g *protogen.GeneratedFile, namedPathFiel
 			}
 		}
 	}
-	return nil
 }
 
 func (f *Generator) PrintPathField(g *protogen.GeneratedFile, pathFields []*protogen.Field) {
+	if len(pathFields) <= 0 {
+		return
+	}
+	form := "vars"
+	errName := "varErr"
+	g.P("var ", errName, " error")
 	for _, field := range pathFields {
 		fieldName := string(field.Desc.Name())
-		form := "vars"
-		errName := "varErr"
 
 		tgtValue := []any{"req.", field.GoName, " = "}
 		tgtErrValue := []any{"req.", field.GoName, ", ", errName, " = "}
-
 		srcValue := []any{"vars.Get(", strconv.Quote(fieldName), ")"}
 
 		goType, pointer := internal.FieldGoType(g, field)
@@ -205,6 +201,9 @@ func (f *Generator) PrintPathField(g *protogen.GeneratedFile, pathFields []*prot
 			}
 		}
 	}
+	g.P("if ", errName, " != nil {")
+	g.P("return nil, ", errName)
+	g.P("}")
 }
 
 func (f *Generator) PrintQueryField(g *protogen.GeneratedFile, queryFields []*protogen.Field) {
