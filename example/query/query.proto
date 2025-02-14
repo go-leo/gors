@@ -6,97 +6,149 @@ import "google/protobuf/empty.proto";
 import "google/api/annotations.proto";
 import "google/protobuf/wrappers.proto";
 
-service Query {
-  rpc Query (QueryRequest) returns (google.protobuf.Empty) {
+
+service BoolQuery {
+  rpc BoolQuery (BoolQueryRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      get : "/v1/query"
+      get : "/v1/bool"
     };
   }
 }
 
-message QueryRequest {
+message BoolQueryRequest {
   bool bool = 2;
+  optional bool opt_bool = 22;
+  google.protobuf.BoolValue wrap_bool = 48;
+}
+
+service Int32Query {
+  rpc Int32Query (Int32QueryRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      get : "/v1/int32"
+    };
+  }
+}
+
+message Int32QueryRequest {
   int32 int32 = 3;
   sint32 sint32 = 4;
-  uint32 uint32 = 6;
-  int64 int64 = 7;
-  sint64 sint64 = 8;
-  uint64 uint64 = 9;
   sfixed32 sfixed32 = 10;
-  fixed32 fixed32 = 11;
-  float float = 12;
-  sfixed64 sfixed64 = 13;
-  fixed64 fixed64 = 14;
-  double  double = 15;
-  string string = 16;
-
-  optional bool opt_bool = 22;
   optional int32 opt_int32 = 23;
   optional sint32 opt_sint32 = 24;
-  optional uint32 opt_uint32 = 26;
+  optional sfixed32 opt_sfixed32 = 30;
+  google.protobuf.Int32Value wrap_int32 = 46;
+}
+
+
+
+service Int64Query {
+  rpc Int64Query (Int64QueryRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      get : "/v1/int64"
+    };
+  }
+}
+
+message Int64QueryRequest {
+  int64 int64 = 7;
+  sint64 sint64 = 8;
+  sfixed64 sfixed64 = 13;
   optional int64 opt_int64 = 27;
   optional sint64 opt_sint64 = 28;
-  optional uint64 opt_uint64 = 29;
-  optional sfixed32 opt_sfixed32 = 30;
-  optional fixed32 opt_fixed32 = 31;
-  optional float opt_float = 32;
   optional sfixed64 opt_sfixed64 = 33;
-  optional fixed64 opt_fixed64 = 34;
-  optional double  opt_double = 35;
-  optional string opt_string = 36;
-
-  repeated bool rep_bool = 52;
-  repeated int32 rep_int32 = 53;
-  repeated sint32 rep_sint32 = 54;
-  repeated uint32 rep_uint32 = 56;
-  repeated int64 rep_int64 = 57;
-  repeated sint64 rep_sint64 = 58;
-  repeated uint64 rep_uint64 = 59;
-  repeated sfixed32 rep_sfixed32 = 60;
-  repeated fixed32 rep_fixed32 = 61;
-  repeated float rep_float = 62;
-  repeated sfixed64 rep_sfixed64 = 63;
-  repeated fixed64 rep_fixed64 = 64;
-  repeated double  rep_double = 65;
-  repeated  string rep_string = 66;
-
-  google.protobuf.DoubleValue wrap_double = 42;
-  google.protobuf.FloatValue wrap_float = 43;
   google.protobuf.Int64Value wrap_int64 = 44;
-  google.protobuf.UInt64Value wrap_uint64 = 45;
-  google.protobuf.Int32Value wrap_int32 = 46;
+}
+
+service Uint32Query {
+  rpc Uint32Query (Uint32QueryRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      get : "/v1/uint32"
+    };
+  }
+}
+
+message Uint32QueryRequest {
+  uint32 uint32 = 6;
+  fixed32 fixed32 = 11;
+  optional uint32 opt_uint32 = 26;
+  optional fixed32 opt_fixed32 = 31;
   google.protobuf.UInt32Value wrap_uint32 = 47;
-  google.protobuf.BoolValue wrap_bool = 48;
+}
+
+service Uint64Query {
+  rpc Uint64Query (Uint64QueryRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      get : "/v1/uint64"
+    };
+  }
+}
+
+message Uint64QueryRequest {
+  uint64 uint64 = 9;
+  fixed64 fixed64 = 14;
+  optional uint64 opt_uint64 = 29;
+  optional fixed64 opt_fixed64 = 34;
+  google.protobuf.UInt64Value wrap_uint64 = 45;
+}
+
+
+service FloatQuery {
+  rpc FloatQuery (FloatQueryRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      get : "/v1/float"
+    };
+  }
+}
+
+message FloatQueryRequest {
+  float float = 12;
+  optional float opt_float = 32;
+  google.protobuf.FloatValue wrap_float = 43;
+}
+
+service DoubleQuery {
+  rpc DoubleQuery (DoubleQueryRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      get : "/v1/double"
+    };
+  }
+}
+
+message DoubleQueryRequest {
+  double double = 15;
+  optional double  opt_double = 35;
+  google.protobuf.DoubleValue wrap_double = 42;
+}
+
+service StringQuery {
+  rpc StringQuery (StringQueryRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      get : "/v1/string"
+    };
+  }
+}
+
+message StringQueryRequest {
+  string string = 16;
+  optional string opt_string = 36;
   google.protobuf.StringValue wrap_string = 49;
 
+}
+service EnumQuery {
+  rpc EnumQuery (EnumQueryRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      get : "/v1/enum"
+    };
+  }
+}
 
-  optional google.protobuf.DoubleValue opt_wrap_double = 79;
-  optional google.protobuf.FloatValue opt_wrap_float = 80;
-  optional google.protobuf.Int64Value opt_wrap_int64 = 81;
-  optional google.protobuf.UInt64Value opt_wrap_uint64 = 82;
-  optional google.protobuf.Int32Value opt_wrap_int32 = 83;
-  optional google.protobuf.UInt32Value opt_wrap_uint32 = 84;
-  optional google.protobuf.BoolValue opt_wrap_bool = 85;
-  optional google.protobuf.StringValue opt_wrap_string = 86;
-
-  repeated google.protobuf.DoubleValue rep_wrap_double = 88;
-  repeated google.protobuf.FloatValue rep_wrap_float = 89;
-  repeated google.protobuf.Int64Value rep_wrap_int64 = 90;
-  repeated google.protobuf.UInt64Value rep_wrap_uint64 = 91;
-  repeated google.protobuf.Int32Value rep_wrap_int32 = 92;
-  repeated google.protobuf.UInt32Value rep_wrap_uint32 = 93;
-  repeated google.protobuf.BoolValue rep_wrap_bool = 94;
-  repeated google.protobuf.StringValue rep_wrap_string = 95;
-
+message EnumQueryRequest {
   enum Status {
     UNKNOWN = 0;
     OK = 1;
     CANCELLED = 2;
     UNKNOWN_ERROR = 3;
   }
-
   Status status = 68;
   optional Status opt_status = 69;
-  repeated Status rep_status = 70;
-
 }

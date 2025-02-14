@@ -85,7 +85,8 @@ func (f *Generator) GenerateAppendServerFunc(service *internal.Service, g *proto
 		httpRule := endpoint.HttpRule()
 		// 调整路径，来适应 github.com/gorilla/mux 路由规则
 		path, _, _, _ := httpRule.RegularizePath(httpRule.Path())
-		g.P("router.NewRoute().Name(", strconv.Quote(endpoint.FullName()), ").")
+		g.P("router.NewRoute().")
+		g.P("Name(", strconv.Quote(endpoint.FullName()), ").")
 		g.P("Methods(", strconv.Quote(httpRule.Method()), ").")
 		g.P("Path(", strconv.Quote(path), ").")
 		g.P("Handler(handler.", endpoint.Name(), "())")

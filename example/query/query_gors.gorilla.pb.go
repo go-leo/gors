@@ -6,7 +6,6 @@ import (
 	context "context"
 	v2 "github.com/go-leo/gors/v2"
 	urlx "github.com/go-leo/gox/netx/urlx"
-	protox "github.com/go-leo/gox/protox"
 	mux "github.com/gorilla/mux"
 	protojson "google.golang.org/protobuf/encoding/protojson"
 	proto "google.golang.org/protobuf/proto"
@@ -15,144 +14,706 @@ import (
 	http "net/http"
 )
 
-type QueryGorillaService interface {
-	Query(ctx context.Context, request *QueryRequest) (*emptypb.Empty, error)
+type BoolQueryGorillaService interface {
+	BoolQuery(ctx context.Context, request *BoolQueryRequest) (*emptypb.Empty, error)
 }
 
-func AppendQueryGorillaRoute(router *mux.Router, service QueryGorillaService) *mux.Router {
-	handler := QueryGorillaHandler{
+func AppendBoolQueryGorillaRoute(router *mux.Router, service BoolQueryGorillaService) *mux.Router {
+	handler := BoolQueryGorillaHandler{
 		service: service,
-		decoder: QueryGorillaRequestDecoder{
+		decoder: BoolQueryGorillaRequestDecoder{
 			unmarshalOptions: protojson.UnmarshalOptions{},
 		},
-		encoder: QueryGorillaResponseEncoder{
+		encoder: BoolQueryGorillaResponseEncoder{
 			marshalOptions:   protojson.MarshalOptions{},
 			unmarshalOptions: protojson.UnmarshalOptions{},
 		},
 		errorEncoder: v2.DefaultErrorEncoder,
 	}
-	router.NewRoute().Name("/leo.gors.query.v1.Query/Query").
+	router.NewRoute().
+		Name("/leo.gors.query.v1.BoolQuery/BoolQuery").
 		Methods("GET").
-		Path("/v1/query").
-		Handler(handler.Query())
+		Path("/v1/bool").
+		Handler(handler.BoolQuery())
 	return router
 }
 
-type QueryGorillaHandler struct {
-	service      QueryGorillaService
-	decoder      QueryGorillaRequestDecoder
-	encoder      QueryGorillaResponseEncoder
+type BoolQueryGorillaHandler struct {
+	service      BoolQueryGorillaService
+	decoder      BoolQueryGorillaRequestDecoder
+	encoder      BoolQueryGorillaResponseEncoder
 	errorEncoder v2.ErrorEncoder
 }
 
-func (h QueryGorillaHandler) Query() http.Handler {
+func (h BoolQueryGorillaHandler) BoolQuery() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
-		in, err := h.decoder.Query(ctx, request)
+		in, err := h.decoder.BoolQuery(ctx, request)
 		if err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
-		out, err := h.service.Query(ctx, in)
+		out, err := h.service.BoolQuery(ctx, in)
 		if err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
-		if err := h.encoder.Query(ctx, writer, out); err != nil {
+		if err := h.encoder.BoolQuery(ctx, writer, out); err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
 	})
 }
 
-type QueryGorillaRequestDecoder struct {
+type BoolQueryGorillaRequestDecoder struct {
 	unmarshalOptions protojson.UnmarshalOptions
 }
 
-func (decoder QueryGorillaRequestDecoder) Query(ctx context.Context, r *http.Request) (*QueryRequest, error) {
-	req := &QueryRequest{}
+func (decoder BoolQueryGorillaRequestDecoder) BoolQuery(ctx context.Context, r *http.Request) (*BoolQueryRequest, error) {
+	req := &BoolQueryRequest{}
 	queries := r.URL.Query()
 	var queryErr error
 	req.Bool, queryErr = v2.FormDecoder[bool](queryErr, queries, "bool", urlx.GetBool)
-	req.Int32, queryErr = v2.FormDecoder[int32](queryErr, queries, "int32", urlx.GetInt)
-	req.Sint32, queryErr = v2.FormDecoder[int32](queryErr, queries, "sint32", urlx.GetInt)
-	req.Uint32, queryErr = v2.FormDecoder[uint32](queryErr, queries, "uint32", urlx.GetUint)
-	req.Int64, queryErr = v2.FormDecoder[int64](queryErr, queries, "int64", urlx.GetInt)
-	req.Sint64, queryErr = v2.FormDecoder[int64](queryErr, queries, "sint64", urlx.GetInt)
-	req.Uint64, queryErr = v2.FormDecoder[uint64](queryErr, queries, "uint64", urlx.GetUint)
-	req.Sfixed32, queryErr = v2.FormDecoder[int32](queryErr, queries, "sfixed32", urlx.GetInt)
-	req.Fixed32, queryErr = v2.FormDecoder[uint32](queryErr, queries, "fixed32", urlx.GetUint)
-	req.Float, queryErr = v2.FormDecoder[float32](queryErr, queries, "float", urlx.GetFloat)
-	req.Sfixed64, queryErr = v2.FormDecoder[int64](queryErr, queries, "sfixed64", urlx.GetInt)
-	req.Fixed64, queryErr = v2.FormDecoder[uint64](queryErr, queries, "fixed64", urlx.GetUint)
-	req.Double, queryErr = v2.FormDecoder[float64](queryErr, queries, "double", urlx.GetFloat)
-	req.String_ = queries.Get("string")
 	req.OptBool, queryErr = v2.FormDecoder[*bool](queryErr, queries, "opt_bool", urlx.GetBoolPtr)
-	req.OptInt32, queryErr = v2.FormDecoder[*int32](queryErr, queries, "opt_int32", urlx.GetIntPtr)
-	req.OptSint32, queryErr = v2.FormDecoder[*int32](queryErr, queries, "opt_sint32", urlx.GetIntPtr)
-	req.OptUint32, queryErr = v2.FormDecoder[*uint32](queryErr, queries, "opt_uint32", urlx.GetUintPtr)
-	req.OptInt64, queryErr = v2.FormDecoder[*int64](queryErr, queries, "opt_int64", urlx.GetIntPtr)
-	req.OptSint64, queryErr = v2.FormDecoder[*int64](queryErr, queries, "opt_sint64", urlx.GetIntPtr)
-	req.OptUint64, queryErr = v2.FormDecoder[*uint64](queryErr, queries, "opt_uint64", urlx.GetUintPtr)
-	req.OptSfixed32, queryErr = v2.FormDecoder[*int32](queryErr, queries, "opt_sfixed32", urlx.GetIntPtr)
-	req.OptFixed32, queryErr = v2.FormDecoder[*uint32](queryErr, queries, "opt_fixed32", urlx.GetUintPtr)
-	req.OptFloat, queryErr = v2.FormDecoder[*float32](queryErr, queries, "opt_float", urlx.GetFloatPtr)
-	req.OptSfixed64, queryErr = v2.FormDecoder[*int64](queryErr, queries, "opt_sfixed64", urlx.GetIntPtr)
-	req.OptFixed64, queryErr = v2.FormDecoder[*uint64](queryErr, queries, "opt_fixed64", urlx.GetUintPtr)
-	req.OptDouble, queryErr = v2.FormDecoder[*float64](queryErr, queries, "opt_double", urlx.GetFloatPtr)
-	req.OptString = proto.String(queries.Get("opt_string"))
-	req.RepBool, queryErr = v2.FormDecoder[[]bool](queryErr, queries, "rep_bool", urlx.GetBoolSlice)
-	req.RepInt32, queryErr = v2.FormDecoder[[]int32](queryErr, queries, "rep_int32", urlx.GetIntSlice)
-	req.RepSint32, queryErr = v2.FormDecoder[[]int32](queryErr, queries, "rep_sint32", urlx.GetIntSlice)
-	req.RepUint32, queryErr = v2.FormDecoder[[]uint32](queryErr, queries, "rep_uint32", urlx.GetUintSlice)
-	req.RepInt64, queryErr = v2.FormDecoder[[]int64](queryErr, queries, "rep_int64", urlx.GetIntSlice)
-	req.RepSint64, queryErr = v2.FormDecoder[[]int64](queryErr, queries, "rep_sint64", urlx.GetIntSlice)
-	req.RepUint64, queryErr = v2.FormDecoder[[]uint64](queryErr, queries, "rep_uint64", urlx.GetUintSlice)
-	req.RepSfixed32, queryErr = v2.FormDecoder[[]int32](queryErr, queries, "rep_sfixed32", urlx.GetIntSlice)
-	req.RepFixed32, queryErr = v2.FormDecoder[[]uint32](queryErr, queries, "rep_fixed32", urlx.GetUintSlice)
-	req.RepFloat, queryErr = v2.FormDecoder[[]float32](queryErr, queries, "rep_float", urlx.GetFloatSlice)
-	req.RepSfixed64, queryErr = v2.FormDecoder[[]int64](queryErr, queries, "rep_sfixed64", urlx.GetIntSlice)
-	req.RepFixed64, queryErr = v2.FormDecoder[[]uint64](queryErr, queries, "rep_fixed64", urlx.GetUintSlice)
-	req.RepDouble, queryErr = v2.FormDecoder[[]float64](queryErr, queries, "rep_double", urlx.GetFloatSlice)
-	req.RepString = queries["rep_string"]
-	req.WrapDouble, queryErr = v2.FormDecoder[*wrapperspb.DoubleValue](queryErr, queries, "wrap_double", urlx.GetFloat64Value)
-	req.WrapFloat, queryErr = v2.FormDecoder[*wrapperspb.FloatValue](queryErr, queries, "wrap_float", urlx.GetFloat32Value)
-	req.WrapInt64, queryErr = v2.FormDecoder[*wrapperspb.Int64Value](queryErr, queries, "wrap_int64", urlx.GetInt64Value)
-	req.WrapUint64, queryErr = v2.FormDecoder[*wrapperspb.UInt64Value](queryErr, queries, "wrap_uint64", urlx.GetUint64Value)
-	req.WrapInt32, queryErr = v2.FormDecoder[*wrapperspb.Int32Value](queryErr, queries, "wrap_int32", urlx.GetInt32Value)
-	req.WrapUint32, queryErr = v2.FormDecoder[*wrapperspb.UInt32Value](queryErr, queries, "wrap_uint32", urlx.GetUint32Value)
 	req.WrapBool, queryErr = v2.FormDecoder[*wrapperspb.BoolValue](queryErr, queries, "wrap_bool", urlx.GetBoolValue)
-	req.WrapString = wrapperspb.String(queries.Get("wrap_string"))
-	req.OptWrapDouble, queryErr = v2.FormDecoder[*wrapperspb.DoubleValue](queryErr, queries, "opt_wrap_double", urlx.GetFloat64Value)
-	req.OptWrapFloat, queryErr = v2.FormDecoder[*wrapperspb.FloatValue](queryErr, queries, "opt_wrap_float", urlx.GetFloat32Value)
-	req.OptWrapInt64, queryErr = v2.FormDecoder[*wrapperspb.Int64Value](queryErr, queries, "opt_wrap_int64", urlx.GetInt64Value)
-	req.OptWrapUint64, queryErr = v2.FormDecoder[*wrapperspb.UInt64Value](queryErr, queries, "opt_wrap_uint64", urlx.GetUint64Value)
-	req.OptWrapInt32, queryErr = v2.FormDecoder[*wrapperspb.Int32Value](queryErr, queries, "opt_wrap_int32", urlx.GetInt32Value)
-	req.OptWrapUint32, queryErr = v2.FormDecoder[*wrapperspb.UInt32Value](queryErr, queries, "opt_wrap_uint32", urlx.GetUint32Value)
-	req.OptWrapBool, queryErr = v2.FormDecoder[*wrapperspb.BoolValue](queryErr, queries, "opt_wrap_bool", urlx.GetBoolValue)
-	req.OptWrapString = wrapperspb.String(queries.Get("opt_wrap_string"))
-	req.RepWrapDouble, queryErr = v2.FormDecoder[[]*wrapperspb.DoubleValue](queryErr, queries, "rep_wrap_double", urlx.GetFloat64ValueSlice)
-	req.RepWrapFloat, queryErr = v2.FormDecoder[[]*wrapperspb.FloatValue](queryErr, queries, "rep_wrap_float", urlx.GetFloat32ValueSlice)
-	req.RepWrapInt64, queryErr = v2.FormDecoder[[]*wrapperspb.Int64Value](queryErr, queries, "rep_wrap_int64", urlx.GetInt64ValueSlice)
-	req.RepWrapUint64, queryErr = v2.FormDecoder[[]*wrapperspb.UInt64Value](queryErr, queries, "rep_wrap_uint64", urlx.GetUint64ValueSlice)
-	req.RepWrapInt32, queryErr = v2.FormDecoder[[]*wrapperspb.Int32Value](queryErr, queries, "rep_wrap_int32", urlx.GetInt32ValueSlice)
-	req.RepWrapUint32, queryErr = v2.FormDecoder[[]*wrapperspb.UInt32Value](queryErr, queries, "rep_wrap_uint32", urlx.GetUint32ValueSlice)
-	req.RepWrapBool, queryErr = v2.FormDecoder[[]*wrapperspb.BoolValue](queryErr, queries, "rep_wrap_bool", urlx.GetBoolValueSlice)
-	req.RepWrapString = protox.WrapStringSlice(queries["rep_wrap_string"])
-	req.Status, queryErr = v2.FormDecoder[QueryRequest_Status](queryErr, queries, "status", urlx.GetInt[QueryRequest_Status])
-	req.OptStatus, queryErr = v2.FormDecoder[*QueryRequest_Status](queryErr, queries, "opt_status", urlx.GetIntPtr[QueryRequest_Status])
-	req.RepStatus, queryErr = v2.FormDecoder[[]QueryRequest_Status](queryErr, queries, "rep_status", urlx.GetIntSlice[QueryRequest_Status])
 	if queryErr != nil {
 		return nil, queryErr
 	}
 	return req, nil
 }
 
-type QueryGorillaResponseEncoder struct {
+type BoolQueryGorillaResponseEncoder struct {
 	marshalOptions   protojson.MarshalOptions
 	unmarshalOptions protojson.UnmarshalOptions
 }
 
-func (encoder QueryGorillaResponseEncoder) Query(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
+func (encoder BoolQueryGorillaResponseEncoder) BoolQuery(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
+	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+}
+
+type Int32QueryGorillaService interface {
+	Int32Query(ctx context.Context, request *Int32QueryRequest) (*emptypb.Empty, error)
+}
+
+func AppendInt32QueryGorillaRoute(router *mux.Router, service Int32QueryGorillaService) *mux.Router {
+	handler := Int32QueryGorillaHandler{
+		service: service,
+		decoder: Int32QueryGorillaRequestDecoder{
+			unmarshalOptions: protojson.UnmarshalOptions{},
+		},
+		encoder: Int32QueryGorillaResponseEncoder{
+			marshalOptions:   protojson.MarshalOptions{},
+			unmarshalOptions: protojson.UnmarshalOptions{},
+		},
+		errorEncoder: v2.DefaultErrorEncoder,
+	}
+	router.NewRoute().
+		Name("/leo.gors.query.v1.Int32Query/Int32Query").
+		Methods("GET").
+		Path("/v1/int32").
+		Handler(handler.Int32Query())
+	return router
+}
+
+type Int32QueryGorillaHandler struct {
+	service      Int32QueryGorillaService
+	decoder      Int32QueryGorillaRequestDecoder
+	encoder      Int32QueryGorillaResponseEncoder
+	errorEncoder v2.ErrorEncoder
+}
+
+func (h Int32QueryGorillaHandler) Int32Query() http.Handler {
+	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		ctx := request.Context()
+		in, err := h.decoder.Int32Query(ctx, request)
+		if err != nil {
+			h.errorEncoder(ctx, err, writer)
+			return
+		}
+		out, err := h.service.Int32Query(ctx, in)
+		if err != nil {
+			h.errorEncoder(ctx, err, writer)
+			return
+		}
+		if err := h.encoder.Int32Query(ctx, writer, out); err != nil {
+			h.errorEncoder(ctx, err, writer)
+			return
+		}
+	})
+}
+
+type Int32QueryGorillaRequestDecoder struct {
+	unmarshalOptions protojson.UnmarshalOptions
+}
+
+func (decoder Int32QueryGorillaRequestDecoder) Int32Query(ctx context.Context, r *http.Request) (*Int32QueryRequest, error) {
+	req := &Int32QueryRequest{}
+	queries := r.URL.Query()
+	var queryErr error
+	req.Int32, queryErr = v2.FormDecoder[int32](queryErr, queries, "int32", urlx.GetInt)
+	req.Sint32, queryErr = v2.FormDecoder[int32](queryErr, queries, "sint32", urlx.GetInt)
+	req.Sfixed32, queryErr = v2.FormDecoder[int32](queryErr, queries, "sfixed32", urlx.GetInt)
+	req.OptInt32, queryErr = v2.FormDecoder[*int32](queryErr, queries, "opt_int32", urlx.GetIntPtr)
+	req.OptSint32, queryErr = v2.FormDecoder[*int32](queryErr, queries, "opt_sint32", urlx.GetIntPtr)
+	req.OptSfixed32, queryErr = v2.FormDecoder[*int32](queryErr, queries, "opt_sfixed32", urlx.GetIntPtr)
+	req.WrapInt32, queryErr = v2.FormDecoder[*wrapperspb.Int32Value](queryErr, queries, "wrap_int32", urlx.GetInt32Value)
+	if queryErr != nil {
+		return nil, queryErr
+	}
+	return req, nil
+}
+
+type Int32QueryGorillaResponseEncoder struct {
+	marshalOptions   protojson.MarshalOptions
+	unmarshalOptions protojson.UnmarshalOptions
+}
+
+func (encoder Int32QueryGorillaResponseEncoder) Int32Query(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
+	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+}
+
+type Int64QueryGorillaService interface {
+	Int64Query(ctx context.Context, request *Int64QueryRequest) (*emptypb.Empty, error)
+}
+
+func AppendInt64QueryGorillaRoute(router *mux.Router, service Int64QueryGorillaService) *mux.Router {
+	handler := Int64QueryGorillaHandler{
+		service: service,
+		decoder: Int64QueryGorillaRequestDecoder{
+			unmarshalOptions: protojson.UnmarshalOptions{},
+		},
+		encoder: Int64QueryGorillaResponseEncoder{
+			marshalOptions:   protojson.MarshalOptions{},
+			unmarshalOptions: protojson.UnmarshalOptions{},
+		},
+		errorEncoder: v2.DefaultErrorEncoder,
+	}
+	router.NewRoute().
+		Name("/leo.gors.query.v1.Int64Query/Int64Query").
+		Methods("GET").
+		Path("/v1/int64").
+		Handler(handler.Int64Query())
+	return router
+}
+
+type Int64QueryGorillaHandler struct {
+	service      Int64QueryGorillaService
+	decoder      Int64QueryGorillaRequestDecoder
+	encoder      Int64QueryGorillaResponseEncoder
+	errorEncoder v2.ErrorEncoder
+}
+
+func (h Int64QueryGorillaHandler) Int64Query() http.Handler {
+	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		ctx := request.Context()
+		in, err := h.decoder.Int64Query(ctx, request)
+		if err != nil {
+			h.errorEncoder(ctx, err, writer)
+			return
+		}
+		out, err := h.service.Int64Query(ctx, in)
+		if err != nil {
+			h.errorEncoder(ctx, err, writer)
+			return
+		}
+		if err := h.encoder.Int64Query(ctx, writer, out); err != nil {
+			h.errorEncoder(ctx, err, writer)
+			return
+		}
+	})
+}
+
+type Int64QueryGorillaRequestDecoder struct {
+	unmarshalOptions protojson.UnmarshalOptions
+}
+
+func (decoder Int64QueryGorillaRequestDecoder) Int64Query(ctx context.Context, r *http.Request) (*Int64QueryRequest, error) {
+	req := &Int64QueryRequest{}
+	queries := r.URL.Query()
+	var queryErr error
+	req.Int64, queryErr = v2.FormDecoder[int64](queryErr, queries, "int64", urlx.GetInt)
+	req.Sint64, queryErr = v2.FormDecoder[int64](queryErr, queries, "sint64", urlx.GetInt)
+	req.Sfixed64, queryErr = v2.FormDecoder[int64](queryErr, queries, "sfixed64", urlx.GetInt)
+	req.OptInt64, queryErr = v2.FormDecoder[*int64](queryErr, queries, "opt_int64", urlx.GetIntPtr)
+	req.OptSint64, queryErr = v2.FormDecoder[*int64](queryErr, queries, "opt_sint64", urlx.GetIntPtr)
+	req.OptSfixed64, queryErr = v2.FormDecoder[*int64](queryErr, queries, "opt_sfixed64", urlx.GetIntPtr)
+	req.WrapInt64, queryErr = v2.FormDecoder[*wrapperspb.Int64Value](queryErr, queries, "wrap_int64", urlx.GetInt64Value)
+	if queryErr != nil {
+		return nil, queryErr
+	}
+	return req, nil
+}
+
+type Int64QueryGorillaResponseEncoder struct {
+	marshalOptions   protojson.MarshalOptions
+	unmarshalOptions protojson.UnmarshalOptions
+}
+
+func (encoder Int64QueryGorillaResponseEncoder) Int64Query(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
+	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+}
+
+type Uint32QueryGorillaService interface {
+	Uint32Query(ctx context.Context, request *Uint32QueryRequest) (*emptypb.Empty, error)
+}
+
+func AppendUint32QueryGorillaRoute(router *mux.Router, service Uint32QueryGorillaService) *mux.Router {
+	handler := Uint32QueryGorillaHandler{
+		service: service,
+		decoder: Uint32QueryGorillaRequestDecoder{
+			unmarshalOptions: protojson.UnmarshalOptions{},
+		},
+		encoder: Uint32QueryGorillaResponseEncoder{
+			marshalOptions:   protojson.MarshalOptions{},
+			unmarshalOptions: protojson.UnmarshalOptions{},
+		},
+		errorEncoder: v2.DefaultErrorEncoder,
+	}
+	router.NewRoute().
+		Name("/leo.gors.query.v1.Uint32Query/Uint32Query").
+		Methods("GET").
+		Path("/v1/uint32").
+		Handler(handler.Uint32Query())
+	return router
+}
+
+type Uint32QueryGorillaHandler struct {
+	service      Uint32QueryGorillaService
+	decoder      Uint32QueryGorillaRequestDecoder
+	encoder      Uint32QueryGorillaResponseEncoder
+	errorEncoder v2.ErrorEncoder
+}
+
+func (h Uint32QueryGorillaHandler) Uint32Query() http.Handler {
+	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		ctx := request.Context()
+		in, err := h.decoder.Uint32Query(ctx, request)
+		if err != nil {
+			h.errorEncoder(ctx, err, writer)
+			return
+		}
+		out, err := h.service.Uint32Query(ctx, in)
+		if err != nil {
+			h.errorEncoder(ctx, err, writer)
+			return
+		}
+		if err := h.encoder.Uint32Query(ctx, writer, out); err != nil {
+			h.errorEncoder(ctx, err, writer)
+			return
+		}
+	})
+}
+
+type Uint32QueryGorillaRequestDecoder struct {
+	unmarshalOptions protojson.UnmarshalOptions
+}
+
+func (decoder Uint32QueryGorillaRequestDecoder) Uint32Query(ctx context.Context, r *http.Request) (*Uint32QueryRequest, error) {
+	req := &Uint32QueryRequest{}
+	queries := r.URL.Query()
+	var queryErr error
+	req.Uint32, queryErr = v2.FormDecoder[uint32](queryErr, queries, "uint32", urlx.GetUint)
+	req.Fixed32, queryErr = v2.FormDecoder[uint32](queryErr, queries, "fixed32", urlx.GetUint)
+	req.OptUint32, queryErr = v2.FormDecoder[*uint32](queryErr, queries, "opt_uint32", urlx.GetUintPtr)
+	req.OptFixed32, queryErr = v2.FormDecoder[*uint32](queryErr, queries, "opt_fixed32", urlx.GetUintPtr)
+	req.WrapUint32, queryErr = v2.FormDecoder[*wrapperspb.UInt32Value](queryErr, queries, "wrap_uint32", urlx.GetUint32Value)
+	if queryErr != nil {
+		return nil, queryErr
+	}
+	return req, nil
+}
+
+type Uint32QueryGorillaResponseEncoder struct {
+	marshalOptions   protojson.MarshalOptions
+	unmarshalOptions protojson.UnmarshalOptions
+}
+
+func (encoder Uint32QueryGorillaResponseEncoder) Uint32Query(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
+	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+}
+
+type Uint64QueryGorillaService interface {
+	Uint64Query(ctx context.Context, request *Uint64QueryRequest) (*emptypb.Empty, error)
+}
+
+func AppendUint64QueryGorillaRoute(router *mux.Router, service Uint64QueryGorillaService) *mux.Router {
+	handler := Uint64QueryGorillaHandler{
+		service: service,
+		decoder: Uint64QueryGorillaRequestDecoder{
+			unmarshalOptions: protojson.UnmarshalOptions{},
+		},
+		encoder: Uint64QueryGorillaResponseEncoder{
+			marshalOptions:   protojson.MarshalOptions{},
+			unmarshalOptions: protojson.UnmarshalOptions{},
+		},
+		errorEncoder: v2.DefaultErrorEncoder,
+	}
+	router.NewRoute().
+		Name("/leo.gors.query.v1.Uint64Query/Uint64Query").
+		Methods("GET").
+		Path("/v1/uint64").
+		Handler(handler.Uint64Query())
+	return router
+}
+
+type Uint64QueryGorillaHandler struct {
+	service      Uint64QueryGorillaService
+	decoder      Uint64QueryGorillaRequestDecoder
+	encoder      Uint64QueryGorillaResponseEncoder
+	errorEncoder v2.ErrorEncoder
+}
+
+func (h Uint64QueryGorillaHandler) Uint64Query() http.Handler {
+	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		ctx := request.Context()
+		in, err := h.decoder.Uint64Query(ctx, request)
+		if err != nil {
+			h.errorEncoder(ctx, err, writer)
+			return
+		}
+		out, err := h.service.Uint64Query(ctx, in)
+		if err != nil {
+			h.errorEncoder(ctx, err, writer)
+			return
+		}
+		if err := h.encoder.Uint64Query(ctx, writer, out); err != nil {
+			h.errorEncoder(ctx, err, writer)
+			return
+		}
+	})
+}
+
+type Uint64QueryGorillaRequestDecoder struct {
+	unmarshalOptions protojson.UnmarshalOptions
+}
+
+func (decoder Uint64QueryGorillaRequestDecoder) Uint64Query(ctx context.Context, r *http.Request) (*Uint64QueryRequest, error) {
+	req := &Uint64QueryRequest{}
+	queries := r.URL.Query()
+	var queryErr error
+	req.Uint64, queryErr = v2.FormDecoder[uint64](queryErr, queries, "uint64", urlx.GetUint)
+	req.Fixed64, queryErr = v2.FormDecoder[uint64](queryErr, queries, "fixed64", urlx.GetUint)
+	req.OptUint64, queryErr = v2.FormDecoder[*uint64](queryErr, queries, "opt_uint64", urlx.GetUintPtr)
+	req.OptFixed64, queryErr = v2.FormDecoder[*uint64](queryErr, queries, "opt_fixed64", urlx.GetUintPtr)
+	req.WrapUint64, queryErr = v2.FormDecoder[*wrapperspb.UInt64Value](queryErr, queries, "wrap_uint64", urlx.GetUint64Value)
+	if queryErr != nil {
+		return nil, queryErr
+	}
+	return req, nil
+}
+
+type Uint64QueryGorillaResponseEncoder struct {
+	marshalOptions   protojson.MarshalOptions
+	unmarshalOptions protojson.UnmarshalOptions
+}
+
+func (encoder Uint64QueryGorillaResponseEncoder) Uint64Query(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
+	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+}
+
+type FloatQueryGorillaService interface {
+	FloatQuery(ctx context.Context, request *FloatQueryRequest) (*emptypb.Empty, error)
+}
+
+func AppendFloatQueryGorillaRoute(router *mux.Router, service FloatQueryGorillaService) *mux.Router {
+	handler := FloatQueryGorillaHandler{
+		service: service,
+		decoder: FloatQueryGorillaRequestDecoder{
+			unmarshalOptions: protojson.UnmarshalOptions{},
+		},
+		encoder: FloatQueryGorillaResponseEncoder{
+			marshalOptions:   protojson.MarshalOptions{},
+			unmarshalOptions: protojson.UnmarshalOptions{},
+		},
+		errorEncoder: v2.DefaultErrorEncoder,
+	}
+	router.NewRoute().
+		Name("/leo.gors.query.v1.FloatQuery/FloatQuery").
+		Methods("GET").
+		Path("/v1/float").
+		Handler(handler.FloatQuery())
+	return router
+}
+
+type FloatQueryGorillaHandler struct {
+	service      FloatQueryGorillaService
+	decoder      FloatQueryGorillaRequestDecoder
+	encoder      FloatQueryGorillaResponseEncoder
+	errorEncoder v2.ErrorEncoder
+}
+
+func (h FloatQueryGorillaHandler) FloatQuery() http.Handler {
+	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		ctx := request.Context()
+		in, err := h.decoder.FloatQuery(ctx, request)
+		if err != nil {
+			h.errorEncoder(ctx, err, writer)
+			return
+		}
+		out, err := h.service.FloatQuery(ctx, in)
+		if err != nil {
+			h.errorEncoder(ctx, err, writer)
+			return
+		}
+		if err := h.encoder.FloatQuery(ctx, writer, out); err != nil {
+			h.errorEncoder(ctx, err, writer)
+			return
+		}
+	})
+}
+
+type FloatQueryGorillaRequestDecoder struct {
+	unmarshalOptions protojson.UnmarshalOptions
+}
+
+func (decoder FloatQueryGorillaRequestDecoder) FloatQuery(ctx context.Context, r *http.Request) (*FloatQueryRequest, error) {
+	req := &FloatQueryRequest{}
+	queries := r.URL.Query()
+	var queryErr error
+	req.Float, queryErr = v2.FormDecoder[float32](queryErr, queries, "float", urlx.GetFloat)
+	req.OptFloat, queryErr = v2.FormDecoder[*float32](queryErr, queries, "opt_float", urlx.GetFloatPtr)
+	req.WrapFloat, queryErr = v2.FormDecoder[*wrapperspb.FloatValue](queryErr, queries, "wrap_float", urlx.GetFloat32Value)
+	if queryErr != nil {
+		return nil, queryErr
+	}
+	return req, nil
+}
+
+type FloatQueryGorillaResponseEncoder struct {
+	marshalOptions   protojson.MarshalOptions
+	unmarshalOptions protojson.UnmarshalOptions
+}
+
+func (encoder FloatQueryGorillaResponseEncoder) FloatQuery(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
+	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+}
+
+type DoubleQueryGorillaService interface {
+	DoubleQuery(ctx context.Context, request *DoubleQueryRequest) (*emptypb.Empty, error)
+}
+
+func AppendDoubleQueryGorillaRoute(router *mux.Router, service DoubleQueryGorillaService) *mux.Router {
+	handler := DoubleQueryGorillaHandler{
+		service: service,
+		decoder: DoubleQueryGorillaRequestDecoder{
+			unmarshalOptions: protojson.UnmarshalOptions{},
+		},
+		encoder: DoubleQueryGorillaResponseEncoder{
+			marshalOptions:   protojson.MarshalOptions{},
+			unmarshalOptions: protojson.UnmarshalOptions{},
+		},
+		errorEncoder: v2.DefaultErrorEncoder,
+	}
+	router.NewRoute().
+		Name("/leo.gors.query.v1.DoubleQuery/DoubleQuery").
+		Methods("GET").
+		Path("/v1/double").
+		Handler(handler.DoubleQuery())
+	return router
+}
+
+type DoubleQueryGorillaHandler struct {
+	service      DoubleQueryGorillaService
+	decoder      DoubleQueryGorillaRequestDecoder
+	encoder      DoubleQueryGorillaResponseEncoder
+	errorEncoder v2.ErrorEncoder
+}
+
+func (h DoubleQueryGorillaHandler) DoubleQuery() http.Handler {
+	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		ctx := request.Context()
+		in, err := h.decoder.DoubleQuery(ctx, request)
+		if err != nil {
+			h.errorEncoder(ctx, err, writer)
+			return
+		}
+		out, err := h.service.DoubleQuery(ctx, in)
+		if err != nil {
+			h.errorEncoder(ctx, err, writer)
+			return
+		}
+		if err := h.encoder.DoubleQuery(ctx, writer, out); err != nil {
+			h.errorEncoder(ctx, err, writer)
+			return
+		}
+	})
+}
+
+type DoubleQueryGorillaRequestDecoder struct {
+	unmarshalOptions protojson.UnmarshalOptions
+}
+
+func (decoder DoubleQueryGorillaRequestDecoder) DoubleQuery(ctx context.Context, r *http.Request) (*DoubleQueryRequest, error) {
+	req := &DoubleQueryRequest{}
+	queries := r.URL.Query()
+	var queryErr error
+	req.Double, queryErr = v2.FormDecoder[float64](queryErr, queries, "double", urlx.GetFloat)
+	req.OptDouble, queryErr = v2.FormDecoder[*float64](queryErr, queries, "opt_double", urlx.GetFloatPtr)
+	req.WrapDouble, queryErr = v2.FormDecoder[*wrapperspb.DoubleValue](queryErr, queries, "wrap_double", urlx.GetFloat64Value)
+	if queryErr != nil {
+		return nil, queryErr
+	}
+	return req, nil
+}
+
+type DoubleQueryGorillaResponseEncoder struct {
+	marshalOptions   protojson.MarshalOptions
+	unmarshalOptions protojson.UnmarshalOptions
+}
+
+func (encoder DoubleQueryGorillaResponseEncoder) DoubleQuery(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
+	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+}
+
+type StringQueryGorillaService interface {
+	StringQuery(ctx context.Context, request *StringQueryRequest) (*emptypb.Empty, error)
+}
+
+func AppendStringQueryGorillaRoute(router *mux.Router, service StringQueryGorillaService) *mux.Router {
+	handler := StringQueryGorillaHandler{
+		service: service,
+		decoder: StringQueryGorillaRequestDecoder{
+			unmarshalOptions: protojson.UnmarshalOptions{},
+		},
+		encoder: StringQueryGorillaResponseEncoder{
+			marshalOptions:   protojson.MarshalOptions{},
+			unmarshalOptions: protojson.UnmarshalOptions{},
+		},
+		errorEncoder: v2.DefaultErrorEncoder,
+	}
+	router.NewRoute().
+		Name("/leo.gors.query.v1.StringQuery/StringQuery").
+		Methods("GET").
+		Path("/v1/string").
+		Handler(handler.StringQuery())
+	return router
+}
+
+type StringQueryGorillaHandler struct {
+	service      StringQueryGorillaService
+	decoder      StringQueryGorillaRequestDecoder
+	encoder      StringQueryGorillaResponseEncoder
+	errorEncoder v2.ErrorEncoder
+}
+
+func (h StringQueryGorillaHandler) StringQuery() http.Handler {
+	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		ctx := request.Context()
+		in, err := h.decoder.StringQuery(ctx, request)
+		if err != nil {
+			h.errorEncoder(ctx, err, writer)
+			return
+		}
+		out, err := h.service.StringQuery(ctx, in)
+		if err != nil {
+			h.errorEncoder(ctx, err, writer)
+			return
+		}
+		if err := h.encoder.StringQuery(ctx, writer, out); err != nil {
+			h.errorEncoder(ctx, err, writer)
+			return
+		}
+	})
+}
+
+type StringQueryGorillaRequestDecoder struct {
+	unmarshalOptions protojson.UnmarshalOptions
+}
+
+func (decoder StringQueryGorillaRequestDecoder) StringQuery(ctx context.Context, r *http.Request) (*StringQueryRequest, error) {
+	req := &StringQueryRequest{}
+	queries := r.URL.Query()
+	var queryErr error
+	req.String_ = queries.Get("string")
+	req.OptString = proto.String(queries.Get("opt_string"))
+	req.WrapString = wrapperspb.String(queries.Get("wrap_string"))
+	if queryErr != nil {
+		return nil, queryErr
+	}
+	return req, nil
+}
+
+type StringQueryGorillaResponseEncoder struct {
+	marshalOptions   protojson.MarshalOptions
+	unmarshalOptions protojson.UnmarshalOptions
+}
+
+func (encoder StringQueryGorillaResponseEncoder) StringQuery(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
+	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+}
+
+type EnumQueryGorillaService interface {
+	EnumQuery(ctx context.Context, request *EnumQueryRequest) (*emptypb.Empty, error)
+}
+
+func AppendEnumQueryGorillaRoute(router *mux.Router, service EnumQueryGorillaService) *mux.Router {
+	handler := EnumQueryGorillaHandler{
+		service: service,
+		decoder: EnumQueryGorillaRequestDecoder{
+			unmarshalOptions: protojson.UnmarshalOptions{},
+		},
+		encoder: EnumQueryGorillaResponseEncoder{
+			marshalOptions:   protojson.MarshalOptions{},
+			unmarshalOptions: protojson.UnmarshalOptions{},
+		},
+		errorEncoder: v2.DefaultErrorEncoder,
+	}
+	router.NewRoute().
+		Name("/leo.gors.query.v1.EnumQuery/EnumQuery").
+		Methods("GET").
+		Path("/v1/enum").
+		Handler(handler.EnumQuery())
+	return router
+}
+
+type EnumQueryGorillaHandler struct {
+	service      EnumQueryGorillaService
+	decoder      EnumQueryGorillaRequestDecoder
+	encoder      EnumQueryGorillaResponseEncoder
+	errorEncoder v2.ErrorEncoder
+}
+
+func (h EnumQueryGorillaHandler) EnumQuery() http.Handler {
+	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		ctx := request.Context()
+		in, err := h.decoder.EnumQuery(ctx, request)
+		if err != nil {
+			h.errorEncoder(ctx, err, writer)
+			return
+		}
+		out, err := h.service.EnumQuery(ctx, in)
+		if err != nil {
+			h.errorEncoder(ctx, err, writer)
+			return
+		}
+		if err := h.encoder.EnumQuery(ctx, writer, out); err != nil {
+			h.errorEncoder(ctx, err, writer)
+			return
+		}
+	})
+}
+
+type EnumQueryGorillaRequestDecoder struct {
+	unmarshalOptions protojson.UnmarshalOptions
+}
+
+func (decoder EnumQueryGorillaRequestDecoder) EnumQuery(ctx context.Context, r *http.Request) (*EnumQueryRequest, error) {
+	req := &EnumQueryRequest{}
+	queries := r.URL.Query()
+	var queryErr error
+	req.Status, queryErr = v2.FormDecoder[EnumQueryRequest_Status](queryErr, queries, "status", urlx.GetInt[EnumQueryRequest_Status])
+	req.OptStatus, queryErr = v2.FormDecoder[*EnumQueryRequest_Status](queryErr, queries, "opt_status", urlx.GetIntPtr[EnumQueryRequest_Status])
+	if queryErr != nil {
+		return nil, queryErr
+	}
+	return req, nil
+}
+
+type EnumQueryGorillaResponseEncoder struct {
+	marshalOptions   protojson.MarshalOptions
+	unmarshalOptions protojson.UnmarshalOptions
+}
+
+func (encoder EnumQueryGorillaResponseEncoder) EnumQuery(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
 	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }

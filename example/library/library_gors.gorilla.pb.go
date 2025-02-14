@@ -39,47 +39,58 @@ func AppendLibraryServiceGorillaRoute(router *mux.Router, service LibraryService
 		},
 		errorEncoder: v2.DefaultErrorEncoder,
 	}
-	router.NewRoute().Name("/google.example.library.v1.LibraryService/CreateShelf").
+	router.NewRoute().
+		Name("/google.example.library.v1.LibraryService/CreateShelf").
 		Methods("POST").
 		Path("/v1/shelves").
 		Handler(handler.CreateShelf())
-	router.NewRoute().Name("/google.example.library.v1.LibraryService/GetShelf").
+	router.NewRoute().
+		Name("/google.example.library.v1.LibraryService/GetShelf").
 		Methods("GET").
 		Path("/v1/shelves/{shelf}").
 		Handler(handler.GetShelf())
-	router.NewRoute().Name("/google.example.library.v1.LibraryService/ListShelves").
+	router.NewRoute().
+		Name("/google.example.library.v1.LibraryService/ListShelves").
 		Methods("GET").
 		Path("/v1/shelves").
 		Handler(handler.ListShelves())
-	router.NewRoute().Name("/google.example.library.v1.LibraryService/DeleteShelf").
+	router.NewRoute().
+		Name("/google.example.library.v1.LibraryService/DeleteShelf").
 		Methods("DELETE").
 		Path("/v1/shelves/{shelf}").
 		Handler(handler.DeleteShelf())
-	router.NewRoute().Name("/google.example.library.v1.LibraryService/MergeShelves").
+	router.NewRoute().
+		Name("/google.example.library.v1.LibraryService/MergeShelves").
 		Methods("POST").
 		Path("/v1/shelves/{shelf}:merge").
 		Handler(handler.MergeShelves())
-	router.NewRoute().Name("/google.example.library.v1.LibraryService/CreateBook").
+	router.NewRoute().
+		Name("/google.example.library.v1.LibraryService/CreateBook").
 		Methods("POST").
 		Path("/v1/shelves/{shelf}/books").
 		Handler(handler.CreateBook())
-	router.NewRoute().Name("/google.example.library.v1.LibraryService/GetBook").
+	router.NewRoute().
+		Name("/google.example.library.v1.LibraryService/GetBook").
 		Methods("GET").
 		Path("/v1/shelves/{shelf}/books/{book}").
 		Handler(handler.GetBook())
-	router.NewRoute().Name("/google.example.library.v1.LibraryService/ListBooks").
+	router.NewRoute().
+		Name("/google.example.library.v1.LibraryService/ListBooks").
 		Methods("GET").
 		Path("/v1/shelves/{shelf}/books").
 		Handler(handler.ListBooks())
-	router.NewRoute().Name("/google.example.library.v1.LibraryService/DeleteBook").
+	router.NewRoute().
+		Name("/google.example.library.v1.LibraryService/DeleteBook").
 		Methods("DELETE").
 		Path("/v1/shelves/{shelf}/books/{book}").
 		Handler(handler.DeleteBook())
-	router.NewRoute().Name("/google.example.library.v1.LibraryService/UpdateBook").
+	router.NewRoute().
+		Name("/google.example.library.v1.LibraryService/UpdateBook").
 		Methods("PATCH").
 		Path("/v1/shelves/{shelf}/books/{book}").
 		Handler(handler.UpdateBook())
-	router.NewRoute().Name("/google.example.library.v1.LibraryService/MoveBook").
+	router.NewRoute().
+		Name("/google.example.library.v1.LibraryService/MoveBook").
 		Methods("POST").
 		Path("/v1/shelves/{shelf}/books/{book}:move").
 		Handler(handler.MoveBook())

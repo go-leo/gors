@@ -15,77 +15,38 @@ import (
 	http "net/http"
 )
 
-type PathGorillaService interface {
-	BoolPath(ctx context.Context, request *PathRequest) (*emptypb.Empty, error)
-	Int32Path(ctx context.Context, request *PathRequest) (*emptypb.Empty, error)
-	Int64Path(ctx context.Context, request *PathRequest) (*emptypb.Empty, error)
-	Uint32Path(ctx context.Context, request *PathRequest) (*emptypb.Empty, error)
-	Uint64Path(ctx context.Context, request *PathRequest) (*emptypb.Empty, error)
-	FloatPath(ctx context.Context, request *PathRequest) (*emptypb.Empty, error)
-	DoublePath(ctx context.Context, request *PathRequest) (*emptypb.Empty, error)
-	StringPath(ctx context.Context, request *PathRequest) (*emptypb.Empty, error)
-	EnumPath(ctx context.Context, request *PathRequest) (*emptypb.Empty, error)
+type BoolPathGorillaService interface {
+	BoolPath(ctx context.Context, request *BoolPathRequest) (*emptypb.Empty, error)
 }
 
-func AppendPathGorillaRoute(router *mux.Router, service PathGorillaService) *mux.Router {
-	handler := PathGorillaHandler{
+func AppendBoolPathGorillaRoute(router *mux.Router, service BoolPathGorillaService) *mux.Router {
+	handler := BoolPathGorillaHandler{
 		service: service,
-		decoder: PathGorillaRequestDecoder{
+		decoder: BoolPathGorillaRequestDecoder{
 			unmarshalOptions: protojson.UnmarshalOptions{},
 		},
-		encoder: PathGorillaResponseEncoder{
+		encoder: BoolPathGorillaResponseEncoder{
 			marshalOptions:   protojson.MarshalOptions{},
 			unmarshalOptions: protojson.UnmarshalOptions{},
 		},
 		errorEncoder: v2.DefaultErrorEncoder,
 	}
-	router.NewRoute().Name("/leo.gors.path.v1.Path/BoolPath").
+	router.NewRoute().
+		Name("/leo.gors.path.v1.BoolPath/BoolPath").
 		Methods("GET").
 		Path("/v1/{bool}/{opt_bool}/{wrap_bool}").
 		Handler(handler.BoolPath())
-	router.NewRoute().Name("/leo.gors.path.v1.Path/Int32Path").
-		Methods("GET").
-		Path("/v1/{int32}/{sint32}/{sfixed32}/{opt_int32}/{opt_sint32}/{opt_sfixed32}/{wrap_int32}").
-		Handler(handler.Int32Path())
-	router.NewRoute().Name("/leo.gors.path.v1.Path/Int64Path").
-		Methods("GET").
-		Path("/v1/{int64}/{sint64}/{sfixed64}/{opt_int64}/{opt_sint64}/{opt_sfixed64}/{wrap_int64}").
-		Handler(handler.Int64Path())
-	router.NewRoute().Name("/leo.gors.path.v1.Path/Uint32Path").
-		Methods("GET").
-		Path("/v1/{uint32}/{fixed32}/{opt_uint32}/{opt_fixed32}/{wrap_uint32}").
-		Handler(handler.Uint32Path())
-	router.NewRoute().Name("/leo.gors.path.v1.Path/Uint64Path").
-		Methods("GET").
-		Path("/v1/{uint64}/{fixed64}/{opt_uint64}/{opt_fixed64}/{wrap_uint64}").
-		Handler(handler.Uint64Path())
-	router.NewRoute().Name("/leo.gors.path.v1.Path/FloatPath").
-		Methods("GET").
-		Path("/v1/{float}/{opt_float}/{wrap_float}").
-		Handler(handler.FloatPath())
-	router.NewRoute().Name("/leo.gors.path.v1.Path/DoublePath").
-		Methods("GET").
-		Path("/v1/{double}/{opt_double}/{wrap_double}").
-		Handler(handler.DoublePath())
-	router.NewRoute().Name("/leo.gors.path.v1.Path/StringPath").
-		Methods("GET").
-		Path("/v1/{string}/{opt_string}/{wrap_string}").
-		Handler(handler.StringPath())
-	router.NewRoute().Name("/leo.gors.path.v1.Path/EnumPath").
-		Methods("GET").
-		Path("/v1/{status}/{opt_status}").
-		Handler(handler.EnumPath())
 	return router
 }
 
-type PathGorillaHandler struct {
-	service      PathGorillaService
-	decoder      PathGorillaRequestDecoder
-	encoder      PathGorillaResponseEncoder
+type BoolPathGorillaHandler struct {
+	service      BoolPathGorillaService
+	decoder      BoolPathGorillaRequestDecoder
+	encoder      BoolPathGorillaResponseEncoder
 	errorEncoder v2.ErrorEncoder
 }
 
-func (h PathGorillaHandler) BoolPath() http.Handler {
+func (h BoolPathGorillaHandler) BoolPath() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.BoolPath(ctx, request)
@@ -105,7 +66,64 @@ func (h PathGorillaHandler) BoolPath() http.Handler {
 	})
 }
 
-func (h PathGorillaHandler) Int32Path() http.Handler {
+type BoolPathGorillaRequestDecoder struct {
+	unmarshalOptions protojson.UnmarshalOptions
+}
+
+func (decoder BoolPathGorillaRequestDecoder) BoolPath(ctx context.Context, r *http.Request) (*BoolPathRequest, error) {
+	req := &BoolPathRequest{}
+	vars := urlx.FormFromMap(mux.Vars(r))
+	var varErr error
+	req.Bool, varErr = v2.FormDecoder[bool](varErr, vars, "bool", urlx.GetBool)
+	req.OptBool, varErr = v2.FormDecoder[*bool](varErr, vars, "opt_bool", urlx.GetBoolPtr)
+	req.WrapBool, varErr = v2.FormDecoder[*wrapperspb.BoolValue](varErr, vars, "wrap_bool", urlx.GetBoolValue)
+	if varErr != nil {
+		return nil, varErr
+	}
+	return req, nil
+}
+
+type BoolPathGorillaResponseEncoder struct {
+	marshalOptions   protojson.MarshalOptions
+	unmarshalOptions protojson.UnmarshalOptions
+}
+
+func (encoder BoolPathGorillaResponseEncoder) BoolPath(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
+	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+}
+
+type Int32PathGorillaService interface {
+	Int32Path(ctx context.Context, request *Int32PathRequest) (*emptypb.Empty, error)
+}
+
+func AppendInt32PathGorillaRoute(router *mux.Router, service Int32PathGorillaService) *mux.Router {
+	handler := Int32PathGorillaHandler{
+		service: service,
+		decoder: Int32PathGorillaRequestDecoder{
+			unmarshalOptions: protojson.UnmarshalOptions{},
+		},
+		encoder: Int32PathGorillaResponseEncoder{
+			marshalOptions:   protojson.MarshalOptions{},
+			unmarshalOptions: protojson.UnmarshalOptions{},
+		},
+		errorEncoder: v2.DefaultErrorEncoder,
+	}
+	router.NewRoute().
+		Name("/leo.gors.path.v1.Int32Path/Int32Path").
+		Methods("GET").
+		Path("/v1/{int32}/{sint32}/{sfixed32}/{opt_int32}/{opt_sint32}/{opt_sfixed32}/{wrap_int32}").
+		Handler(handler.Int32Path())
+	return router
+}
+
+type Int32PathGorillaHandler struct {
+	service      Int32PathGorillaService
+	decoder      Int32PathGorillaRequestDecoder
+	encoder      Int32PathGorillaResponseEncoder
+	errorEncoder v2.ErrorEncoder
+}
+
+func (h Int32PathGorillaHandler) Int32Path() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.Int32Path(ctx, request)
@@ -125,7 +143,68 @@ func (h PathGorillaHandler) Int32Path() http.Handler {
 	})
 }
 
-func (h PathGorillaHandler) Int64Path() http.Handler {
+type Int32PathGorillaRequestDecoder struct {
+	unmarshalOptions protojson.UnmarshalOptions
+}
+
+func (decoder Int32PathGorillaRequestDecoder) Int32Path(ctx context.Context, r *http.Request) (*Int32PathRequest, error) {
+	req := &Int32PathRequest{}
+	vars := urlx.FormFromMap(mux.Vars(r))
+	var varErr error
+	req.Int32, varErr = v2.FormDecoder[int32](varErr, vars, "int32", urlx.GetInt)
+	req.Sint32, varErr = v2.FormDecoder[int32](varErr, vars, "sint32", urlx.GetInt)
+	req.Sfixed32, varErr = v2.FormDecoder[int32](varErr, vars, "sfixed32", urlx.GetInt)
+	req.OptInt32, varErr = v2.FormDecoder[*int32](varErr, vars, "opt_int32", urlx.GetIntPtr)
+	req.OptSint32, varErr = v2.FormDecoder[*int32](varErr, vars, "opt_sint32", urlx.GetIntPtr)
+	req.OptSfixed32, varErr = v2.FormDecoder[*int32](varErr, vars, "opt_sfixed32", urlx.GetIntPtr)
+	req.WrapInt32, varErr = v2.FormDecoder[*wrapperspb.Int32Value](varErr, vars, "wrap_int32", urlx.GetInt32Value)
+	if varErr != nil {
+		return nil, varErr
+	}
+	return req, nil
+}
+
+type Int32PathGorillaResponseEncoder struct {
+	marshalOptions   protojson.MarshalOptions
+	unmarshalOptions protojson.UnmarshalOptions
+}
+
+func (encoder Int32PathGorillaResponseEncoder) Int32Path(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
+	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+}
+
+type Int64PathGorillaService interface {
+	Int64Path(ctx context.Context, request *Int64PathRequest) (*emptypb.Empty, error)
+}
+
+func AppendInt64PathGorillaRoute(router *mux.Router, service Int64PathGorillaService) *mux.Router {
+	handler := Int64PathGorillaHandler{
+		service: service,
+		decoder: Int64PathGorillaRequestDecoder{
+			unmarshalOptions: protojson.UnmarshalOptions{},
+		},
+		encoder: Int64PathGorillaResponseEncoder{
+			marshalOptions:   protojson.MarshalOptions{},
+			unmarshalOptions: protojson.UnmarshalOptions{},
+		},
+		errorEncoder: v2.DefaultErrorEncoder,
+	}
+	router.NewRoute().
+		Name("/leo.gors.path.v1.Int64Path/Int64Path").
+		Methods("GET").
+		Path("/v1/{int64}/{sint64}/{sfixed64}/{opt_int64}/{opt_sint64}/{opt_sfixed64}/{wrap_int64}").
+		Handler(handler.Int64Path())
+	return router
+}
+
+type Int64PathGorillaHandler struct {
+	service      Int64PathGorillaService
+	decoder      Int64PathGorillaRequestDecoder
+	encoder      Int64PathGorillaResponseEncoder
+	errorEncoder v2.ErrorEncoder
+}
+
+func (h Int64PathGorillaHandler) Int64Path() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.Int64Path(ctx, request)
@@ -145,7 +224,68 @@ func (h PathGorillaHandler) Int64Path() http.Handler {
 	})
 }
 
-func (h PathGorillaHandler) Uint32Path() http.Handler {
+type Int64PathGorillaRequestDecoder struct {
+	unmarshalOptions protojson.UnmarshalOptions
+}
+
+func (decoder Int64PathGorillaRequestDecoder) Int64Path(ctx context.Context, r *http.Request) (*Int64PathRequest, error) {
+	req := &Int64PathRequest{}
+	vars := urlx.FormFromMap(mux.Vars(r))
+	var varErr error
+	req.Int64, varErr = v2.FormDecoder[int64](varErr, vars, "int64", urlx.GetInt)
+	req.Sint64, varErr = v2.FormDecoder[int64](varErr, vars, "sint64", urlx.GetInt)
+	req.Sfixed64, varErr = v2.FormDecoder[int64](varErr, vars, "sfixed64", urlx.GetInt)
+	req.OptInt64, varErr = v2.FormDecoder[*int64](varErr, vars, "opt_int64", urlx.GetIntPtr)
+	req.OptSint64, varErr = v2.FormDecoder[*int64](varErr, vars, "opt_sint64", urlx.GetIntPtr)
+	req.OptSfixed64, varErr = v2.FormDecoder[*int64](varErr, vars, "opt_sfixed64", urlx.GetIntPtr)
+	req.WrapInt64, varErr = v2.FormDecoder[*wrapperspb.Int64Value](varErr, vars, "wrap_int64", urlx.GetInt64Value)
+	if varErr != nil {
+		return nil, varErr
+	}
+	return req, nil
+}
+
+type Int64PathGorillaResponseEncoder struct {
+	marshalOptions   protojson.MarshalOptions
+	unmarshalOptions protojson.UnmarshalOptions
+}
+
+func (encoder Int64PathGorillaResponseEncoder) Int64Path(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
+	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+}
+
+type Uint32PathGorillaService interface {
+	Uint32Path(ctx context.Context, request *Uint32PathRequest) (*emptypb.Empty, error)
+}
+
+func AppendUint32PathGorillaRoute(router *mux.Router, service Uint32PathGorillaService) *mux.Router {
+	handler := Uint32PathGorillaHandler{
+		service: service,
+		decoder: Uint32PathGorillaRequestDecoder{
+			unmarshalOptions: protojson.UnmarshalOptions{},
+		},
+		encoder: Uint32PathGorillaResponseEncoder{
+			marshalOptions:   protojson.MarshalOptions{},
+			unmarshalOptions: protojson.UnmarshalOptions{},
+		},
+		errorEncoder: v2.DefaultErrorEncoder,
+	}
+	router.NewRoute().
+		Name("/leo.gors.path.v1.Uint32Path/Uint32Path").
+		Methods("GET").
+		Path("/v1/{uint32}/{fixed32}/{opt_uint32}/{opt_fixed32}/{wrap_uint32}").
+		Handler(handler.Uint32Path())
+	return router
+}
+
+type Uint32PathGorillaHandler struct {
+	service      Uint32PathGorillaService
+	decoder      Uint32PathGorillaRequestDecoder
+	encoder      Uint32PathGorillaResponseEncoder
+	errorEncoder v2.ErrorEncoder
+}
+
+func (h Uint32PathGorillaHandler) Uint32Path() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.Uint32Path(ctx, request)
@@ -165,7 +305,66 @@ func (h PathGorillaHandler) Uint32Path() http.Handler {
 	})
 }
 
-func (h PathGorillaHandler) Uint64Path() http.Handler {
+type Uint32PathGorillaRequestDecoder struct {
+	unmarshalOptions protojson.UnmarshalOptions
+}
+
+func (decoder Uint32PathGorillaRequestDecoder) Uint32Path(ctx context.Context, r *http.Request) (*Uint32PathRequest, error) {
+	req := &Uint32PathRequest{}
+	vars := urlx.FormFromMap(mux.Vars(r))
+	var varErr error
+	req.Uint32, varErr = v2.FormDecoder[uint32](varErr, vars, "uint32", urlx.GetUint)
+	req.Fixed32, varErr = v2.FormDecoder[uint32](varErr, vars, "fixed32", urlx.GetUint)
+	req.OptUint32, varErr = v2.FormDecoder[*uint32](varErr, vars, "opt_uint32", urlx.GetUintPtr)
+	req.OptFixed32, varErr = v2.FormDecoder[*uint32](varErr, vars, "opt_fixed32", urlx.GetUintPtr)
+	req.WrapUint32, varErr = v2.FormDecoder[*wrapperspb.UInt32Value](varErr, vars, "wrap_uint32", urlx.GetUint32Value)
+	if varErr != nil {
+		return nil, varErr
+	}
+	return req, nil
+}
+
+type Uint32PathGorillaResponseEncoder struct {
+	marshalOptions   protojson.MarshalOptions
+	unmarshalOptions protojson.UnmarshalOptions
+}
+
+func (encoder Uint32PathGorillaResponseEncoder) Uint32Path(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
+	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+}
+
+type Uint64PathGorillaService interface {
+	Uint64Path(ctx context.Context, request *Uint64PathRequest) (*emptypb.Empty, error)
+}
+
+func AppendUint64PathGorillaRoute(router *mux.Router, service Uint64PathGorillaService) *mux.Router {
+	handler := Uint64PathGorillaHandler{
+		service: service,
+		decoder: Uint64PathGorillaRequestDecoder{
+			unmarshalOptions: protojson.UnmarshalOptions{},
+		},
+		encoder: Uint64PathGorillaResponseEncoder{
+			marshalOptions:   protojson.MarshalOptions{},
+			unmarshalOptions: protojson.UnmarshalOptions{},
+		},
+		errorEncoder: v2.DefaultErrorEncoder,
+	}
+	router.NewRoute().
+		Name("/leo.gors.path.v1.Uint64Path/Uint64Path").
+		Methods("GET").
+		Path("/v1/{uint64}/{fixed64}/{opt_uint64}/{opt_fixed64}/{wrap_uint64}").
+		Handler(handler.Uint64Path())
+	return router
+}
+
+type Uint64PathGorillaHandler struct {
+	service      Uint64PathGorillaService
+	decoder      Uint64PathGorillaRequestDecoder
+	encoder      Uint64PathGorillaResponseEncoder
+	errorEncoder v2.ErrorEncoder
+}
+
+func (h Uint64PathGorillaHandler) Uint64Path() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.Uint64Path(ctx, request)
@@ -185,7 +384,66 @@ func (h PathGorillaHandler) Uint64Path() http.Handler {
 	})
 }
 
-func (h PathGorillaHandler) FloatPath() http.Handler {
+type Uint64PathGorillaRequestDecoder struct {
+	unmarshalOptions protojson.UnmarshalOptions
+}
+
+func (decoder Uint64PathGorillaRequestDecoder) Uint64Path(ctx context.Context, r *http.Request) (*Uint64PathRequest, error) {
+	req := &Uint64PathRequest{}
+	vars := urlx.FormFromMap(mux.Vars(r))
+	var varErr error
+	req.Uint64, varErr = v2.FormDecoder[uint64](varErr, vars, "uint64", urlx.GetUint)
+	req.Fixed64, varErr = v2.FormDecoder[uint64](varErr, vars, "fixed64", urlx.GetUint)
+	req.OptUint64, varErr = v2.FormDecoder[*uint64](varErr, vars, "opt_uint64", urlx.GetUintPtr)
+	req.OptFixed64, varErr = v2.FormDecoder[*uint64](varErr, vars, "opt_fixed64", urlx.GetUintPtr)
+	req.WrapUint64, varErr = v2.FormDecoder[*wrapperspb.UInt64Value](varErr, vars, "wrap_uint64", urlx.GetUint64Value)
+	if varErr != nil {
+		return nil, varErr
+	}
+	return req, nil
+}
+
+type Uint64PathGorillaResponseEncoder struct {
+	marshalOptions   protojson.MarshalOptions
+	unmarshalOptions protojson.UnmarshalOptions
+}
+
+func (encoder Uint64PathGorillaResponseEncoder) Uint64Path(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
+	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+}
+
+type FloatPathGorillaService interface {
+	FloatPath(ctx context.Context, request *FloatPathRequest) (*emptypb.Empty, error)
+}
+
+func AppendFloatPathGorillaRoute(router *mux.Router, service FloatPathGorillaService) *mux.Router {
+	handler := FloatPathGorillaHandler{
+		service: service,
+		decoder: FloatPathGorillaRequestDecoder{
+			unmarshalOptions: protojson.UnmarshalOptions{},
+		},
+		encoder: FloatPathGorillaResponseEncoder{
+			marshalOptions:   protojson.MarshalOptions{},
+			unmarshalOptions: protojson.UnmarshalOptions{},
+		},
+		errorEncoder: v2.DefaultErrorEncoder,
+	}
+	router.NewRoute().
+		Name("/leo.gors.path.v1.FloatPath/FloatPath").
+		Methods("GET").
+		Path("/v1/{float}/{opt_float}/{wrap_float}").
+		Handler(handler.FloatPath())
+	return router
+}
+
+type FloatPathGorillaHandler struct {
+	service      FloatPathGorillaService
+	decoder      FloatPathGorillaRequestDecoder
+	encoder      FloatPathGorillaResponseEncoder
+	errorEncoder v2.ErrorEncoder
+}
+
+func (h FloatPathGorillaHandler) FloatPath() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.FloatPath(ctx, request)
@@ -205,7 +463,64 @@ func (h PathGorillaHandler) FloatPath() http.Handler {
 	})
 }
 
-func (h PathGorillaHandler) DoublePath() http.Handler {
+type FloatPathGorillaRequestDecoder struct {
+	unmarshalOptions protojson.UnmarshalOptions
+}
+
+func (decoder FloatPathGorillaRequestDecoder) FloatPath(ctx context.Context, r *http.Request) (*FloatPathRequest, error) {
+	req := &FloatPathRequest{}
+	vars := urlx.FormFromMap(mux.Vars(r))
+	var varErr error
+	req.Float, varErr = v2.FormDecoder[float32](varErr, vars, "float", urlx.GetFloat)
+	req.OptFloat, varErr = v2.FormDecoder[*float32](varErr, vars, "opt_float", urlx.GetFloatPtr)
+	req.WrapFloat, varErr = v2.FormDecoder[*wrapperspb.FloatValue](varErr, vars, "wrap_float", urlx.GetFloat32Value)
+	if varErr != nil {
+		return nil, varErr
+	}
+	return req, nil
+}
+
+type FloatPathGorillaResponseEncoder struct {
+	marshalOptions   protojson.MarshalOptions
+	unmarshalOptions protojson.UnmarshalOptions
+}
+
+func (encoder FloatPathGorillaResponseEncoder) FloatPath(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
+	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+}
+
+type DoublePathGorillaService interface {
+	DoublePath(ctx context.Context, request *DoublePathRequest) (*emptypb.Empty, error)
+}
+
+func AppendDoublePathGorillaRoute(router *mux.Router, service DoublePathGorillaService) *mux.Router {
+	handler := DoublePathGorillaHandler{
+		service: service,
+		decoder: DoublePathGorillaRequestDecoder{
+			unmarshalOptions: protojson.UnmarshalOptions{},
+		},
+		encoder: DoublePathGorillaResponseEncoder{
+			marshalOptions:   protojson.MarshalOptions{},
+			unmarshalOptions: protojson.UnmarshalOptions{},
+		},
+		errorEncoder: v2.DefaultErrorEncoder,
+	}
+	router.NewRoute().
+		Name("/leo.gors.path.v1.DoublePath/DoublePath").
+		Methods("GET").
+		Path("/v1/{double}/{opt_double}/{wrap_double}").
+		Handler(handler.DoublePath())
+	return router
+}
+
+type DoublePathGorillaHandler struct {
+	service      DoublePathGorillaService
+	decoder      DoublePathGorillaRequestDecoder
+	encoder      DoublePathGorillaResponseEncoder
+	errorEncoder v2.ErrorEncoder
+}
+
+func (h DoublePathGorillaHandler) DoublePath() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.DoublePath(ctx, request)
@@ -225,7 +540,64 @@ func (h PathGorillaHandler) DoublePath() http.Handler {
 	})
 }
 
-func (h PathGorillaHandler) StringPath() http.Handler {
+type DoublePathGorillaRequestDecoder struct {
+	unmarshalOptions protojson.UnmarshalOptions
+}
+
+func (decoder DoublePathGorillaRequestDecoder) DoublePath(ctx context.Context, r *http.Request) (*DoublePathRequest, error) {
+	req := &DoublePathRequest{}
+	vars := urlx.FormFromMap(mux.Vars(r))
+	var varErr error
+	req.Double, varErr = v2.FormDecoder[float64](varErr, vars, "double", urlx.GetFloat)
+	req.OptDouble, varErr = v2.FormDecoder[*float64](varErr, vars, "opt_double", urlx.GetFloatPtr)
+	req.WrapDouble, varErr = v2.FormDecoder[*wrapperspb.DoubleValue](varErr, vars, "wrap_double", urlx.GetFloat64Value)
+	if varErr != nil {
+		return nil, varErr
+	}
+	return req, nil
+}
+
+type DoublePathGorillaResponseEncoder struct {
+	marshalOptions   protojson.MarshalOptions
+	unmarshalOptions protojson.UnmarshalOptions
+}
+
+func (encoder DoublePathGorillaResponseEncoder) DoublePath(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
+	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+}
+
+type StringPathGorillaService interface {
+	StringPath(ctx context.Context, request *StringPathRequest) (*emptypb.Empty, error)
+}
+
+func AppendStringPathGorillaRoute(router *mux.Router, service StringPathGorillaService) *mux.Router {
+	handler := StringPathGorillaHandler{
+		service: service,
+		decoder: StringPathGorillaRequestDecoder{
+			unmarshalOptions: protojson.UnmarshalOptions{},
+		},
+		encoder: StringPathGorillaResponseEncoder{
+			marshalOptions:   protojson.MarshalOptions{},
+			unmarshalOptions: protojson.UnmarshalOptions{},
+		},
+		errorEncoder: v2.DefaultErrorEncoder,
+	}
+	router.NewRoute().
+		Name("/leo.gors.path.v1.StringPath/StringPath").
+		Methods("GET").
+		Path("/v1/{string}/{opt_string}/{wrap_string}").
+		Handler(handler.StringPath())
+	return router
+}
+
+type StringPathGorillaHandler struct {
+	service      StringPathGorillaService
+	decoder      StringPathGorillaRequestDecoder
+	encoder      StringPathGorillaResponseEncoder
+	errorEncoder v2.ErrorEncoder
+}
+
+func (h StringPathGorillaHandler) StringPath() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.StringPath(ctx, request)
@@ -245,7 +617,64 @@ func (h PathGorillaHandler) StringPath() http.Handler {
 	})
 }
 
-func (h PathGorillaHandler) EnumPath() http.Handler {
+type StringPathGorillaRequestDecoder struct {
+	unmarshalOptions protojson.UnmarshalOptions
+}
+
+func (decoder StringPathGorillaRequestDecoder) StringPath(ctx context.Context, r *http.Request) (*StringPathRequest, error) {
+	req := &StringPathRequest{}
+	vars := urlx.FormFromMap(mux.Vars(r))
+	var varErr error
+	req.String_ = vars.Get("string")
+	req.OptString = proto.String(vars.Get("opt_string"))
+	req.WrapString = wrapperspb.String(vars.Get("wrap_string"))
+	if varErr != nil {
+		return nil, varErr
+	}
+	return req, nil
+}
+
+type StringPathGorillaResponseEncoder struct {
+	marshalOptions   protojson.MarshalOptions
+	unmarshalOptions protojson.UnmarshalOptions
+}
+
+func (encoder StringPathGorillaResponseEncoder) StringPath(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
+	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+}
+
+type EnumPathGorillaService interface {
+	EnumPath(ctx context.Context, request *EnumPathRequest) (*emptypb.Empty, error)
+}
+
+func AppendEnumPathGorillaRoute(router *mux.Router, service EnumPathGorillaService) *mux.Router {
+	handler := EnumPathGorillaHandler{
+		service: service,
+		decoder: EnumPathGorillaRequestDecoder{
+			unmarshalOptions: protojson.UnmarshalOptions{},
+		},
+		encoder: EnumPathGorillaResponseEncoder{
+			marshalOptions:   protojson.MarshalOptions{},
+			unmarshalOptions: protojson.UnmarshalOptions{},
+		},
+		errorEncoder: v2.DefaultErrorEncoder,
+	}
+	router.NewRoute().
+		Name("/leo.gors.path.v1.EnumPath/EnumPath").
+		Methods("GET").
+		Path("/v1/{status}/{opt_status}").
+		Handler(handler.EnumPath())
+	return router
+}
+
+type EnumPathGorillaHandler struct {
+	service      EnumPathGorillaService
+	decoder      EnumPathGorillaRequestDecoder
+	encoder      EnumPathGorillaResponseEncoder
+	errorEncoder v2.ErrorEncoder
+}
+
+func (h EnumPathGorillaHandler) EnumPath() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.EnumPath(ctx, request)
@@ -265,509 +694,28 @@ func (h PathGorillaHandler) EnumPath() http.Handler {
 	})
 }
 
-type PathGorillaRequestDecoder struct {
+type EnumPathGorillaRequestDecoder struct {
 	unmarshalOptions protojson.UnmarshalOptions
 }
 
-func (decoder PathGorillaRequestDecoder) BoolPath(ctx context.Context, r *http.Request) (*PathRequest, error) {
-	req := &PathRequest{}
+func (decoder EnumPathGorillaRequestDecoder) EnumPath(ctx context.Context, r *http.Request) (*EnumPathRequest, error) {
+	req := &EnumPathRequest{}
 	vars := urlx.FormFromMap(mux.Vars(r))
 	var varErr error
-	req.Bool, varErr = v2.FormDecoder[bool](varErr, vars, "bool", urlx.GetBool)
-	req.OptBool, varErr = v2.FormDecoder[*bool](varErr, vars, "opt_bool", urlx.GetBoolPtr)
-	req.WrapBool, varErr = v2.FormDecoder[*wrapperspb.BoolValue](varErr, vars, "wrap_bool", urlx.GetBoolValue)
+	req.Status, varErr = v2.FormDecoder[EnumPathRequest_Status](varErr, vars, "status", urlx.GetInt[EnumPathRequest_Status])
+	req.OptStatus, varErr = v2.FormDecoder[*EnumPathRequest_Status](varErr, vars, "opt_status", urlx.GetIntPtr[EnumPathRequest_Status])
 	if varErr != nil {
 		return nil, varErr
-	}
-	queries := r.URL.Query()
-	var queryErr error
-	req.Int32, queryErr = v2.FormDecoder[int32](queryErr, queries, "int32", urlx.GetInt)
-	req.Sint32, queryErr = v2.FormDecoder[int32](queryErr, queries, "sint32", urlx.GetInt)
-	req.Sfixed32, queryErr = v2.FormDecoder[int32](queryErr, queries, "sfixed32", urlx.GetInt)
-	req.OptInt32, queryErr = v2.FormDecoder[*int32](queryErr, queries, "opt_int32", urlx.GetIntPtr)
-	req.OptSint32, queryErr = v2.FormDecoder[*int32](queryErr, queries, "opt_sint32", urlx.GetIntPtr)
-	req.OptSfixed32, queryErr = v2.FormDecoder[*int32](queryErr, queries, "opt_sfixed32", urlx.GetIntPtr)
-	req.WrapInt32, queryErr = v2.FormDecoder[*wrapperspb.Int32Value](queryErr, queries, "wrap_int32", urlx.GetInt32Value)
-	req.Int64, queryErr = v2.FormDecoder[int64](queryErr, queries, "int64", urlx.GetInt)
-	req.Sint64, queryErr = v2.FormDecoder[int64](queryErr, queries, "sint64", urlx.GetInt)
-	req.Sfixed64, queryErr = v2.FormDecoder[int64](queryErr, queries, "sfixed64", urlx.GetInt)
-	req.OptInt64, queryErr = v2.FormDecoder[*int64](queryErr, queries, "opt_int64", urlx.GetIntPtr)
-	req.OptSint64, queryErr = v2.FormDecoder[*int64](queryErr, queries, "opt_sint64", urlx.GetIntPtr)
-	req.OptSfixed64, queryErr = v2.FormDecoder[*int64](queryErr, queries, "opt_sfixed64", urlx.GetIntPtr)
-	req.WrapInt64, queryErr = v2.FormDecoder[*wrapperspb.Int64Value](queryErr, queries, "wrap_int64", urlx.GetInt64Value)
-	req.Uint32, queryErr = v2.FormDecoder[uint32](queryErr, queries, "uint32", urlx.GetUint)
-	req.Fixed32, queryErr = v2.FormDecoder[uint32](queryErr, queries, "fixed32", urlx.GetUint)
-	req.OptUint32, queryErr = v2.FormDecoder[*uint32](queryErr, queries, "opt_uint32", urlx.GetUintPtr)
-	req.OptFixed32, queryErr = v2.FormDecoder[*uint32](queryErr, queries, "opt_fixed32", urlx.GetUintPtr)
-	req.WrapUint32, queryErr = v2.FormDecoder[*wrapperspb.UInt32Value](queryErr, queries, "wrap_uint32", urlx.GetUint32Value)
-	req.Uint64, queryErr = v2.FormDecoder[uint64](queryErr, queries, "uint64", urlx.GetUint)
-	req.Fixed64, queryErr = v2.FormDecoder[uint64](queryErr, queries, "fixed64", urlx.GetUint)
-	req.OptUint64, queryErr = v2.FormDecoder[*uint64](queryErr, queries, "opt_uint64", urlx.GetUintPtr)
-	req.OptFixed64, queryErr = v2.FormDecoder[*uint64](queryErr, queries, "opt_fixed64", urlx.GetUintPtr)
-	req.WrapUint64, queryErr = v2.FormDecoder[*wrapperspb.UInt64Value](queryErr, queries, "wrap_uint64", urlx.GetUint64Value)
-	req.Float, queryErr = v2.FormDecoder[float32](queryErr, queries, "float", urlx.GetFloat)
-	req.OptFloat, queryErr = v2.FormDecoder[*float32](queryErr, queries, "opt_float", urlx.GetFloatPtr)
-	req.WrapFloat, queryErr = v2.FormDecoder[*wrapperspb.FloatValue](queryErr, queries, "wrap_float", urlx.GetFloat32Value)
-	req.Double, queryErr = v2.FormDecoder[float64](queryErr, queries, "double", urlx.GetFloat)
-	req.OptDouble, queryErr = v2.FormDecoder[*float64](queryErr, queries, "opt_double", urlx.GetFloatPtr)
-	req.WrapDouble, queryErr = v2.FormDecoder[*wrapperspb.DoubleValue](queryErr, queries, "wrap_double", urlx.GetFloat64Value)
-	req.String_ = queries.Get("string")
-	req.OptString = proto.String(queries.Get("opt_string"))
-	req.WrapString = wrapperspb.String(queries.Get("wrap_string"))
-	req.Status, queryErr = v2.FormDecoder[PathRequest_Status](queryErr, queries, "status", urlx.GetInt[PathRequest_Status])
-	req.OptStatus, queryErr = v2.FormDecoder[*PathRequest_Status](queryErr, queries, "opt_status", urlx.GetIntPtr[PathRequest_Status])
-	if queryErr != nil {
-		return nil, queryErr
-	}
-	return req, nil
-}
-func (decoder PathGorillaRequestDecoder) Int32Path(ctx context.Context, r *http.Request) (*PathRequest, error) {
-	req := &PathRequest{}
-	vars := urlx.FormFromMap(mux.Vars(r))
-	var varErr error
-	req.Int32, varErr = v2.FormDecoder[int32](varErr, vars, "int32", urlx.GetInt)
-	req.Sint32, varErr = v2.FormDecoder[int32](varErr, vars, "sint32", urlx.GetInt)
-	req.Sfixed32, varErr = v2.FormDecoder[int32](varErr, vars, "sfixed32", urlx.GetInt)
-	req.OptInt32, varErr = v2.FormDecoder[*int32](varErr, vars, "opt_int32", urlx.GetIntPtr)
-	req.OptSint32, varErr = v2.FormDecoder[*int32](varErr, vars, "opt_sint32", urlx.GetIntPtr)
-	req.OptSfixed32, varErr = v2.FormDecoder[*int32](varErr, vars, "opt_sfixed32", urlx.GetIntPtr)
-	req.WrapInt32, varErr = v2.FormDecoder[*wrapperspb.Int32Value](varErr, vars, "wrap_int32", urlx.GetInt32Value)
-	if varErr != nil {
-		return nil, varErr
-	}
-	queries := r.URL.Query()
-	var queryErr error
-	req.Bool, queryErr = v2.FormDecoder[bool](queryErr, queries, "bool", urlx.GetBool)
-	req.OptBool, queryErr = v2.FormDecoder[*bool](queryErr, queries, "opt_bool", urlx.GetBoolPtr)
-	req.WrapBool, queryErr = v2.FormDecoder[*wrapperspb.BoolValue](queryErr, queries, "wrap_bool", urlx.GetBoolValue)
-	req.Int64, queryErr = v2.FormDecoder[int64](queryErr, queries, "int64", urlx.GetInt)
-	req.Sint64, queryErr = v2.FormDecoder[int64](queryErr, queries, "sint64", urlx.GetInt)
-	req.Sfixed64, queryErr = v2.FormDecoder[int64](queryErr, queries, "sfixed64", urlx.GetInt)
-	req.OptInt64, queryErr = v2.FormDecoder[*int64](queryErr, queries, "opt_int64", urlx.GetIntPtr)
-	req.OptSint64, queryErr = v2.FormDecoder[*int64](queryErr, queries, "opt_sint64", urlx.GetIntPtr)
-	req.OptSfixed64, queryErr = v2.FormDecoder[*int64](queryErr, queries, "opt_sfixed64", urlx.GetIntPtr)
-	req.WrapInt64, queryErr = v2.FormDecoder[*wrapperspb.Int64Value](queryErr, queries, "wrap_int64", urlx.GetInt64Value)
-	req.Uint32, queryErr = v2.FormDecoder[uint32](queryErr, queries, "uint32", urlx.GetUint)
-	req.Fixed32, queryErr = v2.FormDecoder[uint32](queryErr, queries, "fixed32", urlx.GetUint)
-	req.OptUint32, queryErr = v2.FormDecoder[*uint32](queryErr, queries, "opt_uint32", urlx.GetUintPtr)
-	req.OptFixed32, queryErr = v2.FormDecoder[*uint32](queryErr, queries, "opt_fixed32", urlx.GetUintPtr)
-	req.WrapUint32, queryErr = v2.FormDecoder[*wrapperspb.UInt32Value](queryErr, queries, "wrap_uint32", urlx.GetUint32Value)
-	req.Uint64, queryErr = v2.FormDecoder[uint64](queryErr, queries, "uint64", urlx.GetUint)
-	req.Fixed64, queryErr = v2.FormDecoder[uint64](queryErr, queries, "fixed64", urlx.GetUint)
-	req.OptUint64, queryErr = v2.FormDecoder[*uint64](queryErr, queries, "opt_uint64", urlx.GetUintPtr)
-	req.OptFixed64, queryErr = v2.FormDecoder[*uint64](queryErr, queries, "opt_fixed64", urlx.GetUintPtr)
-	req.WrapUint64, queryErr = v2.FormDecoder[*wrapperspb.UInt64Value](queryErr, queries, "wrap_uint64", urlx.GetUint64Value)
-	req.Float, queryErr = v2.FormDecoder[float32](queryErr, queries, "float", urlx.GetFloat)
-	req.OptFloat, queryErr = v2.FormDecoder[*float32](queryErr, queries, "opt_float", urlx.GetFloatPtr)
-	req.WrapFloat, queryErr = v2.FormDecoder[*wrapperspb.FloatValue](queryErr, queries, "wrap_float", urlx.GetFloat32Value)
-	req.Double, queryErr = v2.FormDecoder[float64](queryErr, queries, "double", urlx.GetFloat)
-	req.OptDouble, queryErr = v2.FormDecoder[*float64](queryErr, queries, "opt_double", urlx.GetFloatPtr)
-	req.WrapDouble, queryErr = v2.FormDecoder[*wrapperspb.DoubleValue](queryErr, queries, "wrap_double", urlx.GetFloat64Value)
-	req.String_ = queries.Get("string")
-	req.OptString = proto.String(queries.Get("opt_string"))
-	req.WrapString = wrapperspb.String(queries.Get("wrap_string"))
-	req.Status, queryErr = v2.FormDecoder[PathRequest_Status](queryErr, queries, "status", urlx.GetInt[PathRequest_Status])
-	req.OptStatus, queryErr = v2.FormDecoder[*PathRequest_Status](queryErr, queries, "opt_status", urlx.GetIntPtr[PathRequest_Status])
-	if queryErr != nil {
-		return nil, queryErr
-	}
-	return req, nil
-}
-func (decoder PathGorillaRequestDecoder) Int64Path(ctx context.Context, r *http.Request) (*PathRequest, error) {
-	req := &PathRequest{}
-	vars := urlx.FormFromMap(mux.Vars(r))
-	var varErr error
-	req.Int64, varErr = v2.FormDecoder[int64](varErr, vars, "int64", urlx.GetInt)
-	req.Sint64, varErr = v2.FormDecoder[int64](varErr, vars, "sint64", urlx.GetInt)
-	req.Sfixed64, varErr = v2.FormDecoder[int64](varErr, vars, "sfixed64", urlx.GetInt)
-	req.OptInt64, varErr = v2.FormDecoder[*int64](varErr, vars, "opt_int64", urlx.GetIntPtr)
-	req.OptSint64, varErr = v2.FormDecoder[*int64](varErr, vars, "opt_sint64", urlx.GetIntPtr)
-	req.OptSfixed64, varErr = v2.FormDecoder[*int64](varErr, vars, "opt_sfixed64", urlx.GetIntPtr)
-	req.WrapInt64, varErr = v2.FormDecoder[*wrapperspb.Int64Value](varErr, vars, "wrap_int64", urlx.GetInt64Value)
-	if varErr != nil {
-		return nil, varErr
-	}
-	queries := r.URL.Query()
-	var queryErr error
-	req.Bool, queryErr = v2.FormDecoder[bool](queryErr, queries, "bool", urlx.GetBool)
-	req.OptBool, queryErr = v2.FormDecoder[*bool](queryErr, queries, "opt_bool", urlx.GetBoolPtr)
-	req.WrapBool, queryErr = v2.FormDecoder[*wrapperspb.BoolValue](queryErr, queries, "wrap_bool", urlx.GetBoolValue)
-	req.Int32, queryErr = v2.FormDecoder[int32](queryErr, queries, "int32", urlx.GetInt)
-	req.Sint32, queryErr = v2.FormDecoder[int32](queryErr, queries, "sint32", urlx.GetInt)
-	req.Sfixed32, queryErr = v2.FormDecoder[int32](queryErr, queries, "sfixed32", urlx.GetInt)
-	req.OptInt32, queryErr = v2.FormDecoder[*int32](queryErr, queries, "opt_int32", urlx.GetIntPtr)
-	req.OptSint32, queryErr = v2.FormDecoder[*int32](queryErr, queries, "opt_sint32", urlx.GetIntPtr)
-	req.OptSfixed32, queryErr = v2.FormDecoder[*int32](queryErr, queries, "opt_sfixed32", urlx.GetIntPtr)
-	req.WrapInt32, queryErr = v2.FormDecoder[*wrapperspb.Int32Value](queryErr, queries, "wrap_int32", urlx.GetInt32Value)
-	req.Uint32, queryErr = v2.FormDecoder[uint32](queryErr, queries, "uint32", urlx.GetUint)
-	req.Fixed32, queryErr = v2.FormDecoder[uint32](queryErr, queries, "fixed32", urlx.GetUint)
-	req.OptUint32, queryErr = v2.FormDecoder[*uint32](queryErr, queries, "opt_uint32", urlx.GetUintPtr)
-	req.OptFixed32, queryErr = v2.FormDecoder[*uint32](queryErr, queries, "opt_fixed32", urlx.GetUintPtr)
-	req.WrapUint32, queryErr = v2.FormDecoder[*wrapperspb.UInt32Value](queryErr, queries, "wrap_uint32", urlx.GetUint32Value)
-	req.Uint64, queryErr = v2.FormDecoder[uint64](queryErr, queries, "uint64", urlx.GetUint)
-	req.Fixed64, queryErr = v2.FormDecoder[uint64](queryErr, queries, "fixed64", urlx.GetUint)
-	req.OptUint64, queryErr = v2.FormDecoder[*uint64](queryErr, queries, "opt_uint64", urlx.GetUintPtr)
-	req.OptFixed64, queryErr = v2.FormDecoder[*uint64](queryErr, queries, "opt_fixed64", urlx.GetUintPtr)
-	req.WrapUint64, queryErr = v2.FormDecoder[*wrapperspb.UInt64Value](queryErr, queries, "wrap_uint64", urlx.GetUint64Value)
-	req.Float, queryErr = v2.FormDecoder[float32](queryErr, queries, "float", urlx.GetFloat)
-	req.OptFloat, queryErr = v2.FormDecoder[*float32](queryErr, queries, "opt_float", urlx.GetFloatPtr)
-	req.WrapFloat, queryErr = v2.FormDecoder[*wrapperspb.FloatValue](queryErr, queries, "wrap_float", urlx.GetFloat32Value)
-	req.Double, queryErr = v2.FormDecoder[float64](queryErr, queries, "double", urlx.GetFloat)
-	req.OptDouble, queryErr = v2.FormDecoder[*float64](queryErr, queries, "opt_double", urlx.GetFloatPtr)
-	req.WrapDouble, queryErr = v2.FormDecoder[*wrapperspb.DoubleValue](queryErr, queries, "wrap_double", urlx.GetFloat64Value)
-	req.String_ = queries.Get("string")
-	req.OptString = proto.String(queries.Get("opt_string"))
-	req.WrapString = wrapperspb.String(queries.Get("wrap_string"))
-	req.Status, queryErr = v2.FormDecoder[PathRequest_Status](queryErr, queries, "status", urlx.GetInt[PathRequest_Status])
-	req.OptStatus, queryErr = v2.FormDecoder[*PathRequest_Status](queryErr, queries, "opt_status", urlx.GetIntPtr[PathRequest_Status])
-	if queryErr != nil {
-		return nil, queryErr
-	}
-	return req, nil
-}
-func (decoder PathGorillaRequestDecoder) Uint32Path(ctx context.Context, r *http.Request) (*PathRequest, error) {
-	req := &PathRequest{}
-	vars := urlx.FormFromMap(mux.Vars(r))
-	var varErr error
-	req.Uint32, varErr = v2.FormDecoder[uint32](varErr, vars, "uint32", urlx.GetUint)
-	req.Fixed32, varErr = v2.FormDecoder[uint32](varErr, vars, "fixed32", urlx.GetUint)
-	req.OptUint32, varErr = v2.FormDecoder[*uint32](varErr, vars, "opt_uint32", urlx.GetUintPtr)
-	req.OptFixed32, varErr = v2.FormDecoder[*uint32](varErr, vars, "opt_fixed32", urlx.GetUintPtr)
-	req.WrapUint32, varErr = v2.FormDecoder[*wrapperspb.UInt32Value](varErr, vars, "wrap_uint32", urlx.GetUint32Value)
-	if varErr != nil {
-		return nil, varErr
-	}
-	queries := r.URL.Query()
-	var queryErr error
-	req.Bool, queryErr = v2.FormDecoder[bool](queryErr, queries, "bool", urlx.GetBool)
-	req.OptBool, queryErr = v2.FormDecoder[*bool](queryErr, queries, "opt_bool", urlx.GetBoolPtr)
-	req.WrapBool, queryErr = v2.FormDecoder[*wrapperspb.BoolValue](queryErr, queries, "wrap_bool", urlx.GetBoolValue)
-	req.Int32, queryErr = v2.FormDecoder[int32](queryErr, queries, "int32", urlx.GetInt)
-	req.Sint32, queryErr = v2.FormDecoder[int32](queryErr, queries, "sint32", urlx.GetInt)
-	req.Sfixed32, queryErr = v2.FormDecoder[int32](queryErr, queries, "sfixed32", urlx.GetInt)
-	req.OptInt32, queryErr = v2.FormDecoder[*int32](queryErr, queries, "opt_int32", urlx.GetIntPtr)
-	req.OptSint32, queryErr = v2.FormDecoder[*int32](queryErr, queries, "opt_sint32", urlx.GetIntPtr)
-	req.OptSfixed32, queryErr = v2.FormDecoder[*int32](queryErr, queries, "opt_sfixed32", urlx.GetIntPtr)
-	req.WrapInt32, queryErr = v2.FormDecoder[*wrapperspb.Int32Value](queryErr, queries, "wrap_int32", urlx.GetInt32Value)
-	req.Int64, queryErr = v2.FormDecoder[int64](queryErr, queries, "int64", urlx.GetInt)
-	req.Sint64, queryErr = v2.FormDecoder[int64](queryErr, queries, "sint64", urlx.GetInt)
-	req.Sfixed64, queryErr = v2.FormDecoder[int64](queryErr, queries, "sfixed64", urlx.GetInt)
-	req.OptInt64, queryErr = v2.FormDecoder[*int64](queryErr, queries, "opt_int64", urlx.GetIntPtr)
-	req.OptSint64, queryErr = v2.FormDecoder[*int64](queryErr, queries, "opt_sint64", urlx.GetIntPtr)
-	req.OptSfixed64, queryErr = v2.FormDecoder[*int64](queryErr, queries, "opt_sfixed64", urlx.GetIntPtr)
-	req.WrapInt64, queryErr = v2.FormDecoder[*wrapperspb.Int64Value](queryErr, queries, "wrap_int64", urlx.GetInt64Value)
-	req.Uint64, queryErr = v2.FormDecoder[uint64](queryErr, queries, "uint64", urlx.GetUint)
-	req.Fixed64, queryErr = v2.FormDecoder[uint64](queryErr, queries, "fixed64", urlx.GetUint)
-	req.OptUint64, queryErr = v2.FormDecoder[*uint64](queryErr, queries, "opt_uint64", urlx.GetUintPtr)
-	req.OptFixed64, queryErr = v2.FormDecoder[*uint64](queryErr, queries, "opt_fixed64", urlx.GetUintPtr)
-	req.WrapUint64, queryErr = v2.FormDecoder[*wrapperspb.UInt64Value](queryErr, queries, "wrap_uint64", urlx.GetUint64Value)
-	req.Float, queryErr = v2.FormDecoder[float32](queryErr, queries, "float", urlx.GetFloat)
-	req.OptFloat, queryErr = v2.FormDecoder[*float32](queryErr, queries, "opt_float", urlx.GetFloatPtr)
-	req.WrapFloat, queryErr = v2.FormDecoder[*wrapperspb.FloatValue](queryErr, queries, "wrap_float", urlx.GetFloat32Value)
-	req.Double, queryErr = v2.FormDecoder[float64](queryErr, queries, "double", urlx.GetFloat)
-	req.OptDouble, queryErr = v2.FormDecoder[*float64](queryErr, queries, "opt_double", urlx.GetFloatPtr)
-	req.WrapDouble, queryErr = v2.FormDecoder[*wrapperspb.DoubleValue](queryErr, queries, "wrap_double", urlx.GetFloat64Value)
-	req.String_ = queries.Get("string")
-	req.OptString = proto.String(queries.Get("opt_string"))
-	req.WrapString = wrapperspb.String(queries.Get("wrap_string"))
-	req.Status, queryErr = v2.FormDecoder[PathRequest_Status](queryErr, queries, "status", urlx.GetInt[PathRequest_Status])
-	req.OptStatus, queryErr = v2.FormDecoder[*PathRequest_Status](queryErr, queries, "opt_status", urlx.GetIntPtr[PathRequest_Status])
-	if queryErr != nil {
-		return nil, queryErr
-	}
-	return req, nil
-}
-func (decoder PathGorillaRequestDecoder) Uint64Path(ctx context.Context, r *http.Request) (*PathRequest, error) {
-	req := &PathRequest{}
-	vars := urlx.FormFromMap(mux.Vars(r))
-	var varErr error
-	req.Uint64, varErr = v2.FormDecoder[uint64](varErr, vars, "uint64", urlx.GetUint)
-	req.Fixed64, varErr = v2.FormDecoder[uint64](varErr, vars, "fixed64", urlx.GetUint)
-	req.OptUint64, varErr = v2.FormDecoder[*uint64](varErr, vars, "opt_uint64", urlx.GetUintPtr)
-	req.OptFixed64, varErr = v2.FormDecoder[*uint64](varErr, vars, "opt_fixed64", urlx.GetUintPtr)
-	req.WrapUint64, varErr = v2.FormDecoder[*wrapperspb.UInt64Value](varErr, vars, "wrap_uint64", urlx.GetUint64Value)
-	if varErr != nil {
-		return nil, varErr
-	}
-	queries := r.URL.Query()
-	var queryErr error
-	req.Bool, queryErr = v2.FormDecoder[bool](queryErr, queries, "bool", urlx.GetBool)
-	req.OptBool, queryErr = v2.FormDecoder[*bool](queryErr, queries, "opt_bool", urlx.GetBoolPtr)
-	req.WrapBool, queryErr = v2.FormDecoder[*wrapperspb.BoolValue](queryErr, queries, "wrap_bool", urlx.GetBoolValue)
-	req.Int32, queryErr = v2.FormDecoder[int32](queryErr, queries, "int32", urlx.GetInt)
-	req.Sint32, queryErr = v2.FormDecoder[int32](queryErr, queries, "sint32", urlx.GetInt)
-	req.Sfixed32, queryErr = v2.FormDecoder[int32](queryErr, queries, "sfixed32", urlx.GetInt)
-	req.OptInt32, queryErr = v2.FormDecoder[*int32](queryErr, queries, "opt_int32", urlx.GetIntPtr)
-	req.OptSint32, queryErr = v2.FormDecoder[*int32](queryErr, queries, "opt_sint32", urlx.GetIntPtr)
-	req.OptSfixed32, queryErr = v2.FormDecoder[*int32](queryErr, queries, "opt_sfixed32", urlx.GetIntPtr)
-	req.WrapInt32, queryErr = v2.FormDecoder[*wrapperspb.Int32Value](queryErr, queries, "wrap_int32", urlx.GetInt32Value)
-	req.Int64, queryErr = v2.FormDecoder[int64](queryErr, queries, "int64", urlx.GetInt)
-	req.Sint64, queryErr = v2.FormDecoder[int64](queryErr, queries, "sint64", urlx.GetInt)
-	req.Sfixed64, queryErr = v2.FormDecoder[int64](queryErr, queries, "sfixed64", urlx.GetInt)
-	req.OptInt64, queryErr = v2.FormDecoder[*int64](queryErr, queries, "opt_int64", urlx.GetIntPtr)
-	req.OptSint64, queryErr = v2.FormDecoder[*int64](queryErr, queries, "opt_sint64", urlx.GetIntPtr)
-	req.OptSfixed64, queryErr = v2.FormDecoder[*int64](queryErr, queries, "opt_sfixed64", urlx.GetIntPtr)
-	req.WrapInt64, queryErr = v2.FormDecoder[*wrapperspb.Int64Value](queryErr, queries, "wrap_int64", urlx.GetInt64Value)
-	req.Uint32, queryErr = v2.FormDecoder[uint32](queryErr, queries, "uint32", urlx.GetUint)
-	req.Fixed32, queryErr = v2.FormDecoder[uint32](queryErr, queries, "fixed32", urlx.GetUint)
-	req.OptUint32, queryErr = v2.FormDecoder[*uint32](queryErr, queries, "opt_uint32", urlx.GetUintPtr)
-	req.OptFixed32, queryErr = v2.FormDecoder[*uint32](queryErr, queries, "opt_fixed32", urlx.GetUintPtr)
-	req.WrapUint32, queryErr = v2.FormDecoder[*wrapperspb.UInt32Value](queryErr, queries, "wrap_uint32", urlx.GetUint32Value)
-	req.Float, queryErr = v2.FormDecoder[float32](queryErr, queries, "float", urlx.GetFloat)
-	req.OptFloat, queryErr = v2.FormDecoder[*float32](queryErr, queries, "opt_float", urlx.GetFloatPtr)
-	req.WrapFloat, queryErr = v2.FormDecoder[*wrapperspb.FloatValue](queryErr, queries, "wrap_float", urlx.GetFloat32Value)
-	req.Double, queryErr = v2.FormDecoder[float64](queryErr, queries, "double", urlx.GetFloat)
-	req.OptDouble, queryErr = v2.FormDecoder[*float64](queryErr, queries, "opt_double", urlx.GetFloatPtr)
-	req.WrapDouble, queryErr = v2.FormDecoder[*wrapperspb.DoubleValue](queryErr, queries, "wrap_double", urlx.GetFloat64Value)
-	req.String_ = queries.Get("string")
-	req.OptString = proto.String(queries.Get("opt_string"))
-	req.WrapString = wrapperspb.String(queries.Get("wrap_string"))
-	req.Status, queryErr = v2.FormDecoder[PathRequest_Status](queryErr, queries, "status", urlx.GetInt[PathRequest_Status])
-	req.OptStatus, queryErr = v2.FormDecoder[*PathRequest_Status](queryErr, queries, "opt_status", urlx.GetIntPtr[PathRequest_Status])
-	if queryErr != nil {
-		return nil, queryErr
-	}
-	return req, nil
-}
-func (decoder PathGorillaRequestDecoder) FloatPath(ctx context.Context, r *http.Request) (*PathRequest, error) {
-	req := &PathRequest{}
-	vars := urlx.FormFromMap(mux.Vars(r))
-	var varErr error
-	req.Float, varErr = v2.FormDecoder[float32](varErr, vars, "float", urlx.GetFloat)
-	req.OptFloat, varErr = v2.FormDecoder[*float32](varErr, vars, "opt_float", urlx.GetFloatPtr)
-	req.WrapFloat, varErr = v2.FormDecoder[*wrapperspb.FloatValue](varErr, vars, "wrap_float", urlx.GetFloat32Value)
-	if varErr != nil {
-		return nil, varErr
-	}
-	queries := r.URL.Query()
-	var queryErr error
-	req.Bool, queryErr = v2.FormDecoder[bool](queryErr, queries, "bool", urlx.GetBool)
-	req.OptBool, queryErr = v2.FormDecoder[*bool](queryErr, queries, "opt_bool", urlx.GetBoolPtr)
-	req.WrapBool, queryErr = v2.FormDecoder[*wrapperspb.BoolValue](queryErr, queries, "wrap_bool", urlx.GetBoolValue)
-	req.Int32, queryErr = v2.FormDecoder[int32](queryErr, queries, "int32", urlx.GetInt)
-	req.Sint32, queryErr = v2.FormDecoder[int32](queryErr, queries, "sint32", urlx.GetInt)
-	req.Sfixed32, queryErr = v2.FormDecoder[int32](queryErr, queries, "sfixed32", urlx.GetInt)
-	req.OptInt32, queryErr = v2.FormDecoder[*int32](queryErr, queries, "opt_int32", urlx.GetIntPtr)
-	req.OptSint32, queryErr = v2.FormDecoder[*int32](queryErr, queries, "opt_sint32", urlx.GetIntPtr)
-	req.OptSfixed32, queryErr = v2.FormDecoder[*int32](queryErr, queries, "opt_sfixed32", urlx.GetIntPtr)
-	req.WrapInt32, queryErr = v2.FormDecoder[*wrapperspb.Int32Value](queryErr, queries, "wrap_int32", urlx.GetInt32Value)
-	req.Int64, queryErr = v2.FormDecoder[int64](queryErr, queries, "int64", urlx.GetInt)
-	req.Sint64, queryErr = v2.FormDecoder[int64](queryErr, queries, "sint64", urlx.GetInt)
-	req.Sfixed64, queryErr = v2.FormDecoder[int64](queryErr, queries, "sfixed64", urlx.GetInt)
-	req.OptInt64, queryErr = v2.FormDecoder[*int64](queryErr, queries, "opt_int64", urlx.GetIntPtr)
-	req.OptSint64, queryErr = v2.FormDecoder[*int64](queryErr, queries, "opt_sint64", urlx.GetIntPtr)
-	req.OptSfixed64, queryErr = v2.FormDecoder[*int64](queryErr, queries, "opt_sfixed64", urlx.GetIntPtr)
-	req.WrapInt64, queryErr = v2.FormDecoder[*wrapperspb.Int64Value](queryErr, queries, "wrap_int64", urlx.GetInt64Value)
-	req.Uint32, queryErr = v2.FormDecoder[uint32](queryErr, queries, "uint32", urlx.GetUint)
-	req.Fixed32, queryErr = v2.FormDecoder[uint32](queryErr, queries, "fixed32", urlx.GetUint)
-	req.OptUint32, queryErr = v2.FormDecoder[*uint32](queryErr, queries, "opt_uint32", urlx.GetUintPtr)
-	req.OptFixed32, queryErr = v2.FormDecoder[*uint32](queryErr, queries, "opt_fixed32", urlx.GetUintPtr)
-	req.WrapUint32, queryErr = v2.FormDecoder[*wrapperspb.UInt32Value](queryErr, queries, "wrap_uint32", urlx.GetUint32Value)
-	req.Uint64, queryErr = v2.FormDecoder[uint64](queryErr, queries, "uint64", urlx.GetUint)
-	req.Fixed64, queryErr = v2.FormDecoder[uint64](queryErr, queries, "fixed64", urlx.GetUint)
-	req.OptUint64, queryErr = v2.FormDecoder[*uint64](queryErr, queries, "opt_uint64", urlx.GetUintPtr)
-	req.OptFixed64, queryErr = v2.FormDecoder[*uint64](queryErr, queries, "opt_fixed64", urlx.GetUintPtr)
-	req.WrapUint64, queryErr = v2.FormDecoder[*wrapperspb.UInt64Value](queryErr, queries, "wrap_uint64", urlx.GetUint64Value)
-	req.Double, queryErr = v2.FormDecoder[float64](queryErr, queries, "double", urlx.GetFloat)
-	req.OptDouble, queryErr = v2.FormDecoder[*float64](queryErr, queries, "opt_double", urlx.GetFloatPtr)
-	req.WrapDouble, queryErr = v2.FormDecoder[*wrapperspb.DoubleValue](queryErr, queries, "wrap_double", urlx.GetFloat64Value)
-	req.String_ = queries.Get("string")
-	req.OptString = proto.String(queries.Get("opt_string"))
-	req.WrapString = wrapperspb.String(queries.Get("wrap_string"))
-	req.Status, queryErr = v2.FormDecoder[PathRequest_Status](queryErr, queries, "status", urlx.GetInt[PathRequest_Status])
-	req.OptStatus, queryErr = v2.FormDecoder[*PathRequest_Status](queryErr, queries, "opt_status", urlx.GetIntPtr[PathRequest_Status])
-	if queryErr != nil {
-		return nil, queryErr
-	}
-	return req, nil
-}
-func (decoder PathGorillaRequestDecoder) DoublePath(ctx context.Context, r *http.Request) (*PathRequest, error) {
-	req := &PathRequest{}
-	vars := urlx.FormFromMap(mux.Vars(r))
-	var varErr error
-	req.Double, varErr = v2.FormDecoder[float64](varErr, vars, "double", urlx.GetFloat)
-	req.OptDouble, varErr = v2.FormDecoder[*float64](varErr, vars, "opt_double", urlx.GetFloatPtr)
-	req.WrapDouble, varErr = v2.FormDecoder[*wrapperspb.DoubleValue](varErr, vars, "wrap_double", urlx.GetFloat64Value)
-	if varErr != nil {
-		return nil, varErr
-	}
-	queries := r.URL.Query()
-	var queryErr error
-	req.Bool, queryErr = v2.FormDecoder[bool](queryErr, queries, "bool", urlx.GetBool)
-	req.OptBool, queryErr = v2.FormDecoder[*bool](queryErr, queries, "opt_bool", urlx.GetBoolPtr)
-	req.WrapBool, queryErr = v2.FormDecoder[*wrapperspb.BoolValue](queryErr, queries, "wrap_bool", urlx.GetBoolValue)
-	req.Int32, queryErr = v2.FormDecoder[int32](queryErr, queries, "int32", urlx.GetInt)
-	req.Sint32, queryErr = v2.FormDecoder[int32](queryErr, queries, "sint32", urlx.GetInt)
-	req.Sfixed32, queryErr = v2.FormDecoder[int32](queryErr, queries, "sfixed32", urlx.GetInt)
-	req.OptInt32, queryErr = v2.FormDecoder[*int32](queryErr, queries, "opt_int32", urlx.GetIntPtr)
-	req.OptSint32, queryErr = v2.FormDecoder[*int32](queryErr, queries, "opt_sint32", urlx.GetIntPtr)
-	req.OptSfixed32, queryErr = v2.FormDecoder[*int32](queryErr, queries, "opt_sfixed32", urlx.GetIntPtr)
-	req.WrapInt32, queryErr = v2.FormDecoder[*wrapperspb.Int32Value](queryErr, queries, "wrap_int32", urlx.GetInt32Value)
-	req.Int64, queryErr = v2.FormDecoder[int64](queryErr, queries, "int64", urlx.GetInt)
-	req.Sint64, queryErr = v2.FormDecoder[int64](queryErr, queries, "sint64", urlx.GetInt)
-	req.Sfixed64, queryErr = v2.FormDecoder[int64](queryErr, queries, "sfixed64", urlx.GetInt)
-	req.OptInt64, queryErr = v2.FormDecoder[*int64](queryErr, queries, "opt_int64", urlx.GetIntPtr)
-	req.OptSint64, queryErr = v2.FormDecoder[*int64](queryErr, queries, "opt_sint64", urlx.GetIntPtr)
-	req.OptSfixed64, queryErr = v2.FormDecoder[*int64](queryErr, queries, "opt_sfixed64", urlx.GetIntPtr)
-	req.WrapInt64, queryErr = v2.FormDecoder[*wrapperspb.Int64Value](queryErr, queries, "wrap_int64", urlx.GetInt64Value)
-	req.Uint32, queryErr = v2.FormDecoder[uint32](queryErr, queries, "uint32", urlx.GetUint)
-	req.Fixed32, queryErr = v2.FormDecoder[uint32](queryErr, queries, "fixed32", urlx.GetUint)
-	req.OptUint32, queryErr = v2.FormDecoder[*uint32](queryErr, queries, "opt_uint32", urlx.GetUintPtr)
-	req.OptFixed32, queryErr = v2.FormDecoder[*uint32](queryErr, queries, "opt_fixed32", urlx.GetUintPtr)
-	req.WrapUint32, queryErr = v2.FormDecoder[*wrapperspb.UInt32Value](queryErr, queries, "wrap_uint32", urlx.GetUint32Value)
-	req.Uint64, queryErr = v2.FormDecoder[uint64](queryErr, queries, "uint64", urlx.GetUint)
-	req.Fixed64, queryErr = v2.FormDecoder[uint64](queryErr, queries, "fixed64", urlx.GetUint)
-	req.OptUint64, queryErr = v2.FormDecoder[*uint64](queryErr, queries, "opt_uint64", urlx.GetUintPtr)
-	req.OptFixed64, queryErr = v2.FormDecoder[*uint64](queryErr, queries, "opt_fixed64", urlx.GetUintPtr)
-	req.WrapUint64, queryErr = v2.FormDecoder[*wrapperspb.UInt64Value](queryErr, queries, "wrap_uint64", urlx.GetUint64Value)
-	req.Float, queryErr = v2.FormDecoder[float32](queryErr, queries, "float", urlx.GetFloat)
-	req.OptFloat, queryErr = v2.FormDecoder[*float32](queryErr, queries, "opt_float", urlx.GetFloatPtr)
-	req.WrapFloat, queryErr = v2.FormDecoder[*wrapperspb.FloatValue](queryErr, queries, "wrap_float", urlx.GetFloat32Value)
-	req.String_ = queries.Get("string")
-	req.OptString = proto.String(queries.Get("opt_string"))
-	req.WrapString = wrapperspb.String(queries.Get("wrap_string"))
-	req.Status, queryErr = v2.FormDecoder[PathRequest_Status](queryErr, queries, "status", urlx.GetInt[PathRequest_Status])
-	req.OptStatus, queryErr = v2.FormDecoder[*PathRequest_Status](queryErr, queries, "opt_status", urlx.GetIntPtr[PathRequest_Status])
-	if queryErr != nil {
-		return nil, queryErr
-	}
-	return req, nil
-}
-func (decoder PathGorillaRequestDecoder) StringPath(ctx context.Context, r *http.Request) (*PathRequest, error) {
-	req := &PathRequest{}
-	vars := urlx.FormFromMap(mux.Vars(r))
-	var varErr error
-	req.String_ = vars.Get("string")
-	req.OptString = proto.String(vars.Get("opt_string"))
-	req.WrapString = wrapperspb.String(vars.Get("wrap_string"))
-	if varErr != nil {
-		return nil, varErr
-	}
-	queries := r.URL.Query()
-	var queryErr error
-	req.Bool, queryErr = v2.FormDecoder[bool](queryErr, queries, "bool", urlx.GetBool)
-	req.OptBool, queryErr = v2.FormDecoder[*bool](queryErr, queries, "opt_bool", urlx.GetBoolPtr)
-	req.WrapBool, queryErr = v2.FormDecoder[*wrapperspb.BoolValue](queryErr, queries, "wrap_bool", urlx.GetBoolValue)
-	req.Int32, queryErr = v2.FormDecoder[int32](queryErr, queries, "int32", urlx.GetInt)
-	req.Sint32, queryErr = v2.FormDecoder[int32](queryErr, queries, "sint32", urlx.GetInt)
-	req.Sfixed32, queryErr = v2.FormDecoder[int32](queryErr, queries, "sfixed32", urlx.GetInt)
-	req.OptInt32, queryErr = v2.FormDecoder[*int32](queryErr, queries, "opt_int32", urlx.GetIntPtr)
-	req.OptSint32, queryErr = v2.FormDecoder[*int32](queryErr, queries, "opt_sint32", urlx.GetIntPtr)
-	req.OptSfixed32, queryErr = v2.FormDecoder[*int32](queryErr, queries, "opt_sfixed32", urlx.GetIntPtr)
-	req.WrapInt32, queryErr = v2.FormDecoder[*wrapperspb.Int32Value](queryErr, queries, "wrap_int32", urlx.GetInt32Value)
-	req.Int64, queryErr = v2.FormDecoder[int64](queryErr, queries, "int64", urlx.GetInt)
-	req.Sint64, queryErr = v2.FormDecoder[int64](queryErr, queries, "sint64", urlx.GetInt)
-	req.Sfixed64, queryErr = v2.FormDecoder[int64](queryErr, queries, "sfixed64", urlx.GetInt)
-	req.OptInt64, queryErr = v2.FormDecoder[*int64](queryErr, queries, "opt_int64", urlx.GetIntPtr)
-	req.OptSint64, queryErr = v2.FormDecoder[*int64](queryErr, queries, "opt_sint64", urlx.GetIntPtr)
-	req.OptSfixed64, queryErr = v2.FormDecoder[*int64](queryErr, queries, "opt_sfixed64", urlx.GetIntPtr)
-	req.WrapInt64, queryErr = v2.FormDecoder[*wrapperspb.Int64Value](queryErr, queries, "wrap_int64", urlx.GetInt64Value)
-	req.Uint32, queryErr = v2.FormDecoder[uint32](queryErr, queries, "uint32", urlx.GetUint)
-	req.Fixed32, queryErr = v2.FormDecoder[uint32](queryErr, queries, "fixed32", urlx.GetUint)
-	req.OptUint32, queryErr = v2.FormDecoder[*uint32](queryErr, queries, "opt_uint32", urlx.GetUintPtr)
-	req.OptFixed32, queryErr = v2.FormDecoder[*uint32](queryErr, queries, "opt_fixed32", urlx.GetUintPtr)
-	req.WrapUint32, queryErr = v2.FormDecoder[*wrapperspb.UInt32Value](queryErr, queries, "wrap_uint32", urlx.GetUint32Value)
-	req.Uint64, queryErr = v2.FormDecoder[uint64](queryErr, queries, "uint64", urlx.GetUint)
-	req.Fixed64, queryErr = v2.FormDecoder[uint64](queryErr, queries, "fixed64", urlx.GetUint)
-	req.OptUint64, queryErr = v2.FormDecoder[*uint64](queryErr, queries, "opt_uint64", urlx.GetUintPtr)
-	req.OptFixed64, queryErr = v2.FormDecoder[*uint64](queryErr, queries, "opt_fixed64", urlx.GetUintPtr)
-	req.WrapUint64, queryErr = v2.FormDecoder[*wrapperspb.UInt64Value](queryErr, queries, "wrap_uint64", urlx.GetUint64Value)
-	req.Float, queryErr = v2.FormDecoder[float32](queryErr, queries, "float", urlx.GetFloat)
-	req.OptFloat, queryErr = v2.FormDecoder[*float32](queryErr, queries, "opt_float", urlx.GetFloatPtr)
-	req.WrapFloat, queryErr = v2.FormDecoder[*wrapperspb.FloatValue](queryErr, queries, "wrap_float", urlx.GetFloat32Value)
-	req.Double, queryErr = v2.FormDecoder[float64](queryErr, queries, "double", urlx.GetFloat)
-	req.OptDouble, queryErr = v2.FormDecoder[*float64](queryErr, queries, "opt_double", urlx.GetFloatPtr)
-	req.WrapDouble, queryErr = v2.FormDecoder[*wrapperspb.DoubleValue](queryErr, queries, "wrap_double", urlx.GetFloat64Value)
-	req.Status, queryErr = v2.FormDecoder[PathRequest_Status](queryErr, queries, "status", urlx.GetInt[PathRequest_Status])
-	req.OptStatus, queryErr = v2.FormDecoder[*PathRequest_Status](queryErr, queries, "opt_status", urlx.GetIntPtr[PathRequest_Status])
-	if queryErr != nil {
-		return nil, queryErr
-	}
-	return req, nil
-}
-func (decoder PathGorillaRequestDecoder) EnumPath(ctx context.Context, r *http.Request) (*PathRequest, error) {
-	req := &PathRequest{}
-	vars := urlx.FormFromMap(mux.Vars(r))
-	var varErr error
-	req.Status, varErr = v2.FormDecoder[PathRequest_Status](varErr, vars, "status", urlx.GetInt[PathRequest_Status])
-	req.OptStatus, varErr = v2.FormDecoder[*PathRequest_Status](varErr, vars, "opt_status", urlx.GetIntPtr[PathRequest_Status])
-	if varErr != nil {
-		return nil, varErr
-	}
-	queries := r.URL.Query()
-	var queryErr error
-	req.Bool, queryErr = v2.FormDecoder[bool](queryErr, queries, "bool", urlx.GetBool)
-	req.OptBool, queryErr = v2.FormDecoder[*bool](queryErr, queries, "opt_bool", urlx.GetBoolPtr)
-	req.WrapBool, queryErr = v2.FormDecoder[*wrapperspb.BoolValue](queryErr, queries, "wrap_bool", urlx.GetBoolValue)
-	req.Int32, queryErr = v2.FormDecoder[int32](queryErr, queries, "int32", urlx.GetInt)
-	req.Sint32, queryErr = v2.FormDecoder[int32](queryErr, queries, "sint32", urlx.GetInt)
-	req.Sfixed32, queryErr = v2.FormDecoder[int32](queryErr, queries, "sfixed32", urlx.GetInt)
-	req.OptInt32, queryErr = v2.FormDecoder[*int32](queryErr, queries, "opt_int32", urlx.GetIntPtr)
-	req.OptSint32, queryErr = v2.FormDecoder[*int32](queryErr, queries, "opt_sint32", urlx.GetIntPtr)
-	req.OptSfixed32, queryErr = v2.FormDecoder[*int32](queryErr, queries, "opt_sfixed32", urlx.GetIntPtr)
-	req.WrapInt32, queryErr = v2.FormDecoder[*wrapperspb.Int32Value](queryErr, queries, "wrap_int32", urlx.GetInt32Value)
-	req.Int64, queryErr = v2.FormDecoder[int64](queryErr, queries, "int64", urlx.GetInt)
-	req.Sint64, queryErr = v2.FormDecoder[int64](queryErr, queries, "sint64", urlx.GetInt)
-	req.Sfixed64, queryErr = v2.FormDecoder[int64](queryErr, queries, "sfixed64", urlx.GetInt)
-	req.OptInt64, queryErr = v2.FormDecoder[*int64](queryErr, queries, "opt_int64", urlx.GetIntPtr)
-	req.OptSint64, queryErr = v2.FormDecoder[*int64](queryErr, queries, "opt_sint64", urlx.GetIntPtr)
-	req.OptSfixed64, queryErr = v2.FormDecoder[*int64](queryErr, queries, "opt_sfixed64", urlx.GetIntPtr)
-	req.WrapInt64, queryErr = v2.FormDecoder[*wrapperspb.Int64Value](queryErr, queries, "wrap_int64", urlx.GetInt64Value)
-	req.Uint32, queryErr = v2.FormDecoder[uint32](queryErr, queries, "uint32", urlx.GetUint)
-	req.Fixed32, queryErr = v2.FormDecoder[uint32](queryErr, queries, "fixed32", urlx.GetUint)
-	req.OptUint32, queryErr = v2.FormDecoder[*uint32](queryErr, queries, "opt_uint32", urlx.GetUintPtr)
-	req.OptFixed32, queryErr = v2.FormDecoder[*uint32](queryErr, queries, "opt_fixed32", urlx.GetUintPtr)
-	req.WrapUint32, queryErr = v2.FormDecoder[*wrapperspb.UInt32Value](queryErr, queries, "wrap_uint32", urlx.GetUint32Value)
-	req.Uint64, queryErr = v2.FormDecoder[uint64](queryErr, queries, "uint64", urlx.GetUint)
-	req.Fixed64, queryErr = v2.FormDecoder[uint64](queryErr, queries, "fixed64", urlx.GetUint)
-	req.OptUint64, queryErr = v2.FormDecoder[*uint64](queryErr, queries, "opt_uint64", urlx.GetUintPtr)
-	req.OptFixed64, queryErr = v2.FormDecoder[*uint64](queryErr, queries, "opt_fixed64", urlx.GetUintPtr)
-	req.WrapUint64, queryErr = v2.FormDecoder[*wrapperspb.UInt64Value](queryErr, queries, "wrap_uint64", urlx.GetUint64Value)
-	req.Float, queryErr = v2.FormDecoder[float32](queryErr, queries, "float", urlx.GetFloat)
-	req.OptFloat, queryErr = v2.FormDecoder[*float32](queryErr, queries, "opt_float", urlx.GetFloatPtr)
-	req.WrapFloat, queryErr = v2.FormDecoder[*wrapperspb.FloatValue](queryErr, queries, "wrap_float", urlx.GetFloat32Value)
-	req.Double, queryErr = v2.FormDecoder[float64](queryErr, queries, "double", urlx.GetFloat)
-	req.OptDouble, queryErr = v2.FormDecoder[*float64](queryErr, queries, "opt_double", urlx.GetFloatPtr)
-	req.WrapDouble, queryErr = v2.FormDecoder[*wrapperspb.DoubleValue](queryErr, queries, "wrap_double", urlx.GetFloat64Value)
-	req.String_ = queries.Get("string")
-	req.OptString = proto.String(queries.Get("opt_string"))
-	req.WrapString = wrapperspb.String(queries.Get("wrap_string"))
-	if queryErr != nil {
-		return nil, queryErr
 	}
 	return req, nil
 }
 
-type PathGorillaResponseEncoder struct {
+type EnumPathGorillaResponseEncoder struct {
 	marshalOptions   protojson.MarshalOptions
 	unmarshalOptions protojson.UnmarshalOptions
 }
 
-func (encoder PathGorillaResponseEncoder) BoolPath(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
-}
-func (encoder PathGorillaResponseEncoder) Int32Path(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
-}
-func (encoder PathGorillaResponseEncoder) Int64Path(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
-}
-func (encoder PathGorillaResponseEncoder) Uint32Path(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
-}
-func (encoder PathGorillaResponseEncoder) Uint64Path(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
-}
-func (encoder PathGorillaResponseEncoder) FloatPath(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
-}
-func (encoder PathGorillaResponseEncoder) DoublePath(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
-}
-func (encoder PathGorillaResponseEncoder) StringPath(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
-}
-func (encoder PathGorillaResponseEncoder) EnumPath(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
+func (encoder EnumPathGorillaResponseEncoder) EnumPath(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
 	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }
 
@@ -792,27 +740,33 @@ func AppendNamedPathGorillaRoute(router *mux.Router, service NamedPathGorillaSer
 		},
 		errorEncoder: v2.DefaultErrorEncoder,
 	}
-	router.NewRoute().Name("/leo.gors.path.v1.NamedPath/NamedPathString").
+	router.NewRoute().
+		Name("/leo.gors.path.v1.NamedPath/NamedPathString").
 		Methods("GET").
 		Path("/v1/string/classes/{class}/shelves/{shelf}/books/{book}/families/{family}").
 		Handler(handler.NamedPathString())
-	router.NewRoute().Name("/leo.gors.path.v1.NamedPath/NamedPathOptString").
+	router.NewRoute().
+		Name("/leo.gors.path.v1.NamedPath/NamedPathOptString").
 		Methods("GET").
 		Path("/v1/opt_string/classes/{class}/shelves/{shelf}/books/{book}/families/{family}").
 		Handler(handler.NamedPathOptString())
-	router.NewRoute().Name("/leo.gors.path.v1.NamedPath/NamedPathWrapString").
+	router.NewRoute().
+		Name("/leo.gors.path.v1.NamedPath/NamedPathWrapString").
 		Methods("GET").
 		Path("/v1/wrap_string/classes/{class}/shelves/{shelf}/books/{book}/families/{family}").
 		Handler(handler.NamedPathWrapString())
-	router.NewRoute().Name("/leo.gors.path.v1.NamedPath/EmbedNamedPathString").
+	router.NewRoute().
+		Name("/leo.gors.path.v1.NamedPath/EmbedNamedPathString").
 		Methods("GET").
 		Path("/v1/embed/string/classes/{class}/shelves/{shelf}/books/{book}/families/{family}").
 		Handler(handler.EmbedNamedPathString())
-	router.NewRoute().Name("/leo.gors.path.v1.NamedPath/EmbedNamedPathOptString").
+	router.NewRoute().
+		Name("/leo.gors.path.v1.NamedPath/EmbedNamedPathOptString").
 		Methods("GET").
 		Path("/v1/embed/opt_string/classes/{class}/shelves/{shelf}/books/{book}/families/{family}").
 		Handler(handler.EmbedNamedPathOptString())
-	router.NewRoute().Name("/leo.gors.path.v1.NamedPath/EmbedNamedPathWrapString").
+	router.NewRoute().
+		Name("/leo.gors.path.v1.NamedPath/EmbedNamedPathWrapString").
 		Methods("GET").
 		Path("/v1/embed/wrap_string/classes/{class}/shelves/{shelf}/books/{book}/families/{family}").
 		Handler(handler.EmbedNamedPathWrapString())
@@ -1057,7 +1011,8 @@ func AppendMixPathGorillaRoute(router *mux.Router, service MixPathGorillaService
 		},
 		errorEncoder: v2.DefaultErrorEncoder,
 	}
-	router.NewRoute().Name("/leo.gors.path.v1.MixPath/MixPath").
+	router.NewRoute().
+		Name("/leo.gors.path.v1.MixPath/MixPath").
 		Methods("GET").
 		Path("/v1/{string}/{opt_string}/{wrap_string}/classes/{class}/shelves/{shelf}/books/{book}/families/{family}").
 		Handler(handler.MixPath())

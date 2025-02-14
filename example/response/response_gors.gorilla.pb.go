@@ -34,27 +34,33 @@ func AppendResponseGorillaRoute(router *mux.Router, service ResponseGorillaServi
 		},
 		errorEncoder: v2.DefaultErrorEncoder,
 	}
-	router.NewRoute().Name("/leo.gors.response.v1.Response/OmittedResponse").
+	router.NewRoute().
+		Name("/leo.gors.response.v1.Response/OmittedResponse").
 		Methods("POST").
 		Path("/v1/omitted/response").
 		Handler(handler.OmittedResponse())
-	router.NewRoute().Name("/leo.gors.response.v1.Response/StarResponse").
+	router.NewRoute().
+		Name("/leo.gors.response.v1.Response/StarResponse").
 		Methods("POST").
 		Path("/v1/star/response").
 		Handler(handler.StarResponse())
-	router.NewRoute().Name("/leo.gors.response.v1.Response/NamedResponse").
+	router.NewRoute().
+		Name("/leo.gors.response.v1.Response/NamedResponse").
 		Methods("POST").
 		Path("/v1/named/response").
 		Handler(handler.NamedResponse())
-	router.NewRoute().Name("/leo.gors.response.v1.Response/HttpBodyResponse").
+	router.NewRoute().
+		Name("/leo.gors.response.v1.Response/HttpBodyResponse").
 		Methods("PUT").
 		Path("/v1/http/body/omitted/response").
 		Handler(handler.HttpBodyResponse())
-	router.NewRoute().Name("/leo.gors.response.v1.Response/HttpBodyNamedResponse").
+	router.NewRoute().
+		Name("/leo.gors.response.v1.Response/HttpBodyNamedResponse").
 		Methods("PUT").
 		Path("/v1/http/body/named/response").
 		Handler(handler.HttpBodyNamedResponse())
-	router.NewRoute().Name("/leo.gors.response.v1.Response/HttpResponse").
+	router.NewRoute().
+		Name("/leo.gors.response.v1.Response/HttpResponse").
 		Methods("GET").
 		Path("/v1/http/response").
 		Handler(handler.HttpResponse())

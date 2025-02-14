@@ -33,23 +33,28 @@ func AppendWorkspacesGorillaRoute(router *mux.Router, service WorkspacesGorillaS
 		},
 		errorEncoder: v2.DefaultErrorEncoder,
 	}
-	router.NewRoute().Name("/google.example.endpointsapis.v1.Workspaces/ListWorkspaces").
+	router.NewRoute().
+		Name("/google.example.endpointsapis.v1.Workspaces/ListWorkspaces").
 		Methods("GET").
 		Path("/v1/projects/{project}/locations/{location}/workspaces").
 		Handler(handler.ListWorkspaces())
-	router.NewRoute().Name("/google.example.endpointsapis.v1.Workspaces/GetWorkspace").
+	router.NewRoute().
+		Name("/google.example.endpointsapis.v1.Workspaces/GetWorkspace").
 		Methods("GET").
 		Path("/v1/projects/{project}/locations/{location}/workspaces/{workspac}").
 		Handler(handler.GetWorkspace())
-	router.NewRoute().Name("/google.example.endpointsapis.v1.Workspaces/CreateWorkspace").
+	router.NewRoute().
+		Name("/google.example.endpointsapis.v1.Workspaces/CreateWorkspace").
 		Methods("POST").
 		Path("/v1/projects/{project}/locations/{location}/workspaces").
 		Handler(handler.CreateWorkspace())
-	router.NewRoute().Name("/google.example.endpointsapis.v1.Workspaces/UpdateWorkspace").
+	router.NewRoute().
+		Name("/google.example.endpointsapis.v1.Workspaces/UpdateWorkspace").
 		Methods("PATCH").
 		Path("/v1/projects/{project}/locations/{location}/Workspaces/{Workspac}").
 		Handler(handler.UpdateWorkspace())
-	router.NewRoute().Name("/google.example.endpointsapis.v1.Workspaces/DeleteWorkspace").
+	router.NewRoute().
+		Name("/google.example.endpointsapis.v1.Workspaces/DeleteWorkspace").
 		Methods("DELETE").
 		Path("/v1/projects/{project}/locations/{location}/workspaces/{workspac}").
 		Handler(handler.DeleteWorkspace())
