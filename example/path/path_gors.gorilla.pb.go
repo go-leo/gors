@@ -28,9 +28,9 @@ type PathGorillaService interface {
 	EnumPath(ctx context.Context, request *PathRequest) (*emptypb.Empty, error)
 }
 
-func AppendPathGorillaRoute(router *mux.Router, svc PathGorillaService) *mux.Router {
+func AppendPathGorillaRoute(router *mux.Router, service PathGorillaService) *mux.Router {
 	handler := PathGorillaHandler{
-		svc: svc,
+		service: service,
 		decoder: PathGorillaRequestDecoder{
 			unmarshalOptions: protojson.UnmarshalOptions{},
 		},
@@ -80,7 +80,7 @@ func AppendPathGorillaRoute(router *mux.Router, svc PathGorillaService) *mux.Rou
 }
 
 type PathGorillaHandler struct {
-	svc          PathGorillaService
+	service      PathGorillaService
 	decoder      PathGorillaRequestDecoder
 	encoder      PathGorillaResponseEncoder
 	errorEncoder v2.ErrorEncoder
@@ -94,7 +94,7 @@ func (h PathGorillaHandler) BoolPath() http.Handler {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
-		out, err := h.svc.BoolPath(ctx, in)
+		out, err := h.service.BoolPath(ctx, in)
 		if err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return
@@ -114,7 +114,7 @@ func (h PathGorillaHandler) Int32Path() http.Handler {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
-		out, err := h.svc.Int32Path(ctx, in)
+		out, err := h.service.Int32Path(ctx, in)
 		if err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return
@@ -134,7 +134,7 @@ func (h PathGorillaHandler) Int64Path() http.Handler {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
-		out, err := h.svc.Int64Path(ctx, in)
+		out, err := h.service.Int64Path(ctx, in)
 		if err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return
@@ -154,7 +154,7 @@ func (h PathGorillaHandler) Uint32Path() http.Handler {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
-		out, err := h.svc.Uint32Path(ctx, in)
+		out, err := h.service.Uint32Path(ctx, in)
 		if err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return
@@ -174,7 +174,7 @@ func (h PathGorillaHandler) Uint64Path() http.Handler {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
-		out, err := h.svc.Uint64Path(ctx, in)
+		out, err := h.service.Uint64Path(ctx, in)
 		if err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return
@@ -194,7 +194,7 @@ func (h PathGorillaHandler) FloatPath() http.Handler {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
-		out, err := h.svc.FloatPath(ctx, in)
+		out, err := h.service.FloatPath(ctx, in)
 		if err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return
@@ -214,7 +214,7 @@ func (h PathGorillaHandler) DoublePath() http.Handler {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
-		out, err := h.svc.DoublePath(ctx, in)
+		out, err := h.service.DoublePath(ctx, in)
 		if err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return
@@ -234,7 +234,7 @@ func (h PathGorillaHandler) StringPath() http.Handler {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
-		out, err := h.svc.StringPath(ctx, in)
+		out, err := h.service.StringPath(ctx, in)
 		if err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return
@@ -254,7 +254,7 @@ func (h PathGorillaHandler) EnumPath() http.Handler {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
-		out, err := h.svc.EnumPath(ctx, in)
+		out, err := h.service.EnumPath(ctx, in)
 		if err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return
@@ -781,9 +781,9 @@ type NamedPathGorillaService interface {
 	EmbedNamedPathWrapString(ctx context.Context, request *EmbedNamedPathRequest) (*emptypb.Empty, error)
 }
 
-func AppendNamedPathGorillaRoute(router *mux.Router, svc NamedPathGorillaService) *mux.Router {
+func AppendNamedPathGorillaRoute(router *mux.Router, service NamedPathGorillaService) *mux.Router {
 	handler := NamedPathGorillaHandler{
-		svc: svc,
+		service: service,
 		decoder: NamedPathGorillaRequestDecoder{
 			unmarshalOptions: protojson.UnmarshalOptions{},
 		},
@@ -821,7 +821,7 @@ func AppendNamedPathGorillaRoute(router *mux.Router, svc NamedPathGorillaService
 }
 
 type NamedPathGorillaHandler struct {
-	svc          NamedPathGorillaService
+	service      NamedPathGorillaService
 	decoder      NamedPathGorillaRequestDecoder
 	encoder      NamedPathGorillaResponseEncoder
 	errorEncoder v2.ErrorEncoder
@@ -835,7 +835,7 @@ func (h NamedPathGorillaHandler) NamedPathString() http.Handler {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
-		out, err := h.svc.NamedPathString(ctx, in)
+		out, err := h.service.NamedPathString(ctx, in)
 		if err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return
@@ -855,7 +855,7 @@ func (h NamedPathGorillaHandler) NamedPathOptString() http.Handler {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
-		out, err := h.svc.NamedPathOptString(ctx, in)
+		out, err := h.service.NamedPathOptString(ctx, in)
 		if err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return
@@ -875,7 +875,7 @@ func (h NamedPathGorillaHandler) NamedPathWrapString() http.Handler {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
-		out, err := h.svc.NamedPathWrapString(ctx, in)
+		out, err := h.service.NamedPathWrapString(ctx, in)
 		if err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return
@@ -895,7 +895,7 @@ func (h NamedPathGorillaHandler) EmbedNamedPathString() http.Handler {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
-		out, err := h.svc.EmbedNamedPathString(ctx, in)
+		out, err := h.service.EmbedNamedPathString(ctx, in)
 		if err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return
@@ -915,7 +915,7 @@ func (h NamedPathGorillaHandler) EmbedNamedPathOptString() http.Handler {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
-		out, err := h.svc.EmbedNamedPathOptString(ctx, in)
+		out, err := h.service.EmbedNamedPathOptString(ctx, in)
 		if err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return
@@ -935,7 +935,7 @@ func (h NamedPathGorillaHandler) EmbedNamedPathWrapString() http.Handler {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
-		out, err := h.svc.EmbedNamedPathWrapString(ctx, in)
+		out, err := h.service.EmbedNamedPathWrapString(ctx, in)
 		if err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return
@@ -1070,9 +1070,9 @@ type MixPathGorillaService interface {
 	MixPath(ctx context.Context, request *MixPathRequest) (*emptypb.Empty, error)
 }
 
-func AppendMixPathGorillaRoute(router *mux.Router, svc MixPathGorillaService) *mux.Router {
+func AppendMixPathGorillaRoute(router *mux.Router, service MixPathGorillaService) *mux.Router {
 	handler := MixPathGorillaHandler{
-		svc: svc,
+		service: service,
 		decoder: MixPathGorillaRequestDecoder{
 			unmarshalOptions: protojson.UnmarshalOptions{},
 		},
@@ -1090,7 +1090,7 @@ func AppendMixPathGorillaRoute(router *mux.Router, svc MixPathGorillaService) *m
 }
 
 type MixPathGorillaHandler struct {
-	svc          MixPathGorillaService
+	service      MixPathGorillaService
 	decoder      MixPathGorillaRequestDecoder
 	encoder      MixPathGorillaResponseEncoder
 	errorEncoder v2.ErrorEncoder
@@ -1104,7 +1104,7 @@ func (h MixPathGorillaHandler) MixPath() http.Handler {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
-		out, err := h.svc.MixPath(ctx, in)
+		out, err := h.service.MixPath(ctx, in)
 		if err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return

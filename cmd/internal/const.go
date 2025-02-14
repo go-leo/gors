@@ -34,6 +34,8 @@ var (
 	ResponseEncoderIdent     = GorsPackage.Ident("ResponseEncoder")
 	HttpBodyEncoderIdent     = GorsPackage.Ident("HttpBodyEncoder")
 	HttpResponseEncoderIdent = GorsPackage.Ident("HttpResponseEncoder")
+
+	HttpBodyDecoderIdent = GorsPackage.Ident("HttpBodyDecoder")
 )
 
 var (

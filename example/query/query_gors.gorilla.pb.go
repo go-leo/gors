@@ -20,9 +20,9 @@ type QueryGorillaService interface {
 	Query(ctx context.Context, request *QueryRequest) (*emptypb.Empty, error)
 }
 
-func AppendQueryGorillaRoute(router *mux.Router, svc QueryGorillaService) *mux.Router {
+func AppendQueryGorillaRoute(router *mux.Router, service QueryGorillaService) *mux.Router {
 	handler := QueryGorillaHandler{
-		svc: svc,
+		service: service,
 		decoder: QueryGorillaRequestDecoder{
 			unmarshalOptions: protojson.UnmarshalOptions{},
 		},
@@ -40,7 +40,7 @@ func AppendQueryGorillaRoute(router *mux.Router, svc QueryGorillaService) *mux.R
 }
 
 type QueryGorillaHandler struct {
-	svc          QueryGorillaService
+	service      QueryGorillaService
 	decoder      QueryGorillaRequestDecoder
 	encoder      QueryGorillaResponseEncoder
 	errorEncoder v2.ErrorEncoder
@@ -54,7 +54,7 @@ func (h QueryGorillaHandler) Query() http.Handler {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
-		out, err := h.svc.Query(ctx, in)
+		out, err := h.service.Query(ctx, in)
 		if err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return

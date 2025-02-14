@@ -21,9 +21,9 @@ type BodyGorillaService interface {
 	HttpBodyNamedBody(ctx context.Context, request *HttpBodyRequest) (*emptypb.Empty, error)
 }
 
-func AppendBodyGorillaRoute(router *mux.Router, svc BodyGorillaService) *mux.Router {
+func AppendBodyGorillaRoute(router *mux.Router, service BodyGorillaService) *mux.Router {
 	handler := BodyGorillaHandler{
-		svc: svc,
+		service: service,
 		decoder: BodyGorillaRequestDecoder{
 			unmarshalOptions: protojson.UnmarshalOptions{},
 		},
@@ -57,7 +57,7 @@ func AppendBodyGorillaRoute(router *mux.Router, svc BodyGorillaService) *mux.Rou
 }
 
 type BodyGorillaHandler struct {
-	svc          BodyGorillaService
+	service      BodyGorillaService
 	decoder      BodyGorillaRequestDecoder
 	encoder      BodyGorillaResponseEncoder
 	errorEncoder v2.ErrorEncoder
@@ -71,7 +71,7 @@ func (h BodyGorillaHandler) StarBody() http.Handler {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
-		out, err := h.svc.StarBody(ctx, in)
+		out, err := h.service.StarBody(ctx, in)
 		if err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return
@@ -91,7 +91,7 @@ func (h BodyGorillaHandler) NamedBody() http.Handler {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
-		out, err := h.svc.NamedBody(ctx, in)
+		out, err := h.service.NamedBody(ctx, in)
 		if err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return
@@ -111,7 +111,7 @@ func (h BodyGorillaHandler) NonBody() http.Handler {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
-		out, err := h.svc.NonBody(ctx, in)
+		out, err := h.service.NonBody(ctx, in)
 		if err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return
@@ -131,7 +131,7 @@ func (h BodyGorillaHandler) HttpBodyStarBody() http.Handler {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
-		out, err := h.svc.HttpBodyStarBody(ctx, in)
+		out, err := h.service.HttpBodyStarBody(ctx, in)
 		if err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return
@@ -151,7 +151,7 @@ func (h BodyGorillaHandler) HttpBodyNamedBody() http.Handler {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
-		out, err := h.svc.HttpBodyNamedBody(ctx, in)
+		out, err := h.service.HttpBodyNamedBody(ctx, in)
 		if err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return
@@ -195,23 +195,17 @@ func (decoder BodyGorillaRequestDecoder) NonBody(ctx context.Context, r *http.Re
 }
 func (decoder BodyGorillaRequestDecoder) HttpBodyStarBody(ctx context.Context, r *http.Request) (*httpbody.HttpBody, error) {
 	req := &httpbody.HttpBody{}
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
+	if err := v2.HttpBodyDecoder(ctx, r, req); err != nil {
 		return nil, err
 	}
-	req.Data = body
-	req.ContentType = r.Header.Get("Content-Type")
 	return req, nil
 }
 func (decoder BodyGorillaRequestDecoder) HttpBodyNamedBody(ctx context.Context, r *http.Request) (*HttpBodyRequest, error) {
 	req := &HttpBodyRequest{}
 	req.Body = &httpbody.HttpBody{}
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
+	if err := v2.HttpBodyDecoder(ctx, r, req.Body); err != nil {
 		return nil, err
 	}
-	req.Body.Data = body
-	req.Body.ContentType = r.Header.Get("Content-Type")
 	return req, nil
 }
 

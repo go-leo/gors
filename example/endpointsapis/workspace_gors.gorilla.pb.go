@@ -23,9 +23,9 @@ type WorkspacesGorillaService interface {
 	DeleteWorkspace(ctx context.Context, request *DeleteWorkspaceRequest) (*emptypb.Empty, error)
 }
 
-func AppendWorkspacesGorillaRoute(router *mux.Router, svc WorkspacesGorillaService) *mux.Router {
+func AppendWorkspacesGorillaRoute(router *mux.Router, service WorkspacesGorillaService) *mux.Router {
 	handler := WorkspacesGorillaHandler{
-		svc: svc,
+		service: service,
 		decoder: WorkspacesGorillaRequestDecoder{
 			unmarshalOptions: protojson.UnmarshalOptions{},
 		},
@@ -59,7 +59,7 @@ func AppendWorkspacesGorillaRoute(router *mux.Router, svc WorkspacesGorillaServi
 }
 
 type WorkspacesGorillaHandler struct {
-	svc          WorkspacesGorillaService
+	service      WorkspacesGorillaService
 	decoder      WorkspacesGorillaRequestDecoder
 	encoder      WorkspacesGorillaResponseEncoder
 	errorEncoder v2.ErrorEncoder
@@ -73,7 +73,7 @@ func (h WorkspacesGorillaHandler) ListWorkspaces() http.Handler {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
-		out, err := h.svc.ListWorkspaces(ctx, in)
+		out, err := h.service.ListWorkspaces(ctx, in)
 		if err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return
@@ -93,7 +93,7 @@ func (h WorkspacesGorillaHandler) GetWorkspace() http.Handler {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
-		out, err := h.svc.GetWorkspace(ctx, in)
+		out, err := h.service.GetWorkspace(ctx, in)
 		if err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return
@@ -113,7 +113,7 @@ func (h WorkspacesGorillaHandler) CreateWorkspace() http.Handler {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
-		out, err := h.svc.CreateWorkspace(ctx, in)
+		out, err := h.service.CreateWorkspace(ctx, in)
 		if err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return
@@ -133,7 +133,7 @@ func (h WorkspacesGorillaHandler) UpdateWorkspace() http.Handler {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
-		out, err := h.svc.UpdateWorkspace(ctx, in)
+		out, err := h.service.UpdateWorkspace(ctx, in)
 		if err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return
@@ -153,7 +153,7 @@ func (h WorkspacesGorillaHandler) DeleteWorkspace() http.Handler {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
-		out, err := h.svc.DeleteWorkspace(ctx, in)
+		out, err := h.service.DeleteWorkspace(ctx, in)
 		if err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return

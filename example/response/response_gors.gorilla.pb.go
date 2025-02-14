@@ -22,9 +22,9 @@ type ResponseGorillaService interface {
 	HttpResponse(ctx context.Context, request *emptypb.Empty) (*http.HttpResponse, error)
 }
 
-func AppendResponseGorillaRoute(router *mux.Router, svc ResponseGorillaService) *mux.Router {
+func AppendResponseGorillaRoute(router *mux.Router, service ResponseGorillaService) *mux.Router {
 	handler := ResponseGorillaHandler{
-		svc: svc,
+		service: service,
 		decoder: ResponseGorillaRequestDecoder{
 			unmarshalOptions: protojson.UnmarshalOptions{},
 		},
@@ -62,7 +62,7 @@ func AppendResponseGorillaRoute(router *mux.Router, svc ResponseGorillaService) 
 }
 
 type ResponseGorillaHandler struct {
-	svc          ResponseGorillaService
+	service      ResponseGorillaService
 	decoder      ResponseGorillaRequestDecoder
 	encoder      ResponseGorillaResponseEncoder
 	errorEncoder v2.ErrorEncoder
@@ -76,7 +76,7 @@ func (h ResponseGorillaHandler) OmittedResponse() http1.Handler {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
-		out, err := h.svc.OmittedResponse(ctx, in)
+		out, err := h.service.OmittedResponse(ctx, in)
 		if err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return
@@ -96,7 +96,7 @@ func (h ResponseGorillaHandler) StarResponse() http1.Handler {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
-		out, err := h.svc.StarResponse(ctx, in)
+		out, err := h.service.StarResponse(ctx, in)
 		if err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return
@@ -116,7 +116,7 @@ func (h ResponseGorillaHandler) NamedResponse() http1.Handler {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
-		out, err := h.svc.NamedResponse(ctx, in)
+		out, err := h.service.NamedResponse(ctx, in)
 		if err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return
@@ -136,7 +136,7 @@ func (h ResponseGorillaHandler) HttpBodyResponse() http1.Handler {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
-		out, err := h.svc.HttpBodyResponse(ctx, in)
+		out, err := h.service.HttpBodyResponse(ctx, in)
 		if err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return
@@ -156,7 +156,7 @@ func (h ResponseGorillaHandler) HttpBodyNamedResponse() http1.Handler {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
-		out, err := h.svc.HttpBodyNamedResponse(ctx, in)
+		out, err := h.service.HttpBodyNamedResponse(ctx, in)
 		if err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return
@@ -176,7 +176,7 @@ func (h ResponseGorillaHandler) HttpResponse() http1.Handler {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
-		out, err := h.svc.HttpResponse(ctx, in)
+		out, err := h.service.HttpResponse(ctx, in)
 		if err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return

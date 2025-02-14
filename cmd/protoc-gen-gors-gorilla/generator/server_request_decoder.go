@@ -22,16 +22,21 @@ func (f *Generator) GenerateServerRequestDecoder(service *internal.Service, g *p
 		if bodyMessage != nil {
 			switch bodyMessage.Desc.FullName() {
 			case "google.api.HttpBody":
-				f.PrintGoogleApiHttpBodyDecodeBlock(g, []any{"req"}, []any{"r.Body"})
+				f.PrintHttpBodyDecodeBlock(g, []any{"req"})
 			default:
 				f.PrintDecodeBlock(g, []any{"req"}, []any{"r.Body"})
 			}
 		} else if bodyField != nil {
-			if bodyField.Desc.Kind() == protoreflect.MessageKind && bodyField.Message.Desc.FullName() == "google.api.HttpBody" {
-				g.P("req.", bodyField.GoName, " = &", bodyField.Message.GoIdent, "{}")
-				f.PrintGoogleApiHttpBodyDecodeBlock(g, []any{"req.", bodyField.GoName}, []any{"r.Body"})
-			} else {
-				f.PrintDecodeBlock(g, []any{"req.", bodyField.GoName}, []any{"r.Body"})
+			switch bodyField.Desc.Kind() {
+			case protoreflect.MessageKind:
+				switch bodyField.Message.Desc.FullName() {
+				case "google.api.HttpBody":
+					tgtValue := []any{"req.", bodyField.GoName}
+					g.P(append(tgtValue, " = &", bodyField.Message.GoIdent, "{}")...)
+					f.PrintHttpBodyDecodeBlock(g, tgtValue)
+				default:
+					f.PrintDecodeBlock(g, []any{"req.", bodyField.GoName}, []any{"r.Body"})
+				}
 			}
 		}
 
@@ -61,6 +66,12 @@ func (f *Generator) GenerateServerRequestDecoder(service *internal.Service, g *p
 	}
 	g.P()
 	return nil
+}
+
+func (f *Generator) PrintHttpBodyDecodeBlock(g *protogen.GeneratedFile, tgtValue []any) {
+	g.P(append(append([]any{"if err := ", internal.HttpBodyDecoderIdent, "(ctx, r, "}, tgtValue...), "); err != nil {")...)
+	g.P("return nil, err")
+	g.P("}")
 }
 
 func (f *Generator) PrintGoogleApiHttpBodyDecodeBlock(g *protogen.GeneratedFile, tgtValue []any, srcValue []any) {

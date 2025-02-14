@@ -29,9 +29,9 @@ type LibraryServiceGorillaService interface {
 	MoveBook(ctx context.Context, request *MoveBookRequest) (*Book, error)
 }
 
-func AppendLibraryServiceGorillaRoute(router *mux.Router, svc LibraryServiceGorillaService) *mux.Router {
+func AppendLibraryServiceGorillaRoute(router *mux.Router, service LibraryServiceGorillaService) *mux.Router {
 	handler := LibraryServiceGorillaHandler{
-		svc: svc,
+		service: service,
 		decoder: LibraryServiceGorillaRequestDecoder{
 			unmarshalOptions: protojson.UnmarshalOptions{},
 		},
@@ -89,7 +89,7 @@ func AppendLibraryServiceGorillaRoute(router *mux.Router, svc LibraryServiceGori
 }
 
 type LibraryServiceGorillaHandler struct {
-	svc          LibraryServiceGorillaService
+	service      LibraryServiceGorillaService
 	decoder      LibraryServiceGorillaRequestDecoder
 	encoder      LibraryServiceGorillaResponseEncoder
 	errorEncoder v2.ErrorEncoder
@@ -103,7 +103,7 @@ func (h LibraryServiceGorillaHandler) CreateShelf() http.Handler {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
-		out, err := h.svc.CreateShelf(ctx, in)
+		out, err := h.service.CreateShelf(ctx, in)
 		if err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return
@@ -123,7 +123,7 @@ func (h LibraryServiceGorillaHandler) GetShelf() http.Handler {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
-		out, err := h.svc.GetShelf(ctx, in)
+		out, err := h.service.GetShelf(ctx, in)
 		if err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return
@@ -143,7 +143,7 @@ func (h LibraryServiceGorillaHandler) ListShelves() http.Handler {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
-		out, err := h.svc.ListShelves(ctx, in)
+		out, err := h.service.ListShelves(ctx, in)
 		if err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return
@@ -163,7 +163,7 @@ func (h LibraryServiceGorillaHandler) DeleteShelf() http.Handler {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
-		out, err := h.svc.DeleteShelf(ctx, in)
+		out, err := h.service.DeleteShelf(ctx, in)
 		if err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return
@@ -183,7 +183,7 @@ func (h LibraryServiceGorillaHandler) MergeShelves() http.Handler {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
-		out, err := h.svc.MergeShelves(ctx, in)
+		out, err := h.service.MergeShelves(ctx, in)
 		if err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return
@@ -203,7 +203,7 @@ func (h LibraryServiceGorillaHandler) CreateBook() http.Handler {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
-		out, err := h.svc.CreateBook(ctx, in)
+		out, err := h.service.CreateBook(ctx, in)
 		if err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return
@@ -223,7 +223,7 @@ func (h LibraryServiceGorillaHandler) GetBook() http.Handler {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
-		out, err := h.svc.GetBook(ctx, in)
+		out, err := h.service.GetBook(ctx, in)
 		if err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return
@@ -243,7 +243,7 @@ func (h LibraryServiceGorillaHandler) ListBooks() http.Handler {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
-		out, err := h.svc.ListBooks(ctx, in)
+		out, err := h.service.ListBooks(ctx, in)
 		if err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return
@@ -263,7 +263,7 @@ func (h LibraryServiceGorillaHandler) DeleteBook() http.Handler {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
-		out, err := h.svc.DeleteBook(ctx, in)
+		out, err := h.service.DeleteBook(ctx, in)
 		if err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return
@@ -283,7 +283,7 @@ func (h LibraryServiceGorillaHandler) UpdateBook() http.Handler {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
-		out, err := h.svc.UpdateBook(ctx, in)
+		out, err := h.service.UpdateBook(ctx, in)
 		if err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return
@@ -303,7 +303,7 @@ func (h LibraryServiceGorillaHandler) MoveBook() http.Handler {
 			h.errorEncoder(ctx, err, writer)
 			return
 		}
-		out, err := h.svc.MoveBook(ctx, in)
+		out, err := h.service.MoveBook(ctx, in)
 		if err != nil {
 			h.errorEncoder(ctx, err, writer)
 			return

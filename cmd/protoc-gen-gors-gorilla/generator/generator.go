@@ -69,9 +69,9 @@ func (f *Generator) GenerateServices(service *internal.Service, g *protogen.Gene
 }
 
 func (f *Generator) GenerateAppendServerFunc(service *internal.Service, g *protogen.GeneratedFile) error {
-	g.P("func ", service.AppendGorillaRouteName(), "(router *", internal.MuxPackage.Ident("Router"), ", svc ", service.GorillaServiceName(), ") ", "*", internal.MuxPackage.Ident("Router"), " {")
+	g.P("func ", service.AppendGorillaRouteName(), "(router *", internal.MuxPackage.Ident("Router"), ", service ", service.GorillaServiceName(), ") ", "*", internal.MuxPackage.Ident("Router"), " {")
 	g.P("handler :=  ", service.GorillaHandlerName(), "{")
-	g.P("svc: svc,")
+	g.P("service: service,")
 	g.P("decoder: ", service.GorillaRequestDecoderName(), "{")
 	g.P("unmarshalOptions: ", internal.ProtoJsonPackage.Ident("UnmarshalOptions"), "{},")
 	g.P("},")
@@ -98,7 +98,7 @@ func (f *Generator) GenerateAppendServerFunc(service *internal.Service, g *proto
 
 func (f *Generator) GenerateHandlers(service *internal.Service, g *protogen.GeneratedFile) error {
 	g.P("type ", service.GorillaHandlerName(), " struct {")
-	g.P("svc ", service.GorillaServiceName())
+	g.P("service ", service.GorillaServiceName())
 	g.P("decoder ", service.GorillaRequestDecoderName())
 	g.P("encoder ", service.GorillaResponseEncoderName())
 	g.P("errorEncoder ", internal.ErrorEncoderIdent)
@@ -113,7 +113,7 @@ func (f *Generator) GenerateHandlers(service *internal.Service, g *protogen.Gene
 		g.P("h.errorEncoder(ctx, err, writer)")
 		g.P("return")
 		g.P("}")
-		g.P("out, err := h.svc.", endpoint.Name(), "(ctx, in)")
+		g.P("out, err := h.service.", endpoint.Name(), "(ctx, in)")
 		g.P("if err != nil {")
 		g.P("h.errorEncoder(ctx, err, writer)")
 		g.P("return")
