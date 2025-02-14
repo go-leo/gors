@@ -2,12 +2,14 @@ package gors
 
 import (
 	"context"
+	"github.com/go-leo/gox/errorx"
 	"google.golang.org/genproto/googleapis/api/httpbody"
 	rpchttp "google.golang.org/genproto/googleapis/rpc/http"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"io"
 	"net/http"
+	"net/url"
 )
 
 func RequestDecoder(ctx context.Context, r *http.Request, req proto.Message, unmarshalOptions protojson.UnmarshalOptions) error {
@@ -45,4 +47,10 @@ func HttpRequestDecoder(ctx context.Context, r *http.Request, request *rpchttp.H
 	}
 	request.Body = data
 	return nil
+}
+
+type FormGetter[T any] func(form url.Values, key string) (T, error)
+
+func FormDecoder[T any](pre error, form url.Values, key string, f FormGetter[T]) (T, error) {
+	return errorx.Break[T](pre)(func() (T, error) { return f(form, key) })
 }

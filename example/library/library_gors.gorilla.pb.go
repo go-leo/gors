@@ -6,7 +6,6 @@ import (
 	context "context"
 	fmt "fmt"
 	v2 "github.com/go-leo/gors/v2"
-	errorx "github.com/go-leo/gox/errorx"
 	urlx "github.com/go-leo/gox/netx/urlx"
 	mux "github.com/gorilla/mux"
 	protojson "google.golang.org/protobuf/encoding/protojson"
@@ -338,7 +337,7 @@ func (decoder LibraryServiceGorillaRequestDecoder) ListShelves(ctx context.Conte
 	req := &ListShelvesRequest{}
 	queries := r.URL.Query()
 	var queryErr error
-	req.PageSize, queryErr = errorx.Break[int32](queryErr)(urlx.GetInt[int32](queries, "page_size"))
+	req.PageSize, queryErr = v2.FormDecoder[int32](queryErr, queries, "page_size", urlx.GetInt)
 	req.PageToken = queries.Get("page_token")
 	if queryErr != nil {
 		return nil, queryErr
@@ -384,7 +383,7 @@ func (decoder LibraryServiceGorillaRequestDecoder) ListBooks(ctx context.Context
 	req.Parent = fmt.Sprintf("shelves/%s", vars.Get("shelf"))
 	queries := r.URL.Query()
 	var queryErr error
-	req.PageSize, queryErr = errorx.Break[int32](queryErr)(urlx.GetInt[int32](queries, "page_size"))
+	req.PageSize, queryErr = v2.FormDecoder[int32](queryErr, queries, "page_size", urlx.GetInt)
 	req.PageToken = queries.Get("page_token")
 	if queryErr != nil {
 		return nil, queryErr

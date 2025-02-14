@@ -6,7 +6,6 @@ import (
 	context "context"
 	fmt "fmt"
 	v2 "github.com/go-leo/gors/v2"
-	errorx "github.com/go-leo/gox/errorx"
 	urlx "github.com/go-leo/gox/netx/urlx"
 	mux "github.com/gorilla/mux"
 	protojson "google.golang.org/protobuf/encoding/protojson"
@@ -174,7 +173,7 @@ func (decoder WorkspacesGorillaRequestDecoder) ListWorkspaces(ctx context.Contex
 	req.Parent = fmt.Sprintf("projects/%s/locations/%s", vars.Get("project"), vars.Get("location"))
 	queries := r.URL.Query()
 	var queryErr error
-	req.PageSize, queryErr = errorx.Break[int32](queryErr)(urlx.GetInt[int32](queries, "page_size"))
+	req.PageSize, queryErr = v2.FormDecoder[int32](queryErr, queries, "page_size", urlx.GetInt)
 	req.PageToken = queries.Get("page_token")
 	if queryErr != nil {
 		return nil, queryErr

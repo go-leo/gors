@@ -38,6 +38,7 @@ var (
 	RequestDecoderIdent     = GorsPackage.Ident("RequestDecoder")
 	HttpBodyDecoderIdent    = GorsPackage.Ident("HttpBodyDecoder")
 	HttpRequestDecoderIdent = GorsPackage.Ident("HttpRequestDecoder")
+	FormDecoderIdent        = GorsPackage.Ident("FormDecoder")
 )
 
 var (
