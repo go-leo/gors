@@ -21,12 +21,12 @@ type DemoGorillaService interface {
 }
 
 func AppendDemoGorillaRoute(router *mux.Router, service DemoGorillaService) *mux.Router {
-	handler := DemoGorillaHandler{
+	handler := demoGorillaHandler{
 		service: service,
-		decoder: DemoGorillaRequestDecoder{
+		decoder: demoGorillaRequestDecoder{
 			unmarshalOptions: protojson.UnmarshalOptions{},
 		},
-		encoder: DemoGorillaResponseEncoder{
+		encoder: demoGorillaResponseEncoder{
 			marshalOptions:   protojson.MarshalOptions{},
 			unmarshalOptions: protojson.UnmarshalOptions{},
 		},
@@ -60,14 +60,14 @@ func AppendDemoGorillaRoute(router *mux.Router, service DemoGorillaService) *mux
 	return router
 }
 
-type DemoGorillaHandler struct {
+type demoGorillaHandler struct {
 	service      DemoGorillaService
-	decoder      DemoGorillaRequestDecoder
-	encoder      DemoGorillaResponseEncoder
+	decoder      demoGorillaRequestDecoder
+	encoder      demoGorillaResponseEncoder
 	errorEncoder v2.ErrorEncoder
 }
 
-func (h DemoGorillaHandler) CreateUser() http.Handler {
+func (h demoGorillaHandler) CreateUser() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.CreateUser(ctx, request)
@@ -87,7 +87,7 @@ func (h DemoGorillaHandler) CreateUser() http.Handler {
 	})
 }
 
-func (h DemoGorillaHandler) DeleteUser() http.Handler {
+func (h demoGorillaHandler) DeleteUser() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.DeleteUser(ctx, request)
@@ -107,7 +107,7 @@ func (h DemoGorillaHandler) DeleteUser() http.Handler {
 	})
 }
 
-func (h DemoGorillaHandler) ModifyUser() http.Handler {
+func (h demoGorillaHandler) ModifyUser() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.ModifyUser(ctx, request)
@@ -127,7 +127,7 @@ func (h DemoGorillaHandler) ModifyUser() http.Handler {
 	})
 }
 
-func (h DemoGorillaHandler) GetUser() http.Handler {
+func (h demoGorillaHandler) GetUser() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.GetUser(ctx, request)
@@ -147,7 +147,7 @@ func (h DemoGorillaHandler) GetUser() http.Handler {
 	})
 }
 
-func (h DemoGorillaHandler) ListUser() http.Handler {
+func (h demoGorillaHandler) ListUser() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.ListUser(ctx, request)
@@ -167,18 +167,18 @@ func (h DemoGorillaHandler) ListUser() http.Handler {
 	})
 }
 
-type DemoGorillaRequestDecoder struct {
+type demoGorillaRequestDecoder struct {
 	unmarshalOptions protojson.UnmarshalOptions
 }
 
-func (decoder DemoGorillaRequestDecoder) CreateUser(ctx context.Context, r *http.Request) (*CreateUserRequest, error) {
+func (decoder demoGorillaRequestDecoder) CreateUser(ctx context.Context, r *http.Request) (*CreateUserRequest, error) {
 	req := &CreateUserRequest{}
 	if err := v2.RequestDecoder(ctx, r, req, decoder.unmarshalOptions); err != nil {
 		return nil, err
 	}
 	return req, nil
 }
-func (decoder DemoGorillaRequestDecoder) DeleteUser(ctx context.Context, r *http.Request) (*DeleteUserRequest, error) {
+func (decoder demoGorillaRequestDecoder) DeleteUser(ctx context.Context, r *http.Request) (*DeleteUserRequest, error) {
 	req := &DeleteUserRequest{}
 	vars := urlx.FormFromMap(mux.Vars(r))
 	var varErr error
@@ -188,7 +188,7 @@ func (decoder DemoGorillaRequestDecoder) DeleteUser(ctx context.Context, r *http
 	}
 	return req, nil
 }
-func (decoder DemoGorillaRequestDecoder) ModifyUser(ctx context.Context, r *http.Request) (*ModifyUserRequest, error) {
+func (decoder demoGorillaRequestDecoder) ModifyUser(ctx context.Context, r *http.Request) (*ModifyUserRequest, error) {
 	req := &ModifyUserRequest{}
 	if err := v2.RequestDecoder(ctx, r, req, decoder.unmarshalOptions); err != nil {
 		return nil, err
@@ -201,7 +201,7 @@ func (decoder DemoGorillaRequestDecoder) ModifyUser(ctx context.Context, r *http
 	}
 	return req, nil
 }
-func (decoder DemoGorillaRequestDecoder) GetUser(ctx context.Context, r *http.Request) (*GetUserRequest, error) {
+func (decoder demoGorillaRequestDecoder) GetUser(ctx context.Context, r *http.Request) (*GetUserRequest, error) {
 	req := &GetUserRequest{}
 	vars := urlx.FormFromMap(mux.Vars(r))
 	var varErr error
@@ -211,7 +211,7 @@ func (decoder DemoGorillaRequestDecoder) GetUser(ctx context.Context, r *http.Re
 	}
 	return req, nil
 }
-func (decoder DemoGorillaRequestDecoder) ListUser(ctx context.Context, r *http.Request) (*ListUserRequest, error) {
+func (decoder demoGorillaRequestDecoder) ListUser(ctx context.Context, r *http.Request) (*ListUserRequest, error) {
 	req := &ListUserRequest{}
 	queries := r.URL.Query()
 	var queryErr error
@@ -223,23 +223,23 @@ func (decoder DemoGorillaRequestDecoder) ListUser(ctx context.Context, r *http.R
 	return req, nil
 }
 
-type DemoGorillaResponseEncoder struct {
+type demoGorillaResponseEncoder struct {
 	marshalOptions   protojson.MarshalOptions
 	unmarshalOptions protojson.UnmarshalOptions
 }
 
-func (encoder DemoGorillaResponseEncoder) CreateUser(ctx context.Context, w http.ResponseWriter, resp *CreateUserResponse) error {
+func (encoder demoGorillaResponseEncoder) CreateUser(ctx context.Context, w http.ResponseWriter, resp *CreateUserResponse) error {
 	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }
-func (encoder DemoGorillaResponseEncoder) DeleteUser(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
+func (encoder demoGorillaResponseEncoder) DeleteUser(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
 	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }
-func (encoder DemoGorillaResponseEncoder) ModifyUser(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
+func (encoder demoGorillaResponseEncoder) ModifyUser(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
 	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }
-func (encoder DemoGorillaResponseEncoder) GetUser(ctx context.Context, w http.ResponseWriter, resp *GetUserResponse) error {
+func (encoder demoGorillaResponseEncoder) GetUser(ctx context.Context, w http.ResponseWriter, resp *GetUserResponse) error {
 	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }
-func (encoder DemoGorillaResponseEncoder) ListUser(ctx context.Context, w http.ResponseWriter, resp *ListUserResponse) error {
+func (encoder demoGorillaResponseEncoder) ListUser(ctx context.Context, w http.ResponseWriter, resp *ListUserResponse) error {
 	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }

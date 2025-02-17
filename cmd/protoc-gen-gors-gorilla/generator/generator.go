@@ -70,12 +70,12 @@ func (f *Generator) GenerateServices(service *internal.Service, g *protogen.Gene
 
 func (f *Generator) GenerateAppendServerFunc(service *internal.Service, g *protogen.GeneratedFile) error {
 	g.P("func ", service.AppendGorillaRouteName(), "(router *", internal.RouterIdent, ", service ", service.GorillaServiceName(), ") ", "*", internal.MuxPackage.Ident("Router"), " {")
-	g.P("handler :=  ", service.GorillaHandlerName(), "{")
+	g.P("handler :=  ", service.Unexported(service.GorillaHandlerName()), "{")
 	g.P("service: service,")
-	g.P("decoder: ", service.GorillaRequestDecoderName(), "{")
+	g.P("decoder: ", service.Unexported(service.GorillaRequestDecoderName()), "{")
 	g.P("unmarshalOptions: ", internal.ProtoJsonUnmarshalOptionsIdent, "{},")
 	g.P("},")
-	g.P("encoder: ", service.GorillaResponseEncoderName(), "{")
+	g.P("encoder: ", service.Unexported(service.GorillaResponseEncoderName()), "{")
 	g.P("marshalOptions:   ", internal.ProtoJsonMarshalOptionsIdent, "{},")
 	g.P("unmarshalOptions: ", internal.ProtoJsonUnmarshalOptionsIdent, "{},")
 	g.P("},")
@@ -98,15 +98,15 @@ func (f *Generator) GenerateAppendServerFunc(service *internal.Service, g *proto
 }
 
 func (f *Generator) GenerateHandlers(service *internal.Service, g *protogen.GeneratedFile) error {
-	g.P("type ", service.GorillaHandlerName(), " struct {")
+	g.P("type ", service.Unexported(service.GorillaHandlerName()), " struct {")
 	g.P("service ", service.GorillaServiceName())
-	g.P("decoder ", service.GorillaRequestDecoderName())
-	g.P("encoder ", service.GorillaResponseEncoderName())
+	g.P("decoder ", service.Unexported(service.GorillaRequestDecoderName()))
+	g.P("encoder ", service.Unexported(service.GorillaResponseEncoderName()))
 	g.P("errorEncoder ", internal.ErrorEncoderIdent)
 	g.P("}")
 	g.P()
 	for _, endpoint := range service.Endpoints {
-		g.P("func (h ", service.GorillaHandlerName(), ")", endpoint.Name(), "()", internal.HttpHandlerIdent, " {")
+		g.P("func (h ", service.Unexported(service.GorillaHandlerName()), ")", endpoint.Name(), "()", internal.HttpHandlerIdent, " {")
 		g.P("return ", internal.HttpHandlerFuncIdent, "(func(writer ", internal.ResponseWriterIdent, ", request *", internal.RequestIdent, ") {")
 		g.P("ctx := request.Context()")
 		g.P("in, err := h.decoder.", endpoint.Name(), "(ctx, request)")

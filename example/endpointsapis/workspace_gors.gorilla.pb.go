@@ -22,12 +22,12 @@ type WorkspacesGorillaService interface {
 }
 
 func AppendWorkspacesGorillaRoute(router *mux.Router, service WorkspacesGorillaService) *mux.Router {
-	handler := WorkspacesGorillaHandler{
+	handler := workspacesGorillaHandler{
 		service: service,
-		decoder: WorkspacesGorillaRequestDecoder{
+		decoder: workspacesGorillaRequestDecoder{
 			unmarshalOptions: protojson.UnmarshalOptions{},
 		},
-		encoder: WorkspacesGorillaResponseEncoder{
+		encoder: workspacesGorillaResponseEncoder{
 			marshalOptions:   protojson.MarshalOptions{},
 			unmarshalOptions: protojson.UnmarshalOptions{},
 		},
@@ -61,14 +61,14 @@ func AppendWorkspacesGorillaRoute(router *mux.Router, service WorkspacesGorillaS
 	return router
 }
 
-type WorkspacesGorillaHandler struct {
+type workspacesGorillaHandler struct {
 	service      WorkspacesGorillaService
-	decoder      WorkspacesGorillaRequestDecoder
-	encoder      WorkspacesGorillaResponseEncoder
+	decoder      workspacesGorillaRequestDecoder
+	encoder      workspacesGorillaResponseEncoder
 	errorEncoder v2.ErrorEncoder
 }
 
-func (h WorkspacesGorillaHandler) ListWorkspaces() http.Handler {
+func (h workspacesGorillaHandler) ListWorkspaces() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.ListWorkspaces(ctx, request)
@@ -88,7 +88,7 @@ func (h WorkspacesGorillaHandler) ListWorkspaces() http.Handler {
 	})
 }
 
-func (h WorkspacesGorillaHandler) GetWorkspace() http.Handler {
+func (h workspacesGorillaHandler) GetWorkspace() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.GetWorkspace(ctx, request)
@@ -108,7 +108,7 @@ func (h WorkspacesGorillaHandler) GetWorkspace() http.Handler {
 	})
 }
 
-func (h WorkspacesGorillaHandler) CreateWorkspace() http.Handler {
+func (h workspacesGorillaHandler) CreateWorkspace() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.CreateWorkspace(ctx, request)
@@ -128,7 +128,7 @@ func (h WorkspacesGorillaHandler) CreateWorkspace() http.Handler {
 	})
 }
 
-func (h WorkspacesGorillaHandler) UpdateWorkspace() http.Handler {
+func (h workspacesGorillaHandler) UpdateWorkspace() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.UpdateWorkspace(ctx, request)
@@ -148,7 +148,7 @@ func (h WorkspacesGorillaHandler) UpdateWorkspace() http.Handler {
 	})
 }
 
-func (h WorkspacesGorillaHandler) DeleteWorkspace() http.Handler {
+func (h workspacesGorillaHandler) DeleteWorkspace() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.DeleteWorkspace(ctx, request)
@@ -168,11 +168,11 @@ func (h WorkspacesGorillaHandler) DeleteWorkspace() http.Handler {
 	})
 }
 
-type WorkspacesGorillaRequestDecoder struct {
+type workspacesGorillaRequestDecoder struct {
 	unmarshalOptions protojson.UnmarshalOptions
 }
 
-func (decoder WorkspacesGorillaRequestDecoder) ListWorkspaces(ctx context.Context, r *http.Request) (*ListWorkspacesRequest, error) {
+func (decoder workspacesGorillaRequestDecoder) ListWorkspaces(ctx context.Context, r *http.Request) (*ListWorkspacesRequest, error) {
 	req := &ListWorkspacesRequest{}
 	vars := urlx.FormFromMap(mux.Vars(r))
 	req.Parent = fmt.Sprintf("projects/%s/locations/%s", vars.Get("project"), vars.Get("location"))
@@ -185,13 +185,13 @@ func (decoder WorkspacesGorillaRequestDecoder) ListWorkspaces(ctx context.Contex
 	}
 	return req, nil
 }
-func (decoder WorkspacesGorillaRequestDecoder) GetWorkspace(ctx context.Context, r *http.Request) (*GetWorkspaceRequest, error) {
+func (decoder workspacesGorillaRequestDecoder) GetWorkspace(ctx context.Context, r *http.Request) (*GetWorkspaceRequest, error) {
 	req := &GetWorkspaceRequest{}
 	vars := urlx.FormFromMap(mux.Vars(r))
 	req.Name = fmt.Sprintf("projects/%s/locations/%s/workspaces/%s", vars.Get("project"), vars.Get("location"), vars.Get("workspac"))
 	return req, nil
 }
-func (decoder WorkspacesGorillaRequestDecoder) CreateWorkspace(ctx context.Context, r *http.Request) (*CreateWorkspaceRequest, error) {
+func (decoder workspacesGorillaRequestDecoder) CreateWorkspace(ctx context.Context, r *http.Request) (*CreateWorkspaceRequest, error) {
 	req := &CreateWorkspaceRequest{}
 	if req.Workspace == nil {
 		req.Workspace = &Workspace{}
@@ -203,7 +203,7 @@ func (decoder WorkspacesGorillaRequestDecoder) CreateWorkspace(ctx context.Conte
 	req.Parent = fmt.Sprintf("projects/%s/locations/%s", vars.Get("project"), vars.Get("location"))
 	return req, nil
 }
-func (decoder WorkspacesGorillaRequestDecoder) UpdateWorkspace(ctx context.Context, r *http.Request) (*UpdateWorkspaceRequest, error) {
+func (decoder workspacesGorillaRequestDecoder) UpdateWorkspace(ctx context.Context, r *http.Request) (*UpdateWorkspaceRequest, error) {
 	req := &UpdateWorkspaceRequest{}
 	if req.Workspace == nil {
 		req.Workspace = &Workspace{}
@@ -215,30 +215,30 @@ func (decoder WorkspacesGorillaRequestDecoder) UpdateWorkspace(ctx context.Conte
 	req.Name = fmt.Sprintf("projects/%s/locations/%s/Workspaces/%s", vars.Get("project"), vars.Get("location"), vars.Get("Workspac"))
 	return req, nil
 }
-func (decoder WorkspacesGorillaRequestDecoder) DeleteWorkspace(ctx context.Context, r *http.Request) (*DeleteWorkspaceRequest, error) {
+func (decoder workspacesGorillaRequestDecoder) DeleteWorkspace(ctx context.Context, r *http.Request) (*DeleteWorkspaceRequest, error) {
 	req := &DeleteWorkspaceRequest{}
 	vars := urlx.FormFromMap(mux.Vars(r))
 	req.Name = fmt.Sprintf("projects/%s/locations/%s/workspaces/%s", vars.Get("project"), vars.Get("location"), vars.Get("workspac"))
 	return req, nil
 }
 
-type WorkspacesGorillaResponseEncoder struct {
+type workspacesGorillaResponseEncoder struct {
 	marshalOptions   protojson.MarshalOptions
 	unmarshalOptions protojson.UnmarshalOptions
 }
 
-func (encoder WorkspacesGorillaResponseEncoder) ListWorkspaces(ctx context.Context, w http.ResponseWriter, resp *ListWorkspacesResponse) error {
+func (encoder workspacesGorillaResponseEncoder) ListWorkspaces(ctx context.Context, w http.ResponseWriter, resp *ListWorkspacesResponse) error {
 	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }
-func (encoder WorkspacesGorillaResponseEncoder) GetWorkspace(ctx context.Context, w http.ResponseWriter, resp *Workspace) error {
+func (encoder workspacesGorillaResponseEncoder) GetWorkspace(ctx context.Context, w http.ResponseWriter, resp *Workspace) error {
 	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }
-func (encoder WorkspacesGorillaResponseEncoder) CreateWorkspace(ctx context.Context, w http.ResponseWriter, resp *Workspace) error {
+func (encoder workspacesGorillaResponseEncoder) CreateWorkspace(ctx context.Context, w http.ResponseWriter, resp *Workspace) error {
 	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }
-func (encoder WorkspacesGorillaResponseEncoder) UpdateWorkspace(ctx context.Context, w http.ResponseWriter, resp *Workspace) error {
+func (encoder workspacesGorillaResponseEncoder) UpdateWorkspace(ctx context.Context, w http.ResponseWriter, resp *Workspace) error {
 	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }
-func (encoder WorkspacesGorillaResponseEncoder) DeleteWorkspace(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
+func (encoder workspacesGorillaResponseEncoder) DeleteWorkspace(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
 	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }

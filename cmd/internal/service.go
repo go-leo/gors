@@ -23,24 +23,20 @@ func (s *Service) Name() string {
 	return s.ProtoService.GoName
 }
 
-func (s *Service) AppendGorillaRouteName() string {
-	return "Append" + s.Name() + "GorillaRoute"
-}
-
-func (s *Service) GorillaServiceName() string {
-	return s.Name() + "GorillaService"
-}
-
 func (s *Service) GorillaName() string {
 	return s.Name() + "Gorilla"
 }
 
-func (s *Service) GorillaHandlerName() string {
-	return s.GorillaName() + "Handler"
+func (s *Service) GorillaServiceName() string {
+	return s.GorillaName() + "Service"
 }
 
-func (s *Service) UnimplementedServerName() string {
-	return "Unimplemented" + s.ProtoService.GoName + "Server"
+func (s *Service) AppendGorillaRouteName() string {
+	return "Append" + s.GorillaName() + "Route"
+}
+
+func (s *Service) GorillaHandlerName() string {
+	return s.GorillaName() + "Handler"
 }
 
 func (s *Service) GorillaRequestDecoderName() string {

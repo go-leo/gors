@@ -23,12 +23,12 @@ type ResponseGorillaService interface {
 }
 
 func AppendResponseGorillaRoute(router *mux.Router, service ResponseGorillaService) *mux.Router {
-	handler := ResponseGorillaHandler{
+	handler := responseGorillaHandler{
 		service: service,
-		decoder: ResponseGorillaRequestDecoder{
+		decoder: responseGorillaRequestDecoder{
 			unmarshalOptions: protojson.UnmarshalOptions{},
 		},
-		encoder: ResponseGorillaResponseEncoder{
+		encoder: responseGorillaResponseEncoder{
 			marshalOptions:   protojson.MarshalOptions{},
 			unmarshalOptions: protojson.UnmarshalOptions{},
 		},
@@ -67,14 +67,14 @@ func AppendResponseGorillaRoute(router *mux.Router, service ResponseGorillaServi
 	return router
 }
 
-type ResponseGorillaHandler struct {
+type responseGorillaHandler struct {
 	service      ResponseGorillaService
-	decoder      ResponseGorillaRequestDecoder
-	encoder      ResponseGorillaResponseEncoder
+	decoder      responseGorillaRequestDecoder
+	encoder      responseGorillaResponseEncoder
 	errorEncoder v2.ErrorEncoder
 }
 
-func (h ResponseGorillaHandler) OmittedResponse() http1.Handler {
+func (h responseGorillaHandler) OmittedResponse() http1.Handler {
 	return http1.HandlerFunc(func(writer http1.ResponseWriter, request *http1.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.OmittedResponse(ctx, request)
@@ -94,7 +94,7 @@ func (h ResponseGorillaHandler) OmittedResponse() http1.Handler {
 	})
 }
 
-func (h ResponseGorillaHandler) StarResponse() http1.Handler {
+func (h responseGorillaHandler) StarResponse() http1.Handler {
 	return http1.HandlerFunc(func(writer http1.ResponseWriter, request *http1.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.StarResponse(ctx, request)
@@ -114,7 +114,7 @@ func (h ResponseGorillaHandler) StarResponse() http1.Handler {
 	})
 }
 
-func (h ResponseGorillaHandler) NamedResponse() http1.Handler {
+func (h responseGorillaHandler) NamedResponse() http1.Handler {
 	return http1.HandlerFunc(func(writer http1.ResponseWriter, request *http1.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.NamedResponse(ctx, request)
@@ -134,7 +134,7 @@ func (h ResponseGorillaHandler) NamedResponse() http1.Handler {
 	})
 }
 
-func (h ResponseGorillaHandler) HttpBodyResponse() http1.Handler {
+func (h responseGorillaHandler) HttpBodyResponse() http1.Handler {
 	return http1.HandlerFunc(func(writer http1.ResponseWriter, request *http1.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.HttpBodyResponse(ctx, request)
@@ -154,7 +154,7 @@ func (h ResponseGorillaHandler) HttpBodyResponse() http1.Handler {
 	})
 }
 
-func (h ResponseGorillaHandler) HttpBodyNamedResponse() http1.Handler {
+func (h responseGorillaHandler) HttpBodyNamedResponse() http1.Handler {
 	return http1.HandlerFunc(func(writer http1.ResponseWriter, request *http1.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.HttpBodyNamedResponse(ctx, request)
@@ -174,7 +174,7 @@ func (h ResponseGorillaHandler) HttpBodyNamedResponse() http1.Handler {
 	})
 }
 
-func (h ResponseGorillaHandler) HttpResponse() http1.Handler {
+func (h responseGorillaHandler) HttpResponse() http1.Handler {
 	return http1.HandlerFunc(func(writer http1.ResponseWriter, request *http1.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.HttpResponse(ctx, request)
@@ -194,55 +194,55 @@ func (h ResponseGorillaHandler) HttpResponse() http1.Handler {
 	})
 }
 
-type ResponseGorillaRequestDecoder struct {
+type responseGorillaRequestDecoder struct {
 	unmarshalOptions protojson.UnmarshalOptions
 }
 
-func (decoder ResponseGorillaRequestDecoder) OmittedResponse(ctx context.Context, r *http1.Request) (*emptypb.Empty, error) {
+func (decoder responseGorillaRequestDecoder) OmittedResponse(ctx context.Context, r *http1.Request) (*emptypb.Empty, error) {
 	req := &emptypb.Empty{}
 	return req, nil
 }
-func (decoder ResponseGorillaRequestDecoder) StarResponse(ctx context.Context, r *http1.Request) (*emptypb.Empty, error) {
+func (decoder responseGorillaRequestDecoder) StarResponse(ctx context.Context, r *http1.Request) (*emptypb.Empty, error) {
 	req := &emptypb.Empty{}
 	return req, nil
 }
-func (decoder ResponseGorillaRequestDecoder) NamedResponse(ctx context.Context, r *http1.Request) (*emptypb.Empty, error) {
+func (decoder responseGorillaRequestDecoder) NamedResponse(ctx context.Context, r *http1.Request) (*emptypb.Empty, error) {
 	req := &emptypb.Empty{}
 	return req, nil
 }
-func (decoder ResponseGorillaRequestDecoder) HttpBodyResponse(ctx context.Context, r *http1.Request) (*emptypb.Empty, error) {
+func (decoder responseGorillaRequestDecoder) HttpBodyResponse(ctx context.Context, r *http1.Request) (*emptypb.Empty, error) {
 	req := &emptypb.Empty{}
 	return req, nil
 }
-func (decoder ResponseGorillaRequestDecoder) HttpBodyNamedResponse(ctx context.Context, r *http1.Request) (*emptypb.Empty, error) {
+func (decoder responseGorillaRequestDecoder) HttpBodyNamedResponse(ctx context.Context, r *http1.Request) (*emptypb.Empty, error) {
 	req := &emptypb.Empty{}
 	return req, nil
 }
-func (decoder ResponseGorillaRequestDecoder) HttpResponse(ctx context.Context, r *http1.Request) (*emptypb.Empty, error) {
+func (decoder responseGorillaRequestDecoder) HttpResponse(ctx context.Context, r *http1.Request) (*emptypb.Empty, error) {
 	req := &emptypb.Empty{}
 	return req, nil
 }
 
-type ResponseGorillaResponseEncoder struct {
+type responseGorillaResponseEncoder struct {
 	marshalOptions   protojson.MarshalOptions
 	unmarshalOptions protojson.UnmarshalOptions
 }
 
-func (encoder ResponseGorillaResponseEncoder) OmittedResponse(ctx context.Context, w http1.ResponseWriter, resp *UserResponse) error {
+func (encoder responseGorillaResponseEncoder) OmittedResponse(ctx context.Context, w http1.ResponseWriter, resp *UserResponse) error {
 	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }
-func (encoder ResponseGorillaResponseEncoder) StarResponse(ctx context.Context, w http1.ResponseWriter, resp *UserResponse) error {
+func (encoder responseGorillaResponseEncoder) StarResponse(ctx context.Context, w http1.ResponseWriter, resp *UserResponse) error {
 	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }
-func (encoder ResponseGorillaResponseEncoder) NamedResponse(ctx context.Context, w http1.ResponseWriter, resp *UserResponse) error {
+func (encoder responseGorillaResponseEncoder) NamedResponse(ctx context.Context, w http1.ResponseWriter, resp *UserResponse) error {
 	return v2.ResponseEncoder(ctx, w, resp.GetUser(), encoder.marshalOptions)
 }
-func (encoder ResponseGorillaResponseEncoder) HttpBodyResponse(ctx context.Context, w http1.ResponseWriter, resp *httpbody.HttpBody) error {
+func (encoder responseGorillaResponseEncoder) HttpBodyResponse(ctx context.Context, w http1.ResponseWriter, resp *httpbody.HttpBody) error {
 	return v2.HttpBodyEncoder(ctx, w, resp)
 }
-func (encoder ResponseGorillaResponseEncoder) HttpBodyNamedResponse(ctx context.Context, w http1.ResponseWriter, resp *HttpBody) error {
+func (encoder responseGorillaResponseEncoder) HttpBodyNamedResponse(ctx context.Context, w http1.ResponseWriter, resp *HttpBody) error {
 	return v2.HttpBodyEncoder(ctx, w, resp.GetBody())
 }
-func (encoder ResponseGorillaResponseEncoder) HttpResponse(ctx context.Context, w http1.ResponseWriter, resp *http.HttpResponse) error {
+func (encoder responseGorillaResponseEncoder) HttpResponse(ctx context.Context, w http1.ResponseWriter, resp *http.HttpResponse) error {
 	return v2.HttpResponseEncoder(ctx, w, resp)
 }

@@ -8,11 +8,11 @@ import (
 )
 
 func (f *Generator) GenerateServerRequestDecoder(service *internal.Service, g *protogen.GeneratedFile) error {
-	g.P("type ", service.GorillaRequestDecoderName(), " struct {")
+	g.P("type ", service.Unexported(service.GorillaRequestDecoderName()), " struct {")
 	g.P("unmarshalOptions ", internal.ProtoJsonUnmarshalOptionsIdent)
 	g.P("}")
 	for _, endpoint := range service.Endpoints {
-		g.P("func (decoder ", service.GorillaRequestDecoderName(), ")", endpoint.Name(), "(ctx ", internal.ContextIdent, ", r *", internal.RequestIdent, ") (*", endpoint.InputGoIdent(), ", error){")
+		g.P("func (decoder ", service.Unexported(service.GorillaRequestDecoderName()), ")", endpoint.Name(), "(ctx ", internal.ContextIdent, ", r *", internal.RequestIdent, ") (*", endpoint.InputGoIdent(), ", error){")
 		g.P("req := &", endpoint.InputGoIdent(), "{}")
 		bodyMessage, bodyField, namedPathFields, pathFields, queryFields, err := endpoint.ParseParameters()
 		if err != nil {

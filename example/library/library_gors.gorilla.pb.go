@@ -28,12 +28,12 @@ type LibraryServiceGorillaService interface {
 }
 
 func AppendLibraryServiceGorillaRoute(router *mux.Router, service LibraryServiceGorillaService) *mux.Router {
-	handler := LibraryServiceGorillaHandler{
+	handler := libraryServiceGorillaHandler{
 		service: service,
-		decoder: LibraryServiceGorillaRequestDecoder{
+		decoder: libraryServiceGorillaRequestDecoder{
 			unmarshalOptions: protojson.UnmarshalOptions{},
 		},
-		encoder: LibraryServiceGorillaResponseEncoder{
+		encoder: libraryServiceGorillaResponseEncoder{
 			marshalOptions:   protojson.MarshalOptions{},
 			unmarshalOptions: protojson.UnmarshalOptions{},
 		},
@@ -97,14 +97,14 @@ func AppendLibraryServiceGorillaRoute(router *mux.Router, service LibraryService
 	return router
 }
 
-type LibraryServiceGorillaHandler struct {
+type libraryServiceGorillaHandler struct {
 	service      LibraryServiceGorillaService
-	decoder      LibraryServiceGorillaRequestDecoder
-	encoder      LibraryServiceGorillaResponseEncoder
+	decoder      libraryServiceGorillaRequestDecoder
+	encoder      libraryServiceGorillaResponseEncoder
 	errorEncoder v2.ErrorEncoder
 }
 
-func (h LibraryServiceGorillaHandler) CreateShelf() http.Handler {
+func (h libraryServiceGorillaHandler) CreateShelf() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.CreateShelf(ctx, request)
@@ -124,7 +124,7 @@ func (h LibraryServiceGorillaHandler) CreateShelf() http.Handler {
 	})
 }
 
-func (h LibraryServiceGorillaHandler) GetShelf() http.Handler {
+func (h libraryServiceGorillaHandler) GetShelf() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.GetShelf(ctx, request)
@@ -144,7 +144,7 @@ func (h LibraryServiceGorillaHandler) GetShelf() http.Handler {
 	})
 }
 
-func (h LibraryServiceGorillaHandler) ListShelves() http.Handler {
+func (h libraryServiceGorillaHandler) ListShelves() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.ListShelves(ctx, request)
@@ -164,7 +164,7 @@ func (h LibraryServiceGorillaHandler) ListShelves() http.Handler {
 	})
 }
 
-func (h LibraryServiceGorillaHandler) DeleteShelf() http.Handler {
+func (h libraryServiceGorillaHandler) DeleteShelf() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.DeleteShelf(ctx, request)
@@ -184,7 +184,7 @@ func (h LibraryServiceGorillaHandler) DeleteShelf() http.Handler {
 	})
 }
 
-func (h LibraryServiceGorillaHandler) MergeShelves() http.Handler {
+func (h libraryServiceGorillaHandler) MergeShelves() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.MergeShelves(ctx, request)
@@ -204,7 +204,7 @@ func (h LibraryServiceGorillaHandler) MergeShelves() http.Handler {
 	})
 }
 
-func (h LibraryServiceGorillaHandler) CreateBook() http.Handler {
+func (h libraryServiceGorillaHandler) CreateBook() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.CreateBook(ctx, request)
@@ -224,7 +224,7 @@ func (h LibraryServiceGorillaHandler) CreateBook() http.Handler {
 	})
 }
 
-func (h LibraryServiceGorillaHandler) GetBook() http.Handler {
+func (h libraryServiceGorillaHandler) GetBook() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.GetBook(ctx, request)
@@ -244,7 +244,7 @@ func (h LibraryServiceGorillaHandler) GetBook() http.Handler {
 	})
 }
 
-func (h LibraryServiceGorillaHandler) ListBooks() http.Handler {
+func (h libraryServiceGorillaHandler) ListBooks() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.ListBooks(ctx, request)
@@ -264,7 +264,7 @@ func (h LibraryServiceGorillaHandler) ListBooks() http.Handler {
 	})
 }
 
-func (h LibraryServiceGorillaHandler) DeleteBook() http.Handler {
+func (h libraryServiceGorillaHandler) DeleteBook() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.DeleteBook(ctx, request)
@@ -284,7 +284,7 @@ func (h LibraryServiceGorillaHandler) DeleteBook() http.Handler {
 	})
 }
 
-func (h LibraryServiceGorillaHandler) UpdateBook() http.Handler {
+func (h libraryServiceGorillaHandler) UpdateBook() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.UpdateBook(ctx, request)
@@ -304,7 +304,7 @@ func (h LibraryServiceGorillaHandler) UpdateBook() http.Handler {
 	})
 }
 
-func (h LibraryServiceGorillaHandler) MoveBook() http.Handler {
+func (h libraryServiceGorillaHandler) MoveBook() http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
 		ctx := request.Context()
 		in, err := h.decoder.MoveBook(ctx, request)
@@ -324,11 +324,11 @@ func (h LibraryServiceGorillaHandler) MoveBook() http.Handler {
 	})
 }
 
-type LibraryServiceGorillaRequestDecoder struct {
+type libraryServiceGorillaRequestDecoder struct {
 	unmarshalOptions protojson.UnmarshalOptions
 }
 
-func (decoder LibraryServiceGorillaRequestDecoder) CreateShelf(ctx context.Context, r *http.Request) (*CreateShelfRequest, error) {
+func (decoder libraryServiceGorillaRequestDecoder) CreateShelf(ctx context.Context, r *http.Request) (*CreateShelfRequest, error) {
 	req := &CreateShelfRequest{}
 	if req.Shelf == nil {
 		req.Shelf = &Shelf{}
@@ -338,13 +338,13 @@ func (decoder LibraryServiceGorillaRequestDecoder) CreateShelf(ctx context.Conte
 	}
 	return req, nil
 }
-func (decoder LibraryServiceGorillaRequestDecoder) GetShelf(ctx context.Context, r *http.Request) (*GetShelfRequest, error) {
+func (decoder libraryServiceGorillaRequestDecoder) GetShelf(ctx context.Context, r *http.Request) (*GetShelfRequest, error) {
 	req := &GetShelfRequest{}
 	vars := urlx.FormFromMap(mux.Vars(r))
 	req.Name = fmt.Sprintf("shelves/%s", vars.Get("shelf"))
 	return req, nil
 }
-func (decoder LibraryServiceGorillaRequestDecoder) ListShelves(ctx context.Context, r *http.Request) (*ListShelvesRequest, error) {
+func (decoder libraryServiceGorillaRequestDecoder) ListShelves(ctx context.Context, r *http.Request) (*ListShelvesRequest, error) {
 	req := &ListShelvesRequest{}
 	queries := r.URL.Query()
 	var queryErr error
@@ -355,13 +355,13 @@ func (decoder LibraryServiceGorillaRequestDecoder) ListShelves(ctx context.Conte
 	}
 	return req, nil
 }
-func (decoder LibraryServiceGorillaRequestDecoder) DeleteShelf(ctx context.Context, r *http.Request) (*DeleteShelfRequest, error) {
+func (decoder libraryServiceGorillaRequestDecoder) DeleteShelf(ctx context.Context, r *http.Request) (*DeleteShelfRequest, error) {
 	req := &DeleteShelfRequest{}
 	vars := urlx.FormFromMap(mux.Vars(r))
 	req.Name = fmt.Sprintf("shelves/%s", vars.Get("shelf"))
 	return req, nil
 }
-func (decoder LibraryServiceGorillaRequestDecoder) MergeShelves(ctx context.Context, r *http.Request) (*MergeShelvesRequest, error) {
+func (decoder libraryServiceGorillaRequestDecoder) MergeShelves(ctx context.Context, r *http.Request) (*MergeShelvesRequest, error) {
 	req := &MergeShelvesRequest{}
 	if err := v2.RequestDecoder(ctx, r, req, decoder.unmarshalOptions); err != nil {
 		return nil, err
@@ -370,7 +370,7 @@ func (decoder LibraryServiceGorillaRequestDecoder) MergeShelves(ctx context.Cont
 	req.Name = fmt.Sprintf("shelves/%s", vars.Get("shelf"))
 	return req, nil
 }
-func (decoder LibraryServiceGorillaRequestDecoder) CreateBook(ctx context.Context, r *http.Request) (*CreateBookRequest, error) {
+func (decoder libraryServiceGorillaRequestDecoder) CreateBook(ctx context.Context, r *http.Request) (*CreateBookRequest, error) {
 	req := &CreateBookRequest{}
 	if req.Book == nil {
 		req.Book = &Book{}
@@ -382,13 +382,13 @@ func (decoder LibraryServiceGorillaRequestDecoder) CreateBook(ctx context.Contex
 	req.Parent = fmt.Sprintf("shelves/%s", vars.Get("shelf"))
 	return req, nil
 }
-func (decoder LibraryServiceGorillaRequestDecoder) GetBook(ctx context.Context, r *http.Request) (*GetBookRequest, error) {
+func (decoder libraryServiceGorillaRequestDecoder) GetBook(ctx context.Context, r *http.Request) (*GetBookRequest, error) {
 	req := &GetBookRequest{}
 	vars := urlx.FormFromMap(mux.Vars(r))
 	req.Name = fmt.Sprintf("shelves/%s/books/%s", vars.Get("shelf"), vars.Get("book"))
 	return req, nil
 }
-func (decoder LibraryServiceGorillaRequestDecoder) ListBooks(ctx context.Context, r *http.Request) (*ListBooksRequest, error) {
+func (decoder libraryServiceGorillaRequestDecoder) ListBooks(ctx context.Context, r *http.Request) (*ListBooksRequest, error) {
 	req := &ListBooksRequest{}
 	vars := urlx.FormFromMap(mux.Vars(r))
 	req.Parent = fmt.Sprintf("shelves/%s", vars.Get("shelf"))
@@ -401,13 +401,13 @@ func (decoder LibraryServiceGorillaRequestDecoder) ListBooks(ctx context.Context
 	}
 	return req, nil
 }
-func (decoder LibraryServiceGorillaRequestDecoder) DeleteBook(ctx context.Context, r *http.Request) (*DeleteBookRequest, error) {
+func (decoder libraryServiceGorillaRequestDecoder) DeleteBook(ctx context.Context, r *http.Request) (*DeleteBookRequest, error) {
 	req := &DeleteBookRequest{}
 	vars := urlx.FormFromMap(mux.Vars(r))
 	req.Name = fmt.Sprintf("shelves/%s/books/%s", vars.Get("shelf"), vars.Get("book"))
 	return req, nil
 }
-func (decoder LibraryServiceGorillaRequestDecoder) UpdateBook(ctx context.Context, r *http.Request) (*UpdateBookRequest, error) {
+func (decoder libraryServiceGorillaRequestDecoder) UpdateBook(ctx context.Context, r *http.Request) (*UpdateBookRequest, error) {
 	req := &UpdateBookRequest{}
 	if req.Book == nil {
 		req.Book = &Book{}
@@ -422,7 +422,7 @@ func (decoder LibraryServiceGorillaRequestDecoder) UpdateBook(ctx context.Contex
 	req.Book.Name = fmt.Sprintf("shelves/%s/books/%s", vars.Get("shelf"), vars.Get("book"))
 	return req, nil
 }
-func (decoder LibraryServiceGorillaRequestDecoder) MoveBook(ctx context.Context, r *http.Request) (*MoveBookRequest, error) {
+func (decoder libraryServiceGorillaRequestDecoder) MoveBook(ctx context.Context, r *http.Request) (*MoveBookRequest, error) {
 	req := &MoveBookRequest{}
 	if err := v2.RequestDecoder(ctx, r, req, decoder.unmarshalOptions); err != nil {
 		return nil, err
@@ -432,41 +432,41 @@ func (decoder LibraryServiceGorillaRequestDecoder) MoveBook(ctx context.Context,
 	return req, nil
 }
 
-type LibraryServiceGorillaResponseEncoder struct {
+type libraryServiceGorillaResponseEncoder struct {
 	marshalOptions   protojson.MarshalOptions
 	unmarshalOptions protojson.UnmarshalOptions
 }
 
-func (encoder LibraryServiceGorillaResponseEncoder) CreateShelf(ctx context.Context, w http.ResponseWriter, resp *Shelf) error {
+func (encoder libraryServiceGorillaResponseEncoder) CreateShelf(ctx context.Context, w http.ResponseWriter, resp *Shelf) error {
 	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }
-func (encoder LibraryServiceGorillaResponseEncoder) GetShelf(ctx context.Context, w http.ResponseWriter, resp *Shelf) error {
+func (encoder libraryServiceGorillaResponseEncoder) GetShelf(ctx context.Context, w http.ResponseWriter, resp *Shelf) error {
 	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }
-func (encoder LibraryServiceGorillaResponseEncoder) ListShelves(ctx context.Context, w http.ResponseWriter, resp *ListShelvesResponse) error {
+func (encoder libraryServiceGorillaResponseEncoder) ListShelves(ctx context.Context, w http.ResponseWriter, resp *ListShelvesResponse) error {
 	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }
-func (encoder LibraryServiceGorillaResponseEncoder) DeleteShelf(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
+func (encoder libraryServiceGorillaResponseEncoder) DeleteShelf(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
 	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }
-func (encoder LibraryServiceGorillaResponseEncoder) MergeShelves(ctx context.Context, w http.ResponseWriter, resp *Shelf) error {
+func (encoder libraryServiceGorillaResponseEncoder) MergeShelves(ctx context.Context, w http.ResponseWriter, resp *Shelf) error {
 	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }
-func (encoder LibraryServiceGorillaResponseEncoder) CreateBook(ctx context.Context, w http.ResponseWriter, resp *Book) error {
+func (encoder libraryServiceGorillaResponseEncoder) CreateBook(ctx context.Context, w http.ResponseWriter, resp *Book) error {
 	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }
-func (encoder LibraryServiceGorillaResponseEncoder) GetBook(ctx context.Context, w http.ResponseWriter, resp *Book) error {
+func (encoder libraryServiceGorillaResponseEncoder) GetBook(ctx context.Context, w http.ResponseWriter, resp *Book) error {
 	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }
-func (encoder LibraryServiceGorillaResponseEncoder) ListBooks(ctx context.Context, w http.ResponseWriter, resp *ListBooksResponse) error {
+func (encoder libraryServiceGorillaResponseEncoder) ListBooks(ctx context.Context, w http.ResponseWriter, resp *ListBooksResponse) error {
 	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }
-func (encoder LibraryServiceGorillaResponseEncoder) DeleteBook(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
+func (encoder libraryServiceGorillaResponseEncoder) DeleteBook(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
 	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }
-func (encoder LibraryServiceGorillaResponseEncoder) UpdateBook(ctx context.Context, w http.ResponseWriter, resp *Book) error {
+func (encoder libraryServiceGorillaResponseEncoder) UpdateBook(ctx context.Context, w http.ResponseWriter, resp *Book) error {
 	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }
-func (encoder LibraryServiceGorillaResponseEncoder) MoveBook(ctx context.Context, w http.ResponseWriter, resp *Book) error {
+func (encoder libraryServiceGorillaResponseEncoder) MoveBook(ctx context.Context, w http.ResponseWriter, resp *Book) error {
 	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }
