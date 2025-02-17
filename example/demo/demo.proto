@@ -1,5 +1,5 @@
 syntax = "proto3";
-package leo.gors.body.v1;
+package leo.gors.demo.v1;
 option go_package = "github.com/go-leo/gors/v2/example/demo/v1;demo";
 
 import "google/protobuf/empty.proto";
@@ -8,7 +8,8 @@ import "google/api/annotations.proto";
 service Demo {
 
   // CreateUser 创建用户
-  rpc CreateUser (CreateUserRequest) returns (google.protobuf.Empty) {
+  // `POST /v1/user { "name": "Leo" }` | `CreateUserRequest(name: "Leo")`
+  rpc CreateUser (CreateUserRequest) returns (CreateUserResponse) {
     option (google.api.http) = {
       post : "/v1/user"
       body : "*"
@@ -16,6 +17,7 @@ service Demo {
   }
 
   // DeleteUser 删除用户
+  // `DELETE /v1/user/10000 | `DeleteUserRequest(id: 10000)`
   rpc DeleteUser (DeleteUserRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       delete : "/v1/user/{id}"
@@ -23,6 +25,7 @@ service Demo {
   }
 
   // ModifyUser 修改用户
+  // `PUT /v1/user/10000 { "name": "Leo" }` | `ModifyUserRequest(id: 10000, name: "Leo")`
   rpc ModifyUser (ModifyUserRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       put : "/v1/user/{id}"
@@ -31,6 +34,7 @@ service Demo {
   }
 
   // GetUser 获取用户
+  // `GET /v1/user/10000` | `GetUserRequest(id: 10000)`
   rpc GetUser (GetUserRequest) returns (GetUserResponse) {
     option (google.api.http) = {
       get : "/v1/user/{id}"
@@ -38,6 +42,7 @@ service Demo {
   }
 
   // ListUser 获取用户列表
+  // `GET /v1/users?page_num=1&page_size=10` | `ListUserRequest(page_num: 1, page_size: 10)`
   rpc ListUser (ListUserRequest) returns (ListUserResponse) {
     option (google.api.http) = {
       get : "/v1/users"
@@ -48,16 +53,14 @@ service Demo {
 message User {
   int64 id = 1;
   string name = 2;
-  string email = 3;
-  string phone = 4;
-  string address = 5;
 }
 
 message CreateUserRequest {
   string name = 1;
-  string email = 2;
-  string phone = 3;
-  string address = 4;
+}
+
+message CreateUserResponse {
+  User item = 1;
 }
 
 message DeleteUserRequest {
@@ -67,9 +70,6 @@ message DeleteUserRequest {
 message ModifyUserRequest {
   int64 id = 1;
   string name = 2;
-  string email = 3;
-  string phone = 4;
-  string address = 5;
 }
 
 message GetUserRequest {

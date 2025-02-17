@@ -13,7 +13,7 @@ import (
 )
 
 type DemoGorillaService interface {
-	CreateUser(ctx context.Context, request *CreateUserRequest) (*emptypb.Empty, error)
+	CreateUser(ctx context.Context, request *CreateUserRequest) (*CreateUserResponse, error)
 	DeleteUser(ctx context.Context, request *DeleteUserRequest) (*emptypb.Empty, error)
 	ModifyUser(ctx context.Context, request *ModifyUserRequest) (*emptypb.Empty, error)
 	GetUser(ctx context.Context, request *GetUserRequest) (*GetUserResponse, error)
@@ -33,27 +33,27 @@ func AppendDemoGorillaRoute(router *mux.Router, service DemoGorillaService) *mux
 		errorEncoder: v2.DefaultErrorEncoder,
 	}
 	router.NewRoute().
-		Name("/leo.gors.body.v1.Demo/CreateUser").
+		Name("/leo.gors.demo.v1.Demo/CreateUser").
 		Methods("POST").
 		Path("/v1/user").
 		Handler(handler.CreateUser())
 	router.NewRoute().
-		Name("/leo.gors.body.v1.Demo/DeleteUser").
+		Name("/leo.gors.demo.v1.Demo/DeleteUser").
 		Methods("DELETE").
 		Path("/v1/user/{id}").
 		Handler(handler.DeleteUser())
 	router.NewRoute().
-		Name("/leo.gors.body.v1.Demo/ModifyUser").
+		Name("/leo.gors.demo.v1.Demo/ModifyUser").
 		Methods("PUT").
 		Path("/v1/user/{id}").
 		Handler(handler.ModifyUser())
 	router.NewRoute().
-		Name("/leo.gors.body.v1.Demo/GetUser").
+		Name("/leo.gors.demo.v1.Demo/GetUser").
 		Methods("GET").
 		Path("/v1/user/{id}").
 		Handler(handler.GetUser())
 	router.NewRoute().
-		Name("/leo.gors.body.v1.Demo/ListUser").
+		Name("/leo.gors.demo.v1.Demo/ListUser").
 		Methods("GET").
 		Path("/v1/users").
 		Handler(handler.ListUser())
@@ -228,7 +228,7 @@ type DemoGorillaResponseEncoder struct {
 	unmarshalOptions protojson.UnmarshalOptions
 }
 
-func (encoder DemoGorillaResponseEncoder) CreateUser(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
+func (encoder DemoGorillaResponseEncoder) CreateUser(ctx context.Context, w http.ResponseWriter, resp *CreateUserResponse) error {
 	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
 }
 func (encoder DemoGorillaResponseEncoder) DeleteUser(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
