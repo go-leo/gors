@@ -19,15 +19,17 @@ type BoolPathGorillaService interface {
 	BoolPath(ctx context.Context, request *BoolPathRequest) (*emptypb.Empty, error)
 }
 
-func AppendBoolPathGorillaRoute(router *mux.Router, service BoolPathGorillaService) *mux.Router {
+func AppendBoolPathGorillaRoute(router *mux.Router, service BoolPathGorillaService, opts ...v2.Option) *mux.Router {
+	options := v2.NewOptions(opts...)
 	handler := boolPathGorillaHandler{
 		service: service,
 		decoder: boolPathGorillaRequestDecoder{
-			unmarshalOptions: protojson.UnmarshalOptions{},
+			unmarshalOptions: options.UnmarshalOptions(),
 		},
 		encoder: boolPathGorillaResponseEncoder{
-			marshalOptions:   protojson.MarshalOptions{},
-			unmarshalOptions: protojson.UnmarshalOptions{},
+			marshalOptions:      options.MarshalOptions(),
+			unmarshalOptions:    options.UnmarshalOptions(),
+			responseTransformer: options.ResponseTransformer(),
 		},
 		errorEncoder: v2.DefaultErrorEncoder,
 	}
@@ -84,27 +86,30 @@ func (decoder boolPathGorillaRequestDecoder) BoolPath(ctx context.Context, r *ht
 }
 
 type boolPathGorillaResponseEncoder struct {
-	marshalOptions   protojson.MarshalOptions
-	unmarshalOptions protojson.UnmarshalOptions
+	marshalOptions      protojson.MarshalOptions
+	unmarshalOptions    protojson.UnmarshalOptions
+	responseTransformer v2.ResponseTransformer
 }
 
 func (encoder boolPathGorillaResponseEncoder) BoolPath(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+	return v2.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
 
 type Int32PathGorillaService interface {
 	Int32Path(ctx context.Context, request *Int32PathRequest) (*emptypb.Empty, error)
 }
 
-func AppendInt32PathGorillaRoute(router *mux.Router, service Int32PathGorillaService) *mux.Router {
+func AppendInt32PathGorillaRoute(router *mux.Router, service Int32PathGorillaService, opts ...v2.Option) *mux.Router {
+	options := v2.NewOptions(opts...)
 	handler := int32PathGorillaHandler{
 		service: service,
 		decoder: int32PathGorillaRequestDecoder{
-			unmarshalOptions: protojson.UnmarshalOptions{},
+			unmarshalOptions: options.UnmarshalOptions(),
 		},
 		encoder: int32PathGorillaResponseEncoder{
-			marshalOptions:   protojson.MarshalOptions{},
-			unmarshalOptions: protojson.UnmarshalOptions{},
+			marshalOptions:      options.MarshalOptions(),
+			unmarshalOptions:    options.UnmarshalOptions(),
+			responseTransformer: options.ResponseTransformer(),
 		},
 		errorEncoder: v2.DefaultErrorEncoder,
 	}
@@ -165,27 +170,30 @@ func (decoder int32PathGorillaRequestDecoder) Int32Path(ctx context.Context, r *
 }
 
 type int32PathGorillaResponseEncoder struct {
-	marshalOptions   protojson.MarshalOptions
-	unmarshalOptions protojson.UnmarshalOptions
+	marshalOptions      protojson.MarshalOptions
+	unmarshalOptions    protojson.UnmarshalOptions
+	responseTransformer v2.ResponseTransformer
 }
 
 func (encoder int32PathGorillaResponseEncoder) Int32Path(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+	return v2.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
 
 type Int64PathGorillaService interface {
 	Int64Path(ctx context.Context, request *Int64PathRequest) (*emptypb.Empty, error)
 }
 
-func AppendInt64PathGorillaRoute(router *mux.Router, service Int64PathGorillaService) *mux.Router {
+func AppendInt64PathGorillaRoute(router *mux.Router, service Int64PathGorillaService, opts ...v2.Option) *mux.Router {
+	options := v2.NewOptions(opts...)
 	handler := int64PathGorillaHandler{
 		service: service,
 		decoder: int64PathGorillaRequestDecoder{
-			unmarshalOptions: protojson.UnmarshalOptions{},
+			unmarshalOptions: options.UnmarshalOptions(),
 		},
 		encoder: int64PathGorillaResponseEncoder{
-			marshalOptions:   protojson.MarshalOptions{},
-			unmarshalOptions: protojson.UnmarshalOptions{},
+			marshalOptions:      options.MarshalOptions(),
+			unmarshalOptions:    options.UnmarshalOptions(),
+			responseTransformer: options.ResponseTransformer(),
 		},
 		errorEncoder: v2.DefaultErrorEncoder,
 	}
@@ -246,27 +254,30 @@ func (decoder int64PathGorillaRequestDecoder) Int64Path(ctx context.Context, r *
 }
 
 type int64PathGorillaResponseEncoder struct {
-	marshalOptions   protojson.MarshalOptions
-	unmarshalOptions protojson.UnmarshalOptions
+	marshalOptions      protojson.MarshalOptions
+	unmarshalOptions    protojson.UnmarshalOptions
+	responseTransformer v2.ResponseTransformer
 }
 
 func (encoder int64PathGorillaResponseEncoder) Int64Path(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+	return v2.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
 
 type Uint32PathGorillaService interface {
 	Uint32Path(ctx context.Context, request *Uint32PathRequest) (*emptypb.Empty, error)
 }
 
-func AppendUint32PathGorillaRoute(router *mux.Router, service Uint32PathGorillaService) *mux.Router {
+func AppendUint32PathGorillaRoute(router *mux.Router, service Uint32PathGorillaService, opts ...v2.Option) *mux.Router {
+	options := v2.NewOptions(opts...)
 	handler := uint32PathGorillaHandler{
 		service: service,
 		decoder: uint32PathGorillaRequestDecoder{
-			unmarshalOptions: protojson.UnmarshalOptions{},
+			unmarshalOptions: options.UnmarshalOptions(),
 		},
 		encoder: uint32PathGorillaResponseEncoder{
-			marshalOptions:   protojson.MarshalOptions{},
-			unmarshalOptions: protojson.UnmarshalOptions{},
+			marshalOptions:      options.MarshalOptions(),
+			unmarshalOptions:    options.UnmarshalOptions(),
+			responseTransformer: options.ResponseTransformer(),
 		},
 		errorEncoder: v2.DefaultErrorEncoder,
 	}
@@ -325,27 +336,30 @@ func (decoder uint32PathGorillaRequestDecoder) Uint32Path(ctx context.Context, r
 }
 
 type uint32PathGorillaResponseEncoder struct {
-	marshalOptions   protojson.MarshalOptions
-	unmarshalOptions protojson.UnmarshalOptions
+	marshalOptions      protojson.MarshalOptions
+	unmarshalOptions    protojson.UnmarshalOptions
+	responseTransformer v2.ResponseTransformer
 }
 
 func (encoder uint32PathGorillaResponseEncoder) Uint32Path(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+	return v2.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
 
 type Uint64PathGorillaService interface {
 	Uint64Path(ctx context.Context, request *Uint64PathRequest) (*emptypb.Empty, error)
 }
 
-func AppendUint64PathGorillaRoute(router *mux.Router, service Uint64PathGorillaService) *mux.Router {
+func AppendUint64PathGorillaRoute(router *mux.Router, service Uint64PathGorillaService, opts ...v2.Option) *mux.Router {
+	options := v2.NewOptions(opts...)
 	handler := uint64PathGorillaHandler{
 		service: service,
 		decoder: uint64PathGorillaRequestDecoder{
-			unmarshalOptions: protojson.UnmarshalOptions{},
+			unmarshalOptions: options.UnmarshalOptions(),
 		},
 		encoder: uint64PathGorillaResponseEncoder{
-			marshalOptions:   protojson.MarshalOptions{},
-			unmarshalOptions: protojson.UnmarshalOptions{},
+			marshalOptions:      options.MarshalOptions(),
+			unmarshalOptions:    options.UnmarshalOptions(),
+			responseTransformer: options.ResponseTransformer(),
 		},
 		errorEncoder: v2.DefaultErrorEncoder,
 	}
@@ -404,27 +418,30 @@ func (decoder uint64PathGorillaRequestDecoder) Uint64Path(ctx context.Context, r
 }
 
 type uint64PathGorillaResponseEncoder struct {
-	marshalOptions   protojson.MarshalOptions
-	unmarshalOptions protojson.UnmarshalOptions
+	marshalOptions      protojson.MarshalOptions
+	unmarshalOptions    protojson.UnmarshalOptions
+	responseTransformer v2.ResponseTransformer
 }
 
 func (encoder uint64PathGorillaResponseEncoder) Uint64Path(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+	return v2.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
 
 type FloatPathGorillaService interface {
 	FloatPath(ctx context.Context, request *FloatPathRequest) (*emptypb.Empty, error)
 }
 
-func AppendFloatPathGorillaRoute(router *mux.Router, service FloatPathGorillaService) *mux.Router {
+func AppendFloatPathGorillaRoute(router *mux.Router, service FloatPathGorillaService, opts ...v2.Option) *mux.Router {
+	options := v2.NewOptions(opts...)
 	handler := floatPathGorillaHandler{
 		service: service,
 		decoder: floatPathGorillaRequestDecoder{
-			unmarshalOptions: protojson.UnmarshalOptions{},
+			unmarshalOptions: options.UnmarshalOptions(),
 		},
 		encoder: floatPathGorillaResponseEncoder{
-			marshalOptions:   protojson.MarshalOptions{},
-			unmarshalOptions: protojson.UnmarshalOptions{},
+			marshalOptions:      options.MarshalOptions(),
+			unmarshalOptions:    options.UnmarshalOptions(),
+			responseTransformer: options.ResponseTransformer(),
 		},
 		errorEncoder: v2.DefaultErrorEncoder,
 	}
@@ -481,27 +498,30 @@ func (decoder floatPathGorillaRequestDecoder) FloatPath(ctx context.Context, r *
 }
 
 type floatPathGorillaResponseEncoder struct {
-	marshalOptions   protojson.MarshalOptions
-	unmarshalOptions protojson.UnmarshalOptions
+	marshalOptions      protojson.MarshalOptions
+	unmarshalOptions    protojson.UnmarshalOptions
+	responseTransformer v2.ResponseTransformer
 }
 
 func (encoder floatPathGorillaResponseEncoder) FloatPath(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+	return v2.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
 
 type DoublePathGorillaService interface {
 	DoublePath(ctx context.Context, request *DoublePathRequest) (*emptypb.Empty, error)
 }
 
-func AppendDoublePathGorillaRoute(router *mux.Router, service DoublePathGorillaService) *mux.Router {
+func AppendDoublePathGorillaRoute(router *mux.Router, service DoublePathGorillaService, opts ...v2.Option) *mux.Router {
+	options := v2.NewOptions(opts...)
 	handler := doublePathGorillaHandler{
 		service: service,
 		decoder: doublePathGorillaRequestDecoder{
-			unmarshalOptions: protojson.UnmarshalOptions{},
+			unmarshalOptions: options.UnmarshalOptions(),
 		},
 		encoder: doublePathGorillaResponseEncoder{
-			marshalOptions:   protojson.MarshalOptions{},
-			unmarshalOptions: protojson.UnmarshalOptions{},
+			marshalOptions:      options.MarshalOptions(),
+			unmarshalOptions:    options.UnmarshalOptions(),
+			responseTransformer: options.ResponseTransformer(),
 		},
 		errorEncoder: v2.DefaultErrorEncoder,
 	}
@@ -558,27 +578,30 @@ func (decoder doublePathGorillaRequestDecoder) DoublePath(ctx context.Context, r
 }
 
 type doublePathGorillaResponseEncoder struct {
-	marshalOptions   protojson.MarshalOptions
-	unmarshalOptions protojson.UnmarshalOptions
+	marshalOptions      protojson.MarshalOptions
+	unmarshalOptions    protojson.UnmarshalOptions
+	responseTransformer v2.ResponseTransformer
 }
 
 func (encoder doublePathGorillaResponseEncoder) DoublePath(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+	return v2.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
 
 type StringPathGorillaService interface {
 	StringPath(ctx context.Context, request *StringPathRequest) (*emptypb.Empty, error)
 }
 
-func AppendStringPathGorillaRoute(router *mux.Router, service StringPathGorillaService) *mux.Router {
+func AppendStringPathGorillaRoute(router *mux.Router, service StringPathGorillaService, opts ...v2.Option) *mux.Router {
+	options := v2.NewOptions(opts...)
 	handler := stringPathGorillaHandler{
 		service: service,
 		decoder: stringPathGorillaRequestDecoder{
-			unmarshalOptions: protojson.UnmarshalOptions{},
+			unmarshalOptions: options.UnmarshalOptions(),
 		},
 		encoder: stringPathGorillaResponseEncoder{
-			marshalOptions:   protojson.MarshalOptions{},
-			unmarshalOptions: protojson.UnmarshalOptions{},
+			marshalOptions:      options.MarshalOptions(),
+			unmarshalOptions:    options.UnmarshalOptions(),
+			responseTransformer: options.ResponseTransformer(),
 		},
 		errorEncoder: v2.DefaultErrorEncoder,
 	}
@@ -635,27 +658,30 @@ func (decoder stringPathGorillaRequestDecoder) StringPath(ctx context.Context, r
 }
 
 type stringPathGorillaResponseEncoder struct {
-	marshalOptions   protojson.MarshalOptions
-	unmarshalOptions protojson.UnmarshalOptions
+	marshalOptions      protojson.MarshalOptions
+	unmarshalOptions    protojson.UnmarshalOptions
+	responseTransformer v2.ResponseTransformer
 }
 
 func (encoder stringPathGorillaResponseEncoder) StringPath(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+	return v2.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
 
 type EnumPathGorillaService interface {
 	EnumPath(ctx context.Context, request *EnumPathRequest) (*emptypb.Empty, error)
 }
 
-func AppendEnumPathGorillaRoute(router *mux.Router, service EnumPathGorillaService) *mux.Router {
+func AppendEnumPathGorillaRoute(router *mux.Router, service EnumPathGorillaService, opts ...v2.Option) *mux.Router {
+	options := v2.NewOptions(opts...)
 	handler := enumPathGorillaHandler{
 		service: service,
 		decoder: enumPathGorillaRequestDecoder{
-			unmarshalOptions: protojson.UnmarshalOptions{},
+			unmarshalOptions: options.UnmarshalOptions(),
 		},
 		encoder: enumPathGorillaResponseEncoder{
-			marshalOptions:   protojson.MarshalOptions{},
-			unmarshalOptions: protojson.UnmarshalOptions{},
+			marshalOptions:      options.MarshalOptions(),
+			unmarshalOptions:    options.UnmarshalOptions(),
+			responseTransformer: options.ResponseTransformer(),
 		},
 		errorEncoder: v2.DefaultErrorEncoder,
 	}
@@ -711,12 +737,13 @@ func (decoder enumPathGorillaRequestDecoder) EnumPath(ctx context.Context, r *ht
 }
 
 type enumPathGorillaResponseEncoder struct {
-	marshalOptions   protojson.MarshalOptions
-	unmarshalOptions protojson.UnmarshalOptions
+	marshalOptions      protojson.MarshalOptions
+	unmarshalOptions    protojson.UnmarshalOptions
+	responseTransformer v2.ResponseTransformer
 }
 
 func (encoder enumPathGorillaResponseEncoder) EnumPath(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+	return v2.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
 
 type NamedPathGorillaService interface {
@@ -728,15 +755,17 @@ type NamedPathGorillaService interface {
 	EmbedNamedPathWrapString(ctx context.Context, request *EmbedNamedPathRequest) (*emptypb.Empty, error)
 }
 
-func AppendNamedPathGorillaRoute(router *mux.Router, service NamedPathGorillaService) *mux.Router {
+func AppendNamedPathGorillaRoute(router *mux.Router, service NamedPathGorillaService, opts ...v2.Option) *mux.Router {
+	options := v2.NewOptions(opts...)
 	handler := namedPathGorillaHandler{
 		service: service,
 		decoder: namedPathGorillaRequestDecoder{
-			unmarshalOptions: protojson.UnmarshalOptions{},
+			unmarshalOptions: options.UnmarshalOptions(),
 		},
 		encoder: namedPathGorillaResponseEncoder{
-			marshalOptions:   protojson.MarshalOptions{},
-			unmarshalOptions: protojson.UnmarshalOptions{},
+			marshalOptions:      options.MarshalOptions(),
+			unmarshalOptions:    options.UnmarshalOptions(),
+			responseTransformer: options.ResponseTransformer(),
 		},
 		errorEncoder: v2.DefaultErrorEncoder,
 	}
@@ -972,42 +1001,45 @@ func (decoder namedPathGorillaRequestDecoder) EmbedNamedPathWrapString(ctx conte
 }
 
 type namedPathGorillaResponseEncoder struct {
-	marshalOptions   protojson.MarshalOptions
-	unmarshalOptions protojson.UnmarshalOptions
+	marshalOptions      protojson.MarshalOptions
+	unmarshalOptions    protojson.UnmarshalOptions
+	responseTransformer v2.ResponseTransformer
 }
 
 func (encoder namedPathGorillaResponseEncoder) NamedPathString(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+	return v2.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
 func (encoder namedPathGorillaResponseEncoder) NamedPathOptString(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+	return v2.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
 func (encoder namedPathGorillaResponseEncoder) NamedPathWrapString(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+	return v2.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
 func (encoder namedPathGorillaResponseEncoder) EmbedNamedPathString(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+	return v2.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
 func (encoder namedPathGorillaResponseEncoder) EmbedNamedPathOptString(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+	return v2.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
 func (encoder namedPathGorillaResponseEncoder) EmbedNamedPathWrapString(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+	return v2.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
 
 type MixPathGorillaService interface {
 	MixPath(ctx context.Context, request *MixPathRequest) (*emptypb.Empty, error)
 }
 
-func AppendMixPathGorillaRoute(router *mux.Router, service MixPathGorillaService) *mux.Router {
+func AppendMixPathGorillaRoute(router *mux.Router, service MixPathGorillaService, opts ...v2.Option) *mux.Router {
+	options := v2.NewOptions(opts...)
 	handler := mixPathGorillaHandler{
 		service: service,
 		decoder: mixPathGorillaRequestDecoder{
-			unmarshalOptions: protojson.UnmarshalOptions{},
+			unmarshalOptions: options.UnmarshalOptions(),
 		},
 		encoder: mixPathGorillaResponseEncoder{
-			marshalOptions:   protojson.MarshalOptions{},
-			unmarshalOptions: protojson.UnmarshalOptions{},
+			marshalOptions:      options.MarshalOptions(),
+			unmarshalOptions:    options.UnmarshalOptions(),
+			responseTransformer: options.ResponseTransformer(),
 		},
 		errorEncoder: v2.DefaultErrorEncoder,
 	}
@@ -1068,10 +1100,11 @@ func (decoder mixPathGorillaRequestDecoder) MixPath(ctx context.Context, r *http
 }
 
 type mixPathGorillaResponseEncoder struct {
-	marshalOptions   protojson.MarshalOptions
-	unmarshalOptions protojson.UnmarshalOptions
+	marshalOptions      protojson.MarshalOptions
+	unmarshalOptions    protojson.UnmarshalOptions
+	responseTransformer v2.ResponseTransformer
 }
 
 func (encoder mixPathGorillaResponseEncoder) MixPath(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+	return v2.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }

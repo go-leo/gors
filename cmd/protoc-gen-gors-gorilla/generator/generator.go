@@ -69,15 +69,17 @@ func (f *Generator) GenerateServices(service *internal.Service, g *protogen.Gene
 }
 
 func (f *Generator) GenerateAppendServerFunc(service *internal.Service, g *protogen.GeneratedFile) error {
-	g.P("func ", service.AppendGorillaRouteName(), "(router *", internal.RouterIdent, ", service ", service.GorillaServiceName(), ") ", "*", internal.MuxPackage.Ident("Router"), " {")
+	g.P("func ", service.AppendGorillaRouteName(), "(router *", internal.RouterIdent, ", service ", service.GorillaServiceName(), ", opts ...", internal.OptionIdent, ") ", "*", internal.RouterIdent, " {")
+	g.P("options := ", internal.NewOptionsIdent, "(opts...)")
 	g.P("handler :=  ", service.Unexported(service.GorillaHandlerName()), "{")
 	g.P("service: service,")
 	g.P("decoder: ", service.Unexported(service.GorillaRequestDecoderName()), "{")
-	g.P("unmarshalOptions: ", internal.ProtoJsonUnmarshalOptionsIdent, "{},")
+	g.P("unmarshalOptions: options.UnmarshalOptions(),")
 	g.P("},")
 	g.P("encoder: ", service.Unexported(service.GorillaResponseEncoderName()), "{")
-	g.P("marshalOptions:   ", internal.ProtoJsonMarshalOptionsIdent, "{},")
-	g.P("unmarshalOptions: ", internal.ProtoJsonUnmarshalOptionsIdent, "{},")
+	g.P("marshalOptions: options.MarshalOptions(),")
+	g.P("unmarshalOptions: options.UnmarshalOptions(),")
+	g.P("responseTransformer: options.ResponseTransformer(),")
 	g.P("},")
 	g.P("errorEncoder: ", internal.DefaultErrorEncoderIdent, ",")
 	g.P("}")

@@ -11,6 +11,7 @@ func (f *Generator) GenerateServerResponseEncoder(service *internal.Service, g *
 	g.P("type ", service.Unexported(service.GorillaResponseEncoderName()), " struct {")
 	g.P("marshalOptions ", internal.ProtoJsonMarshalOptionsIdent)
 	g.P("unmarshalOptions ", internal.ProtoJsonUnmarshalOptionsIdent)
+	g.P("responseTransformer ", internal.ResponseTransformerIdent)
 	g.P("}")
 	for _, endpoint := range service.Endpoints {
 		httpRule := endpoint.HttpRule()
@@ -18,7 +19,7 @@ func (f *Generator) GenerateServerResponseEncoder(service *internal.Service, g *
 		bodyParameter := httpRule.ResponseBody()
 		switch bodyParameter {
 		case "", "*":
-			srcValue := []any{"resp"}
+			srcValue := []any{"encoder.responseTransformer(ctx, resp)"}
 			message := endpoint.Output()
 			switch message.Desc.FullName() {
 			case "google.api.HttpBody":

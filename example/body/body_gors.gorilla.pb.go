@@ -22,15 +22,17 @@ type BodyGorillaService interface {
 	HttpRequest(ctx context.Context, request *http.HttpRequest) (*emptypb.Empty, error)
 }
 
-func AppendBodyGorillaRoute(router *mux.Router, service BodyGorillaService) *mux.Router {
+func AppendBodyGorillaRoute(router *mux.Router, service BodyGorillaService, opts ...v2.Option) *mux.Router {
+	options := v2.NewOptions(opts...)
 	handler := bodyGorillaHandler{
 		service: service,
 		decoder: bodyGorillaRequestDecoder{
-			unmarshalOptions: protojson.UnmarshalOptions{},
+			unmarshalOptions: options.UnmarshalOptions(),
 		},
 		encoder: bodyGorillaResponseEncoder{
-			marshalOptions:   protojson.MarshalOptions{},
-			unmarshalOptions: protojson.UnmarshalOptions{},
+			marshalOptions:      options.MarshalOptions(),
+			unmarshalOptions:    options.UnmarshalOptions(),
+			responseTransformer: options.ResponseTransformer(),
 		},
 		errorEncoder: v2.DefaultErrorEncoder,
 	}
@@ -245,25 +247,26 @@ func (decoder bodyGorillaRequestDecoder) HttpRequest(ctx context.Context, r *htt
 }
 
 type bodyGorillaResponseEncoder struct {
-	marshalOptions   protojson.MarshalOptions
-	unmarshalOptions protojson.UnmarshalOptions
+	marshalOptions      protojson.MarshalOptions
+	unmarshalOptions    protojson.UnmarshalOptions
+	responseTransformer v2.ResponseTransformer
 }
 
 func (encoder bodyGorillaResponseEncoder) StarBody(ctx context.Context, w http1.ResponseWriter, resp *emptypb.Empty) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+	return v2.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
 func (encoder bodyGorillaResponseEncoder) NamedBody(ctx context.Context, w http1.ResponseWriter, resp *emptypb.Empty) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+	return v2.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
 func (encoder bodyGorillaResponseEncoder) NonBody(ctx context.Context, w http1.ResponseWriter, resp *emptypb.Empty) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+	return v2.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
 func (encoder bodyGorillaResponseEncoder) HttpBodyStarBody(ctx context.Context, w http1.ResponseWriter, resp *emptypb.Empty) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+	return v2.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
 func (encoder bodyGorillaResponseEncoder) HttpBodyNamedBody(ctx context.Context, w http1.ResponseWriter, resp *emptypb.Empty) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+	return v2.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
 func (encoder bodyGorillaResponseEncoder) HttpRequest(ctx context.Context, w http1.ResponseWriter, resp *emptypb.Empty) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+	return v2.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }

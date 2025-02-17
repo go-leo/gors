@@ -21,15 +21,17 @@ type WorkspacesGorillaService interface {
 	DeleteWorkspace(ctx context.Context, request *DeleteWorkspaceRequest) (*emptypb.Empty, error)
 }
 
-func AppendWorkspacesGorillaRoute(router *mux.Router, service WorkspacesGorillaService) *mux.Router {
+func AppendWorkspacesGorillaRoute(router *mux.Router, service WorkspacesGorillaService, opts ...v2.Option) *mux.Router {
+	options := v2.NewOptions(opts...)
 	handler := workspacesGorillaHandler{
 		service: service,
 		decoder: workspacesGorillaRequestDecoder{
-			unmarshalOptions: protojson.UnmarshalOptions{},
+			unmarshalOptions: options.UnmarshalOptions(),
 		},
 		encoder: workspacesGorillaResponseEncoder{
-			marshalOptions:   protojson.MarshalOptions{},
-			unmarshalOptions: protojson.UnmarshalOptions{},
+			marshalOptions:      options.MarshalOptions(),
+			unmarshalOptions:    options.UnmarshalOptions(),
+			responseTransformer: options.ResponseTransformer(),
 		},
 		errorEncoder: v2.DefaultErrorEncoder,
 	}
@@ -223,22 +225,23 @@ func (decoder workspacesGorillaRequestDecoder) DeleteWorkspace(ctx context.Conte
 }
 
 type workspacesGorillaResponseEncoder struct {
-	marshalOptions   protojson.MarshalOptions
-	unmarshalOptions protojson.UnmarshalOptions
+	marshalOptions      protojson.MarshalOptions
+	unmarshalOptions    protojson.UnmarshalOptions
+	responseTransformer v2.ResponseTransformer
 }
 
 func (encoder workspacesGorillaResponseEncoder) ListWorkspaces(ctx context.Context, w http.ResponseWriter, resp *ListWorkspacesResponse) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+	return v2.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
 func (encoder workspacesGorillaResponseEncoder) GetWorkspace(ctx context.Context, w http.ResponseWriter, resp *Workspace) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+	return v2.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
 func (encoder workspacesGorillaResponseEncoder) CreateWorkspace(ctx context.Context, w http.ResponseWriter, resp *Workspace) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+	return v2.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
 func (encoder workspacesGorillaResponseEncoder) UpdateWorkspace(ctx context.Context, w http.ResponseWriter, resp *Workspace) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+	return v2.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
 func (encoder workspacesGorillaResponseEncoder) DeleteWorkspace(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+	return v2.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }

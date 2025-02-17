@@ -18,15 +18,17 @@ type BoolQueryGorillaService interface {
 	BoolQuery(ctx context.Context, request *BoolQueryRequest) (*emptypb.Empty, error)
 }
 
-func AppendBoolQueryGorillaRoute(router *mux.Router, service BoolQueryGorillaService) *mux.Router {
+func AppendBoolQueryGorillaRoute(router *mux.Router, service BoolQueryGorillaService, opts ...v2.Option) *mux.Router {
+	options := v2.NewOptions(opts...)
 	handler := boolQueryGorillaHandler{
 		service: service,
 		decoder: boolQueryGorillaRequestDecoder{
-			unmarshalOptions: protojson.UnmarshalOptions{},
+			unmarshalOptions: options.UnmarshalOptions(),
 		},
 		encoder: boolQueryGorillaResponseEncoder{
-			marshalOptions:   protojson.MarshalOptions{},
-			unmarshalOptions: protojson.UnmarshalOptions{},
+			marshalOptions:      options.MarshalOptions(),
+			unmarshalOptions:    options.UnmarshalOptions(),
+			responseTransformer: options.ResponseTransformer(),
 		},
 		errorEncoder: v2.DefaultErrorEncoder,
 	}
@@ -83,27 +85,30 @@ func (decoder boolQueryGorillaRequestDecoder) BoolQuery(ctx context.Context, r *
 }
 
 type boolQueryGorillaResponseEncoder struct {
-	marshalOptions   protojson.MarshalOptions
-	unmarshalOptions protojson.UnmarshalOptions
+	marshalOptions      protojson.MarshalOptions
+	unmarshalOptions    protojson.UnmarshalOptions
+	responseTransformer v2.ResponseTransformer
 }
 
 func (encoder boolQueryGorillaResponseEncoder) BoolQuery(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+	return v2.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
 
 type Int32QueryGorillaService interface {
 	Int32Query(ctx context.Context, request *Int32QueryRequest) (*emptypb.Empty, error)
 }
 
-func AppendInt32QueryGorillaRoute(router *mux.Router, service Int32QueryGorillaService) *mux.Router {
+func AppendInt32QueryGorillaRoute(router *mux.Router, service Int32QueryGorillaService, opts ...v2.Option) *mux.Router {
+	options := v2.NewOptions(opts...)
 	handler := int32QueryGorillaHandler{
 		service: service,
 		decoder: int32QueryGorillaRequestDecoder{
-			unmarshalOptions: protojson.UnmarshalOptions{},
+			unmarshalOptions: options.UnmarshalOptions(),
 		},
 		encoder: int32QueryGorillaResponseEncoder{
-			marshalOptions:   protojson.MarshalOptions{},
-			unmarshalOptions: protojson.UnmarshalOptions{},
+			marshalOptions:      options.MarshalOptions(),
+			unmarshalOptions:    options.UnmarshalOptions(),
+			responseTransformer: options.ResponseTransformer(),
 		},
 		errorEncoder: v2.DefaultErrorEncoder,
 	}
@@ -164,27 +169,30 @@ func (decoder int32QueryGorillaRequestDecoder) Int32Query(ctx context.Context, r
 }
 
 type int32QueryGorillaResponseEncoder struct {
-	marshalOptions   protojson.MarshalOptions
-	unmarshalOptions protojson.UnmarshalOptions
+	marshalOptions      protojson.MarshalOptions
+	unmarshalOptions    protojson.UnmarshalOptions
+	responseTransformer v2.ResponseTransformer
 }
 
 func (encoder int32QueryGorillaResponseEncoder) Int32Query(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+	return v2.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
 
 type Int64QueryGorillaService interface {
 	Int64Query(ctx context.Context, request *Int64QueryRequest) (*emptypb.Empty, error)
 }
 
-func AppendInt64QueryGorillaRoute(router *mux.Router, service Int64QueryGorillaService) *mux.Router {
+func AppendInt64QueryGorillaRoute(router *mux.Router, service Int64QueryGorillaService, opts ...v2.Option) *mux.Router {
+	options := v2.NewOptions(opts...)
 	handler := int64QueryGorillaHandler{
 		service: service,
 		decoder: int64QueryGorillaRequestDecoder{
-			unmarshalOptions: protojson.UnmarshalOptions{},
+			unmarshalOptions: options.UnmarshalOptions(),
 		},
 		encoder: int64QueryGorillaResponseEncoder{
-			marshalOptions:   protojson.MarshalOptions{},
-			unmarshalOptions: protojson.UnmarshalOptions{},
+			marshalOptions:      options.MarshalOptions(),
+			unmarshalOptions:    options.UnmarshalOptions(),
+			responseTransformer: options.ResponseTransformer(),
 		},
 		errorEncoder: v2.DefaultErrorEncoder,
 	}
@@ -245,27 +253,30 @@ func (decoder int64QueryGorillaRequestDecoder) Int64Query(ctx context.Context, r
 }
 
 type int64QueryGorillaResponseEncoder struct {
-	marshalOptions   protojson.MarshalOptions
-	unmarshalOptions protojson.UnmarshalOptions
+	marshalOptions      protojson.MarshalOptions
+	unmarshalOptions    protojson.UnmarshalOptions
+	responseTransformer v2.ResponseTransformer
 }
 
 func (encoder int64QueryGorillaResponseEncoder) Int64Query(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+	return v2.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
 
 type Uint32QueryGorillaService interface {
 	Uint32Query(ctx context.Context, request *Uint32QueryRequest) (*emptypb.Empty, error)
 }
 
-func AppendUint32QueryGorillaRoute(router *mux.Router, service Uint32QueryGorillaService) *mux.Router {
+func AppendUint32QueryGorillaRoute(router *mux.Router, service Uint32QueryGorillaService, opts ...v2.Option) *mux.Router {
+	options := v2.NewOptions(opts...)
 	handler := uint32QueryGorillaHandler{
 		service: service,
 		decoder: uint32QueryGorillaRequestDecoder{
-			unmarshalOptions: protojson.UnmarshalOptions{},
+			unmarshalOptions: options.UnmarshalOptions(),
 		},
 		encoder: uint32QueryGorillaResponseEncoder{
-			marshalOptions:   protojson.MarshalOptions{},
-			unmarshalOptions: protojson.UnmarshalOptions{},
+			marshalOptions:      options.MarshalOptions(),
+			unmarshalOptions:    options.UnmarshalOptions(),
+			responseTransformer: options.ResponseTransformer(),
 		},
 		errorEncoder: v2.DefaultErrorEncoder,
 	}
@@ -324,27 +335,30 @@ func (decoder uint32QueryGorillaRequestDecoder) Uint32Query(ctx context.Context,
 }
 
 type uint32QueryGorillaResponseEncoder struct {
-	marshalOptions   protojson.MarshalOptions
-	unmarshalOptions protojson.UnmarshalOptions
+	marshalOptions      protojson.MarshalOptions
+	unmarshalOptions    protojson.UnmarshalOptions
+	responseTransformer v2.ResponseTransformer
 }
 
 func (encoder uint32QueryGorillaResponseEncoder) Uint32Query(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+	return v2.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
 
 type Uint64QueryGorillaService interface {
 	Uint64Query(ctx context.Context, request *Uint64QueryRequest) (*emptypb.Empty, error)
 }
 
-func AppendUint64QueryGorillaRoute(router *mux.Router, service Uint64QueryGorillaService) *mux.Router {
+func AppendUint64QueryGorillaRoute(router *mux.Router, service Uint64QueryGorillaService, opts ...v2.Option) *mux.Router {
+	options := v2.NewOptions(opts...)
 	handler := uint64QueryGorillaHandler{
 		service: service,
 		decoder: uint64QueryGorillaRequestDecoder{
-			unmarshalOptions: protojson.UnmarshalOptions{},
+			unmarshalOptions: options.UnmarshalOptions(),
 		},
 		encoder: uint64QueryGorillaResponseEncoder{
-			marshalOptions:   protojson.MarshalOptions{},
-			unmarshalOptions: protojson.UnmarshalOptions{},
+			marshalOptions:      options.MarshalOptions(),
+			unmarshalOptions:    options.UnmarshalOptions(),
+			responseTransformer: options.ResponseTransformer(),
 		},
 		errorEncoder: v2.DefaultErrorEncoder,
 	}
@@ -403,27 +417,30 @@ func (decoder uint64QueryGorillaRequestDecoder) Uint64Query(ctx context.Context,
 }
 
 type uint64QueryGorillaResponseEncoder struct {
-	marshalOptions   protojson.MarshalOptions
-	unmarshalOptions protojson.UnmarshalOptions
+	marshalOptions      protojson.MarshalOptions
+	unmarshalOptions    protojson.UnmarshalOptions
+	responseTransformer v2.ResponseTransformer
 }
 
 func (encoder uint64QueryGorillaResponseEncoder) Uint64Query(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+	return v2.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
 
 type FloatQueryGorillaService interface {
 	FloatQuery(ctx context.Context, request *FloatQueryRequest) (*emptypb.Empty, error)
 }
 
-func AppendFloatQueryGorillaRoute(router *mux.Router, service FloatQueryGorillaService) *mux.Router {
+func AppendFloatQueryGorillaRoute(router *mux.Router, service FloatQueryGorillaService, opts ...v2.Option) *mux.Router {
+	options := v2.NewOptions(opts...)
 	handler := floatQueryGorillaHandler{
 		service: service,
 		decoder: floatQueryGorillaRequestDecoder{
-			unmarshalOptions: protojson.UnmarshalOptions{},
+			unmarshalOptions: options.UnmarshalOptions(),
 		},
 		encoder: floatQueryGorillaResponseEncoder{
-			marshalOptions:   protojson.MarshalOptions{},
-			unmarshalOptions: protojson.UnmarshalOptions{},
+			marshalOptions:      options.MarshalOptions(),
+			unmarshalOptions:    options.UnmarshalOptions(),
+			responseTransformer: options.ResponseTransformer(),
 		},
 		errorEncoder: v2.DefaultErrorEncoder,
 	}
@@ -480,27 +497,30 @@ func (decoder floatQueryGorillaRequestDecoder) FloatQuery(ctx context.Context, r
 }
 
 type floatQueryGorillaResponseEncoder struct {
-	marshalOptions   protojson.MarshalOptions
-	unmarshalOptions protojson.UnmarshalOptions
+	marshalOptions      protojson.MarshalOptions
+	unmarshalOptions    protojson.UnmarshalOptions
+	responseTransformer v2.ResponseTransformer
 }
 
 func (encoder floatQueryGorillaResponseEncoder) FloatQuery(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+	return v2.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
 
 type DoubleQueryGorillaService interface {
 	DoubleQuery(ctx context.Context, request *DoubleQueryRequest) (*emptypb.Empty, error)
 }
 
-func AppendDoubleQueryGorillaRoute(router *mux.Router, service DoubleQueryGorillaService) *mux.Router {
+func AppendDoubleQueryGorillaRoute(router *mux.Router, service DoubleQueryGorillaService, opts ...v2.Option) *mux.Router {
+	options := v2.NewOptions(opts...)
 	handler := doubleQueryGorillaHandler{
 		service: service,
 		decoder: doubleQueryGorillaRequestDecoder{
-			unmarshalOptions: protojson.UnmarshalOptions{},
+			unmarshalOptions: options.UnmarshalOptions(),
 		},
 		encoder: doubleQueryGorillaResponseEncoder{
-			marshalOptions:   protojson.MarshalOptions{},
-			unmarshalOptions: protojson.UnmarshalOptions{},
+			marshalOptions:      options.MarshalOptions(),
+			unmarshalOptions:    options.UnmarshalOptions(),
+			responseTransformer: options.ResponseTransformer(),
 		},
 		errorEncoder: v2.DefaultErrorEncoder,
 	}
@@ -557,27 +577,30 @@ func (decoder doubleQueryGorillaRequestDecoder) DoubleQuery(ctx context.Context,
 }
 
 type doubleQueryGorillaResponseEncoder struct {
-	marshalOptions   protojson.MarshalOptions
-	unmarshalOptions protojson.UnmarshalOptions
+	marshalOptions      protojson.MarshalOptions
+	unmarshalOptions    protojson.UnmarshalOptions
+	responseTransformer v2.ResponseTransformer
 }
 
 func (encoder doubleQueryGorillaResponseEncoder) DoubleQuery(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+	return v2.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
 
 type StringQueryGorillaService interface {
 	StringQuery(ctx context.Context, request *StringQueryRequest) (*emptypb.Empty, error)
 }
 
-func AppendStringQueryGorillaRoute(router *mux.Router, service StringQueryGorillaService) *mux.Router {
+func AppendStringQueryGorillaRoute(router *mux.Router, service StringQueryGorillaService, opts ...v2.Option) *mux.Router {
+	options := v2.NewOptions(opts...)
 	handler := stringQueryGorillaHandler{
 		service: service,
 		decoder: stringQueryGorillaRequestDecoder{
-			unmarshalOptions: protojson.UnmarshalOptions{},
+			unmarshalOptions: options.UnmarshalOptions(),
 		},
 		encoder: stringQueryGorillaResponseEncoder{
-			marshalOptions:   protojson.MarshalOptions{},
-			unmarshalOptions: protojson.UnmarshalOptions{},
+			marshalOptions:      options.MarshalOptions(),
+			unmarshalOptions:    options.UnmarshalOptions(),
+			responseTransformer: options.ResponseTransformer(),
 		},
 		errorEncoder: v2.DefaultErrorEncoder,
 	}
@@ -634,27 +657,30 @@ func (decoder stringQueryGorillaRequestDecoder) StringQuery(ctx context.Context,
 }
 
 type stringQueryGorillaResponseEncoder struct {
-	marshalOptions   protojson.MarshalOptions
-	unmarshalOptions protojson.UnmarshalOptions
+	marshalOptions      protojson.MarshalOptions
+	unmarshalOptions    protojson.UnmarshalOptions
+	responseTransformer v2.ResponseTransformer
 }
 
 func (encoder stringQueryGorillaResponseEncoder) StringQuery(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+	return v2.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
 
 type EnumQueryGorillaService interface {
 	EnumQuery(ctx context.Context, request *EnumQueryRequest) (*emptypb.Empty, error)
 }
 
-func AppendEnumQueryGorillaRoute(router *mux.Router, service EnumQueryGorillaService) *mux.Router {
+func AppendEnumQueryGorillaRoute(router *mux.Router, service EnumQueryGorillaService, opts ...v2.Option) *mux.Router {
+	options := v2.NewOptions(opts...)
 	handler := enumQueryGorillaHandler{
 		service: service,
 		decoder: enumQueryGorillaRequestDecoder{
-			unmarshalOptions: protojson.UnmarshalOptions{},
+			unmarshalOptions: options.UnmarshalOptions(),
 		},
 		encoder: enumQueryGorillaResponseEncoder{
-			marshalOptions:   protojson.MarshalOptions{},
-			unmarshalOptions: protojson.UnmarshalOptions{},
+			marshalOptions:      options.MarshalOptions(),
+			unmarshalOptions:    options.UnmarshalOptions(),
+			responseTransformer: options.ResponseTransformer(),
 		},
 		errorEncoder: v2.DefaultErrorEncoder,
 	}
@@ -710,10 +736,11 @@ func (decoder enumQueryGorillaRequestDecoder) EnumQuery(ctx context.Context, r *
 }
 
 type enumQueryGorillaResponseEncoder struct {
-	marshalOptions   protojson.MarshalOptions
-	unmarshalOptions protojson.UnmarshalOptions
+	marshalOptions      protojson.MarshalOptions
+	unmarshalOptions    protojson.UnmarshalOptions
+	responseTransformer v2.ResponseTransformer
 }
 
 func (encoder enumQueryGorillaResponseEncoder) EnumQuery(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+	return v2.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }

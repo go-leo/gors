@@ -20,15 +20,17 @@ type DemoGorillaService interface {
 	ListUser(ctx context.Context, request *ListUserRequest) (*ListUserResponse, error)
 }
 
-func AppendDemoGorillaRoute(router *mux.Router, service DemoGorillaService) *mux.Router {
+func AppendDemoGorillaRoute(router *mux.Router, service DemoGorillaService, opts ...v2.Option) *mux.Router {
+	options := v2.NewOptions(opts...)
 	handler := demoGorillaHandler{
 		service: service,
 		decoder: demoGorillaRequestDecoder{
-			unmarshalOptions: protojson.UnmarshalOptions{},
+			unmarshalOptions: options.UnmarshalOptions(),
 		},
 		encoder: demoGorillaResponseEncoder{
-			marshalOptions:   protojson.MarshalOptions{},
-			unmarshalOptions: protojson.UnmarshalOptions{},
+			marshalOptions:      options.MarshalOptions(),
+			unmarshalOptions:    options.UnmarshalOptions(),
+			responseTransformer: options.ResponseTransformer(),
 		},
 		errorEncoder: v2.DefaultErrorEncoder,
 	}
@@ -224,22 +226,23 @@ func (decoder demoGorillaRequestDecoder) ListUser(ctx context.Context, r *http.R
 }
 
 type demoGorillaResponseEncoder struct {
-	marshalOptions   protojson.MarshalOptions
-	unmarshalOptions protojson.UnmarshalOptions
+	marshalOptions      protojson.MarshalOptions
+	unmarshalOptions    protojson.UnmarshalOptions
+	responseTransformer v2.ResponseTransformer
 }
 
 func (encoder demoGorillaResponseEncoder) CreateUser(ctx context.Context, w http.ResponseWriter, resp *CreateUserResponse) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+	return v2.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
 func (encoder demoGorillaResponseEncoder) DeleteUser(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+	return v2.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
 func (encoder demoGorillaResponseEncoder) ModifyUser(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+	return v2.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
 func (encoder demoGorillaResponseEncoder) GetUser(ctx context.Context, w http.ResponseWriter, resp *GetUserResponse) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+	return v2.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
 func (encoder demoGorillaResponseEncoder) ListUser(ctx context.Context, w http.ResponseWriter, resp *ListUserResponse) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+	return v2.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }

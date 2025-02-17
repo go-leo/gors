@@ -27,15 +27,17 @@ type LibraryServiceGorillaService interface {
 	MoveBook(ctx context.Context, request *MoveBookRequest) (*Book, error)
 }
 
-func AppendLibraryServiceGorillaRoute(router *mux.Router, service LibraryServiceGorillaService) *mux.Router {
+func AppendLibraryServiceGorillaRoute(router *mux.Router, service LibraryServiceGorillaService, opts ...v2.Option) *mux.Router {
+	options := v2.NewOptions(opts...)
 	handler := libraryServiceGorillaHandler{
 		service: service,
 		decoder: libraryServiceGorillaRequestDecoder{
-			unmarshalOptions: protojson.UnmarshalOptions{},
+			unmarshalOptions: options.UnmarshalOptions(),
 		},
 		encoder: libraryServiceGorillaResponseEncoder{
-			marshalOptions:   protojson.MarshalOptions{},
-			unmarshalOptions: protojson.UnmarshalOptions{},
+			marshalOptions:      options.MarshalOptions(),
+			unmarshalOptions:    options.UnmarshalOptions(),
+			responseTransformer: options.ResponseTransformer(),
 		},
 		errorEncoder: v2.DefaultErrorEncoder,
 	}
@@ -433,40 +435,41 @@ func (decoder libraryServiceGorillaRequestDecoder) MoveBook(ctx context.Context,
 }
 
 type libraryServiceGorillaResponseEncoder struct {
-	marshalOptions   protojson.MarshalOptions
-	unmarshalOptions protojson.UnmarshalOptions
+	marshalOptions      protojson.MarshalOptions
+	unmarshalOptions    protojson.UnmarshalOptions
+	responseTransformer v2.ResponseTransformer
 }
 
 func (encoder libraryServiceGorillaResponseEncoder) CreateShelf(ctx context.Context, w http.ResponseWriter, resp *Shelf) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+	return v2.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
 func (encoder libraryServiceGorillaResponseEncoder) GetShelf(ctx context.Context, w http.ResponseWriter, resp *Shelf) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+	return v2.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
 func (encoder libraryServiceGorillaResponseEncoder) ListShelves(ctx context.Context, w http.ResponseWriter, resp *ListShelvesResponse) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+	return v2.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
 func (encoder libraryServiceGorillaResponseEncoder) DeleteShelf(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+	return v2.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
 func (encoder libraryServiceGorillaResponseEncoder) MergeShelves(ctx context.Context, w http.ResponseWriter, resp *Shelf) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+	return v2.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
 func (encoder libraryServiceGorillaResponseEncoder) CreateBook(ctx context.Context, w http.ResponseWriter, resp *Book) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+	return v2.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
 func (encoder libraryServiceGorillaResponseEncoder) GetBook(ctx context.Context, w http.ResponseWriter, resp *Book) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+	return v2.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
 func (encoder libraryServiceGorillaResponseEncoder) ListBooks(ctx context.Context, w http.ResponseWriter, resp *ListBooksResponse) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+	return v2.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
 func (encoder libraryServiceGorillaResponseEncoder) DeleteBook(ctx context.Context, w http.ResponseWriter, resp *emptypb.Empty) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+	return v2.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
 func (encoder libraryServiceGorillaResponseEncoder) UpdateBook(ctx context.Context, w http.ResponseWriter, resp *Book) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+	return v2.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }
 func (encoder libraryServiceGorillaResponseEncoder) MoveBook(ctx context.Context, w http.ResponseWriter, resp *Book) error {
-	return v2.ResponseEncoder(ctx, w, resp, encoder.marshalOptions)
+	return v2.ResponseEncoder(ctx, w, encoder.responseTransformer(ctx, resp), encoder.marshalOptions)
 }

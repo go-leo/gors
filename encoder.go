@@ -13,6 +13,10 @@ import (
 
 type ErrorEncoder func(ctx context.Context, err error, w http.ResponseWriter)
 
+type ResponseTransformer func(ctx context.Context, resp proto.Message) proto.Message
+
+func DefaultResponseTransformer(ctx context.Context, resp proto.Message) proto.Message { return resp }
+
 func DefaultErrorEncoder(ctx context.Context, err error, w http.ResponseWriter) {
 	contentType, body := "text/plain; charset=utf-8", []byte(err.Error())
 	if marshaler, ok := err.(json.Marshaler); ok {
