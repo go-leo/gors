@@ -5,12 +5,20 @@ import (
 	"fmt"
 	"github.com/gorilla/mux"
 	"google.golang.org/protobuf/types/known/emptypb"
+	"log"
 	"maps"
 	"net/http"
 	"slices"
-	"testing"
 	"time"
 )
+
+func Example() {
+	router := mux.NewRouter()
+	router = AppendDemoGorillaRoute(router, NewMockDemo())
+	if err := http.ListenAndServe(":8080", router); err != nil {
+		log.Fatal(err)
+	}
+}
 
 type MockDemo struct {
 	m map[int64]string
@@ -66,12 +74,4 @@ func (svc *MockDemo) ListUser(ctx context.Context, request *ListUserRequest) (*L
 
 func NewMockDemo() DemoGorillaService {
 	return &MockDemo{m: map[int64]string{}}
-}
-
-func TestRoute(t *testing.T) {
-	router := mux.NewRouter()
-	router = AppendDemoGorillaRoute(router, NewMockDemo())
-	if err := http.ListenAndServe(":8080", router); err != nil {
-		t.Fatal(err)
-	}
 }
