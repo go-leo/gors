@@ -1,8 +1,6 @@
 module github.com/go-leo/gors/v2
 
-go 1.23.0
-
-toolchain go1.23.6
+go 1.23.6
 
 require (
 	github.com/go-leo/gox v0.0.0-20250214090007-f44ede121342
