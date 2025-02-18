@@ -37,32 +37,32 @@ func AppendBodyGorillaRoute(router *mux.Router, service BodyGorillaService, opts
 		errorEncoder: v2.DefaultErrorEncoder,
 	}
 	router.NewRoute().
-		Name("/leo.gors.body.v1.Body/StarBody").
+		Name("/leo.gors.example.body.v1.Body/StarBody").
 		Methods("POST").
 		Path("/v1/star/body").
 		Handler(handler.StarBody())
 	router.NewRoute().
-		Name("/leo.gors.body.v1.Body/NamedBody").
+		Name("/leo.gors.example.body.v1.Body/NamedBody").
 		Methods("POST").
 		Path("/v1/named/body").
 		Handler(handler.NamedBody())
 	router.NewRoute().
-		Name("/leo.gors.body.v1.Body/NonBody").
+		Name("/leo.gors.example.body.v1.Body/NonBody").
 		Methods("GET").
 		Path("/v1/user_body").
 		Handler(handler.NonBody())
 	router.NewRoute().
-		Name("/leo.gors.body.v1.Body/HttpBodyStarBody").
+		Name("/leo.gors.example.body.v1.Body/HttpBodyStarBody").
 		Methods("PUT").
 		Path("/v1/http/body/star/body").
 		Handler(handler.HttpBodyStarBody())
 	router.NewRoute().
-		Name("/leo.gors.body.v1.Body/HttpBodyNamedBody").
+		Name("/leo.gors.example.body.v1.Body/HttpBodyNamedBody").
 		Methods("PUT").
 		Path("/v1/http/body/named/body").
 		Handler(handler.HttpBodyNamedBody())
 	router.NewRoute().
-		Name("/leo.gors.body.v1.Body/HttpRequest").
+		Name("/leo.gors.example.body.v1.Body/HttpRequest").
 		Methods("PUT").
 		Path("/v1/http/request").
 		Handler(handler.HttpRequest())

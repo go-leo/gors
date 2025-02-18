@@ -33,7 +33,7 @@ func AppendBoolQueryGorillaRoute(router *mux.Router, service BoolQueryGorillaSer
 		errorEncoder: v2.DefaultErrorEncoder,
 	}
 	router.NewRoute().
-		Name("/leo.gors.query.v1.BoolQuery/BoolQuery").
+		Name("/leo.gors.example.query.v1.BoolQuery/BoolQuery").
 		Methods("GET").
 		Path("/v1/bool").
 		Handler(handler.BoolQuery())
@@ -113,7 +113,7 @@ func AppendInt32QueryGorillaRoute(router *mux.Router, service Int32QueryGorillaS
 		errorEncoder: v2.DefaultErrorEncoder,
 	}
 	router.NewRoute().
-		Name("/leo.gors.query.v1.Int32Query/Int32Query").
+		Name("/leo.gors.example.query.v1.Int32Query/Int32Query").
 		Methods("GET").
 		Path("/v1/int32").
 		Handler(handler.Int32Query())
@@ -197,7 +197,7 @@ func AppendInt64QueryGorillaRoute(router *mux.Router, service Int64QueryGorillaS
 		errorEncoder: v2.DefaultErrorEncoder,
 	}
 	router.NewRoute().
-		Name("/leo.gors.query.v1.Int64Query/Int64Query").
+		Name("/leo.gors.example.query.v1.Int64Query/Int64Query").
 		Methods("GET").
 		Path("/v1/int64").
 		Handler(handler.Int64Query())
@@ -281,7 +281,7 @@ func AppendUint32QueryGorillaRoute(router *mux.Router, service Uint32QueryGorill
 		errorEncoder: v2.DefaultErrorEncoder,
 	}
 	router.NewRoute().
-		Name("/leo.gors.query.v1.Uint32Query/Uint32Query").
+		Name("/leo.gors.example.query.v1.Uint32Query/Uint32Query").
 		Methods("GET").
 		Path("/v1/uint32").
 		Handler(handler.Uint32Query())
@@ -363,7 +363,7 @@ func AppendUint64QueryGorillaRoute(router *mux.Router, service Uint64QueryGorill
 		errorEncoder: v2.DefaultErrorEncoder,
 	}
 	router.NewRoute().
-		Name("/leo.gors.query.v1.Uint64Query/Uint64Query").
+		Name("/leo.gors.example.query.v1.Uint64Query/Uint64Query").
 		Methods("GET").
 		Path("/v1/uint64").
 		Handler(handler.Uint64Query())
@@ -445,7 +445,7 @@ func AppendFloatQueryGorillaRoute(router *mux.Router, service FloatQueryGorillaS
 		errorEncoder: v2.DefaultErrorEncoder,
 	}
 	router.NewRoute().
-		Name("/leo.gors.query.v1.FloatQuery/FloatQuery").
+		Name("/leo.gors.example.query.v1.FloatQuery/FloatQuery").
 		Methods("GET").
 		Path("/v1/float").
 		Handler(handler.FloatQuery())
@@ -525,7 +525,7 @@ func AppendDoubleQueryGorillaRoute(router *mux.Router, service DoubleQueryGorill
 		errorEncoder: v2.DefaultErrorEncoder,
 	}
 	router.NewRoute().
-		Name("/leo.gors.query.v1.DoubleQuery/DoubleQuery").
+		Name("/leo.gors.example.query.v1.DoubleQuery/DoubleQuery").
 		Methods("GET").
 		Path("/v1/double").
 		Handler(handler.DoubleQuery())
@@ -605,7 +605,7 @@ func AppendStringQueryGorillaRoute(router *mux.Router, service StringQueryGorill
 		errorEncoder: v2.DefaultErrorEncoder,
 	}
 	router.NewRoute().
-		Name("/leo.gors.query.v1.StringQuery/StringQuery").
+		Name("/leo.gors.example.query.v1.StringQuery/StringQuery").
 		Methods("GET").
 		Path("/v1/string").
 		Handler(handler.StringQuery())
@@ -685,7 +685,7 @@ func AppendEnumQueryGorillaRoute(router *mux.Router, service EnumQueryGorillaSer
 		errorEncoder: v2.DefaultErrorEncoder,
 	}
 	router.NewRoute().
-		Name("/leo.gors.query.v1.EnumQuery/EnumQuery").
+		Name("/leo.gors.example.query.v1.EnumQuery/EnumQuery").
 		Methods("GET").
 		Path("/v1/enum").
 		Handler(handler.EnumQuery())

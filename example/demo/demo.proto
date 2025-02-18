@@ -1,5 +1,5 @@
 syntax = "proto3";
-package leo.gors.demo.v1;
+package leo.gors.example.demo.v1;
 option go_package = "github.com/go-leo/gors/v2/example/demo/v1;demo";
 
 import "google/protobuf/empty.proto";

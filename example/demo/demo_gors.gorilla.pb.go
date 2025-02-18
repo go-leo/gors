@@ -35,27 +35,27 @@ func AppendDemoGorillaRoute(router *mux.Router, service DemoGorillaService, opts
 		errorEncoder: v2.DefaultErrorEncoder,
 	}
 	router.NewRoute().
-		Name("/leo.gors.demo.v1.Demo/CreateUser").
+		Name("/leo.gors.example.demo.v1.Demo/CreateUser").
 		Methods("POST").
 		Path("/v1/user").
 		Handler(handler.CreateUser())
 	router.NewRoute().
-		Name("/leo.gors.demo.v1.Demo/DeleteUser").
+		Name("/leo.gors.example.demo.v1.Demo/DeleteUser").
 		Methods("DELETE").
 		Path("/v1/user/{id}").
 		Handler(handler.DeleteUser())
 	router.NewRoute().
-		Name("/leo.gors.demo.v1.Demo/ModifyUser").
+		Name("/leo.gors.example.demo.v1.Demo/ModifyUser").
 		Methods("PUT").
 		Path("/v1/user/{id}").
 		Handler(handler.ModifyUser())
 	router.NewRoute().
-		Name("/leo.gors.demo.v1.Demo/GetUser").
+		Name("/leo.gors.example.demo.v1.Demo/GetUser").
 		Methods("GET").
 		Path("/v1/user/{id}").
 		Handler(handler.GetUser())
 	router.NewRoute().
-		Name("/leo.gors.demo.v1.Demo/ListUser").
+		Name("/leo.gors.example.demo.v1.Demo/ListUser").
 		Methods("GET").
 		Path("/v1/users").
 		Handler(handler.ListUser())

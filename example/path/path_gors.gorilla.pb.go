@@ -34,7 +34,7 @@ func AppendBoolPathGorillaRoute(router *mux.Router, service BoolPathGorillaServi
 		errorEncoder: v2.DefaultErrorEncoder,
 	}
 	router.NewRoute().
-		Name("/leo.gors.path.v1.BoolPath/BoolPath").
+		Name("/leo.gors.example.path.v1.BoolPath/BoolPath").
 		Methods("GET").
 		Path("/v1/{bool}/{opt_bool}/{wrap_bool}").
 		Handler(handler.BoolPath())
@@ -114,7 +114,7 @@ func AppendInt32PathGorillaRoute(router *mux.Router, service Int32PathGorillaSer
 		errorEncoder: v2.DefaultErrorEncoder,
 	}
 	router.NewRoute().
-		Name("/leo.gors.path.v1.Int32Path/Int32Path").
+		Name("/leo.gors.example.path.v1.Int32Path/Int32Path").
 		Methods("GET").
 		Path("/v1/{int32}/{sint32}/{sfixed32}/{opt_int32}/{opt_sint32}/{opt_sfixed32}/{wrap_int32}").
 		Handler(handler.Int32Path())
@@ -198,7 +198,7 @@ func AppendInt64PathGorillaRoute(router *mux.Router, service Int64PathGorillaSer
 		errorEncoder: v2.DefaultErrorEncoder,
 	}
 	router.NewRoute().
-		Name("/leo.gors.path.v1.Int64Path/Int64Path").
+		Name("/leo.gors.example.path.v1.Int64Path/Int64Path").
 		Methods("GET").
 		Path("/v1/{int64}/{sint64}/{sfixed64}/{opt_int64}/{opt_sint64}/{opt_sfixed64}/{wrap_int64}").
 		Handler(handler.Int64Path())
@@ -282,7 +282,7 @@ func AppendUint32PathGorillaRoute(router *mux.Router, service Uint32PathGorillaS
 		errorEncoder: v2.DefaultErrorEncoder,
 	}
 	router.NewRoute().
-		Name("/leo.gors.path.v1.Uint32Path/Uint32Path").
+		Name("/leo.gors.example.path.v1.Uint32Path/Uint32Path").
 		Methods("GET").
 		Path("/v1/{uint32}/{fixed32}/{opt_uint32}/{opt_fixed32}/{wrap_uint32}").
 		Handler(handler.Uint32Path())
@@ -364,7 +364,7 @@ func AppendUint64PathGorillaRoute(router *mux.Router, service Uint64PathGorillaS
 		errorEncoder: v2.DefaultErrorEncoder,
 	}
 	router.NewRoute().
-		Name("/leo.gors.path.v1.Uint64Path/Uint64Path").
+		Name("/leo.gors.example.path.v1.Uint64Path/Uint64Path").
 		Methods("GET").
 		Path("/v1/{uint64}/{fixed64}/{opt_uint64}/{opt_fixed64}/{wrap_uint64}").
 		Handler(handler.Uint64Path())
@@ -446,7 +446,7 @@ func AppendFloatPathGorillaRoute(router *mux.Router, service FloatPathGorillaSer
 		errorEncoder: v2.DefaultErrorEncoder,
 	}
 	router.NewRoute().
-		Name("/leo.gors.path.v1.FloatPath/FloatPath").
+		Name("/leo.gors.example.path.v1.FloatPath/FloatPath").
 		Methods("GET").
 		Path("/v1/{float}/{opt_float}/{wrap_float}").
 		Handler(handler.FloatPath())
@@ -526,7 +526,7 @@ func AppendDoublePathGorillaRoute(router *mux.Router, service DoublePathGorillaS
 		errorEncoder: v2.DefaultErrorEncoder,
 	}
 	router.NewRoute().
-		Name("/leo.gors.path.v1.DoublePath/DoublePath").
+		Name("/leo.gors.example.path.v1.DoublePath/DoublePath").
 		Methods("GET").
 		Path("/v1/{double}/{opt_double}/{wrap_double}").
 		Handler(handler.DoublePath())
@@ -606,7 +606,7 @@ func AppendStringPathGorillaRoute(router *mux.Router, service StringPathGorillaS
 		errorEncoder: v2.DefaultErrorEncoder,
 	}
 	router.NewRoute().
-		Name("/leo.gors.path.v1.StringPath/StringPath").
+		Name("/leo.gors.example.path.v1.StringPath/StringPath").
 		Methods("GET").
 		Path("/v1/{string}/{opt_string}/{wrap_string}").
 		Handler(handler.StringPath())
@@ -686,7 +686,7 @@ func AppendEnumPathGorillaRoute(router *mux.Router, service EnumPathGorillaServi
 		errorEncoder: v2.DefaultErrorEncoder,
 	}
 	router.NewRoute().
-		Name("/leo.gors.path.v1.EnumPath/EnumPath").
+		Name("/leo.gors.example.path.v1.EnumPath/EnumPath").
 		Methods("GET").
 		Path("/v1/{status}/{opt_status}").
 		Handler(handler.EnumPath())
@@ -770,32 +770,32 @@ func AppendNamedPathGorillaRoute(router *mux.Router, service NamedPathGorillaSer
 		errorEncoder: v2.DefaultErrorEncoder,
 	}
 	router.NewRoute().
-		Name("/leo.gors.path.v1.NamedPath/NamedPathString").
+		Name("/leo.gors.example.path.v1.NamedPath/NamedPathString").
 		Methods("GET").
 		Path("/v1/string/classes/{class}/shelves/{shelf}/books/{book}/families/{family}").
 		Handler(handler.NamedPathString())
 	router.NewRoute().
-		Name("/leo.gors.path.v1.NamedPath/NamedPathOptString").
+		Name("/leo.gors.example.path.v1.NamedPath/NamedPathOptString").
 		Methods("GET").
 		Path("/v1/opt_string/classes/{class}/shelves/{shelf}/books/{book}/families/{family}").
 		Handler(handler.NamedPathOptString())
 	router.NewRoute().
-		Name("/leo.gors.path.v1.NamedPath/NamedPathWrapString").
+		Name("/leo.gors.example.path.v1.NamedPath/NamedPathWrapString").
 		Methods("GET").
 		Path("/v1/wrap_string/classes/{class}/shelves/{shelf}/books/{book}/families/{family}").
 		Handler(handler.NamedPathWrapString())
 	router.NewRoute().
-		Name("/leo.gors.path.v1.NamedPath/EmbedNamedPathString").
+		Name("/leo.gors.example.path.v1.NamedPath/EmbedNamedPathString").
 		Methods("GET").
 		Path("/v1/embed/string/classes/{class}/shelves/{shelf}/books/{book}/families/{family}").
 		Handler(handler.EmbedNamedPathString())
 	router.NewRoute().
-		Name("/leo.gors.path.v1.NamedPath/EmbedNamedPathOptString").
+		Name("/leo.gors.example.path.v1.NamedPath/EmbedNamedPathOptString").
 		Methods("GET").
 		Path("/v1/embed/opt_string/classes/{class}/shelves/{shelf}/books/{book}/families/{family}").
 		Handler(handler.EmbedNamedPathOptString())
 	router.NewRoute().
-		Name("/leo.gors.path.v1.NamedPath/EmbedNamedPathWrapString").
+		Name("/leo.gors.example.path.v1.NamedPath/EmbedNamedPathWrapString").
 		Methods("GET").
 		Path("/v1/embed/wrap_string/classes/{class}/shelves/{shelf}/books/{book}/families/{family}").
 		Handler(handler.EmbedNamedPathWrapString())
@@ -1044,7 +1044,7 @@ func AppendMixPathGorillaRoute(router *mux.Router, service MixPathGorillaService
 		errorEncoder: v2.DefaultErrorEncoder,
 	}
 	router.NewRoute().
-		Name("/leo.gors.path.v1.MixPath/MixPath").
+		Name("/leo.gors.example.path.v1.MixPath/MixPath").
 		Methods("GET").
 		Path("/v1/{string}/{opt_string}/{wrap_string}/classes/{class}/shelves/{shelf}/books/{book}/families/{family}").
 		Handler(handler.MixPath())
