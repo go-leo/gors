@@ -1,4 +1,4 @@
-package internal
+package gen
 
 import (
 	"fmt"
@@ -23,28 +23,28 @@ func (s *Service) Name() string {
 	return s.ProtoService.GoName
 }
 
-func (s *Service) GorillaName() string {
-	return s.Name() + "Gorilla"
+func (s *Service) GorsName() string {
+	return s.Name() + "Gors"
 }
 
 func (s *Service) GorillaServiceName() string {
-	return s.GorillaName() + "Service"
+	return s.GorsName() + "Service"
 }
 
 func (s *Service) AppendGorillaRouteName() string {
-	return "Append" + s.GorillaName() + "Route"
+	return "Append" + s.GorsName() + "Route"
 }
 
 func (s *Service) GorillaHandlerName() string {
-	return s.GorillaName() + "Handler"
+	return s.GorsName() + "Handler"
 }
 
 func (s *Service) GorillaRequestDecoderName() string {
-	return s.GorillaName() + "RequestDecoder"
+	return s.GorsName() + "RequestDecoder"
 }
 
 func (s *Service) GorillaResponseEncoderName() string {
-	return s.GorillaName() + "ResponseEncoder"
+	return s.GorsName() + "ResponseEncoder"
 }
 
 func NewServices(file *protogen.File) ([]*Service, error) {
