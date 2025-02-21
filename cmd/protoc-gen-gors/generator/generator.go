@@ -59,7 +59,7 @@ func (f *Generator) GenerateFile() error {
 }
 
 func (f *Generator) GenerateServices(service *gen.Service, g *protogen.GeneratedFile) error {
-	g.P("type ", service.GorillaServiceName(), " interface {")
+	g.P("type ", service.ServiceName(), " interface {")
 	for _, endpoint := range service.Endpoints {
 		g.P(endpoint.Name(), "(ctx ", gen.ContextIdent, ", request *", endpoint.InputGoIdent(), ") (*", endpoint.OutputGoIdent(), ", error)")
 	}
@@ -69,14 +69,14 @@ func (f *Generator) GenerateServices(service *gen.Service, g *protogen.Generated
 }
 
 func (f *Generator) GenerateAppendServerFunc(service *gen.Service, g *protogen.GeneratedFile) error {
-	g.P("func ", service.AppendGorillaRouteName(), "(router *", gen.RouterIdent, ", service ", service.GorillaServiceName(), ", opts ...", gen.OptionIdent, ") ", "*", gen.RouterIdent, " {")
+	g.P("func ", service.AppendRouteName(), "(router *", gen.RouterIdent, ", service ", service.ServiceName(), ", opts ...", gen.OptionIdent, ") ", "*", gen.RouterIdent, " {")
 	g.P("options := ", gen.NewOptionsIdent, "(opts...)")
-	g.P("handler :=  ", service.Unexported(service.GorillaHandlerName()), "{")
+	g.P("handler :=  ", service.Unexported(service.HandlerName()), "{")
 	g.P("service: service,")
-	g.P("decoder: ", service.Unexported(service.GorillaRequestDecoderName()), "{")
+	g.P("decoder: ", service.Unexported(service.RequestDecoderName()), "{")
 	g.P("unmarshalOptions: options.UnmarshalOptions(),")
 	g.P("},")
-	g.P("encoder: ", service.Unexported(service.GorillaResponseEncoderName()), "{")
+	g.P("encoder: ", service.Unexported(service.ResponseEncoderName()), "{")
 	g.P("marshalOptions: options.MarshalOptions(),")
 	g.P("unmarshalOptions: options.UnmarshalOptions(),")
 	g.P("responseTransformer: options.ResponseTransformer(),")
@@ -100,15 +100,15 @@ func (f *Generator) GenerateAppendServerFunc(service *gen.Service, g *protogen.G
 }
 
 func (f *Generator) GenerateHandlers(service *gen.Service, g *protogen.GeneratedFile) error {
-	g.P("type ", service.Unexported(service.GorillaHandlerName()), " struct {")
-	g.P("service ", service.GorillaServiceName())
-	g.P("decoder ", service.Unexported(service.GorillaRequestDecoderName()))
-	g.P("encoder ", service.Unexported(service.GorillaResponseEncoderName()))
+	g.P("type ", service.Unexported(service.HandlerName()), " struct {")
+	g.P("service ", service.ServiceName())
+	g.P("decoder ", service.Unexported(service.RequestDecoderName()))
+	g.P("encoder ", service.Unexported(service.ResponseEncoderName()))
 	g.P("errorEncoder ", gen.ErrorEncoderIdent)
 	g.P("}")
 	g.P()
 	for _, endpoint := range service.Endpoints {
-		g.P("func (h ", service.Unexported(service.GorillaHandlerName()), ")", endpoint.Name(), "()", gen.HttpHandlerIdent, " {")
+		g.P("func (h ", service.Unexported(service.HandlerName()), ")", endpoint.Name(), "()", gen.HttpHandlerIdent, " {")
 		g.P("return ", gen.HttpHandlerFuncIdent, "(func(writer ", gen.ResponseWriterIdent, ", request *", gen.RequestIdent, ") {")
 		g.P("ctx := request.Context()")
 		g.P("in, err := h.decoder.", endpoint.Name(), "(ctx, request)")

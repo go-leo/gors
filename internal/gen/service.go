@@ -27,23 +27,23 @@ func (s *Service) GorsName() string {
 	return s.Name() + "Gors"
 }
 
-func (s *Service) GorillaServiceName() string {
+func (s *Service) ServiceName() string {
 	return s.GorsName() + "Service"
 }
 
-func (s *Service) AppendGorillaRouteName() string {
+func (s *Service) AppendRouteName() string {
 	return "Append" + s.GorsName() + "Route"
 }
 
-func (s *Service) GorillaHandlerName() string {
+func (s *Service) HandlerName() string {
 	return s.GorsName() + "Handler"
 }
 
-func (s *Service) GorillaRequestDecoderName() string {
+func (s *Service) RequestDecoderName() string {
 	return s.GorsName() + "RequestDecoder"
 }
 
-func (s *Service) GorillaResponseEncoderName() string {
+func (s *Service) ResponseEncoderName() string {
 	return s.GorsName() + "ResponseEncoder"
 }
 

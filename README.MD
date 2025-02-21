@@ -7,7 +7,7 @@ gors 底层基于 [gorilla](http://github.com/gorilla/mux) 管理http路由。
 
 # 安装
 ```
-go install github.com/go-leo/gors/v2/cmd/protoc-gen-gors-gorilla@latest
+go install github.com/go-leo/gors/v2/cmd/protoc-gen-gors@latest
 ```
 
 # Example
@@ -129,11 +129,20 @@ import (
 	"fmt"
 	"github.com/gorilla/mux"
 	"google.golang.org/protobuf/types/known/emptypb"
+	"log"
 	"maps"
 	"net/http"
 	"slices"
 	"time"
 )
+
+func Example() {
+	router := mux.NewRouter()
+	router = AppendDemoGorsRoute(router, NewMockDemo())
+	if err := http.ListenAndServe(":8080", router); err != nil {
+		log.Fatal(err)
+	}
+}
 
 type MockDemo struct {
 	m map[int64]string
@@ -187,16 +196,8 @@ func (svc *MockDemo) ListUser(ctx context.Context, request *ListUserRequest) (*L
 	return resp, nil
 }
 
-func NewMockDemo() DemoGorillaService {
+func NewMockDemo() DemoGorsService {
 	return &MockDemo{m: map[int64]string{}}
-}
-
-func main() {
-	router := mux.NewRouter()
-	router = AppendDemoGorillaRoute(router, NewMockDemo())
-	if err := http.ListenAndServe(":8080", router); err != nil {
-		fmt.Println(err)
-	}
 }
 ```
 

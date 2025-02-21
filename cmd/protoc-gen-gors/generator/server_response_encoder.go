@@ -8,14 +8,14 @@ import (
 )
 
 func (f *Generator) GenerateServerResponseEncoder(service *gen.Service, g *protogen.GeneratedFile) error {
-	g.P("type ", service.Unexported(service.GorillaResponseEncoderName()), " struct {")
+	g.P("type ", service.Unexported(service.ResponseEncoderName()), " struct {")
 	g.P("marshalOptions ", gen.ProtoJsonMarshalOptionsIdent)
 	g.P("unmarshalOptions ", gen.ProtoJsonUnmarshalOptionsIdent)
 	g.P("responseTransformer ", gen.ResponseTransformerIdent)
 	g.P("}")
 	for _, endpoint := range service.Endpoints {
 		httpRule := endpoint.HttpRule()
-		g.P("func (encoder ", service.Unexported(service.GorillaResponseEncoderName()), ")", endpoint.Name(), "(ctx ", gen.ContextIdent, ", w ", gen.ResponseWriterIdent, ", resp *", endpoint.OutputGoIdent(), ") error {")
+		g.P("func (encoder ", service.Unexported(service.ResponseEncoderName()), ")", endpoint.Name(), "(ctx ", gen.ContextIdent, ", w ", gen.ResponseWriterIdent, ", resp *", endpoint.OutputGoIdent(), ") error {")
 		bodyParameter := httpRule.ResponseBody()
 		switch bodyParameter {
 		case "", "*":

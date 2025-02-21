@@ -14,7 +14,7 @@ import (
 
 func Example() {
 	router := mux.NewRouter()
-	router = AppendDemoGorillaRoute(router, NewMockDemo())
+	router = AppendDemoGorsRoute(router, NewMockDemo())
 	if err := http.ListenAndServe(":8080", router); err != nil {
 		log.Fatal(err)
 	}
@@ -72,6 +72,6 @@ func (svc *MockDemo) ListUser(ctx context.Context, request *ListUserRequest) (*L
 	return resp, nil
 }
 
-func NewMockDemo() DemoGorillaService {
+func NewMockDemo() DemoGorsService {
 	return &MockDemo{m: map[int64]string{}}
 }
